@@ -50,7 +50,9 @@
             --font-mono: "SFMono-Regular", Consolas, "Liberation Mono", Menlo, monospace;
         }
 
-        * {
+        *,
+        *::before,
+        *::after {
             box-sizing: border-box;
         }
 
@@ -58,6 +60,11 @@
         body {
             margin: 0;
             padding: 0;
+            width: 100%;
+            min-height: 100%;
+            overflow-x: hidden;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
         }
 
         body {
@@ -67,6 +74,7 @@
             font-size: 14px;
             line-height: 1.5;
             -webkit-font-smoothing: antialiased;
+            -moz-osx-font-smoothing: grayscale;
         }
 
         a {
@@ -2466,11 +2474,13 @@
             overflow: hidden;
             min-height: 280px;
         }
+
         .geofence-radar-canvas {
             border-radius: 50%;
             background: radial-gradient(circle, #0F2035 0%, #08111E 100%);
             box-shadow: 0 0 20px rgba(232, 96, 10, 0.15);
         }
+
         .radius-preset-pill {
             padding: 6px 14px;
             border-radius: 20px;
@@ -2481,11 +2491,14 @@
             cursor: pointer;
             transition: all .15s ease;
         }
-        .radius-preset-pill:hover, .radius-preset-pill.active {
+
+        .radius-preset-pill:hover,
+        .radius-preset-pill.active {
             border-color: var(--orange);
             background: #FFF4EC;
             color: var(--orange);
         }
+
         .obs-card {
             border: 1.5px solid #E65100;
             background: #FFF8F2;
@@ -2493,6 +2506,7 @@
             padding: 16px 18px;
             margin-bottom: 16px;
         }
+
         .retrigger-card {
             border: 1.5px solid #1E88E5;
             background: #F2F7FC;
@@ -2585,7 +2599,8 @@
            Zero horizontal scrolling, fluid scaling, accessible touch targets (>=42px)
            ================================================================ */
 
-        html, body {
+        html,
+        body {
             max-width: 100vw;
             overflow-x: hidden;
             position: relative;
@@ -2593,11 +2608,21 @@
             text-size-adjust: 100%;
         }
 
-        img, canvas, iframe {
+        img,
+        canvas,
+        iframe {
             max-width: 100%;
         }
 
-        button, input, select, textarea, .btn, .radio-pill, .check-pill, .nav-link, .icon-btn {
+        button,
+        input,
+        select,
+        textarea,
+        .btn,
+        .radio-pill,
+        .check-pill,
+        .nav-link,
+        .icon-btn {
             touch-action: manipulation;
         }
 
@@ -2644,9 +2669,11 @@
             .landing-brand {
                 max-width: 900px;
             }
+
             .role-grid {
                 max-width: 1360px;
             }
+
             .topbar {
                 padding: 0 32px;
             }
@@ -2657,6 +2684,7 @@
             .grid-3 {
                 grid-template-columns: repeat(2, 1fr);
             }
+
             .kpi-strip {
                 grid-template-columns: repeat(2, 1fr);
             }
@@ -2994,7 +3022,7 @@
                 margin-bottom: 16px;
             }
 
-            .view-header > div:first-child {
+            .view-header>div:first-child {
                 width: 100%;
             }
 
@@ -3012,7 +3040,7 @@
                 min-height: 42px;
             }
 
-            .view-header > div:last-child {
+            .view-header>div:last-child {
                 width: 100%;
                 display: flex;
                 flex-direction: column;
@@ -3025,7 +3053,7 @@
                 padding: 12px 14px;
             }
 
-            .wizard-foot > div {
+            .wizard-foot>div {
                 display: flex;
                 flex-direction: column;
                 width: 100%;
@@ -3193,10 +3221,12 @@
                 max-height: 96vh;
                 max-height: 96dvh;
             }
+
             .modal-body {
                 max-height: calc(96vh - 90px);
                 max-height: calc(96dvh - 90px);
             }
+
             .topbar {
                 height: 48px;
             }
@@ -3465,15 +3495,20 @@
                 ARPL EHS Permit-to-Work &mdash; Excavation Module</h1>
             <p class="landing-sub"><i class="fa-solid fa-building"></i> Auro Realty Private Limited &bull; Environmental
                 Health &amp; Safety</p>
-            <div style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+            <div
+                style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
                 <span class="dpdp-tag"><i class="fa-solid fa-shield-check"></i> DPDP Act 2023 Compliant</span>
-                <span style="font-size:11.8px;color:#CBD1DA;"><i class="fa-solid fa-user-lock"></i> No names tagged to roles &bull; Name &amp; statutory consent required before signature</span>
+                <span style="font-size:11.8px;color:#CBD1DA;"><i class="fa-solid fa-user-lock"></i> No names tagged to
+                    roles &bull; Name &amp; statutory consent required before signature</span>
             </div>
         </div>
 
         <div class="landing-banner">
             <i class="fa-solid fa-circle-info"></i>
-            <span>Frontend demonstration environment with full <b>Digital Personal Data Protection (DPDP) Act</b> compliance. Roles represent functional authorizations only without pre-linked personal identities. Authorised users enter their name and provide explicit consent at the point of digital signing. All dates and times run on live Indian Standard Time (IST).</span>
+            <span>Frontend demonstration environment with full <b>Digital Personal Data Protection (DPDP) Act</b>
+                compliance. Roles represent functional authorizations only without pre-linked personal identities.
+                Authorised users enter their name and provide explicit consent at the point of digital signing. All
+                dates and times run on live Indian Standard Time (IST).</span>
         </div>
 
         <div class="role-grid" id="roleCardsGrid"></div>
@@ -3501,8 +3536,10 @@
                     <div class="t1">ARPL EHS PTW</div>
                     <div class="t2">Excavation Module</div>
                 </div>
-                <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar"><i class="fa-solid fa-bars"></i></button>
-                <button class="sidebar-close-btn no-print" id="sidebarCloseBtn" onclick="toggleMobileNav(false)" title="Close Navigation"><i class="fa-solid fa-xmark"></i></button>
+                <button class="sidebar-toggle" id="sidebarToggle" title="Toggle Sidebar"><i
+                        class="fa-solid fa-bars"></i></button>
+                <button class="sidebar-close-btn no-print" id="sidebarCloseBtn" onclick="toggleMobileNav(false)"
+                    title="Close Navigation"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="navContainer"></div>
             <div class="sidebar-footer">PT-01 Excavation &middot; PT-02 Hot Work &middot; v2.0<br>Demo build &middot;
@@ -3535,7 +3572,8 @@
                         <div class="role-badge-value" id="roleBadgeValue">&mdash;</div>
                     </div>
                 </div>
-                <button class="btn-switch-user no-print" onclick="doLogout()" title="Switch User / Role"><i class="fa-solid fa-right-left"></i>
+                <button class="btn-switch-user no-print" onclick="doLogout()" title="Switch User / Role"><i
+                        class="fa-solid fa-right-left"></i>
                     <span class="btn-text">Switch User</span></button>
             </div>
             <div class="content" id="contentRoot">
@@ -3654,96 +3692,142 @@
                 <div class="view" id="view-admin-config">
                     <div class="view-header">
                         <div>
-                            <h1><i class="fa-solid fa-map-location-dot"></i> Site GPS &amp; Geofencing Configuration</h1>
-                            <p>Administrator control: Configure worksite coordinates (Lat/Lng) and proximity circle radius range for approval gates</p>
+                            <h1><i class="fa-solid fa-map-location-dot"></i> Site GPS &amp; Geofencing Configuration
+                            </h1>
+                            <p>Administrator control: Configure worksite coordinates (Lat/Lng) and proximity circle
+                                radius range for approval gates</p>
                         </div>
-                        <button class="btn btn-primary" onclick="openSaveGeofenceModal()"><i class="fa-solid fa-floppy-disk"></i> Save Geofence Configuration</button>
+                        <button class="btn btn-primary" onclick="openSaveGeofenceModal()"><i
+                                class="fa-solid fa-floppy-disk"></i> Save Geofence Configuration</button>
                     </div>
 
                     <div class="dash-grid">
                         <div class="card" style="padding: 20px;">
-                            <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 14px; color: var(--navy); display:flex; align-items:center; gap:8px;">
-                                <i class="fa-solid fa-sliders" style="color:var(--orange);"></i> Worksite Location &amp; Proximity Parameters
+                            <h3
+                                style="font-size: 15px; font-weight: 700; margin: 0 0 14px; color: var(--navy); display:flex; align-items:center; gap:8px;">
+                                <i class="fa-solid fa-sliders" style="color:var(--orange);"></i> Worksite Location &amp;
+                                Proximity Parameters
                             </h3>
-                            
+
                             <!-- Per-Project Configuration Status Banner -->
                             <div id="adminProjectStatusBanner" style="margin-bottom: 16px;"></div>
 
                             <div class="form-field" style="margin-bottom: 16px;">
-                                <label for="adminProjectSelect">Select Project Site to Configure <span class="req">*</span></label>
+                                <label for="adminProjectSelect">Select Project Site to Configure <span
+                                        class="req">*</span></label>
                                 <select id="adminProjectSelect" onchange="onAdminSelectProject()"></select>
                             </div>
 
                             <!-- Dedicated On-Site Physical GPS Tagging Module -->
-                            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px;">
-                                <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:8px;">
-                                    <i class="fa-solid fa-location-crosshairs" style="color:var(--orange);font-size:15px;"></i> Worksite Physical GPS Tagging
-                                    <span class="badge st-active" style="font-size:10px;"><i class="fa-solid fa-shield-check"></i> On-Site Only</span>
+                            <div
+                                style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:14px;margin-bottom:16px;">
+                                <div
+                                    style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:4px;display:flex;align-items:center;gap:8px;">
+                                    <i class="fa-solid fa-location-crosshairs"
+                                        style="color:var(--orange);font-size:15px;"></i> Worksite Physical GPS Tagging
+                                    <span class="badge st-active" style="font-size:10px;"><i
+                                            class="fa-solid fa-shield-check"></i> On-Site Only</span>
                                 </div>
                                 <p style="font-size:11.8px;color:var(--text-muted);margin:0 0 12px;line-height:1.5;">
-                                    <b>Safety Rule:</b> Manual entry of coordinate numbers is disabled to prevent incorrect, mistyped, or fraudulent coordinates. The Administrator must physically visit the worksite and capture coordinates directly via device GPS.
+                                    <b>Safety Rule:</b> Manual entry of coordinate numbers is disabled to prevent
+                                    incorrect, mistyped, or fraudulent coordinates. The Administrator must physically
+                                    visit the worksite and capture coordinates directly via device GPS.
                                 </p>
                                 <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
-                                    <button type="button" class="btn btn-primary" onclick="tagCurrentLocationOnSite()" style="font-weight:700;padding:8px 16px;display:inline-flex;align-items:center;gap:7px;">
-                                        <i class="fa-solid fa-location-crosshairs"></i> Go to Location &amp; Tag (On-Site GPS)
+                                    <button type="button" class="btn btn-primary" onclick="tagCurrentLocationOnSite()"
+                                        style="font-weight:700;padding:8px 16px;display:inline-flex;align-items:center;gap:7px;">
+                                        <i class="fa-solid fa-location-crosshairs"></i> Go to Location &amp; Tag
+                                        (On-Site GPS)
                                     </button>
-                                    <button type="button" class="btn btn-sm btn-ghost" onclick="resetAdminCoordsDefault()" title="Reset coordinates to standard project pin for demonstration"><i class="fa-solid fa-rotate-left"></i> Reset to Factory Site Pin</button>
+                                    <button type="button" class="btn btn-sm btn-ghost"
+                                        onclick="resetAdminCoordsDefault()"
+                                        title="Reset coordinates to standard project pin for demonstration"><i
+                                            class="fa-solid fa-rotate-left"></i> Reset to Factory Site Pin</button>
                                 </div>
                                 <div id="tagFeedbackBox" style="margin-top:10px;"></div>
                             </div>
 
                             <div class="form-grid" style="margin-bottom: 14px;">
                                 <div class="form-field">
-                                    <label for="adminSiteLat"><i class="fa-solid fa-lock" style="font-size:10.5px;color:var(--text-muted);margin-right:3px;"></i> Tagged Latitude (Read-Only) <span class="req">*</span></label>
-                                    <input type="text" id="adminSiteLat" readonly style="background:var(--bg);cursor:not-allowed;font-weight:700;color:var(--navy);font-family:var(--mono);" placeholder="Tagged on-site only">
+                                    <label for="adminSiteLat"><i class="fa-solid fa-lock"
+                                            style="font-size:10.5px;color:var(--text-muted);margin-right:3px;"></i>
+                                        Tagged Latitude (Read-Only) <span class="req">*</span></label>
+                                    <input type="text" id="adminSiteLat" readonly
+                                        style="background:var(--bg);cursor:not-allowed;font-weight:700;color:var(--navy);font-family:var(--mono);"
+                                        placeholder="Tagged on-site only">
                                 </div>
                                 <div class="form-field">
-                                    <label for="adminSiteLng"><i class="fa-solid fa-lock" style="font-size:10.5px;color:var(--text-muted);margin-right:3px;"></i> Tagged Longitude (Read-Only) <span class="req">*</span></label>
-                                    <input type="text" id="adminSiteLng" readonly style="background:var(--bg);cursor:not-allowed;font-weight:700;color:var(--navy);font-family:var(--mono);" placeholder="Tagged on-site only">
+                                    <label for="adminSiteLng"><i class="fa-solid fa-lock"
+                                            style="font-size:10.5px;color:var(--text-muted);margin-right:3px;"></i>
+                                        Tagged Longitude (Read-Only) <span class="req">*</span></label>
+                                    <input type="text" id="adminSiteLng" readonly
+                                        style="background:var(--bg);cursor:not-allowed;font-weight:700;color:var(--navy);font-family:var(--mono);"
+                                        placeholder="Tagged on-site only">
                                 </div>
                             </div>
 
                             <div class="form-field" style="margin-bottom: 16px;">
                                 <label for="adminSiteAddress">Site Address &amp; Description</label>
-                                <input type="text" id="adminSiteAddress" oninput="onAdminAddressChange()" placeholder="e.g. Gachibowli, Financial District, Hyderabad">
+                                <input type="text" id="adminSiteAddress" oninput="onAdminAddressChange()"
+                                    placeholder="e.g. Gachibowli, Financial District, Hyderabad">
                             </div>
 
                             <hr style="border:0; border-top:1px solid var(--border); margin:18px 0;">
 
-                            <h3 style="font-size: 14px; font-weight: 700; margin: 0 0 12px; color: var(--navy); display:flex; align-items:center; justify-content:space-between;">
-                                <span><i class="fa-solid fa-bullseye" style="color:var(--orange);"></i> Proximity Circle Radius Range</span>
-                                <span id="adminRadiusValueBadge" style="font-size:14px; color:var(--orange); font-weight:800;" class="mono">100 m</span>
+                            <h3
+                                style="font-size: 14px; font-weight: 700; margin: 0 0 12px; color: var(--navy); display:flex; align-items:center; justify-content:space-between;">
+                                <span><i class="fa-solid fa-bullseye" style="color:var(--orange);"></i> Proximity Circle
+                                    Radius Range</span>
+                                <span id="adminRadiusValueBadge"
+                                    style="font-size:14px; color:var(--orange); font-weight:800;" class="mono">100
+                                    m</span>
                             </h3>
-                            <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">Approvers must be physically located within this radius of the worksite coordinates to authorize permits.</p>
+                            <p style="font-size:12px; color:var(--text-muted); margin:0 0 12px;">Approvers must be
+                                physically located within this radius of the worksite coordinates to authorize permits.
+                            </p>
 
                             <div style="margin-bottom: 16px;">
-                                <input type="range" id="adminRadiusSlider" min="25" max="1000" step="25" value="100" style="width:100%; accent-color:var(--orange); cursor:pointer;" oninput="onAdminRadiusChange(this.value)">
+                                <input type="range" id="adminRadiusSlider" min="25" max="1000" step="25" value="100"
+                                    style="width:100%; accent-color:var(--orange); cursor:pointer;"
+                                    oninput="onAdminRadiusChange(this.value)">
                             </div>
 
                             <div style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:14px;">
                                 <span class="radius-preset-pill" onclick="onAdminRadiusChange(50)">50m (Strict)</span>
-                                <span class="radius-preset-pill active" onclick="onAdminRadiusChange(100)">100m (Standard)</span>
+                                <span class="radius-preset-pill active" onclick="onAdminRadiusChange(100)">100m
+                                    (Standard)</span>
                                 <span class="radius-preset-pill" onclick="onAdminRadiusChange(150)">150m</span>
-                                <span class="radius-preset-pill" onclick="onAdminRadiusChange(200)">200m (Large Site)</span>
+                                <span class="radius-preset-pill" onclick="onAdminRadiusChange(200)">200m (Large
+                                    Site)</span>
                                 <span class="radius-preset-pill" onclick="onAdminRadiusChange(300)">300m</span>
                                 <span class="radius-preset-pill" onclick="onAdminRadiusChange(500)">500m (Campus)</span>
                             </div>
 
-                            <div class="form-hint"><i class="fa-solid fa-shield-halved"></i> Updating coordinates or geofence radius requires Admin DPDP statutory consent &amp; digital signature before saving.</div>
+                            <div class="form-hint"><i class="fa-solid fa-shield-halved"></i> Updating coordinates or
+                                geofence radius requires Admin DPDP statutory consent &amp; digital signature before
+                                saving.</div>
                         </div>
 
                         <div class="card" style="padding: 20px; display:flex; flex-direction:column;">
-                            <h3 style="font-size: 15px; font-weight: 700; margin: 0 0 12px; color: var(--navy); display:flex; align-items:center; justify-content:space-between;">
-                                <span><i class="fa-solid fa-satellite-dish" style="color:var(--orange);"></i> Geofence Radar Preview</span>
-                                <span class="dpdp-tag" style="background:#EBF5FB; color:#1B4F72; border-color:#AED6F1;"><i class="fa-solid fa-signal"></i> Active Geofence</span>
+                            <h3
+                                style="font-size: 15px; font-weight: 700; margin: 0 0 12px; color: var(--navy); display:flex; align-items:center; justify-content:space-between;">
+                                <span><i class="fa-solid fa-satellite-dish" style="color:var(--orange);"></i> Geofence
+                                    Radar Preview</span>
+                                <span class="dpdp-tag"
+                                    style="background:#EBF5FB; color:#1B4F72; border-color:#AED6F1;"><i
+                                        class="fa-solid fa-signal"></i> Active Geofence</span>
                             </h3>
-                            <p style="font-size:12px; color:var(--text-muted); margin:0 0 14px;">Real-time visualization of the worksite perimeter circle and proximity threshold.</p>
+                            <p style="font-size:12px; color:var(--text-muted); margin:0 0 14px;">Real-time visualization
+                                of the worksite perimeter circle and proximity threshold.</p>
 
                             <div class="geofence-radar-wrap" style="flex:1;">
-                                <canvas id="geofenceRadarCanvas" width="280" height="280" class="geofence-radar-canvas"></canvas>
-                                <div id="radarLegend" style="margin-top:12px; font-size:11.5px; color:#A0AEC0; text-align:center; line-height:1.5;">
+                                <canvas id="geofenceRadarCanvas" width="280" height="280"
+                                    class="geofence-radar-canvas"></canvas>
+                                <div id="radarLegend"
+                                    style="margin-top:12px; font-size:11.5px; color:#A0AEC0; text-align:center; line-height:1.5;">
                                     Center Pin: Worksite Site Lat/Lng<br>
-                                    Orange Perimeter Circle: Geofence Gate Boundary (<span id="radarRadiusTxt" class="mono">100m</span>)
+                                    Orange Perimeter Circle: Geofence Gate Boundary (<span id="radarRadiusTxt"
+                                        class="mono">100m</span>)
                                 </div>
                             </div>
                         </div>
@@ -4706,7 +4790,7 @@
                 const itChanged = JSON.stringify(oldSnap.it) !== JSON.stringify(newSnap.it);
 
                 if (!p.approvals) p.approvals = newChain('excavation');
-                
+
                 // Invalidate approvals whose fields changed or that previously rejected
                 if (mepChanged || (p.approvals.mep && p.approvals.mep.status === 'rejected')) {
                     p.approvals.mep = { status: 'pending', by: null, at: null, gps: null, comment: null };
@@ -4995,7 +5079,7 @@
         function approveExtensionStage(p, roleKey, gps, comment, sig, signerName) {
             const ext = p.extension;
             const effectiveSigner = signerName || (currentUser && currentUser.name) || roleInfo(roleKey).label;
-            
+
             if (!ext.approvals || ext.approvals.kind === 'exc-ext' || !ext.approvals.mep) {
                 if (roleKey === 'section-head' || roleKey === 'hw-section-head') {
                     ext.approvals.sectionHead = { status: 'approved', by: effectiveSigner, at: nowTime(), gps, comment, sig };
@@ -5136,19 +5220,19 @@
                 if (prj.configured) {
                     sb.innerHTML = '<div style="background:var(--green-bg);border:1px solid var(--green-brd);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
                         '<div>' +
-                            '<div style="font-weight:700;color:var(--green);font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-circle-check"></i> Project GPS Configured &amp; Active</div>' +
-                            '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Configured by <b>' + escapeHtml(prj.configuredBy || 'Admin') + '</b>' + (prj.configuredAt ? (' on ' + fmtDateTime(prj.configuredAt)) : '') + ' &bull; Method: <b>On-Site Tagged (Device GPS)</b> &bull; Radius: <b>' + (prj.radius || 150) + 'm</b></div>' +
+                        '<div style="font-weight:700;color:var(--green);font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-circle-check"></i> Project GPS Configured &amp; Active</div>' +
+                        '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Configured by <b>' + escapeHtml(prj.configuredBy || 'Admin') + '</b>' + (prj.configuredAt ? (' on ' + fmtDateTime(prj.configuredAt)) : '') + ' &bull; Method: <b>On-Site Tagged (Device GPS)</b> &bull; Radius: <b>' + (prj.radius || 150) + 'm</b></div>' +
                         '</div>' +
                         '<span class="dpdp-tag" style="background:#E8F5E9;color:var(--green);border-color:#C8E6C9;"><i class="fa-solid fa-unlock"></i> Permit Forms Unlocked</span>' +
-                    '</div>';
+                        '</div>';
                 } else {
                     sb.innerHTML = '<div style="background:#FFEBEE;border:1px solid #FFCDD2;border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
                         '<div>' +
-                            '<div style="font-weight:700;color:#C62828;font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-triangle-exclamation"></i> Project GPS Not Configured</div>' +
-                            '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Permit form filling is currently <b>LOCKED</b> for this project. Administrator must visit worksite and click <b>Go to Location &amp; Tag (On-Site GPS)</b> to unlock.</div>' +
+                        '<div style="font-weight:700;color:#C62828;font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-triangle-exclamation"></i> Project GPS Not Configured</div>' +
+                        '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Permit form filling is currently <b>LOCKED</b> for this project. Administrator must visit worksite and click <b>Go to Location &amp; Tag (On-Site GPS)</b> to unlock.</div>' +
                         '</div>' +
                         '<span class="dpdp-tag" style="background:#FFEBEE;color:#C62828;border-color:#EF9A9A;"><i class="fa-solid fa-lock"></i> Forms Locked</span>' +
-                    '</div>';
+                        '</div>';
                 }
             }
 
@@ -5181,19 +5265,19 @@
                 if (prj.configured) {
                     sb.innerHTML = '<div style="background:var(--green-bg);border:1px solid var(--green-brd);border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
                         '<div>' +
-                            '<div style="font-weight:700;color:var(--green);font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-circle-check"></i> Project GPS Configured &amp; Active</div>' +
-                            '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Configured by <b>' + escapeHtml(prj.configuredBy || 'Admin') + '</b>' + (prj.configuredAt ? (' on ' + fmtDateTime(prj.configuredAt)) : '') + ' &bull; Method: <b>On-Site Tagged (Device GPS)</b> &bull; Radius: <b>' + (prj.radius || 150) + 'm</b></div>' +
+                        '<div style="font-weight:700;color:var(--green);font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-circle-check"></i> Project GPS Configured &amp; Active</div>' +
+                        '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Configured by <b>' + escapeHtml(prj.configuredBy || 'Admin') + '</b>' + (prj.configuredAt ? (' on ' + fmtDateTime(prj.configuredAt)) : '') + ' &bull; Method: <b>On-Site Tagged (Device GPS)</b> &bull; Radius: <b>' + (prj.radius || 150) + 'm</b></div>' +
                         '</div>' +
                         '<span class="dpdp-tag" style="background:#E8F5E9;color:var(--green);border-color:#C8E6C9;"><i class="fa-solid fa-unlock"></i> Permit Forms Unlocked</span>' +
-                    '</div>';
+                        '</div>';
                 } else {
                     sb.innerHTML = '<div style="background:#FFEBEE;border:1px solid #FFCDD2;border-radius:8px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
                         '<div>' +
-                            '<div style="font-weight:700;color:#C62828;font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-triangle-exclamation"></i> Project GPS Not Configured</div>' +
-                            '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Permit form filling is currently <b>LOCKED</b> for this project. Administrator must visit worksite and click <b>Go to Location &amp; Tag (On-Site GPS)</b> to unlock.</div>' +
+                        '<div style="font-weight:700;color:#C62828;font-size:13px;display:flex;align-items:center;gap:6px;"><i class="fa-solid fa-triangle-exclamation"></i> Project GPS Not Configured</div>' +
+                        '<div style="font-size:11.5px;color:var(--text);margin-top:2px;">Permit form filling is currently <b>LOCKED</b> for this project. Administrator must visit worksite and click <b>Go to Location &amp; Tag (On-Site GPS)</b> to unlock.</div>' +
                         '</div>' +
                         '<span class="dpdp-tag" style="background:#FFEBEE;color:#C62828;border-color:#EF9A9A;"><i class="fa-solid fa-lock"></i> Forms Locked</span>' +
-                    '</div>';
+                        '</div>';
                 }
             }
 
@@ -5327,7 +5411,7 @@
 
             // Configured geofence circle
             const radiusPx = Math.min(125, Math.max(30, 25 + Math.sqrt(adminConfigState.tempRadius) * 4.4));
-            
+
             // Geofence fill
             ctx.fillStyle = 'rgba(232, 96, 10, 0.12)';
             ctx.beginPath();
@@ -5406,52 +5490,52 @@
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-floppy-disk" style="color:var(--orange);"></i> Authorize Geofence Configuration';
             document.getElementById('actionModalBody').innerHTML =
                 '<div style="background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:12px 14px;margin-bottom:14px;font-size:12.5px;line-height:1.6;">' +
-                    '<div><b>Project Site:</b> ' + prj.name + ' (' + prj.id + ')</div>' +
-                    '<div><b>Tagged Coordinates:</b> Lat ' + newLat.toFixed(5) + ', Lng ' + newLng.toFixed(5) + '</div>' +
-                    '<div><b>Address:</b> ' + newAddr + '</div>' +
-                    '<div><b>Geofence Circle Radius:</b> <b class="mono" style="color:var(--orange);">' + newRadius + ' meters</b></div>' +
-                    '<div><b>Configuration Method:</b> <span class="badge st-active" style="font-size:11px;"><i class="fa-solid fa-location-crosshairs"></i> On-Site Tagged (Device GPS)</span></div>' +
+                '<div><b>Project Site:</b> ' + prj.name + ' (' + prj.id + ')</div>' +
+                '<div><b>Tagged Coordinates:</b> Lat ' + newLat.toFixed(5) + ', Lng ' + newLng.toFixed(5) + '</div>' +
+                '<div><b>Address:</b> ' + newAddr + '</div>' +
+                '<div><b>Geofence Circle Radius:</b> <b class="mono" style="color:var(--orange);">' + newRadius + ' meters</b></div>' +
+                '<div><b>Configuration Method:</b> <span class="badge st-active" style="font-size:11px;"><i class="fa-solid fa-location-crosshairs"></i> On-Site Tagged (Device GPS)</span></div>' +
                 '</div>' +
                 '<div id="modalSigFlowWrap">' +
-                    '<div id="modalSignerIdBox" class="dpdp-box">' +
-                        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-                            '<div style="width:30px;height:30px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fa-solid fa-shield-halved"></i></div>' +
-                            '<div>' +
-                                '<div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">Administrator Identification &amp; DPDP Consent <span class="dpdp-tag">DPDP Mandatory</span></div>' +
-                                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Enter your name and confirm statutory consent before digitally signing this project geofence authorization.</div>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="form-field" style="margin-bottom:10px;">' +
-                            '<label for="modalSignerName" style="font-weight:600;font-size:12px;">Administrator Full Name <span class="req">*</span></label>' +
-                            '<input type="text" id="modalSignerName" value="' + escapeHtml(currentUser.name || '') + '" placeholder="Enter any name (e.g., your full name)" class="input-lg" style="width:100%;" oninput="onModalSignerInput()">' +
-                            '<div id="modalSignerNameErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
-                        '</div>' +
-                        '<div style="margin-bottom:12px;">' +
-                            '<label class="dpdp-consent-pill" id="modalConsentPill">' +
-                                '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
-                                '<span style="font-size:11.5px;line-height:1.55;color:var(--text);">' +
-                                    '<strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my name, role (Administrator), timestamp, and digital signature for authorizing worksite GPS geofencing configuration.' +
-                                '</span>' +
-                            '</label>' +
-                            '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
-                        '</div>' +
-                        '<button type="button" class="btn btn-primary btn-sm" id="btnModalContinueToSig" onclick="continueModalToSignature()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">' +
-                            '<span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i>' +
-                        '</button>' +
-                    '</div>' +
-                    '<div id="modalSigBox" style="display:none;margin-top:10px;">' +
-                        '<div class="dpdp-verified-banner">' +
-                            '<div>' +
-                                '<div style="font-size:13px;font-weight:700;color:var(--navy);" id="modalVerifiedSignerTitle">Signatory: &mdash;</div>' +
-                                '<div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
-                            '</div>' +
-                            '<button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Edit Name / Consent</button>' +
-                        '</div>' +
-                        '<div class="form-field">' +
-                            '<label style="font-weight:600;font-size:12.5px;">Administrator Digital Signature <span class="req">*</span></label>' +
-                            sigPadHtml('apprSigPad', 'Sign here to authorize project geofence configuration') +
-                        '</div>' +
-                    '</div>' +
+                '<div id="modalSignerIdBox" class="dpdp-box">' +
+                '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+                '<div style="width:30px;height:30px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fa-solid fa-shield-halved"></i></div>' +
+                '<div>' +
+                '<div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">Administrator Identification &amp; DPDP Consent <span class="dpdp-tag">DPDP Mandatory</span></div>' +
+                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Enter your name and confirm statutory consent before digitally signing this project geofence authorization.</div>' +
+                '</div>' +
+                '</div>' +
+                '<div class="form-field" style="margin-bottom:10px;">' +
+                '<label for="modalSignerName" style="font-weight:600;font-size:12px;">Administrator Full Name <span class="req">*</span></label>' +
+                '<input type="text" id="modalSignerName" value="' + escapeHtml(currentUser.name || '') + '" placeholder="Enter any name (e.g., your full name)" class="input-lg" style="width:100%;" oninput="onModalSignerInput()">' +
+                '<div id="modalSignerNameErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
+                '</div>' +
+                '<div style="margin-bottom:12px;">' +
+                '<label class="dpdp-consent-pill" id="modalConsentPill">' +
+                '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
+                '<span style="font-size:11.5px;line-height:1.55;color:var(--text);">' +
+                '<strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my name, role (Administrator), timestamp, and digital signature for authorizing worksite GPS geofencing configuration.' +
+                '</span>' +
+                '</label>' +
+                '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
+                '</div>' +
+                '<button type="button" class="btn btn-primary btn-sm" id="btnModalContinueToSig" onclick="continueModalToSignature()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">' +
+                '<span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i>' +
+                '</button>' +
+                '</div>' +
+                '<div id="modalSigBox" style="display:none;margin-top:10px;">' +
+                '<div class="dpdp-verified-banner">' +
+                '<div>' +
+                '<div style="font-size:13px;font-weight:700;color:var(--navy);" id="modalVerifiedSignerTitle">Signatory: &mdash;</div>' +
+                '<div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
+                '</div>' +
+                '<button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Edit Name / Consent</button>' +
+                '</div>' +
+                '<div class="form-field">' +
+                '<label style="font-weight:600;font-size:12.5px;">Administrator Digital Signature <span class="req">*</span></label>' +
+                sigPadHtml('apprSigPad', 'Sign here to authorize project geofence configuration') +
+                '</div>' +
+                '</div>' +
                 '</div>';
 
             document.getElementById('actionModalFoot').innerHTML =
@@ -6295,17 +6379,17 @@
             if (isUnconfigured) {
                 unconfiguredBanner = '<div class="locked-banner" style="border-color:#C62828;background:#FFEBEE;color:#C62828;padding:14px 16px;border-radius:8px;margin-bottom:16px;">' +
                     '<div style="display:flex;align-items:center;gap:10px;margin-bottom:6px;">' +
-                        '<i class="fa-solid fa-lock" style="font-size:18px;"></i>' +
-                        '<strong style="font-size:13.5px;">Permit Form Filling Locked &mdash; Site GPS Not Configured</strong>' +
+                    '<i class="fa-solid fa-lock" style="font-size:18px;"></i>' +
+                    '<strong style="font-size:13.5px;">Permit Form Filling Locked &mdash; Site GPS Not Configured</strong>' +
                     '</div>' +
                     '<div style="font-size:12px;line-height:1.55;color:var(--text);">' +
-                        'The worksite GPS coordinates and proximity circle radius for <b>' + escapeHtml(draft.project) + '</b> have not been configured by an Administrator yet.<br>' +
-                        '<b>Policy Rule:</b> Under company EHS SOP &amp; DPDP compliance, permit forms are strictly locked until an Administrator visits the worksite and tags the location on-site via device GPS.' +
+                    'The worksite GPS coordinates and proximity circle radius for <b>' + escapeHtml(draft.project) + '</b> have not been configured by an Administrator yet.<br>' +
+                    '<b>Policy Rule:</b> Under company EHS SOP &amp; DPDP compliance, permit forms are strictly locked until an Administrator visits the worksite and tags the location on-site via device GPS.' +
                     '</div>' +
                     (isAdmin
                         ? '<div style="margin-top:10px;"><button type="button" class="btn btn-sm btn-primary" onclick="goToAdminConfigForProject(\'' + (prj ? prj.id : '') + '\')"><i class="fa-solid fa-location-crosshairs"></i> Tag Location on Site for this Project Now</button></div>'
                         : '<div style="margin-top:8px;font-size:11.5px;color:#78909C;font-weight:600;"><i class="fa-solid fa-circle-info"></i> Please notify your Administrator to configure and tag this project\'s GPS location before filling permits.</div>') +
-                '</div>';
+                    '</div>';
             }
 
             const disAttr = isUnconfigured ? ' disabled' : '';
@@ -6356,15 +6440,15 @@
 
                 return '<div class="gps-box captured" style="' + (isWithin ? '' : 'border-color:#EF5350;background:#FFEBEE;') + '">' +
                     '<div class="gps-row">' +
-                        '<div class="gps-info"><i class="fa-solid fa-location-dot" style="color:' + (isWithin ? 'var(--green)' : '#C62828') + ';"></i> Lat <b>' + draft.gps.lat.toFixed(5) + '</b>, Lng <b>' + draft.gps.lng.toFixed(5) + '</b><br>' + escapeHtml(draft.gps.address || '') + '</div>' +
-                        badgeHtml +
-                        '<button type="button" class="btn btn-sm" onclick="captureLocationForStep1()" style="margin-left:8px;"><i class="fa-solid fa-rotate"></i> Re-capture</button>' +
+                    '<div class="gps-info"><i class="fa-solid fa-location-dot" style="color:' + (isWithin ? 'var(--green)' : '#C62828') + ';"></i> Lat <b>' + draft.gps.lat.toFixed(5) + '</b>, Lng <b>' + draft.gps.lng.toFixed(5) + '</b><br>' + escapeHtml(draft.gps.address || '') + '</div>' +
+                    badgeHtml +
+                    '<button type="button" class="btn btn-sm" onclick="captureLocationForStep1()" style="margin-left:8px;"><i class="fa-solid fa-rotate"></i> Re-capture</button>' +
                     '</div>' +
                     (!isWithin
                         ? '<div class="form-error" style="display:flex;margin:8px 0 6px 0;"><i class="fa-solid fa-circle-exclamation"></i> <b>Geofence Violation:</b> Captured coordinates are ' + Math.round(dist) + 'm away from the configured worksite center (allowed radius: ' + radius + 'm). Form submission is blocked until you are within the worksite boundary.</div>'
                         : '') +
                     '<div class="map-preview"><iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=' + (draft.gps.lng - 0.006) + '%2C' + (draft.gps.lat - 0.006) + '%2C' + (draft.gps.lng + 0.006) + '%2C' + (draft.gps.lat + 0.006) + '&layer=mapnik&marker=' + draft.gps.lat + '%2C' + draft.gps.lng + '"></iframe></div>' +
-                '</div>';
+                    '</div>';
             }
             return '<div class="gps-box"><div class="gps-row"><div class="gps-info"><i class="fa-solid fa-triangle-exclamation" style="color:var(--amber);"></i> Worksite GPS must be captured within the configured geofence radius. Submission is blocked until valid on-site location is verified.</div>' +
                 '<button type="button" class="btn btn-sm btn-primary" onclick="captureLocationForStep1()" ' + (!draft.project || !isConfigured ? 'disabled' : '') + '><i class="fa-solid fa-location-crosshairs"></i> Capture Location</button></div></div>';
@@ -6603,54 +6687,54 @@
                 '<div class="dsec" id="wizSigSection"><div class="dsec-title"><i class="fa-solid fa-signature"></i> Digital Signature of Permittee <span class="req">*</span></div>' +
                 (draft.signature && draft.signature.dataUrl
                     ? '<div class="sig-preview" style="background:#F4FBF6;border-color:var(--green-brd);padding:14px;border-radius:9px;">' +
-                      '<img src="' + draft.signature.dataUrl + '" alt="signature" style="max-height:64px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:4px 8px;">' +
-                      '<div style="font-size:12.5px;">' +
-                      '<b>' + escapeHtml(draft.signature.by) + '</b> <span style="font-size:11.5px;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span>' +
-                      '<div style="color:var(--green);font-size:11.5px;font-weight:700;margin-top:3px;"><i class="fa-solid fa-shield-check"></i> DPDP Statutory Consent Verified &bull; Signed ' + fmtDateTime(draft.signature.at) + '</div>' +
-                      '</div>' +
-                      '<button type="button" class="btn btn-sm btn-ghost" style="margin-left:auto;" onclick="draft.signature=null;draft.signerVerified=false;renderWizStep();"><i class="fa-solid fa-eraser"></i> Change Signatory / Re-sign</button>' +
-                      '</div>'
+                    '<img src="' + draft.signature.dataUrl + '" alt="signature" style="max-height:64px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:4px 8px;">' +
+                    '<div style="font-size:12.5px;">' +
+                    '<b>' + escapeHtml(draft.signature.by) + '</b> <span style="font-size:11.5px;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span>' +
+                    '<div style="color:var(--green);font-size:11.5px;font-weight:700;margin-top:3px;"><i class="fa-solid fa-shield-check"></i> DPDP Statutory Consent Verified &bull; Signed ' + fmtDateTime(draft.signature.at) + '</div>' +
+                    '</div>' +
+                    '<button type="button" class="btn btn-sm btn-ghost" style="margin-left:auto;" onclick="draft.signature=null;draft.signerVerified=false;renderWizStep();"><i class="fa-solid fa-eraser"></i> Change Signatory / Re-sign</button>' +
+                    '</div>'
                     : (!draft.signerVerified
                         ? '<div class="dpdp-box">' +
-                          '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-                          '<div style="width:32px;height:32px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:15px;"><i class="fa-solid fa-shield-halved"></i></div>' +
-                          '<div><div style="font-size:13.5px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;">Signatory Identification &amp; DPDP Consent <span class="dpdp-tag">DPDP Mandatory</span></div>' +
-                          '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">No person name is tagged to the <b>Site Supervisor</b> role. Enter any name and grant statutory consent before signature.</div></div>' +
-                          '</div>' +
-                          '<div class="form-field" style="margin-bottom:12px;">' +
-                          '<label for="seSignerName" style="font-weight:600;font-size:12.5px;">Signatory Full Name (Site Supervisor / Permittee) <span class="req">*</span></label>' +
-                          '<input type="text" id="seSignerName" value="' + escapeHtml(draft.signerName || currentUser.name || '') + '" placeholder="Enter any name (e.g., your full name)" class="input-lg" style="width:100%;max-width:480px;" oninput="onWizSignerInput()">' +
-                          '<div class="form-hint" style="margin-top:4px;">Enter any name. Under the DPDP Act 2023, this name will be stamped against this permit\'s digital signature.</div>' +
-                          '<div id="seSignerNameErr" class="form-error" style="display:none;margin-top:5px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
-                          '</div>' +
-                          '<div style="margin-bottom:14px;">' +
-                          '<label class="dpdp-consent-pill ' + (draft.signerConsent ? 'checked' : '') + '" id="seConsentPill">' +
-                          '<input type="checkbox" id="seDpdpConsentChk" ' + (draft.signerConsent ? 'checked' : '') + ' onchange="onWizSignerInput()" style="margin-top:3px;width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">' +
-                          '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
-                          '<strong style="color:var(--navy);">Consent Declaration (DPDP Act, 2023) <span class="req">*</span>:</strong> I hereby give voluntary and explicit consent under the Digital Personal Data Protection (DPDP) Act, 2023 for recording and processing my personal name, role designation (Site Supervisor / Permittee), timestamp, worksite GPS coordinates, and digital signature strictly for statutory Permit-to-Work execution and safety audit compliance.' +
-                          '</span>' +
-                          '</label>' +
-                          '<div id="seConsentErr" class="form-error" style="display:none;margin-top:5px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP statutory consent checkbox must be selected before you can sign.</div>' +
-                          '</div>' +
-                          '<div>' +
-                          '<button type="button" class="btn btn-primary" id="btnWizContinueToSig" onclick="continueWizToSignature()" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;font-weight:600;">' +
-                          '<span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i>' +
-                          '</button>' +
-                          '</div>' +
-                          '</div>'
+                        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+                        '<div style="width:32px;height:32px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:15px;"><i class="fa-solid fa-shield-halved"></i></div>' +
+                        '<div><div style="font-size:13.5px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;">Signatory Identification &amp; DPDP Consent <span class="dpdp-tag">DPDP Mandatory</span></div>' +
+                        '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">No person name is tagged to the <b>Site Supervisor</b> role. Enter any name and grant statutory consent before signature.</div></div>' +
+                        '</div>' +
+                        '<div class="form-field" style="margin-bottom:12px;">' +
+                        '<label for="seSignerName" style="font-weight:600;font-size:12.5px;">Signatory Full Name (Site Supervisor / Permittee) <span class="req">*</span></label>' +
+                        '<input type="text" id="seSignerName" value="' + escapeHtml(draft.signerName || currentUser.name || '') + '" placeholder="Enter any name (e.g., your full name)" class="input-lg" style="width:100%;max-width:480px;" oninput="onWizSignerInput()">' +
+                        '<div class="form-hint" style="margin-top:4px;">Enter any name. Under the DPDP Act 2023, this name will be stamped against this permit\'s digital signature.</div>' +
+                        '<div id="seSignerNameErr" class="form-error" style="display:none;margin-top:5px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
+                        '</div>' +
+                        '<div style="margin-bottom:14px;">' +
+                        '<label class="dpdp-consent-pill ' + (draft.signerConsent ? 'checked' : '') + '" id="seConsentPill">' +
+                        '<input type="checkbox" id="seDpdpConsentChk" ' + (draft.signerConsent ? 'checked' : '') + ' onchange="onWizSignerInput()" style="margin-top:3px;width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">' +
+                        '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
+                        '<strong style="color:var(--navy);">Consent Declaration (DPDP Act, 2023) <span class="req">*</span>:</strong> I hereby give voluntary and explicit consent under the Digital Personal Data Protection (DPDP) Act, 2023 for recording and processing my personal name, role designation (Site Supervisor / Permittee), timestamp, worksite GPS coordinates, and digital signature strictly for statutory Permit-to-Work execution and safety audit compliance.' +
+                        '</span>' +
+                        '</label>' +
+                        '<div id="seConsentErr" class="form-error" style="display:none;margin-top:5px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP statutory consent checkbox must be selected before you can sign.</div>' +
+                        '</div>' +
+                        '<div>' +
+                        '<button type="button" class="btn btn-primary" id="btnWizContinueToSig" onclick="continueWizToSignature()" style="display:inline-flex;align-items:center;gap:8px;padding:9px 18px;font-weight:600;">' +
+                        '<span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i>' +
+                        '</button>' +
+                        '</div>' +
+                        '</div>'
                         : '<div class="dpdp-verified-banner">' +
-                          '<div style="display:flex;align-items:center;gap:10px;">' +
-                          '<div style="width:34px;height:34px;border-radius:50%;background:rgba(46,125,50,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:15px;"><i class="fa-solid fa-shield-check"></i></div>' +
-                          '<div>' +
-                          '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Signatory: <b>' + escapeHtml(draft.signerName) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span></div>' +
-                          '<div style="font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
-                          '</div>' +
-                          '</div>' +
-                          '<button type="button" class="btn btn-sm btn-ghost" onclick="editWizSigner()" style="font-size:11.5px;"><i class="fa-solid fa-pen-to-square"></i> Change Name / Consent</button>' +
-                          '</div>' +
-                          '<p style="font-size:12px;color:var(--text-muted);margin:0 0 10px;">By signing below, <b>' + escapeHtml(draft.signerName) + '</b> (' + roleInfo('site-supervisor').label + ') declares that all safety checklist precautions and requirements are in place (EHS_PTW_001 &sect;II). The signature is reproduced on the final Permit Report PDF.</p>' +
-                          sigPadHtml('seSigPad', 'Sign here as ' + escapeHtml(draft.signerName))
-                      )
+                        '<div style="display:flex;align-items:center;gap:10px;">' +
+                        '<div style="width:34px;height:34px;border-radius:50%;background:rgba(46,125,50,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:15px;"><i class="fa-solid fa-shield-check"></i></div>' +
+                        '<div>' +
+                        '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Signatory: <b>' + escapeHtml(draft.signerName) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span></div>' +
+                        '<div style="font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
+                        '</div>' +
+                        '</div>' +
+                        '<button type="button" class="btn btn-sm btn-ghost" onclick="editWizSigner()" style="font-size:11.5px;"><i class="fa-solid fa-pen-to-square"></i> Change Name / Consent</button>' +
+                        '</div>' +
+                        '<p style="font-size:12px;color:var(--text-muted);margin:0 0 10px;">By signing below, <b>' + escapeHtml(draft.signerName) + '</b> (' + roleInfo('site-supervisor').label + ') declares that all safety checklist precautions and requirements are in place (EHS_PTW_001 &sect;II). The signature is reproduced on the final Permit Report PDF.</p>' +
+                        sigPadHtml('seSigPad', 'Sign here as ' + escapeHtml(draft.signerName))
+                    )
                 ) +
                 '</div>';
         }
@@ -6956,29 +7040,29 @@
                 const obsId = p.observation.id || ('OBS-' + p.id);
                 html += '<div class="obs-card" style="margin-top:14px;">' +
                     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
-                        '<span style="font-weight:700;color:#E65100;"><i class="fa-solid fa-triangle-exclamation"></i> Active Site Observation &bull; ' + escapeHtml(obsId) + ' (Permit: ' + escapeHtml(p.id) + ')</span>' +
-                        '<span class="dpdp-tag" style="background:#FFF3E0;color:#E65100;border-color:#FFE0B2;">Extension &amp; Closure BLOCKED</span>' +
+                    '<span style="font-weight:700;color:#E65100;"><i class="fa-solid fa-triangle-exclamation"></i> Active Site Observation &bull; ' + escapeHtml(obsId) + ' (Permit: ' + escapeHtml(p.id) + ')</span>' +
+                    '<span class="dpdp-tag" style="background:#FFF3E0;color:#E65100;border-color:#FFE0B2;">Extension &amp; Closure BLOCKED</span>' +
                     '</div>' +
                     '<div style="font-size:12.5px;color:var(--text);margin-bottom:6px;"><b>EHS Deviation:</b> "' + escapeHtml(p.observation.comment) + '" <span style="color:var(--text-muted);font-size:11px;">(' + (p.observation.raisedByRole || 'EHS') + ' &middot; ' + fmtDateTime(p.observation.raisedAt) + ')</span></div>' +
                     (p.observation.response ? '<div style="font-size:12px;color:var(--green);font-weight:600;"><i class="fa-solid fa-check"></i> Site Supervisor submitted rectification: "' + escapeHtml(p.observation.response.comment) + '" &middot; Awaiting EHS clearance.</div>' : '<div style="font-size:12px;color:#C62828;"><i class="fa-solid fa-hourglass-half"></i> Awaiting Site Supervisor corrective response + photo evidence.</div>') +
-                '</div>';
+                    '</div>';
             }
 
             // Re-trigger Status Banner
             if (p.retrigger) {
                 html += '<div class="retrigger-card" style="margin-top:14px;">' +
                     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
-                        '<span style="font-weight:700;color:#1E88E5;"><i class="fa-solid fa-arrows-rotate"></i> 2-Day Re-trigger Status: <b>' + escapeHtml(p.retrigger.status) + '</b></span>' +
-                        '<span class="dpdp-tag" style="background:#E3F2FD;color:#1565C0;border-color:#BBDEFB;">Retains All Data</span>' +
+                    '<span style="font-weight:700;color:#1E88E5;"><i class="fa-solid fa-arrows-rotate"></i> 2-Day Re-trigger Status: <b>' + escapeHtml(p.retrigger.status) + '</b></span>' +
+                    '<span class="dpdp-tag" style="background:#E3F2FD;color:#1565C0;border-color:#BBDEFB;">Retains All Data</span>' +
                     '</div>' +
                     '<div style="font-size:12px;color:var(--text);margin-bottom:4px;"><b>Reason:</b> ' + escapeHtml(p.retrigger.reason) + '</div>' +
                     '<div style="font-size:11.5px;color:var(--text-muted);">' +
-                        'Day 1 Initial EHS: ' + (p.retrigger.day1Ehs ? '<b style="color:var(--green);">Approved (Held Overnight)</b>' : '<b>Pending</b>') + ' &middot; ' +
-                        'Day 2 Engineer Ack: ' + (p.retrigger.day2EngAck ? '<b style="color:var(--green);">Acknowledged</b>' : '<b>Pending</b>') + ' &middot; ' +
-                        'Day 2 Section Head: ' + (p.retrigger.day2SectionHead ? '<b style="color:var(--green);">Approved</b>' : '<b>Pending</b>') + ' &middot; ' +
-                        'Day 2 Actual EHS: ' + (p.retrigger.day2EhsActual ? '<b style="color:var(--green);">Revalidated</b>' : '<b>Pending</b>') +
+                    'Day 1 Initial EHS: ' + (p.retrigger.day1Ehs ? '<b style="color:var(--green);">Approved (Held Overnight)</b>' : '<b>Pending</b>') + ' &middot; ' +
+                    'Day 2 Engineer Ack: ' + (p.retrigger.day2EngAck ? '<b style="color:var(--green);">Acknowledged</b>' : '<b>Pending</b>') + ' &middot; ' +
+                    'Day 2 Section Head: ' + (p.retrigger.day2SectionHead ? '<b style="color:var(--green);">Approved</b>' : '<b>Pending</b>') + ' &middot; ' +
+                    'Day 2 Actual EHS: ' + (p.retrigger.day2EhsActual ? '<b style="color:var(--green);">Revalidated</b>' : '<b>Pending</b>') +
                     '</div>' +
-                '</div>';
+                    '</div>';
             }
 
             return html;
@@ -6989,9 +7073,9 @@
             function node(label, sub, state) {
                 return '<div class="tr-node ' + state + '"><div class="tr-circ">' +
                     (state === 'done' ? '<i class="fa-solid fa-check"></i>' :
-                     (state === 'rejected' || state === 'cancelled') ? '<i class="fa-solid fa-ban"></i>' :
-                     state === 'current' ? '<i class="fa-solid fa-spinner fa-spin"></i>' :
-                     '<i class="fa-solid fa-clock"></i>') +
+                        (state === 'rejected' || state === 'cancelled') ? '<i class="fa-solid fa-ban"></i>' :
+                            state === 'current' ? '<i class="fa-solid fa-spinner fa-spin"></i>' :
+                                '<i class="fa-solid fa-clock"></i>') +
                     '</div><div class="tr-label">' + label + '</div><div class="tr-sub">' + sub + '</div></div>';
             }
 
@@ -7001,7 +7085,7 @@
 
             const ehsApproved = (a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved');
             const ehsCancelled = (a.ehsManager && (a.ehsManager.status === 'rejected' || a.ehsManager.status === 'cancelled')) ||
-                                 (a.ehsOfficer && (a.ehsOfficer.status === 'rejected' || a.ehsOfficer.status === 'cancelled'));
+                (a.ehsOfficer && (a.ehsOfficer.status === 'rejected' || a.ehsOfficer.status === 'cancelled'));
             const ehsState = ehsApproved ? 'done' : (ehsCancelled ? 'rejected' : (ext.status === 'Pending EHS Approval' ? 'current' : ''));
 
             const isDone = ext.status === 'Approved';
@@ -7139,9 +7223,9 @@
                     '<div class="aa-desc">Supervisor rectification: "' + escapeHtml(p.observation && p.observation.response ? p.observation.response.comment : '') + '"<br>Review the photo evidence and either clear to return to Active or Cancel the permit (terminal).</div>' +
                     ((['ehs-manager', 'ehs-officer'].includes(rk))
                         ? '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
-                          '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'obs-clear-ok\')"><i class="fa-solid fa-check"></i> EHS OK (Resolve &amp; Return to Active)</button>' +
-                          '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'obs-cancel\')"><i class="fa-solid fa-ban"></i> Cancel Permit + Comment (Terminal)</button>' +
-                          '</div>'
+                        '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'obs-clear-ok\')"><i class="fa-solid fa-check"></i> EHS OK (Resolve &amp; Return to Active)</button>' +
+                        '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'obs-cancel\')"><i class="fa-solid fa-ban"></i> Cancel Permit + Comment (Terminal)</button>' +
+                        '</div>'
                         : '<div style="font-size:12px;color:var(--text-muted);"><i class="fa-solid fa-clock"></i> Awaiting EHS Manager / Officer verification and clearance.</div>') +
                     '</div>';
             }
@@ -7342,7 +7426,7 @@
         function getPermitSignatory(p, roleKey) {
             if (!p) return null;
             p.signatories = p.signatories || {};
-            
+
             // 1. Direct match on this specific permit
             let sigObj = p.signatories[roleKey];
             if (sigObj && sigObj.name && sigObj.sig) return sigObj;
@@ -7380,13 +7464,13 @@
             if (decision === 'retrigger-day1-approved') {
                 return '<div class="dpdp-verified-banner" style="background:#EBF3FC;border:1px solid #90CAF9;padding:14px;border-radius:8px;margin-top:14px;">' +
                     '<div style="display:flex;align-items:center;gap:12px;">' +
-                        '<div style="width:36px;height:36px;border-radius:50%;background:rgba(30,136,229,0.15);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="fa-solid fa-moon"></i></div>' +
-                        '<div style="flex:1;">' +
-                            '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Day 1 Overnight Hold Authorization</div>' +
-                            '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Authorises ongoing excavation work to be held overnight for Day 2 resumption. As requested by EHS SOP, no re-signature is required for this Day 1 hold (primary EHS permit authorization remains valid).</div>' +
-                        '</div>' +
+                    '<div style="width:36px;height:36px;border-radius:50%;background:rgba(30,136,229,0.15);color:var(--blue);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="fa-solid fa-moon"></i></div>' +
+                    '<div style="flex:1;">' +
+                    '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Day 1 Overnight Hold Authorization</div>' +
+                    '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Authorises ongoing excavation work to be held overnight for Day 2 resumption. As requested by EHS SOP, no re-signature is required for this Day 1 hold (primary EHS permit authorization remains valid).</div>' +
                     '</div>' +
-                '</div>';
+                    '</div>' +
+                    '</div>';
             }
 
             const isDay2 = decision && ['retrigger-eng-ack', 'retrigger-sh-approved', 'retrigger-ehs-approved'].includes(decision);
@@ -7402,63 +7486,63 @@
 
                 return '<div class="dpdp-verified-banner" style="background:#F4FBF6;border:1px solid var(--green-brd);padding:14px;border-radius:8px;margin-top:14px;">' +
                     '<div style="display:flex;align-items:center;gap:12px;">' +
-                        '<div style="width:36px;height:36px;border-radius:50%;background:rgba(46,125,50,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="fa-solid fa-shield-check"></i></div>' +
-                        '<div style="flex:1;">' +
-                            '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Signatory on File: <b>' + escapeHtml(existingSigner.name) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + roleInfo(roleKey).label + ')</span></div>' +
-                            '<div style="font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent &amp; Digital Signature Recorded on this Permit</div>' +
-                            sigImgHtml +
-                        '</div>' +
-                        '<button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Change / Re-sign</button>' +
+                    '<div style="width:36px;height:36px;border-radius:50%;background:rgba(46,125,50,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="fa-solid fa-shield-check"></i></div>' +
+                    '<div style="flex:1;">' +
+                    '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Signatory on File: <b>' + escapeHtml(existingSigner.name) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + roleInfo(roleKey).label + ')</span></div>' +
+                    '<div style="font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent &amp; Digital Signature Recorded on this Permit</div>' +
+                    sigImgHtml +
                     '</div>' +
-                '</div>';
+                    '<button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Change / Re-sign</button>' +
+                    '</div>' +
+                    '</div>';
             } else {
                 return '<div id="modalSigFlowWrap" style="margin-top:14px;">' +
                     '<div id="modalSignerIdBox" class="dpdp-box">' +
-                        '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-                            '<div style="width:30px;height:30px;border-radius:6px;background:' + (isDay2 ? 'rgba(230,81,0,0.12)' : 'rgba(232,96,10,0.12)') + ';color:' + (isDay2 ? '#E65100' : 'var(--orange)') + ';display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fa-solid ' + (isDay2 ? 'fa-sun' : 'fa-shield-halved') + '"></i></div>' +
-                            '<div>' +
-                                '<div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">' +
-                                    (isDay2 ? 'Day 2 Resumption Signatory Identification &amp; DPDP Consent' : 'Signatory Identification &amp; DPDP Consent') +
-                                    '<span class="dpdp-tag" style="' + (isDay2 ? 'background:#FFF3E0;color:#E65100;border-color:#FFE0B2;' : '') + '">' + (isDay2 ? 'Next Day Duty Verification' : 'First Action on Permit ' + p.id) + '</span>' +
-                                '</div>' +
-                                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">' +
-                                    (isDay2 ? 'As this action takes place on Day 2 of the 2-day re-trigger cycle, the on-duty personnel may have changed. Please enter today\'s on-duty signatory name, confirm DPDP statutory consent, and provide your digital signature.' : 'First action for <b>' + roleInfo(roleKey).label + '</b> on this permit. Enter your name and sign once &mdash; it will be remembered for all subsequent actions on this permit.') +
-                                '</div>' +
-                            '</div>' +
-                        '</div>' +
-                        '<div class="form-field" style="margin-bottom:10px;">' +
-                            '<label for="modalSignerName" style="font-weight:600;font-size:12px;">Full Name of ' + (isDay2 ? 'Today\'s On-Duty ' : '') + 'Signatory <span class="req">*</span></label>' +
-                            '<input type="text" id="modalSignerName" value="' + escapeHtml(currentUser.name || '') + '" placeholder="Enter full name of on-duty signatory" class="input-lg" style="width:100%;" oninput="onModalSignerInput()">' +
-                            '<div id="modalSignerNameErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
-                        '</div>' +
-                        '<div style="margin-bottom:12px;">' +
-                            '<label class="dpdp-consent-pill" id="modalConsentPill">' +
-                                '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
-                                '<span style="font-size:11.5px;line-height:1.55;color:var(--text);">' +
-                                    '<strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under the Digital Personal Data Protection (DPDP) Act, 2023 for recording and processing my personal name, designation (' + roleInfo(roleKey).label + (isDay2 ? ' - Day 2 Resumption' : '') + '), timestamp, GPS, and digital signature for statutory permit authorization and compliance.' +
-                                '</span>' +
-                            '</label>' +
-                            '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
-                        '</div>' +
-                        '<button type="button" class="btn btn-primary btn-sm" id="btnModalContinueToSig" onclick="continueModalToSignature()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">' +
-                            '<span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i>' +
-                        '</button>' +
+                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+                    '<div style="width:30px;height:30px;border-radius:6px;background:' + (isDay2 ? 'rgba(230,81,0,0.12)' : 'rgba(232,96,10,0.12)') + ';color:' + (isDay2 ? '#E65100' : 'var(--orange)') + ';display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fa-solid ' + (isDay2 ? 'fa-sun' : 'fa-shield-halved') + '"></i></div>' +
+                    '<div>' +
+                    '<div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">' +
+                    (isDay2 ? 'Day 2 Resumption Signatory Identification &amp; DPDP Consent' : 'Signatory Identification &amp; DPDP Consent') +
+                    '<span class="dpdp-tag" style="' + (isDay2 ? 'background:#FFF3E0;color:#E65100;border-color:#FFE0B2;' : '') + '">' + (isDay2 ? 'Next Day Duty Verification' : 'First Action on Permit ' + p.id) + '</span>' +
+                    '</div>' +
+                    '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">' +
+                    (isDay2 ? 'As this action takes place on Day 2 of the 2-day re-trigger cycle, the on-duty personnel may have changed. Please enter today\'s on-duty signatory name, confirm DPDP statutory consent, and provide your digital signature.' : 'First action for <b>' + roleInfo(roleKey).label + '</b> on this permit. Enter your name and sign once &mdash; it will be remembered for all subsequent actions on this permit.') +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div class="form-field" style="margin-bottom:10px;">' +
+                    '<label for="modalSignerName" style="font-weight:600;font-size:12px;">Full Name of ' + (isDay2 ? 'Today\'s On-Duty ' : '') + 'Signatory <span class="req">*</span></label>' +
+                    '<input type="text" id="modalSignerName" value="' + escapeHtml(currentUser.name || '') + '" placeholder="Enter full name of on-duty signatory" class="input-lg" style="width:100%;" oninput="onModalSignerInput()">' +
+                    '<div id="modalSignerNameErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
+                    '</div>' +
+                    '<div style="margin-bottom:12px;">' +
+                    '<label class="dpdp-consent-pill" id="modalConsentPill">' +
+                    '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
+                    '<span style="font-size:11.5px;line-height:1.55;color:var(--text);">' +
+                    '<strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under the Digital Personal Data Protection (DPDP) Act, 2023 for recording and processing my personal name, designation (' + roleInfo(roleKey).label + (isDay2 ? ' - Day 2 Resumption' : '') + '), timestamp, GPS, and digital signature for statutory permit authorization and compliance.' +
+                    '</span>' +
+                    '</label>' +
+                    '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
+                    '</div>' +
+                    '<button type="button" class="btn btn-primary btn-sm" id="btnModalContinueToSig" onclick="continueModalToSignature()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;">' +
+                    '<span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i>' +
+                    '</button>' +
                     '</div>' +
                     '<div id="modalSigBox" style="display:none;margin-top:10px;">' +
-                        '<div class="dpdp-verified-banner">' +
-                            '<div>' +
-                                '<div style="font-size:13px;font-weight:700;color:var(--navy);" id="modalVerifiedSignerTitle">Signatory: &mdash;</div>' +
-                                '<div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
-                            '</div>' +
-                            '<button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Edit Name / Consent</button>' +
-                        '</div>' +
-                        '<div class="form-field">' +
-                            '<label style="font-weight:600;font-size:12.5px;">Digital Signature <span class="req">*</span></label>' +
-                            sigPadHtml('apprSigPad', 'Sign here to authorise this action') +
-                            '<div class="form-hint" style="margin-top:6px;">Your signature is recorded with your name, timestamp and GPS, and stamped on the official Permit Report PDF.</div>' +
-                        '</div>' +
+                    '<div class="dpdp-verified-banner">' +
+                    '<div>' +
+                    '<div style="font-size:13px;font-weight:700;color:var(--navy);" id="modalVerifiedSignerTitle">Signatory: &mdash;</div>' +
+                    '<div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
                     '</div>' +
-                '</div>';
+                    '<button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Edit Name / Consent</button>' +
+                    '</div>' +
+                    '<div class="form-field">' +
+                    '<label style="font-weight:600;font-size:12.5px;">Digital Signature <span class="req">*</span></label>' +
+                    sigPadHtml('apprSigPad', 'Sign here to authorise this action') +
+                    '<div class="form-hint" style="margin-top:6px;">Your signature is recorded with your name, timestamp and GPS, and stamped on the official Permit Report PDF.</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>';
             }
         }
 
@@ -7484,7 +7568,7 @@
                 signerVerified: isDay1EhsApproval || hasStoredSigner,
                 reusedSignatory: hasStoredSigner
             };
-            
+
             let modalTitle = '<i class="fa-solid fa-check" style="color:var(--green);"></i> Confirm Approval';
             if (decision === 'ack') modalTitle = '<i class="fa-solid fa-clipboard-check" style="color:var(--blue);"></i> Site Engineer Acknowledgment';
             else if (decision === 'obs-eng-ack') modalTitle = '<i class="fa-solid fa-clipboard-check" style="color:var(--blue);"></i> Acknowledge Observation Rectification';
@@ -7569,32 +7653,32 @@
             const p = actionModalCtx.p;
             const fallbackHtml = '<div id="modalSigFlowWrap" style="margin-top:14px;">' +
                 '<div id="modalSignerIdBox" class="dpdp-box">' +
-                    '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
-                        '<div style="width:30px;height:30px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fa-solid fa-shield-halved"></i></div>' +
-                        '<div><div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">Signatory Identification &amp; DPDP Consent</div>' +
-                        '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Enter signatory name and confirm statutory consent before signing.</div></div>' +
-                    '</div>' +
-                    '<div class="form-field" style="margin-bottom:10px;">' +
-                        '<label for="modalSignerName" style="font-weight:600;font-size:12px;">Full Name of Signatory <span class="req">*</span></label>' +
-                        '<input type="text" id="modalSignerName" value="" placeholder="Enter signatory full name" class="input-lg" style="width:100%;" oninput="onModalSignerInput()">' +
-                        '<div id="modalSignerNameErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
-                    '</div>' +
-                    '<div style="margin-bottom:12px;">' +
-                        '<label class="dpdp-consent-pill" id="modalConsentPill">' +
-                            '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
-                            '<span style="font-size:11.5px;line-height:1.55;color:var(--text);"><strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my personal name, role designation (' + roleInfo(rk).label + '), timestamp, GPS, and digital signature.</span>' +
-                        '</label>' +
-                        '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
-                    '</div>' +
-                    '<button type="button" class="btn btn-primary btn-sm" id="btnModalContinueToSig" onclick="continueModalToSignature()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;"><span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i></button>' +
+                '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
+                '<div style="width:30px;height:30px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:14px;"><i class="fa-solid fa-shield-halved"></i></div>' +
+                '<div><div style="font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:6px;">Signatory Identification &amp; DPDP Consent</div>' +
+                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Enter signatory name and confirm statutory consent before signing.</div></div>' +
+                '</div>' +
+                '<div class="form-field" style="margin-bottom:10px;">' +
+                '<label for="modalSignerName" style="font-weight:600;font-size:12px;">Full Name of Signatory <span class="req">*</span></label>' +
+                '<input type="text" id="modalSignerName" value="" placeholder="Enter signatory full name" class="input-lg" style="width:100%;" oninput="onModalSignerInput()">' +
+                '<div id="modalSignerNameErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
+                '</div>' +
+                '<div style="margin-bottom:12px;">' +
+                '<label class="dpdp-consent-pill" id="modalConsentPill">' +
+                '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
+                '<span style="font-size:11.5px;line-height:1.55;color:var(--text);"><strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my personal name, role designation (' + roleInfo(rk).label + '), timestamp, GPS, and digital signature.</span>' +
+                '</label>' +
+                '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
+                '</div>' +
+                '<button type="button" class="btn btn-primary btn-sm" id="btnModalContinueToSig" onclick="continueModalToSignature()" style="display:inline-flex;align-items:center;gap:6px;font-weight:600;"><span>Continue to Digital Signature</span> <i class="fa-solid fa-arrow-right"></i></button>' +
                 '</div>' +
                 '<div id="modalSigBox" style="display:none;margin-top:10px;">' +
-                    '<div class="dpdp-verified-banner"><div><div style="font-size:13px;font-weight:700;color:var(--navy);" id="modalVerifiedSignerTitle">Signatory: &mdash;</div><div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div></div><button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Change / Re-sign</button></div>' +
-                    '<div class="form-field"><label style="font-weight:600;font-size:12.5px;">Digital Signature <span class="req">*</span></label>' +
-                    sigPadHtml('apprSigPad', 'Sign here to authorise this action') +
-                    '<div class="form-hint" style="margin-top:6px;">Your signature is recorded with your name, timestamp and GPS.</div></div>' +
+                '<div class="dpdp-verified-banner"><div><div style="font-size:13px;font-weight:700;color:var(--navy);" id="modalVerifiedSignerTitle">Signatory: &mdash;</div><div style="font-size:11px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div></div><button type="button" class="btn btn-xs btn-ghost" onclick="editModalSigner()" style="font-size:11px;"><i class="fa-solid fa-pen-to-square"></i> Change / Re-sign</button></div>' +
+                '<div class="form-field"><label style="font-weight:600;font-size:12.5px;">Digital Signature <span class="req">*</span></label>' +
+                sigPadHtml('apprSigPad', 'Sign here to authorise this action') +
+                '<div class="form-hint" style="margin-top:6px;">Your signature is recorded with your name, timestamp and GPS.</div></div>' +
                 '</div>' +
-            '</div>';
+                '</div>';
 
             const wrap = document.getElementById('modalSigFlowWrap');
             if (wrap) {
@@ -7734,11 +7818,13 @@
 
         function captureObsGPS() {
             const p = actionModalCtx.p;
-            openGPSModal({ siteCoord: getProjectSiteCoord(p), radius: getProjectRadius(p), gateEnabled: true, onConfirm: function (cap) {
-                actionModalCtx.gps = cap;
-                const wrap = document.getElementById('obsGpsWrap');
-                if (wrap) wrap.innerHTML = '<div class="gps-box captured"><div class="gps-info"><i class="fa-solid fa-location-dot" style="color:var(--green);"></i> ' + cap.lat.toFixed(5) + ', ' + cap.lng.toFixed(5) + ' <span style="color:var(--green);font-size:11.5px;font-weight:700;">(Within ' + cap.radius + 'm)</span></div></div>';
-            }});
+            openGPSModal({
+                siteCoord: getProjectSiteCoord(p), radius: getProjectRadius(p), gateEnabled: true, onConfirm: function (cap) {
+                    actionModalCtx.gps = cap;
+                    const wrap = document.getElementById('obsGpsWrap');
+                    if (wrap) wrap.innerHTML = '<div class="gps-box captured"><div class="gps-info"><i class="fa-solid fa-location-dot" style="color:var(--green);"></i> ' + cap.lat.toFixed(5) + ', ' + cap.lng.toFixed(5) + ' <span style="color:var(--green);font-size:11.5px;font-weight:700;">(Within ' + cap.radius + 'm)</span></div></div>';
+                }
+            });
         }
 
         function submitRaiseObservation() {
@@ -7784,8 +7870,8 @@
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-camera" style="color:var(--green);"></i> Respond to Observation';
             document.getElementById('actionModalBody').innerHTML =
                 '<div class="obs-card" style="margin-bottom:14px;">' +
-                    '<div style="font-weight:700;color:#E65100;margin-bottom:4px;"><i class="fa-solid fa-triangle-exclamation"></i> EHS Deviation:</div>' +
-                    '<div style="font-size:12.5px;color:var(--text);">' + escapeHtml(p.observation ? p.observation.comment : '') + '</div>' +
+                '<div style="font-weight:700;color:#E65100;margin-bottom:4px;"><i class="fa-solid fa-triangle-exclamation"></i> EHS Deviation:</div>' +
+                '<div style="font-size:12.5px;color:var(--text);">' + escapeHtml(p.observation ? p.observation.comment : '') + '</div>' +
                 '</div>' +
                 '<div class="form-field" style="margin-bottom:12px;"><label>Corrective Action &amp; Remarks <span class="req">*</span></label><textarea id="respObsComment" placeholder="Explain the corrective actions taken at site to rectify the deviation&hellip;" oninput="actionModalCtx.comment=this.value"></textarea></div>' +
                 '<div class="form-field" style="margin-bottom:12px;"><label>Corrective Action Photo Evidence <span class="req">*</span></label><div id="respObsPhotoWrap"><button type="button" class="btn btn-sm" onclick="captureRespObsPhoto()"><i class="fa-solid fa-camera"></i> Attach Rectification Photo</button></div></div>' +
@@ -7797,11 +7883,13 @@
         }
 
         function captureRespObsPhoto() {
-            openPhotoModal({ onConfirm: function (cap) {
-                actionModalCtx.photo = cap.dataUrl;
-                const wrap = document.getElementById('respObsPhotoWrap');
-                if (wrap) wrap.innerHTML = '<div class="photo-preview"><img src="' + cap.dataUrl + '"></div>';
-            }});
+            openPhotoModal({
+                onConfirm: function (cap) {
+                    actionModalCtx.photo = cap.dataUrl;
+                    const wrap = document.getElementById('respObsPhotoWrap');
+                    if (wrap) wrap.innerHTML = '<div class="photo-preview"><img src="' + cap.dataUrl + '"></div>';
+                }
+            });
         }
 
         function submitRespondObservation() {
@@ -7841,12 +7929,12 @@
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-arrows-rotate" style="color:var(--blue);"></i> Request Re-trigger (2-Day Revalidation)';
             document.getElementById('actionModalBody').innerHTML =
                 '<div class="retrigger-card" style="margin-bottom:14px;">' +
-                    '<div style="font-weight:700;color:#1E88E5;margin-bottom:4px;"><i class="fa-solid fa-info-circle"></i> Dedicated 2-Day Revalidation Path:</div>' +
-                    '<div style="font-size:12px;color:var(--text);line-height:1.5;">' +
-                        '<b>Day 1:</b> EHS initial approval authorises re-trigger &rarr; holds overnight.<br>' +
-                        '<b>Day 2:</b> Site Engineer acknowledges &rarr; Section Head reviews &rarr; EHS actual approval revalidates permit.<br>' +
-                        '<i>All previously entered permit details and checklists are retained; no re-entry required.</i>' +
-                    '</div>' +
+                '<div style="font-weight:700;color:#1E88E5;margin-bottom:4px;"><i class="fa-solid fa-info-circle"></i> Dedicated 2-Day Revalidation Path:</div>' +
+                '<div style="font-size:12px;color:var(--text);line-height:1.5;">' +
+                '<b>Day 1:</b> EHS initial approval authorises re-trigger &rarr; holds overnight.<br>' +
+                '<b>Day 2:</b> Site Engineer acknowledges &rarr; Section Head reviews &rarr; EHS actual approval revalidates permit.<br>' +
+                '<i>All previously entered permit details and checklists are retained; no re-entry required.</i>' +
+                '</div>' +
                 '</div>' +
                 '<div class="form-field" style="margin-bottom:12px;"><label>Reason for Re-trigger &amp; Site Status <span class="req">*</span></label><textarea id="retrigReason" placeholder="Explain reason for overnight hold and Day 2 work resumption&hellip;" oninput="actionModalCtx.reason=this.value"></textarea></div>' +
                 '<div class="form-field" style="margin-bottom:12px;"><label>Current Worksite GPS Location <span class="req">*</span></label><div id="retrigGpsWrap"><button type="button" class="btn btn-sm" onclick="captureRetrigGPS()"><i class="fa-solid fa-location-crosshairs"></i> Capture GPS</button></div></div>' +
@@ -7860,19 +7948,23 @@
 
         function captureRetrigGPS() {
             const p = actionModalCtx.p;
-            openGPSModal({ siteCoord: getProjectSiteCoord(p), radius: getProjectRadius(p), gateEnabled: true, onConfirm: function (cap) {
-                actionModalCtx.gps = cap;
-                const wrap = document.getElementById('retrigGpsWrap');
-                if (wrap) wrap.innerHTML = '<div class="gps-box captured"><div class="gps-info"><i class="fa-solid fa-location-dot" style="color:var(--green);"></i> ' + cap.lat.toFixed(5) + ', ' + cap.lng.toFixed(5) + ' <span style="color:var(--green);font-size:11.5px;font-weight:700;">(Within ' + cap.radius + 'm)</span></div></div>';
-            }});
+            openGPSModal({
+                siteCoord: getProjectSiteCoord(p), radius: getProjectRadius(p), gateEnabled: true, onConfirm: function (cap) {
+                    actionModalCtx.gps = cap;
+                    const wrap = document.getElementById('retrigGpsWrap');
+                    if (wrap) wrap.innerHTML = '<div class="gps-box captured"><div class="gps-info"><i class="fa-solid fa-location-dot" style="color:var(--green);"></i> ' + cap.lat.toFixed(5) + ', ' + cap.lng.toFixed(5) + ' <span style="color:var(--green);font-size:11.5px;font-weight:700;">(Within ' + cap.radius + 'm)</span></div></div>';
+                }
+            });
         }
 
         function captureRetrigPhoto() {
-            openPhotoModal({ onConfirm: function (cap) {
-                actionModalCtx.photo = cap.dataUrl;
-                const wrap = document.getElementById('retrigPhotoWrap');
-                if (wrap) wrap.innerHTML = '<div class="photo-preview"><img src="' + cap.dataUrl + '"></div>';
-            }});
+            openPhotoModal({
+                onConfirm: function (cap) {
+                    actionModalCtx.photo = cap.dataUrl;
+                    const wrap = document.getElementById('retrigPhotoWrap');
+                    if (wrap) wrap.innerHTML = '<div class="photo-preview"><img src="' + cap.dataUrl + '"></div>';
+                }
+            });
         }
 
         function submitRequestRetrigger() {
