@@ -4222,7 +4222,15 @@
                 PERMITS.forEach(function (p) {
                     if (!p.ptype) p.ptype = 'excavation';
                     if (p.approvals && !p.approvals.kind) p.approvals.kind = p.approvals.mep ? 'exc' : 'hw';
-                    if (p.extension && p.extension.approvals && !p.extension.approvals.kind) p.extension.approvals.kind = p.extension.approvals.mep ? 'exc' : 'hw';
+                    if (p.extension) {
+                        if (p.extension.status === 'Pending Parallel Approval' || (p.extension.approvals && p.extension.approvals.mep)) {
+                            p.extension.approvals = { kind: 'exc-ext', sectionHead: { status: 'pending', by: null, at: null, gps: null, comment: null }, ehsManager: { status: 'pending', by: null, at: null, gps: null, comment: null }, ehsOfficer: { status: 'pending', by: null, at: null, gps: null, comment: null } };
+                            p.extension.status = 'Pending Section Head';
+                        }
+                        if (p.extension.approvals && !p.extension.approvals.kind) {
+                            p.extension.approvals.kind = 'exc-ext';
+                        }
+                    }
                     if (!p.signatories) p.signatories = {};
                     if (p.signature) {
                         const sName = p.signerName || p.createdBy || (p.signature && p.signature.by) || 'Permittee';
@@ -4500,26 +4508,53 @@
             return { kind: 'exc', mep: pend(), pm: pend(), it: pend(), sectionHead: pend(), ehsManager: pend(), ehsOfficer: pend() };
         }
         function chainStage(chain) {
+            if (!chain) return 'complete';
+            if (chain.kind === 'exc-ext') {
+                if (chain.sectionHead && (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled')) return 'rejected-sectionhead';
+                if ((chain.ehsManager && (chain.ehsManager.status === 'rejected' || chain.ehsManager.status === 'cancelled')) ||
+                    (chain.ehsOfficer && (chain.ehsOfficer.status === 'rejected' || chain.ehsOfficer.status === 'cancelled'))) return 'rejected-ehs';
+                if (!chain.sectionHead || chain.sectionHead.status !== 'approved') return 'section-head';
+                if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
+                return 'complete';
+            }
+            if (!chain.mep || !chain.pm || !chain.it) {
+                if (chain.sectionHead && (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled')) return 'rejected-sectionhead';
+                if ((chain.ehsManager && (chain.ehsManager.status === 'rejected' || chain.ehsManager.status === 'cancelled')) ||
+                    (chain.ehsOfficer && (chain.ehsOfficer.status === 'rejected' || chain.ehsOfficer.status === 'cancelled'))) return 'rejected-ehs';
+                if (chain.sectionHead && chain.sectionHead.status !== 'approved') return 'section-head';
+                if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
+                return 'complete';
+            }
             if (chain.mep.status === 'rejected' || chain.pm.status === 'rejected' || chain.it.status === 'rejected') return 'rejected-parallel';
-            if (chain.sectionHead.status === 'rejected') return 'rejected-sectionhead';
-            if (chain.ehsManager.status === 'rejected' || chain.ehsOfficer.status === 'rejected') return 'rejected-ehs';
+            if (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled') return 'rejected-sectionhead';
+            if (chain.ehsManager.status === 'rejected' || chain.ehsManager.status === 'cancelled' || chain.ehsOfficer.status === 'rejected' || chain.ehsOfficer.status === 'cancelled') return 'rejected-ehs';
             if (chain.mep.status !== 'approved' || chain.pm.status !== 'approved' || chain.it.status !== 'approved') return 'parallel';
             if (chain.sectionHead.status !== 'approved') return 'section-head';
             if (chain.ehsManager.status !== 'approved' && chain.ehsOfficer.status !== 'approved') return 'ehs';
             return 'complete';
         }
         function roleCanActOnChain(chain, roleKey) {
+            if (!chain) return false;
             const stage = chainStage(chain);
-            if (stage === 'parallel') {
-                if (roleKey === 'mep') return chain.mep.status === 'pending';
-                if (roleKey === 'pm') return chain.pm.status === 'pending';
-                if (roleKey === 'it') return chain.it.status === 'pending';
+            if (chain.kind === 'exc-ext') {
+                if (stage === 'section-head') return (roleKey === 'section-head' || roleKey === 'hw-section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+                if (stage === 'ehs') {
+                    if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
+                    if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
+                    return false;
+                }
                 return false;
             }
-            if (stage === 'section-head') return roleKey === 'section-head' && chain.sectionHead.status === 'pending';
+            if (stage === 'parallel') {
+                if (roleKey === 'mep') return chain.mep && chain.mep.status === 'pending';
+                if (roleKey === 'pm') return chain.pm && chain.pm.status === 'pending';
+                if (roleKey === 'it') return chain.it && chain.it.status === 'pending';
+                return false;
+            }
+            if (stage === 'section-head') return (roleKey === 'section-head' || roleKey === 'hw-section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
             if (stage === 'ehs') {
-                if (roleKey === 'ehs-manager') return chain.ehsManager.status === 'pending';
-                if (roleKey === 'ehs-officer') return chain.ehsOfficer.status === 'pending';
+                if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
+                if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
                 return false;
             }
             return false;
@@ -4923,7 +4958,11 @@
 
         /* ---------------- EXTENSION WORKFLOW ---------------- */
         function requestExtension(p, { reason, minutes, gps, photo, sig, signerName }) {
-            if (p.extension && !['Approved', 'Rejected'].includes(p.extension.status)) {
+            if (!workStarted(p)) {
+                showToast('This permit cannot be extended before the scheduled work start time (' + (p.startTime || 'validity start') + ' IST).', 'warn');
+                return;
+            }
+            if (p.extension && !['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status)) {
                 showToast('An extension request is already in the approval workflow for this permit.', 'warn');
                 return;
             }
@@ -4957,10 +4996,11 @@
             const ext = p.extension;
             const effectiveSigner = signerName || (currentUser && currentUser.name) || roleInfo(roleKey).label;
             
-            if (ext.approvals.kind === 'exc-ext') {
-                if (roleKey === 'section-head') {
+            if (!ext.approvals || ext.approvals.kind === 'exc-ext' || !ext.approvals.mep) {
+                if (roleKey === 'section-head' || roleKey === 'hw-section-head') {
                     ext.approvals.sectionHead = { status: 'approved', by: effectiveSigner, at: nowTime(), gps, comment, sig };
                     ext.status = 'Pending EHS Approval';
+                    ext.stageEnteredAt = nowTime();
                     logActivity(p, 'Extension — Section Head (' + effectiveSigner + ') approved.');
                     notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' extension approved by Section Head — awaiting EHS verification.', 'info', p.id);
                 } else if (roleKey === 'ehs-manager' || roleKey === 'ehs-officer') {
@@ -4997,10 +5037,18 @@
         function rejectExtensionStage(p, roleKey, gps, comment, signerName) {
             const ext = p.extension;
             const effectiveSigner = signerName || (currentUser && currentUser.name) || roleInfo(roleKey).label;
-            ext.status = 'Rejected';
-            logActivity(p, 'Extension request cancelled / rejected by ' + roleInfo(roleKey).label + ' (' + effectiveSigner + '): ' + comment);
+            ext.status = 'Cancelled';
+            if (ext.approvals) {
+                if (roleKey === 'section-head' || roleKey === 'hw-section-head') {
+                    ext.approvals.sectionHead = { status: 'cancelled', by: effectiveSigner, at: nowTime(), gps, comment };
+                } else if (roleKey === 'ehs-manager' || roleKey === 'ehs-officer') {
+                    const key = roleKey === 'ehs-manager' ? 'ehsManager' : 'ehsOfficer';
+                    ext.approvals[key] = { status: 'cancelled', by: effectiveSigner, at: nowTime(), gps, comment };
+                }
+            }
+            logActivity(p, 'Extension request cancelled by ' + roleInfo(roleKey).label + ' (' + effectiveSigner + '): ' + comment);
             notify(stakeholdersFor(p), pLabel(p) + ' extension request CANCELLED by ' + roleInfo(roleKey).label + ': "' + comment + '"', 'error', p.id);
-            showToast('Extension cancelled.', 'err');
+            showToast('Extension request cancelled.', 'err');
             saveState();
         }
 
@@ -5032,10 +5080,13 @@
            its planned Start Time. Derived from the permit's creation date + startTime
            so it works uniformly for wizard-created, seeded and legacy records. ---- */
         function workStartAt(p) {
+            if (!p) return null;
+            if (p.startAt) return new Date(p.startAt);
             if (!p.startTime) return null;
             const parts = String(p.startTime).split(':').map(Number);
             if (parts.length < 2 || isNaN(parts[0])) return null;
-            const d = new Date(p.createdAt || nowTime());
+            const base = p.validTill ? new Date(p.validTill) : new Date(p.createdAt || nowTime());
+            const d = new Date(base);
             d.setHours(parts[0], parts[1], 0, 0);
             return d;
         }
@@ -5695,18 +5746,18 @@
             activeExt.extension = {
                 id: uid(), reason: 'Unexpected rock strata encountered at 2.8m requiring additional breaking time before formation level is reached.',
                 hours: 2, minutes: 120, gps: { lat: site1.site.lat, lng: site1.site.lng, within: true }, photo: 'demo',
-                requestedAt: new Date(nowTime() - 15 * 60000), requestedBy: 'Duty Site Engineer',
-                approvals: { mep: mkApproved('Duty MEP Engineer', 12), pm: mkPending(), it: mkPending(), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
+                requestedAt: new Date(nowTime() - 15 * 60000), requestedBy: 'Duty Site Supervisor',
+                approvals: { kind: 'exc-ext', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
                 stageEnteredAt: new Date(nowTime() - 12 * 60000), escalation: { stage1: false, stage2: false },
-                status: 'Pending Parallel Approval'
+                status: 'Pending Section Head'
             };
             activeExt.activityLog = [
-                { ts: new Date(nowTime() - 3 * 3600 * 1000), actor: 'Duty Site Engineer', text: 'Permit submitted for parallel MEP / P&M / IT approval.' },
-                { ts: new Date(nowTime() - 2.9 * 3600 * 1000), actor: 'System', text: 'All three parallel approvals complete. Routed to Section Head.' },
-                { ts: new Date(nowTime() - 2.6 * 3600 * 1000), actor: 'System', text: 'Approved by Section Head. Routed to EHS for final endorsement.' },
-                { ts: new Date(nowTime() - 2.5 * 3600 * 1000), actor: 'System', text: 'Permit ENDORSED by EHS Manager. Status is now ACTIVE.' },
-                { ts: new Date(nowTime() - 15 * 60000), actor: 'Duty Site Engineer', text: 'Extension of 2h requested. Reason: unexpected rock strata encountered.' },
-                { ts: new Date(nowTime() - 12 * 60000), actor: 'Duty MEP Engineer', text: 'Extension — MEP Engineer approved.' },
+                { ts: new Date(nowTime() - 3 * 3600 * 1000), actor: 'Duty Site Supervisor', text: 'Excavation permit submitted by Site Supervisor.' },
+                { ts: new Date(nowTime() - 2.95 * 3600 * 1000), actor: 'Duty Site Engineer', text: 'Site Engineer acknowledged & forwarded to parallel approval gate.' },
+                { ts: new Date(nowTime() - 2.85 * 3600 * 1000), actor: 'Duty P&M Engineer', text: 'All three parallel discipline clearances approved.' },
+                { ts: new Date(nowTime() - 2.6 * 3600 * 1000), actor: 'Excavation Section Head', text: 'Section Head review approved. Forwarded to EHS for endorsement.' },
+                { ts: new Date(nowTime() - 2.5 * 3600 * 1000), actor: 'EHS Safety Manager', text: 'Permit ENDORSED and activated for live excavation work.' },
+                { ts: new Date(nowTime() - 15 * 60000), actor: 'Duty Site Supervisor', text: 'Extension of 2h requested by Site Supervisor. Reason: unexpected rock strata encountered.' }
             ];
         }
         function stampSeedSignatures() {
@@ -5911,10 +5962,10 @@
         function pendingExtensionsForRole(roleKey) {
             return PERMITS.filter(p => {
                 if (!p.extension || !['Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status)) return false;
-                if (['mep', 'pm', 'it'].includes(roleKey)) return p.extension.status === 'Pending Parallel Approval' && p.extension.approvals[roleKey] && p.extension.approvals[roleKey].status === 'pending';
-                if (roleKey === 'section-head') return p.extension.status === 'Pending Section Head';
-                if (roleKey === 'ehs-manager') return p.extension.status === 'Pending EHS Approval' && p.extension.approvals.ehsManager.status === 'pending';
-                if (roleKey === 'ehs-officer') return p.extension.status === 'Pending EHS Approval' && p.extension.approvals.ehsOfficer.status === 'pending';
+                if (['mep', 'pm', 'it'].includes(roleKey)) return p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals[roleKey] && p.extension.approvals[roleKey].status === 'pending';
+                if (roleKey === 'section-head' || roleKey === 'hw-section-head') return p.extension.status === 'Pending Section Head';
+                if (roleKey === 'ehs-manager') return p.extension.status === 'Pending EHS Approval' && (!p.extension.approvals || !p.extension.approvals.ehsManager || p.extension.approvals.ehsManager.status === 'pending');
+                if (roleKey === 'ehs-officer') return p.extension.status === 'Pending EHS Approval' && (!p.extension.approvals || !p.extension.approvals.ehsOfficer || p.extension.approvals.ehsOfficer.status === 'pending');
                 return false;
             });
         }
@@ -5942,7 +5993,7 @@
                 const closed = mine.filter(p => ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status));
                 const expired = mine.filter(p => p.status === 'Expired');
                 const obs = mine.filter(p => p.status === 'Active – Observation Open');
-                const extReq = mine.filter(p => p.extension && p.extension.status !== 'Approved' && p.extension.status !== 'Rejected');
+                const extReq = mine.filter(p => p.extension && !['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status));
                 html += '<div class="kpi-strip">' +
                     kpiCard('k-grey', 'fa-file-pen', 'My Drafts', drafts.length, 'Not yet submitted', "filterRegisterAndGo('Draft')") +
                     kpiCard('k-amber', 'fa-hourglass-half', 'In Approval Chain', pendingAppr.length, 'Across workflow stages', "goTo('register')") +
@@ -6934,22 +6985,37 @@
         }
 
         function extTrackerHtml(ext) {
-            const a = ext.approvals; const stage = chainStage(a);
-            function node(label, sub, state) { return '<div class="tr-node ' + state + '"><div class="tr-circ">' + (state === 'done' ? '<i class="fa-solid fa-check"></i>' : state === 'rejected' ? '<i class="fa-solid fa-xmark"></i>' : '<i class="fa-solid fa-clock"></i>') + '</div><div class="tr-label">' + label + '</div><div class="tr-sub">' + sub + '</div></div>'; }
-            function pState(field) { return a[field].status === 'approved' ? 'done' : a[field].status === 'rejected' ? 'rejected' : (stage === 'parallel' ? 'current' : ''); }
-            const parallelDone = a.mep && a.pm && a.it && a.mep.status === 'approved' && a.pm.status === 'approved' && a.it.status === 'approved';
-            let html = '<div class="tracker">';
-            html += '<div class="tr-parallel-wrap"><div class="tr-parallel-row">' +
-                node('MEP', '', pState('mep')) + '<div class="tr-line ' + (a.mep && a.mep.status === 'approved' ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
-                node('P&M', '', pState('pm')) + '<div class="tr-line ' + (a.pm && a.pm.status === 'approved' ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
-                node('IT', '', pState('it')) + '</div><div class="tr-parallel-label">Parallel Disciplines</div></div>';
-            html += '<div class="tr-line ' + (parallelDone ? 'done' : '') + '"></div>';
-            html += node('Section Head', '', a.sectionHead.status === 'approved' ? 'done' : a.sectionHead.status === 'rejected' ? 'rejected' : (stage === 'section-head' ? 'current' : ''));
-            html += '<div class="tr-line ' + (a.sectionHead.status === 'approved' ? 'done' : '') + '"></div>';
-            const ehsApproved = a.ehsManager.status === 'approved' || a.ehsOfficer.status === 'approved';
-            html += node('EHS', '', ehsApproved ? 'done' : (stage === 'ehs' ? 'current' : ''));
+            const a = ext.approvals || {};
+            function node(label, sub, state) {
+                return '<div class="tr-node ' + state + '"><div class="tr-circ">' +
+                    (state === 'done' ? '<i class="fa-solid fa-check"></i>' :
+                     (state === 'rejected' || state === 'cancelled') ? '<i class="fa-solid fa-ban"></i>' :
+                     state === 'current' ? '<i class="fa-solid fa-spinner fa-spin"></i>' :
+                     '<i class="fa-solid fa-clock"></i>') +
+                    '</div><div class="tr-label">' + label + '</div><div class="tr-sub">' + sub + '</div></div>';
+            }
+
+            const shApproved = a.sectionHead && a.sectionHead.status === 'approved';
+            const shCancelled = a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled');
+            const shState = shApproved ? 'done' : (shCancelled ? 'rejected' : (ext.status === 'Pending Section Head' ? 'current' : ''));
+
+            const ehsApproved = (a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved');
+            const ehsCancelled = (a.ehsManager && (a.ehsManager.status === 'rejected' || a.ehsManager.status === 'cancelled')) ||
+                                 (a.ehsOfficer && (a.ehsOfficer.status === 'rejected' || a.ehsOfficer.status === 'cancelled'));
+            const ehsState = ehsApproved ? 'done' : (ehsCancelled ? 'rejected' : (ext.status === 'Pending EHS Approval' ? 'current' : ''));
+
+            const isDone = ext.status === 'Approved';
+            const isCancelled = ext.status === 'Cancelled' || ext.status === 'Rejected';
+
+            let html = '<div class="tracker" style="margin-top:10px;">';
+            html += node('Supervisor Request', '+' + fmtExtDur(ext), 'done');
+            html += '<div class="tr-line ' + (shApproved ? 'done' : '') + '"></div>';
+            html += node('Section Head', shApproved ? (a.sectionHead.by || 'Approved') : (shCancelled ? 'Cancelled' : (ext.status === 'Pending Section Head' ? 'Review & Approve' : 'Awaiting Review')), shState);
             html += '<div class="tr-line ' + (ehsApproved ? 'done' : '') + '"></div>';
-            html += node('Continue Work', '', ext.status === 'Approved' ? 'done' : '');
+            const ehsActor = (a.ehsManager && a.ehsManager.by) || (a.ehsOfficer && a.ehsOfficer.by) || 'Safety Review';
+            html += node('EHS Safety', ehsApproved ? (ehsActor + ' Endorsed') : (ehsCancelled ? 'Cancelled' : (ext.status === 'Pending EHS Approval' ? 'Endorsement Req.' : 'Awaiting Endorsement')), ehsState);
+            html += '<div class="tr-line ' + (isDone ? 'done' : '') + '"></div>';
+            html += node('Work Resumed', isDone ? 'Validity Extended' : (isCancelled ? 'Extension Cancelled' : 'Pending Approvals'), isDone ? 'done' : (isCancelled ? 'rejected' : ''));
             html += '</div>';
             return html;
         }
@@ -7137,7 +7203,8 @@
 
             // ---- EXTENSION FLOW ----
             // Request Extension (Site Supervisor only)
-            if (rk === 'site-supervisor' && ['Active', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected'].includes(p.extension.status))) {
+            if (rk === 'site-supervisor' && ['Active', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status))) {
+                const started = workStarted(p);
                 if (obsOpen) {
                     html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);opacity:0.75;">' +
                         '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--purple);"></i> Extension Request Blocked</div>' +
@@ -7149,6 +7216,13 @@
                         '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--purple);"></i> Extension Requests Closed for Today</div>' +
                         '<div class="aa-desc">Extension request button turns off at <b>06:30 PM IST</b>. Extension requests and approvals must be completed before 06:30 PM IST (approved time may run up to 08:30 PM IST).</div>' +
                         '<button class="btn btn-ghost" disabled><i class="fa-solid fa-stopwatch"></i> Extension Closed (Past 06:30 PM IST)</button>' +
+                        '</div>';
+                } else if (!started) {
+                    html += '<div class="approval-action-card" style="border-color:var(--purple);background:var(--purple-bg);">' +
+                        '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--purple);"></i> ' + (p.status === 'Expired' ? 'Permit Expired — Extend to Resume' : 'Need More Time?') + '</div>' +
+                        '<div class="aa-desc">Request an extension in 10-minute increments &mdash; request and approvals must complete before <b>06:30 PM IST</b>; extended validity can run until <b>08:30 PM IST</b>. Requires reason, GPS, photo, and DPDP signature. Chain: ' + (isExcavation ? 'Section Head &rarr; EHS (Approve or Cancel only)' : 'Section Head &rarr; EHS') + '.</div>' +
+                        '<div class="form-error" style="display:flex;margin-bottom:10px;"><i class="fa-solid fa-circle-exclamation"></i> Cannot request extension before scheduled work start time (' + (p.startTime || 'validity start') + ' IST).</div>' +
+                        '<button class="btn btn-primary" disabled><i class="fa-solid fa-stopwatch"></i> Request Extension</button>' +
                         '</div>';
                 } else {
                     html += '<div class="approval-action-card" style="border-color:var(--purple);background:var(--purple-bg);">' +
@@ -7208,6 +7282,20 @@
             if (action === 'ack-engineer' && rk !== 'site-engineer') {
                 showToast('Access Denied: Only Site Engineer can acknowledge permits.', 'err');
                 return;
+            }
+            if (action === 'approve-ext' || action === 'reject-ext') {
+                if (!p.extension) {
+                    showToast('No active extension request found.', 'err');
+                    return;
+                }
+                if (p.extension.status === 'Pending Section Head' && rk !== 'section-head' && rk !== shRoleFor(p)) {
+                    showToast('Access Denied: Only Section Head can act on this extension stage.', 'err');
+                    return;
+                }
+                if (p.extension.status === 'Pending EHS Approval' && !['ehs-manager', 'ehs-officer'].includes(rk)) {
+                    showToast('Access Denied: Only EHS Safety personnel can act on this extension stage.', 'err');
+                    return;
+                }
             }
             if (action === 'approve' || action === 'reject' || action === 'cancel') {
                 if (p.status === 'Pending Parallel Approval' && !['mep', 'pm', 'it'].includes(rk)) {
@@ -7815,6 +7903,15 @@
                 return;
             }
             const p = PERMITS.find(x => x.id === id);
+            if (!p) return;
+            if (!workStarted(p)) {
+                showToast('An extension cannot be requested before the scheduled work start time (' + (p.startTime || 'validity start') + ' IST).', 'warn');
+                return;
+            }
+            if (ptypeOf(p) === 'excavation' && !isExtensionRequestAllowed()) {
+                showToast('Extension requests are turned off after 06:30 PM IST.', 'warn');
+                return;
+            }
             const rk = currentUser.key;
             const existingSigner = getPermitSignatory(p, rk);
             const hasStoredSigner = !!(existingSigner && existingSigner.name && existingSigner.sig);
