@@ -3813,6 +3813,7 @@
                             <option value="">All Permit Types</option>
                             <option value="excavation">Excavation (PT-01)</option>
                             <option value="hotwork">Hot Work (PT-02)</option>
+                            <option value="shaft">Shaft Work (PT-05)</option>
                         </select>
                         <select id="regStatusFilter" onchange="buildRegisterTable()">
                             <option value="">All Statuses</option>
@@ -4129,7 +4130,7 @@
             { key: 'hotwork', code: 'PT-02', name: 'Hot Work', icon: 'fa-fire', available: true, desc: 'Welding, gas cutting, soldering or abrasive wheel cutting creating sparks or open flames. Form EHS_PTW_002.' },
             { key: 'guardrail', code: 'PT-03', name: 'Guard Rail / Floor Protection Removal', icon: 'fa-person-falling-burst', available: false, desc: 'Removal of covers, openings, edge protections and shaft gates. Minimum one watcher until re-fixed. Form EHS_PTW_003.' },
             { key: 'confined', code: 'PT-04', name: 'Confined Space Entry', icon: 'fa-door-closed', available: false, desc: 'Limited/restricted entry, not for continuous occupancy. Gas testing of all 4 parameters mandatory before entry. Form EHS_PTW_004.' },
-            { key: 'shaft', code: 'PT-05', name: 'Shaft Work', icon: 'fa-elevator', available: false, desc: 'Working in shaft on scaffold or RSP. Scaffold tag verification and worker entry list required. Form EHS_PTW_005.' },
+            { key: 'shaft', code: 'PT-05', name: 'Shaft Work', icon: 'fa-elevator', available: true, desc: 'Working in shaft on scaffold or RSP. Scaffold tag verification and worker entry list required. Form EHS_PTW_005.' },
             { key: 'electrical', code: 'PT-06', name: 'Electrical Work (HT/LT)', icon: 'fa-bolt', available: false, desc: 'Maintenance, repair and inspection on 440V and above. LOTO, earthing and written shutdown cancellation mandatory. Form EHS_PTW_006.' },
             { key: 'blasting', code: 'PT-07', name: 'Drilling and Blasting', icon: 'fa-explosion', available: false, desc: 'All blasting operations. Licensed Blasting In-charge must be present at site at all times. Form EHS_PTW_007.' },
             { key: 'general', code: 'PT-08', name: 'General Work', icon: 'fa-helmet-safety', available: false, desc: 'Day-to-day activities not covered by other permit types, incl. erection, hoist and formwork sub-checklists. Form EHS_PTW_008.' },
@@ -4204,10 +4205,11 @@
         ];
 
         /* ---------------- PERMIT TYPE METADATA ----------------
-           Excavation (PT-01 / EHS_PTW_001) & Hot Work (PT-02 / EHS_PTW_002) */
+           Excavation (PT-01), Hot Work (PT-02) & Shaft Work (PT-05) */
         const PTYPE_META = {
             excavation: { key: 'excavation', code: 'PT-01', name: 'Excavation Work', short: 'Excavation', prefix: 'EXC', form: 'EHS_PTW_001', sh: 'section-head', shLabel: 'Excavation Section Head' },
-            hotwork: { key: 'hotwork', code: 'PT-02', name: 'Hot Work', short: 'Hot Work', prefix: 'HW', form: 'EHS_PTW_002', sh: 'hw-section-head', shLabel: 'Section Head / Tower In-charge' }
+            hotwork: { key: 'hotwork', code: 'PT-02', name: 'Hot Work', short: 'Hot Work', prefix: 'HW', form: 'EHS_PTW_002', sh: 'hw-section-head', shLabel: 'Section Head / Tower In-charge' },
+            shaft: { key: 'shaft', code: 'PT-05', name: 'Shaft Work', short: 'Shaft Work', prefix: 'SW', form: 'EHS_PTW_005', sh: 'hw-section-head', shLabel: 'Section Head / Tower In-charge' }
         };
         function ptypeOf(p) {
             if (!p) return 'excavation';
@@ -4221,15 +4223,25 @@
             if (ptypeOf(p) === 'hotwork') {
                 return ['site-supervisor', 'site-engineer', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
             }
+            if (ptypeOf(p) === 'shaft') {
+                return ['site-supervisor', 'site-engineer', 'mep', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
+            }
             return ['site-supervisor', 'site-engineer', 'mep', 'pm', 'it', 'section-head', 'ehs-manager', 'ehs-officer'];
         }
         function checklistFor(type) {
-            return type === 'hotwork' ? HOTWORK_CHECKLIST_ITEMS : CHECKLIST_ITEMS;
+            if (type === 'hotwork') return HOTWORK_CHECKLIST_ITEMS;
+            if (type === 'shaft') return SHAFT_CHECKLIST_ITEMS;
+            return CHECKLIST_ITEMS;
         }
         function roleTypeScope(roleKey) {
             if (roleKey === 'section-head') return 'excavation';
-            if (roleKey === 'hw-section-head') return 'hotwork';
+            if (roleKey === 'hw-section-head') return ['hotwork', 'shaft'];
             return null;
+        }
+        function permitMatchesScope(p, scope) {
+            if (!scope) return true;
+            if (Array.isArray(scope)) return scope.includes(ptypeOf(p));
+            return ptypeOf(p) === scope;
         }
 
         const CHECKLIST_ITEMS = [
@@ -4278,18 +4290,41 @@
             "Any other precautions?"
         ];
 
+        /* Shaft Work Specifications (Form EHS_PTW_005) */
+        const SHAFT_CHECKLIST_ITEMS = [
+            "Is Method statement and Risk Assessment available for the Task?",
+            "Are workers aware of risk involved, precaution and control measures required and training given?",
+            "Is Overhead protection provided if required?",
+            "Are Workers provided with safety harness and all other required job specific Personal Protective equipment’s for the activity?",
+            "Is access to shaft clear and safe?",
+            "Is working platform provided and Scaff tag placed (planks secured, guard rails and toe boards for fall protection as per standard) /RSP Checked and fall protection in place with fall arrestor?",
+            "Are Electrical tools and hand tools checked prior to use in shaft and green tag available?",
+            "Are Light and ventilation as per requirement for activity ensured?",
+            "Is Supervisor available full-time to monitor the activity?",
+            "Is Hot work permit obtained separately for all hot work?"
+        ];
+
+        const SHAFT_FLOORS = [
+            'Basement 3 (B3)', 'Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)',
+            'Podium Level 1 (P1)', 'Podium Level 2 (P2)', 'Podium Level 3 (P3)',
+            'Floor 1', 'Floor 2', 'Floor 3', 'Floor 4', 'Floor 5', 'Floor 6', 'Floor 7', 'Floor 8', 'Floor 9', 'Floor 10',
+            'Floor 11', 'Floor 12', 'Floor 13', 'Floor 14', 'Floor 15', 'Floor 16', 'Floor 17', 'Floor 18', 'Floor 19', 'Floor 20',
+            'Floor 21', 'Floor 22', 'Floor 23', 'Floor 24', 'Floor 25', 'Floor 26', 'Floor 27', 'Floor 28', 'Floor 29', 'Floor 30',
+            'Floor 31', 'Floor 32', 'Floor 33', 'Floor 34', 'Floor 35', 'Terrace / Roof Level'
+        ];
+
         /* ---------------- ROLES ----------------
            DPDP Act 2023 Compliance: Roles represent functional authorizations
            without pre-assigned personal names. Authorised personnel enter their
            name dynamically before providing their digital signature. */
         const ROLES = [
-            { key: 'site-supervisor', label: 'Site Supervisor', sub: 'Permittee / Form Filling', icon: 'fa-user-pen', desc: 'Step 1: Fill permit forms (Excavation & Hot Work), attach work-area photos, respond to Observations, request Extensions and Re-triggers.' },
-            { key: 'site-engineer', label: 'Site Engineer', sub: 'Step 2: Acknowledger & Forwarder', icon: 'fa-hard-hat', desc: 'Step 2: Acknowledge & forward Excavation permits to parallel gate, acknowledge Hot Work permits to Section Head / Tower In-charge, close and surrender permits.' },
-            { key: 'mep', label: 'MEP Engineer', sub: 'Parallel Approver', icon: 'fa-plug-circle-bolt', desc: 'Verify MEP service clearances (utilities, cabling, plumbing) before excavation begins. Parallel approval, stage 1.' },
+            { key: 'site-supervisor', label: 'Site Supervisor', sub: 'Permittee / Form Filling', icon: 'fa-user-pen', desc: 'Step 1: Fill permit forms (Excavation, Hot Work & Shaft Work), attach work-area photos, respond to Observations, request Extensions and Re-triggers.' },
+            { key: 'site-engineer', label: 'Site Engineer', sub: 'Step 2: Acknowledger & Forwarder', icon: 'fa-hard-hat', desc: 'Step 2: Acknowledge & forward Excavation permits to parallel gate, acknowledge Hot Work permits to Section Head, acknowledge Shaft Work permits to MEP clearance, close and surrender permits.' },
+            { key: 'mep', label: 'MEP Engineer', sub: 'Clearance & Parallel Approver', icon: 'fa-plug-circle-bolt', desc: 'Step 3: Single MEP clearance step for Shaft Work; verify utilities, cabling and plumbing before excavation begins (parallel approval).' },
             { key: 'pm', label: 'P&M Engineer', sub: 'Parallel Approver', icon: 'fa-gears', desc: 'Verify plant & machinery readiness — excavators, barricading equipment, lifting gear. Parallel approval, stage 1.' },
             { key: 'it', label: 'IT Engineer', sub: 'Parallel Approver', icon: 'fa-network-wired', desc: 'Verify underground IT / data / fibre service lines are identified and protected. Parallel approval, stage 1.' },
             { key: 'section-head', label: 'Excavation Section Head', sub: 'Excavation — Approving Authority', icon: 'fa-user-tie', desc: 'Excavation permits only: holistic review after MEP, P&M and IT have all cleared the permit. Physically inspects the worksite before approving.' },
-            { key: 'hw-section-head', label: 'Section Head / Tower In-charge', sub: 'Hot Work — Approving Authority', icon: 'fa-user-tie', desc: 'Hot Work permits only: Step 3 review after Site Engineer acknowledgment. Review hot work conditions and Approve or Cancel.' },
+            { key: 'hw-section-head', label: 'Section Head / Tower In-charge', sub: 'Approving Authority', icon: 'fa-user-tie', desc: 'Hot Work (Step 3) & Shaft Work (Step 4) permits: review after clearances. Review safety conditions and Approve, Reject or Cancel.' },
             { key: 'ehs-manager', label: 'EHS Manager', sub: 'Final Safety Endorsement', icon: 'fa-shield-halved', desc: 'Final safety endorsement — either EHS Manager or EHS Officer approval activates the permit.' },
             { key: 'ehs-officer', label: 'EHS Officer', sub: 'Final Safety Endorsement', icon: 'fa-user-shield', desc: 'Final safety endorsement — either EHS Manager or EHS Officer approval activates the permit.' },
             { key: 'admin', label: 'Administrator', sub: 'Site GPS & Geofence Administrator', icon: 'fa-user-gear', desc: 'Configure project site GPS coordinates (Lat/Lng), set proximity circle radius range (meters), and manage geofencing parameters.' },
@@ -4596,9 +4631,19 @@
                             // ONLY record signatory if action was actually taken with a signature and not pending
                             if (e && e.by && e.sig && e.status !== 'pending') {
                                 const rk = rkMap[k] || k;
+                                if (ptypeOf(p) === 'shaft' && (rk === 'pm' || rk === 'it')) return;
+                                if (ptypeOf(p) === 'hotwork' && (rk === 'mep' || rk === 'pm' || rk === 'it')) return;
                                 p.signatories[rk] = p.signatories[rk] || { name: e.by, sig: e.sig, consent: true, at: e.at };
                             }
                         });
+                    }
+                    if (ptypeOf(p) === 'shaft') {
+                        delete p.signatories['pm'];
+                        delete p.signatories['it'];
+                    } else if (ptypeOf(p) === 'hotwork') {
+                        delete p.signatories['mep'];
+                        delete p.signatories['pm'];
+                        delete p.signatories['it'];
                     }
                 });
                 NOTIFICATIONS = Array.isArray(s.notifications) ? s.notifications : [];
@@ -4865,6 +4910,9 @@
             if (type === 'hotwork') {
                 return { kind: 'hotwork', sectionHead: pend(), ehsManager: pend(), ehsOfficer: pend() };
             }
+            if (type === 'shaft') {
+                return { kind: 'shaft', mep: pend(), sectionHead: pend(), ehsManager: pend(), ehsOfficer: pend() };
+            }
             return { kind: 'exc', mep: pend(), pm: pend(), it: pend(), sectionHead: pend(), ehsManager: pend(), ehsOfficer: pend() };
         }
         function chainStage(chain) {
@@ -4873,6 +4921,18 @@
                 if (chain.sectionHead && (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled')) return 'rejected-sectionhead';
                 if ((chain.ehsManager && chain.ehsManager.status === 'cancelled') || (chain.ehsOfficer && chain.ehsOfficer.status === 'cancelled')) return 'cancelled-ehs';
                 if ((chain.ehsManager && chain.ehsManager.status === 'rejected') || (chain.ehsOfficer && chain.ehsOfficer.status === 'rejected')) return 'rejected-ehs';
+                if (!chain.sectionHead || chain.sectionHead.status !== 'approved') return 'section-head';
+                if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
+                return 'complete';
+            }
+            if (chain.kind === 'shaft') {
+                if (chain.mep && (chain.mep.status === 'cancelled')) return 'cancelled-mep';
+                if (chain.mep && (chain.mep.status === 'rejected')) return 'rejected-mep';
+                if (chain.sectionHead && (chain.sectionHead.status === 'cancelled')) return 'cancelled-sectionhead';
+                if (chain.sectionHead && (chain.sectionHead.status === 'rejected')) return 'rejected-sectionhead';
+                if ((chain.ehsManager && chain.ehsManager.status === 'cancelled') || (chain.ehsOfficer && chain.ehsOfficer.status === 'cancelled')) return 'cancelled-ehs';
+                if ((chain.ehsManager && chain.ehsManager.status === 'rejected') || (chain.ehsOfficer && chain.ehsOfficer.status === 'rejected')) return 'rejected-ehs';
+                if (!chain.mep || chain.mep.status !== 'approved') return 'mep';
                 if (!chain.sectionHead || chain.sectionHead.status !== 'approved') return 'section-head';
                 if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
                 return 'complete';
@@ -4905,7 +4965,17 @@
             if (!chain) return false;
             const stage = chainStage(chain);
             if (chain.kind === 'hotwork') {
-                if (stage === 'section-head') return roleKey === 'hw-section-head' && chain.sectionHead && chain.sectionHead.status === 'pending';
+                if (stage === 'section-head') return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+                if (stage === 'ehs') {
+                    if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
+                    if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
+                    return false;
+                }
+                return false;
+            }
+            if (chain.kind === 'shaft') {
+                if (stage === 'mep') return roleKey === 'mep' && chain.mep && chain.mep.status === 'pending';
+                if (stage === 'section-head') return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
                 if (stage === 'ehs') {
                     if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
                     if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
@@ -4914,7 +4984,7 @@
                 return false;
             }
             if (chain.kind === 'exc-ext') {
-                if (stage === 'section-head') return roleKey === 'section-head' && chain.sectionHead && chain.sectionHead.status === 'pending';
+                if (stage === 'section-head') return (roleKey === 'section-head' || roleKey === 'hw-section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
                 if (stage === 'ehs') {
                     if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
                     if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
@@ -4977,6 +5047,13 @@
             p.escalation = { stage1: false, stage2: false };
             const creator = p.createdBy || (currentUser && currentUser.name) || roleInfo('site-supervisor').label;
             p.status = 'Pending Site Engineer Acknowledgment';
+            if (ptypeOf(p) === 'shaft') {
+                logActivity(p, 'Shaft Work permit submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2).');
+                notify(['site-engineer'], pLabel(p) + ' submitted by Site Supervisor — Site Engineer acknowledgment required.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Site Engineer acknowledgment.', 'info', p.id);
+                saveState();
+                return;
+            }
             if (ptypeOf(p) === 'hotwork') {
                 logActivity(p, 'Hot Work permit submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2).');
                 notify(['site-engineer'], pLabel(p) + ' submitted by Site Supervisor — Site Engineer acknowledgment required.', 'info', p.id);
@@ -5003,6 +5080,17 @@
             p.siteEngineerAck = { acknowledged: true, at: nowTime(), by: effectiveSigner, gps: effectiveGps, comment: comment || '', sig: effectiveSig };
             p.stageEnteredAt = nowTime();
             p.escalation = { stage1: false, stage2: false };
+
+            if (ptypeOf(p) === 'shaft') {
+                p.status = 'Pending MEP Clearance';
+                p.approvals = p.approvals || newChain('shaft');
+                logActivity(p, 'Site Engineer (' + effectiveSigner + ') acknowledged & forwarded Shaft Work permit to MEP Engineer for clearance (Step 3).' + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
+                notify(['mep'], pLabel(p) + ' acknowledged by Site Engineer — MEP Engineer clearance required.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Site Engineer and forwarded to MEP Engineer.', 'info', p.id);
+                showToast('Permit acknowledged & forwarded to MEP Engineer.', 'ok');
+                saveState();
+                return;
+            }
 
             if (ptypeOf(p) === 'hotwork') {
                 p.status = 'Pending Section Head';
@@ -5039,6 +5127,7 @@
             p.status = 'Returned for Correction';
             p.returnReason = comment || 'Returned by Site Engineer for corrections';
             p.returnedBy = 'Site Engineer (' + effectiveSigner + ')';
+            p.returnedByRoleKey = 'site-engineer';
             p.siteEngineerAck = { acknowledged: false, rejected: true, at: nowTime(), by: effectiveSigner, gps, comment, sig: effectiveSig };
             p.stageEnteredAt = nowTime();
             p.signatories = p.signatories || {};
@@ -5057,8 +5146,8 @@
             logActivity(p, roleInfo(roleKey).label + ' (' + effectiveSigner + ') approved at this stage.' + (gps ? (' GPS verified within ' + prjRad + 'm.') : ''));
             if (newStage === 'section-head') {
                 p.status = 'Pending Section Head'; p.stageEnteredAt = nowTime(); p.escalation = { stage1: false, stage2: false };
-                notify([shRoleFor(p)], pLabel(p) + ' cleared by MEP, P&M and IT. Awaiting your holistic approval.', 'info', p.id);
-                notify(stakeholdersFor(p), pLabel(p) + ' — all three parallel approvals complete. Routed to Section Head.', 'success', p.id);
+                notify([shRoleFor(p)], pLabel(p) + (ptypeOf(p) === 'shaft' ? ' cleared by MEP Engineer. Awaiting your Section Head review.' : ' cleared by MEP, P&M and IT. Awaiting your holistic approval.'), 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + (ptypeOf(p) === 'shaft' ? ' — MEP clearance complete. Routed to Section Head.' : ' — all three parallel approvals complete. Routed to Section Head.'), 'success', p.id);
             } else if (newStage === 'ehs') {
                 p.status = 'Pending EHS Approval'; p.stageEnteredAt = nowTime(); p.escalation = { stage1: false, stage2: false };
                 notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' approved by ' + pMeta(p).shLabel + '. Awaiting EHS Manager or EHS Officer verification — first approval activates the permit.', 'info', p.id);
@@ -5070,7 +5159,7 @@
                 }
                 activatePermit(p);
             } else {
-                notify(stakeholdersFor(p), pLabel(p) + ' — ' + roleInfo(roleKey).label + ' approval recorded. Awaiting remaining parallel approvals.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' — ' + roleInfo(roleKey).label + ' approval recorded. Awaiting remaining clearances.', 'info', p.id);
             }
             showToast('Approval recorded for ' + p.id + '.', 'ok');
             saveState();
@@ -5078,14 +5167,14 @@
 
         function rejectPermitStage(p, roleKey, gps, comment, sig, signerName, isCancel) {
             const effectiveSigner = signerName || (currentUser && currentUser.name) || roleInfo(roleKey).label;
-            const dec = (isCancel || roleKey === 'section-head' || roleKey === 'hw-section-head') ? 'cancelled' : 'rejected';
+            const dec = (isCancel || (roleKey === 'section-head' && ptypeOf(p) === 'excavation')) ? 'cancelled' : 'rejected';
             actOnChain(p.approvals, roleKey, dec, { gps, comment, sig, signerName: effectiveSigner });
             const stage = chainStage(p.approvals);
             p._preCorrectionSnapshot = snapshotDisciplineFields(p);
 
-            const isTerminalCancel = isCancel || stage === 'cancelled-ehs' || roleKey === 'section-head' || roleKey === 'hw-section-head' || (ptypeOf(p) === 'excavation' && stage === 'rejected-ehs');
+            const isTerminalCancel = isCancel || stage === 'cancelled-ehs' || stage === 'cancelled-mep' || stage === 'cancelled-sectionhead' || (roleKey === 'section-head' && ptypeOf(p) === 'excavation') || (stage === 'rejected-ehs' && ptypeOf(p) === 'excavation');
             if (isTerminalCancel) {
-                // Section Head or EHS cancellation is terminal
+                // Cancellation is terminal
                 p.status = 'Cancelled';
                 p.cancelReason = comment;
                 p.cancelledBy = effectiveSigner;
@@ -5097,6 +5186,7 @@
                 p.status = 'Returned for Correction';
                 p.returnReason = comment;
                 p.returnedBy = roleInfo(roleKey).label + ' (' + effectiveSigner + ')';
+                p.returnedByRoleKey = roleKey;
                 logActivity(p, 'Permit returned by ' + roleInfo(roleKey).label + ' (' + effectiveSigner + ') for correction: ' + comment);
                 notify(stakeholdersFor(p), pLabel(p) + ' returned by ' + roleInfo(roleKey).label + ' — correction required: "' + comment + '"', 'error', p.id);
             }
@@ -5114,43 +5204,116 @@
         }
 
         function resubmitReturnedPermit(p) {
-            const resubmitter = p.createdBy || (currentUser && currentUser.name) || roleInfo('site-supervisor').label;
-            if (ptypeOf(p) === 'hotwork') {
-                p.approvals = newChain('hotwork');
-                p.status = 'Pending Section Head';
-            } else {
-                // Universal Stale-approval rule across parallel gate:
-                const oldSnap = p._preCorrectionSnapshot || {};
-                const newSnap = snapshotDisciplineFields(p);
-                const mepChanged = JSON.stringify(oldSnap.mep) !== JSON.stringify(newSnap.mep);
-                const pmChanged = JSON.stringify(oldSnap.pm) !== JSON.stringify(newSnap.pm);
-                const itChanged = JSON.stringify(oldSnap.it) !== JSON.stringify(newSnap.it);
+            const resubmitter = (currentUser && currentUser.name) || 'Site Supervisor';
+            if (!p.approvals) p.approvals = newChain(ptypeOf(p));
 
-                if (!p.approvals) p.approvals = newChain('excavation');
+            // Identify which role rejected the permit
+            const retRole = p.returnedByRoleKey || (
+                (p.siteEngineerAck && p.siteEngineerAck.rejected) ? 'site-engineer' :
+                (p.approvals.ehsManager && p.approvals.ehsManager.status === 'rejected') ? 'ehs-manager' :
+                (p.approvals.ehsOfficer && p.approvals.ehsOfficer.status === 'rejected') ? 'ehs-officer' :
+                (p.approvals.sectionHead && p.approvals.sectionHead.status === 'rejected') ? ((ptypeOf(p) === 'excavation') ? 'section-head' : 'hw-section-head') :
+                (p.approvals.mep && p.approvals.mep.status === 'rejected') ? 'mep' :
+                (p.approvals.pm && p.approvals.pm.status === 'rejected') ? 'pm' :
+                (p.approvals.it && p.approvals.it.status === 'rejected') ? 'it' :
+                null
+            );
 
-                // Invalidate approvals whose fields changed or that previously rejected
-                if (mepChanged || (p.approvals.mep && p.approvals.mep.status === 'rejected')) {
-                    p.approvals.mep = { status: 'pending', by: null, at: null, gps: null, comment: null };
-                }
-                if (pmChanged || (p.approvals.pm && p.approvals.pm.status === 'rejected')) {
-                    p.approvals.pm = { status: 'pending', by: null, at: null, gps: null, comment: null };
-                }
-                if (itChanged || (p.approvals.it && p.approvals.it.status === 'rejected')) {
-                    p.approvals.it = { status: 'pending', by: null, at: null, gps: null, comment: null };
-                }
-                // Section Head and EHS reset for fresh evaluation
-                p.approvals.sectionHead = { status: 'pending', by: null, at: null, gps: null, comment: null };
+            // Rule: Whoever has already approved doesn't have to approve again.
+            // Only the role who rejected them needs to approve.
+            if (retRole === 'site-engineer') {
+                p.status = 'Pending Site Engineer Acknowledgment';
+                p.siteEngineerAck = { acknowledged: false, rejected: false, at: null, by: null, reacknowledgment: true };
+                notify(['site-engineer'], pLabel(p) + ' resubmitted after correction by Site Supervisor — Site Engineer re-acknowledgment required.', 'info', p.id);
+                logActivity(p, 'Permit resubmitted after correction by Site Supervisor (' + resubmitter + '). Routed to Site Engineer for re-acknowledgment.');
+            } else if (retRole === 'ehs-manager' || retRole === 'ehs-officer') {
+                // Reset ONLY EHS stage; all prior approvals (Site Engineer, MEP, Section Head, etc.) remain approved
                 p.approvals.ehsManager = { status: 'pending', by: null, at: null, gps: null, comment: null };
                 p.approvals.ehsOfficer = { status: 'pending', by: null, at: null, gps: null, comment: null };
-
-                // For excavation, require Site Engineer re-acknowledgment on the modified form
-                p.status = 'Pending Site Engineer Acknowledgment';
-                p.siteEngineerAck = { acknowledged: false, at: null, by: null, reacknowledgment: true };
-                notify(['site-engineer'], pLabel(p) + ' resubmitted after correction by Site Supervisor — Site Engineer re-acknowledgment required.', 'info', p.id);
+                p.status = 'Pending EHS Approval';
+                notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' resubmitted after correction by Site Supervisor — EHS verification required.', 'info', p.id);
+                logActivity(p, 'Permit resubmitted after correction by Site Supervisor (' + resubmitter + '). Routed directly to EHS Safety for verification (prior approvals retained).');
+            } else if (retRole === 'section-head' || retRole === 'hw-section-head') {
+                // Reset ONLY Section Head stage; all prior approvals (Site Engineer, MEP/parallel) remain approved
+                p.approvals.sectionHead = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                p.status = 'Pending Section Head';
+                const shRole = shRoleFor(p);
+                notify([shRole], pLabel(p) + ' resubmitted after correction by Site Supervisor — Section Head review required.', 'info', p.id);
+                logActivity(p, 'Permit resubmitted after correction by Site Supervisor (' + resubmitter + '). Routed directly to Section Head / Tower In-charge for review (prior approvals retained).');
+            } else if (retRole === 'mep' || retRole === 'pm' || retRole === 'it') {
+                // Reset ONLY the rejected discipline; others and Site Engineer remain approved
+                if (p.approvals[retRole]) {
+                    p.approvals[retRole] = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                }
+                if (ptypeOf(p) === 'shaft') {
+                    p.status = 'Pending MEP Clearance';
+                    notify(['mep'], pLabel(p) + ' resubmitted after correction by Site Supervisor — MEP clearance required.', 'info', p.id);
+                } else {
+                    p.status = 'Pending Parallel Approval';
+                    notify([retRole], pLabel(p) + ' resubmitted after correction by Site Supervisor — ' + roleInfo(retRole).label + ' clearance required.', 'info', p.id);
+                }
+                logActivity(p, 'Permit resubmitted after correction by Site Supervisor (' + resubmitter + '). Routed to ' + roleInfo(retRole).label + ' (prior approvals retained).');
+            } else {
+                // Fallback if rejected role was not explicitly tracked:
+                // Route to whichever stage is not approved, keeping approved stages intact
+                const ptype = ptypeOf(p);
+                if (!p.siteEngineerAck || !p.siteEngineerAck.acknowledged) {
+                    p.status = 'Pending Site Engineer Acknowledgment';
+                    notify(['site-engineer'], pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                } else if (ptype === 'shaft') {
+                    if (!p.approvals.mep || p.approvals.mep.status !== 'approved') {
+                        p.approvals.mep = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending MEP Clearance';
+                        notify(['mep'], pLabel(p) + ' resubmitted after correction — MEP clearance required.', 'info', p.id);
+                    } else if (!p.approvals.sectionHead || p.approvals.sectionHead.status !== 'approved') {
+                        p.approvals.sectionHead = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending Section Head';
+                        notify([shRoleFor(p)], pLabel(p) + ' resubmitted after correction — Section Head review required.', 'info', p.id);
+                    } else {
+                        p.approvals.ehsManager = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.approvals.ehsOfficer = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending EHS Approval';
+                        notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                    }
+                } else if (ptype === 'hotwork') {
+                    if (!p.approvals.sectionHead || p.approvals.sectionHead.status !== 'approved') {
+                        p.approvals.sectionHead = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending Section Head';
+                        notify([shRoleFor(p)], pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                    } else {
+                        p.approvals.ehsManager = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.approvals.ehsOfficer = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending EHS Approval';
+                        notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                    }
+                } else {
+                    // Excavation
+                    const mepOk = p.approvals.mep && p.approvals.mep.status === 'approved';
+                    const pmOk = p.approvals.pm && p.approvals.pm.status === 'approved';
+                    const itOk = p.approvals.it && p.approvals.it.status === 'approved';
+                    if (!mepOk || !pmOk || !itOk) {
+                        p.status = 'Pending Parallel Approval';
+                        const pendingDiscs = [];
+                        if (!mepOk) { p.approvals.mep = { status: 'pending', by: null, at: null, gps: null, comment: null }; pendingDiscs.push('mep'); }
+                        if (!pmOk) { p.approvals.pm = { status: 'pending', by: null, at: null, gps: null, comment: null }; pendingDiscs.push('pm'); }
+                        if (!itOk) { p.approvals.it = { status: 'pending', by: null, at: null, gps: null, comment: null }; pendingDiscs.push('it'); }
+                        notify(pendingDiscs, pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                    } else if (!p.approvals.sectionHead || p.approvals.sectionHead.status !== 'approved') {
+                        p.approvals.sectionHead = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending Section Head';
+                        notify(['section-head'], pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                    } else {
+                        p.approvals.ehsManager = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.approvals.ehsOfficer = { status: 'pending', by: null, at: null, gps: null, comment: null };
+                        p.status = 'Pending EHS Approval';
+                        notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' resubmitted after correction.', 'info', p.id);
+                    }
+                }
             }
-            p.returnReason = null; p.returnedBy = null;
+
+            p.returnReason = null; p.returnedBy = null; p.returnedByRoleKey = null;
             p.stageEnteredAt = nowTime(); p.escalation = { stage1: false, stage2: false };
-            logActivity(p, 'Permit corrected and refilled by ' + resubmitter + '. Stale-approval rule applied: approvals of unchanged sections retained.');
+            logActivity(p, 'Permit corrected and refilled by ' + resubmitter + '. Role-specific correction rule applied: approvals of already approved roles retained.');
             notify(stakeholdersFor(p), p.id + ' resubmitted after correction by Site Supervisor.', 'info', p.id);
             showToast('Permit refilled & resubmitted.', 'ok');
             saveState();
@@ -5252,6 +5415,10 @@
 
         /* ---------------- RE-TRIGGER WORKFLOW (EXCAVATION 2-DAY) ---------------- */
         function requestRetrigger(p, { reason, gps, photo, sig, signerName }) {
+            if (!p || ptypeOf(p) !== 'excavation') {
+                showToast('2-Day Re-trigger is strictly an Excavation permit requirement and is not available for Shaft Work or Hot Work.', 'warn');
+                return;
+            }
             const effectiveSigner = signerName || (currentUser && currentUser.name) || 'Site Supervisor';
             p.status = 'Pending Re-trigger EHS (Day 1)';
             p.retrigger = {
@@ -5397,12 +5564,11 @@
                 return;
             }
             const mins = Math.min(Math.max(EXTENSION_STEP_MIN, minutes || EXTENSION_STEP_MIN), cap);
-            const hw = ptypeOf(p) === 'hotwork';
             const reqBy = signerName || (currentUser && currentUser.name) || p.createdBy || 'Site Supervisor';
             p.extension = {
                 id: uid(), reason, minutes: mins, hours: mins / 60, gps, photo, sig,
                 requestedAt: nowTime(), requestedBy: reqBy,
-                approvals: hw ? newChain('hotwork') : { kind: 'exc-ext', sectionHead: { status: 'pending', by: null, at: null, gps: null, comment: null }, ehsManager: { status: 'pending', by: null, at: null, gps: null, comment: null }, ehsOfficer: { status: 'pending', by: null, at: null, gps: null, comment: null } },
+                approvals: { kind: 'exc-ext', sectionHead: { status: 'pending', by: null, at: null, gps: null, comment: null }, ehsManager: { status: 'pending', by: null, at: null, gps: null, comment: null }, ehsOfficer: { status: 'pending', by: null, at: null, gps: null, comment: null } },
                 stageEnteredAt: nowTime(), escalation: { stage1: false, stage2: false },
                 status: 'Pending Section Head'
             };
@@ -6286,6 +6452,83 @@
                 ],
                 extension: null, closure: null, surrender: null
             }));
+
+            // ---------------- SHAFT WORK SEED PERMITS (PT-05 / EHS_PTW_005) ----------------
+            function baseShaft(over) {
+                const res = Object.assign({
+                    id: genPermitNumber('shaft'), ptype: 'shaft', activity: 'Shaft Work (PT-05)', createdBy: 'Duty Site Supervisor',
+                    weather: 'Sunny', organization: 'ARPL', contractor: null,
+                    shaftLocationType: 'Tower',
+                    shaftFloor: 'Floor 12',
+                    numPersonnel: '4',
+                    scaffTagVerified: true,
+                    shaftDeclaration: true,
+                    startTime: '09:00',
+                    checklist: SHAFT_CHECKLIST_ITEMS.map((q, i) => ({ q, ans: 'yes', comment: null, photo: null, gps: null })),
+                    sitePhoto: 'demo',
+                    drawing: null,
+                    activityLog: [], surrenderEscalations: 0
+                }, over);
+                if (res.gps) {
+                    res.gps = Object.assign({ within: true, distance: 10, radius: 150 }, res.gps);
+                }
+                return res;
+            }
+
+            // 1. Active Shaft Work permit
+            PERMITS.push(baseShaft({
+                project: site1.name, tower: 'Tower A', location: 'Passenger Lift Shaft #2 (Floors 10–14)',
+                gps: site1.site, shaftLocationType: 'Tower', shaftFloor: 'Floor 12', numPersonnel: '4',
+                organization: 'ARPL',
+                createdAt: new Date(nowTime() - 3 * 3600 * 1000), submittedAt: new Date(nowTime() - 3 * 3600 * 1000),
+                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                status: 'Active', activatedAt: new Date(nowTime() - 2.4 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.4 * 3600 * 1000), escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 2.9 * 3600 * 1000), by: 'Duty Site Engineer' },
+                approvals: { kind: 'shaft', mep: mkApproved('Duty MEP Engineer', 165), sectionHead: mkApproved('Duty Section Head', 155), ehsManager: mkApproved('EHS Safety Manager', 144), ehsOfficer: mkPending() },
+                activityLog: [
+                    { ts: new Date(nowTime() - 2.4 * 3600 * 1000), actor: 'EHS Safety Manager', text: 'Shaft Work permit ENDORSED and activated for lift shaft scaffolding work.' },
+                    { ts: new Date(nowTime() - 2.6 * 3600 * 1000), actor: 'Duty Section Head', text: 'Section Head / Tower In-charge approved Shaft Work permit.' },
+                    { ts: new Date(nowTime() - 2.75 * 3600 * 1000), actor: 'Duty MEP Engineer', text: 'MEP Engineer clearance approved for shaft services.' },
+                    { ts: new Date(nowTime() - 2.9 * 3600 * 1000), actor: 'Duty Site Engineer', text: 'Site Engineer acknowledged & forwarded to MEP Engineer.' },
+                    { ts: new Date(nowTime() - 3 * 3600 * 1000), actor: 'Duty Site Supervisor', text: 'Shaft Work permit submitted by Site Supervisor.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
+
+            // 2. Pending MEP Clearance Shaft Work permit (Directly testable by MEP Engineer)
+            PERMITS.push(baseShaft({
+                project: site1.name, tower: 'Tower B', location: 'Plumbing & Drainage Shaft Grid P4',
+                gps: site1.site, shaftLocationType: 'Tower', shaftFloor: 'Floor 5', numPersonnel: '3',
+                organization: 'Subcontractor', contractor: 'AquaFlow MEP Contracting',
+                createdAt: new Date(nowTime() - 30 * 60000), submittedAt: new Date(nowTime() - 30 * 60000),
+                validTill: new Date(nowTime() + 5 * 3600 * 1000),
+                status: 'Pending MEP Clearance', stageEnteredAt: new Date(nowTime() - 25 * 60000), escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 25 * 60000), by: 'Duty Site Engineer' },
+                approvals: { kind: 'shaft', mep: mkPending(), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
+                activityLog: [
+                    { ts: new Date(nowTime() - 25 * 60000), actor: 'Duty Site Engineer', text: 'Site Engineer acknowledged & forwarded to MEP Engineer for clearance (Step 3).' },
+                    { ts: new Date(nowTime() - 30 * 60000), actor: 'Duty Site Supervisor', text: 'Shaft Work permit submitted for Site Engineer acknowledgment.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
+
+            // 3. Pending Section Head Shaft Work permit
+            PERMITS.push(baseShaft({
+                project: site2.name, tower: 'Block 2', location: 'Fire Fighting Riser Shaft Podium Level',
+                gps: site2.site, shaftLocationType: 'Podium', shaftFloor: 'Podium Level 2 (P2)', numPersonnel: '2',
+                organization: 'ARPL',
+                createdAt: new Date(nowTime() - 40 * 60000), submittedAt: new Date(nowTime() - 40 * 60000),
+                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                status: 'Pending Section Head', stageEnteredAt: new Date(nowTime() - 20 * 60000), escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 35 * 60000), by: 'Duty Site Engineer' },
+                approvals: { kind: 'shaft', mep: mkApproved('Duty MEP Engineer', 20), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
+                activityLog: [
+                    { ts: new Date(nowTime() - 20 * 60000), actor: 'Duty MEP Engineer', text: 'MEP Engineer clearance approved for shaft activity. Routed to Section Head.' },
+                    { ts: new Date(nowTime() - 35 * 60000), actor: 'Duty Site Engineer', text: 'Site Engineer acknowledged & forwarded to MEP Engineer.' },
+                    { ts: new Date(nowTime() - 40 * 60000), actor: 'Duty Site Supervisor', text: 'Shaft Work permit submitted by Site Supervisor.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
         }
         function stampSeedSignatures() {
             // Seeded records carry real (simulated cursive) signatures so the final PDF
@@ -6311,12 +6554,22 @@
                         if (e && e.status !== 'pending' && !e.sig && e.by) { const sd = makeSimSignature(e.by); if (sd) e.sig = sd; }
                         // ONLY record signatory if the action was already completed (not pending!)
                         if (e && e.by && e.status !== 'pending') {
-                            const rkMap = { mep: 'mep', pm: 'pm', it: 'it', sectionHead: ptypeOf(p) === 'hotwork' ? 'hw-section-head' : 'section-head', ehsManager: 'ehs-manager', ehsOfficer: 'ehs-officer' };
+                            const rkMap = { mep: 'mep', pm: 'pm', it: 'it', sectionHead: (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft') ? 'hw-section-head' : 'section-head', ehsManager: 'ehs-manager', ehsOfficer: 'ehs-officer' };
                             const rk = rkMap[k] || k;
+                            if (ptypeOf(p) === 'shaft' && (rk === 'pm' || rk === 'it')) return;
+                            if (ptypeOf(p) === 'hotwork' && (rk === 'mep' || rk === 'pm' || rk === 'it')) return;
                             p.signatories[rk] = { name: e.by, sig: e.sig || makeSimSignature(e.by), consent: true, at: e.at || nowTime() };
                         }
                     });
                 });
+                if (ptypeOf(p) === 'shaft') {
+                    delete p.signatories['pm'];
+                    delete p.signatories['it'];
+                } else if (ptypeOf(p) === 'hotwork') {
+                    delete p.signatories['mep'];
+                    delete p.signatories['pm'];
+                    delete p.signatories['it'];
+                }
             });
         }
         if (!loadState()) { seedPermits(); stampSeedSignatures(); }
@@ -6496,7 +6749,7 @@
                 'Expired': 'expired',
                 'Closed – Pending Surrender': 'closed',
                 'Completed (Surrendered)': 'completed',
-                'Cancelled': 'cancelled'
+                    'Cancelled': 'cancelled'
             })[status] || 'draft';
         }
         function statusBadge(status) { return '<span class="badge st-' + statusClass(status) + '">' + status + '</span>'; }
@@ -6508,9 +6761,10 @@
         function pendingForRole(roleKey) {
             return PERMITS.filter(p => {
                 if (roleKey === 'site-engineer') return p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Re-trigger Held Overnight (Day 1 Cleared)' || p.status === 'Observation Pending Site Engineer Acknowledgment';
-                if (['mep', 'pm', 'it'].includes(roleKey)) return p.status === 'Pending Parallel Approval' && p.approvals && p.approvals[roleKey] && p.approvals[roleKey].status === 'pending';
-                if (roleKey === 'section-head') return p.status === 'Pending Section Head' && ptypeOf(p) === 'excavation';
-                if (roleKey === 'hw-section-head') return p.status === 'Pending Section Head' && ptypeOf(p) === 'hotwork';
+                if (roleKey === 'mep') return (p.status === 'Pending MEP Clearance') || (p.status === 'Pending Parallel Approval' && p.approvals && p.approvals.mep && p.approvals.mep.status === 'pending');
+                if (['pm', 'it'].includes(roleKey)) return p.status === 'Pending Parallel Approval' && p.approvals && p.approvals[roleKey] && p.approvals[roleKey].status === 'pending';
+                if (roleKey === 'section-head') return p.status === 'Pending Section Head' && (ptypeOf(p) === 'excavation' || ptypeOf(p) === 'shaft');
+                if (roleKey === 'hw-section-head') return p.status === 'Pending Section Head' && (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft');
                 if (roleKey === 'ehs-manager') return p.status === 'Pending EHS Approval' && p.approvals && p.approvals.ehsManager && p.approvals.ehsManager.status === 'pending';
                 if (roleKey === 'ehs-officer') return p.status === 'Pending EHS Approval' && p.approvals && p.approvals.ehsOfficer && p.approvals.ehsOfficer.status === 'pending';
                 return false;
@@ -6519,9 +6773,10 @@
         function pendingExtensionsForRole(roleKey) {
             return PERMITS.filter(p => {
                 if (!p.extension || !['Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status)) return false;
-                if (['mep', 'pm', 'it'].includes(roleKey)) return p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals[roleKey] && p.extension.approvals[roleKey].status === 'pending';
-                if (roleKey === 'section-head') return p.extension.status === 'Pending Section Head' && ptypeOf(p) === 'excavation';
-                if (roleKey === 'hw-section-head') return p.extension.status === 'Pending Section Head' && ptypeOf(p) === 'hotwork';
+                if (roleKey === 'mep') return (p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals.mep && p.extension.approvals.mep.status === 'pending');
+                if (['pm', 'it'].includes(roleKey)) return p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals[roleKey] && p.extension.approvals[roleKey].status === 'pending';
+                if (roleKey === 'section-head') return p.extension.status === 'Pending Section Head' && (ptypeOf(p) === 'excavation' || ptypeOf(p) === 'shaft');
+                if (roleKey === 'hw-section-head') return p.extension.status === 'Pending Section Head' && (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft');
                 if (roleKey === 'ehs-manager') return p.extension.status === 'Pending EHS Approval' && (!p.extension.approvals || !p.extension.approvals.ehsManager || p.extension.approvals.ehsManager.status === 'pending');
                 if (roleKey === 'ehs-officer') return p.extension.status === 'Pending EHS Approval' && (!p.extension.approvals || !p.extension.approvals.ehsOfficer || p.extension.approvals.ehsOfficer.status === 'pending');
                 return false;
@@ -6533,7 +6788,7 @@
         function quickFeedRow(p) {
             const t = roleInfo(currentUser.key);
             return '<li onclick="viewDetail(\'' + p.id + '\')" style="cursor:pointer;">' +
-                '<div class="feed-ic"><i class="fa-solid fa-person-digging"></i></div>' +
+                '<div class="feed-ic"><i class="fa-solid ' + (ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i></div>' +
                 '<div class="feed-body"><div class="feed-title">' + p.id + ' &middot; ' + p.project + ' — ' + p.tower + '</div><div class="feed-meta">' + pMeta(p).code + ' ' + pMeta(p).short + ' &middot; ' + p.location + '</div></div>' +
                 '<div style="text-align:right;">' + statusBadge(p.status) + '<div class="feed-time" style="margin-top:4px;">Valid till ' + fmtTime(p.validTill) + '</div></div>' +
                 '</li>';
@@ -6595,17 +6850,17 @@
                 const pending = pendingForRole(rk);
                 const extPending = pendingExtensionsForRole(rk);
                 const scope = roleTypeScope(rk);
-                const active = PERMITS.filter(p => p.status === 'Active' && (!scope || ptypeOf(p) === scope));
+                const active = PERMITS.filter(p => p.status === 'Active' && permitMatchesScope(p, scope));
                 const approvedByMe = PERMITS.filter(p => {
-                    if (rk === 'section-head' && ptypeOf(p) !== 'excavation') return false;
-                    if (rk === 'hw-section-head' && ptypeOf(p) !== 'hotwork') return false;
+                    if (!permitMatchesScope(p, scope)) return false;
                     const f = CHAIN_ROLE_FIELD[rk]; return p.approvals && p.approvals[f] && p.approvals[f].status === 'approved';
                 });
+                const scopeLabel = rk === 'hw-section-head' ? 'Hot Work & Shaft Work permits' : rk === 'section-head' ? 'Excavation permits' : 'Across all permit types';
                 html += '<div class="kpi-strip">' +
-                    kpiCard('k-amber', 'fa-hourglass-half', 'Pending My Approval', pending.length, rk === 'hw-section-head' ? 'Hot Work permits' : rk === 'section-head' ? 'Excavation permits' : 'Across both permit types', 'goTo(\'register\')') +
-                    kpiCard('k-purple', 'fa-stopwatch', 'Pending Extension Approval', extPending.length, 'Extension requests', 'goTo(\'register\')') +
-                    kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, scope ? (PTYPE_META[scope].short + ' — currently on site') : 'Currently on site', 'goTo(\'register\')') +
-                    kpiCard('k-green', 'fa-circle-check', 'Approved by Me', approvedByMe.length, 'All-time', 'goTo(\'register\')') +
+                    kpiCard('k-amber', 'fa-hourglass-half', 'Pending My Approval', pending.length, scopeLabel, "goTo('register')") +
+                    kpiCard('k-purple', 'fa-stopwatch', 'Pending Extension Approval', extPending.length, 'Extension requests', "goTo('register')") +
+                    kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, scope ? ((Array.isArray(scope) ? 'Hot Work & Shaft Work' : PTYPE_META[scope].short) + ' — currently on site') : 'Currently on site', "goTo('register')") +
+                    kpiCard('k-green', 'fa-circle-check', 'Approved by Me', approvedByMe.length, 'All-time', "goTo('register')") +
                     '</div>';
                 html += '<div class="grid-2"><div class="card card-pad"><div class="card-title">Awaiting Your Approval</div><ul class="feed">' +
                     (pending.length ? pending.map(quickFeedRow).join('') : '<div class="empty-state"><i class="fa-regular fa-circle-check"></i>Nothing pending — you\'re all caught up.</div>') +
@@ -6661,20 +6916,25 @@
         ];
         function buildRegisterFilters() {
             const scope = roleTypeScope(currentUser.key);
-            document.getElementById('registerTitle').innerHTML = '<i class="fa-solid fa-table-list"></i> ' + (currentUser.key === 'site-supervisor' ? 'My Permits (Supervisor)' : currentUser.key === 'site-engineer' ? 'Site Permits' : (scope ? PTYPE_META[scope].short + ' Permit Register' : 'Permit Register'));
+            const scopeTitle = Array.isArray(scope) ? 'Hot Work & Shaft Work' : (scope ? PTYPE_META[scope].short : '');
+            document.getElementById('registerTitle').innerHTML = '<i class="fa-solid fa-table-list"></i> ' + (currentUser.key === 'site-supervisor' ? 'My Permits (Supervisor)' : currentUser.key === 'site-engineer' ? 'Site Permits' : (scope ? scopeTitle + ' Permit Register' : 'Permit Register'));
             document.getElementById('registerSub').textContent = currentUser.key === 'site-supervisor'
-                ? 'All permits you have initiated as Permittee — Excavation (PT-01)'
+                ? 'All permits you have initiated as Permittee'
                 : (currentUser.key === 'site-engineer'
                     ? 'All permits across your site — Step 2 acknowledgments and active works'
-                    : (scope ? (PTYPE_META[scope].short + ' (' + PTYPE_META[scope].code + ') permits only — your approval domain')
-                        : 'All permits across the project — Excavation (PT-01)'));
+                    : (scope ? (scopeTitle + ' permits only — your approval domain')
+                        : 'All permits across the project'));
             const tSel = document.getElementById('regTypeFilter');
             if (tSel) {
-                // Reset on entry (matching the status/project filters), then lock to the
-                // Section Head's domain where a scope applies.
-                tSel.value = scope || '';
-                tSel.disabled = !!scope;
-                tSel.title = scope ? 'Register is scoped to your approval domain' : '';
+                if (Array.isArray(scope)) {
+                    tSel.value = '';
+                    tSel.disabled = false;
+                    tSel.title = 'Filter by permit type within your domain (' + scopeTitle + ')';
+                } else {
+                    tSel.value = scope || '';
+                    tSel.disabled = !!scope;
+                    tSel.title = scope ? 'Register is scoped to your approval domain' : '';
+                }
             }
             const sSel = document.getElementById('regStatusFilter');
             sSel.innerHTML = '<option value="">All Statuses</option>' + ALL_STATUSES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
@@ -6688,7 +6948,7 @@
             const tf = document.getElementById('regTypeFilter') ? document.getElementById('regTypeFilter').value : '';
             const scope = roleTypeScope(currentUser.key);
             let rows = PERMITS.filter(p => {
-                if (scope && ptypeOf(p) !== scope) return false;   // Section Heads never see the other module
+                if (!permitMatchesScope(p, scope)) return false;   // Section Heads only see their allowed modules
                 if (tf && ptypeOf(p) !== tf) return false;
                 if (sf && p.status !== sf) return false;
                 if (pf && p.project !== pf) return false;
@@ -6697,17 +6957,20 @@
             }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const tbody = document.getElementById('registerTbody');
             if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-regular fa-folder-open"></i>No permits match these filters.</div></td></tr>'; return; }
-            tbody.innerHTML = rows.map(p =>
-                '<tr style="cursor:pointer;" onclick="viewDetail(\'' + p.id + '\')"><td class="mono">' + p.id + (p.extension && ['Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status) ? ' <span class="badge st-sectionhead" style="margin-left:4px;">EXT</span>' : '') + '</td>' +
-                '<td><span class="badge" style="font-size:10px;' + (ptypeOf(p) === 'hotwork' ? 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);' : 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);') + '"><i class="fa-solid ' + (ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i> ' + pMeta(p).code + '</span></td>' +
-                '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + p.tower + '</span></td>' +
-                '<td>' + (ptypeOf(p) === 'hotwork' ? ('<span style="font-size:11.5px;">' + (p.hotworkTypes || []).join(', ') + '</span>') : (p.depth + ' m')) + '</td>' +
-                '<td>' + statusBadge(p.status) + '</td>' +
-                '<td><span style="font-size:11.5px;">' + pMeta(p).shLabel + '</span></td>' +
-                '<td>' + (p.validTill ? fmtDateTime(p.validTill) : '<span style="color:var(--text-faint);">&mdash; Draft</span>') + '</td>' +
-                '<td>' + p.createdBy + '</td>' +
-                '<td><button class="btn btn-sm btn-ghost" title="View Detail" onclick="event.stopPropagation();viewDetail(\'' + p.id + '\')"><i class="fa-solid fa-arrow-right"></i></button></td></tr>'
-            ).join('');
+            tbody.innerHTML = rows.map(p => {
+                const pIcon = ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging';
+                const pBadgeStyle = ptypeOf(p) === 'shaft' ? 'background:rgba(21,101,192,0.12);color:#1565C0;border:1px solid rgba(21,101,192,0.25);' : ptypeOf(p) === 'hotwork' ? 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);' : 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);';
+                const pSubText = ptypeOf(p) === 'shaft' ? ((p.shaftLocationType || 'Tower') + ' &middot; ' + (p.shaftFloor || '')) : ptypeOf(p) === 'hotwork' ? ((p.hotworkTypes || []).join(', ')) : (p.depth + ' m');
+                return '<tr style="cursor:pointer;" onclick="viewDetail(\'' + p.id + '\')"><td class="mono">' + p.id + (p.extension && ['Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status) ? ' <span class="badge st-sectionhead" style="margin-left:4px;">EXT</span>' : '') + '</td>' +
+                    '<td><span class="badge" style="font-size:10px;' + pBadgeStyle + '"><i class="fa-solid ' + pIcon + '"></i> ' + pMeta(p).code + '</span></td>' +
+                    '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + p.tower + '</span></td>' +
+                    '<td><span style="font-size:11.5px;">' + pSubText + '</span></td>' +
+                    '<td>' + statusBadge(p.status) + '</td>' +
+                    '<td><span style="font-size:11.5px;">' + pMeta(p).shLabel + '</span></td>' +
+                    '<td>' + (p.validTill ? fmtDateTime(p.validTill) : '<span style="color:var(--text-faint);">&mdash; Draft</span>') + '</td>' +
+                    '<td>' + p.createdBy + '</td>' +
+                    '<td><button class="btn btn-sm btn-ghost" title="View Detail" onclick="event.stopPropagation();viewDetail(\'' + p.id + '\')"><i class="fa-solid fa-arrow-right"></i></button></td></tr>';
+            }).join('');
         }
 
         /* ================================================================
@@ -6739,7 +7002,9 @@
                 // Excavation specific:
                 depth: '', slope: '', equipment: [], equipmentOther: '',
                 // Hot Work specific:
-                hotworkTypes: [], welderName: '', welderAffiliation: 'ARPL', welderContractor: ''
+                hotworkTypes: [], welderName: '', welderAffiliation: 'ARPL', welderContractor: '',
+                // Shaft Work specific:
+                shaftLocationType: 'Tower', shaftFloor: '', numPersonnel: '', scaffTagVerified: false, shaftDeclaration: false
             };
             wizStep = 1;
             goTo('create');
@@ -6832,6 +7097,7 @@
         /* ---------- STEP 1 ---------- */
         function step1Html() {
             const isHw = ptypeOf(draft) === 'hotwork';
+            const isShaft = ptypeOf(draft) === 'shaft';
             if (correctionMode) {
                 return '<div class="locked-banner"><i class="fa-solid fa-lock"></i> Master data is locked during correction. These values were captured at permit creation and cannot be modified. Proceed to the Safety Checklist to make corrections.</div>' +
                     '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-clipboard-list"></i> Master Data &mdash; Read Only</div>' +
@@ -6846,9 +7112,16 @@
                         ? ('<div class="review-item"><div class="rk">Description of Hot Work</div><div class="rv">' + ((draft.hotworkTypes || []).join(', ') || '&mdash;') + '</div></div>' +
                            '<div class="review-item"><div class="rk">Name of Welder</div><div class="rv">' + (draft.welderName || '&mdash;') + '</div></div>' +
                            '<div class="review-item"><div class="rk">Welder Affiliation</div><div class="rv">' + (draft.welderAffiliation || 'ARPL') + (draft.welderContractor ? ' &mdash; ' + draft.welderContractor : '') + '</div></div>')
-                        : ('<div class="review-item"><div class="rk">Depth / Slope</div><div class="rv">' + draft.depth + ' m &middot; 1:' + draft.slope + '</div></div>' +
-                           '<div class="review-item"><div class="rk">Equipment</div><div class="rv">' + equipDisplay(draft) + '</div></div>' +
-                           '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + draft.organization + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>')
+                        : (isShaft
+                            ? ('<div class="review-item"><div class="rk">Location Structure</div><div class="rv">' + (draft.shaftLocationType || 'Tower') + '</div></div>' +
+                               '<div class="review-item"><div class="rk">Floor Level</div><div class="rv">' + (draft.shaftFloor || '&mdash;') + '</div></div>' +
+                               '<div class="review-item"><div class="rk">Number of Personnel</div><div class="rv">' + (draft.numPersonnel || '&mdash;') + ' workers</div></div>' +
+                               '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + (draft.organization || 'ARPL') + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>' +
+                               '<div class="review-item"><div class="rk">Scaffold Tag Verification</div><div class="rv">' + (draft.scaffTagVerified ? '<span style="color:var(--green);font-weight:700;"><i class="fa-solid fa-check"></i> Green Tag / RSP Verified</span>' : '<span style="color:var(--red);">Pending</span>') + '</div></div>')
+                            : ('<div class="review-item"><div class="rk">Depth / Slope</div><div class="rv">' + draft.depth + ' m &middot; 1:' + draft.slope + '</div></div>' +
+                               '<div class="review-item"><div class="rk">Equipment</div><div class="rv">' + equipDisplay(draft) + '</div></div>' +
+                               '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + draft.organization + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>')
+                        )
                     ) +
                     '</div>';
             }
@@ -6891,11 +7164,54 @@
                 '<div class="form-field" id="ff-tower"><label>Tower <span class="req">*</span></label><select id="inTower" onchange="draft.tower=this.value;validateWizStep(1)"' + disAttr + '><option value="">Select tower&hellip;</option>' +
                 (prj && isConfigured ? prj.towers.map(t => '<option value="' + t + '" ' + (draft.tower === t ? 'selected' : '') + '>' + t + '</option>').join('') : '') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Tower is required.</div></div>' +
-                '<div class="form-field full" id="ff-location"><label>Location / Area <span class="req">*</span></label><input type="text" id="inLocation" placeholder="e.g. ' + (isHw ? 'Level 14 Core Wall or Fabrication Yard' : 'Basement excavation zone near grid C4-C7') + '" value="' + (draft.location || '') + '" oninput="draft.location=this.value;validateWizStep(1)"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Location is required.</div></div>' +
+                '<div class="form-field full" id="ff-location"><label>Location / Area <span class="req">*</span></label><input type="text" id="inLocation" placeholder="e.g. ' + (isHw ? 'Level 14 Core Wall or Fabrication Yard' : (isShaft ? 'Passenger Lift Shaft #2 or Plumbing Duct Grid B2-B4' : 'Basement excavation zone near grid C4-C7')) + '" value="' + (draft.location || '') + '" oninput="draft.location=this.value;validateWizStep(1)"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Location is required.</div></div>' +
                 '<div class="form-field full"><label>GPS Coordinates <span class="req">*</span></label>' +
                 '<div id="gpsFieldBox">' + gpsFieldBoxHtml() + '</div></div>';
 
-            if (isHw) {
+            if (isShaft) {
+                // Shaft Work specific fields per EHS_PTW_005
+                html += '<div class="form-field" id="ff-shaft-loctype"><label>Location Structure (Beyond GPS) <span class="req">*</span></label>' +
+                    '<select id="inShaftLocType" onchange="draft.shaftLocationType=this.value;validateWizStep(1)"' + disAttr + '>' +
+                    '<option value="Tower" ' + ((draft.shaftLocationType || 'Tower') === 'Tower' ? 'selected' : '') + '>Tower</option>' +
+                    '<option value="Podium" ' + (draft.shaftLocationType === 'Podium' ? 'selected' : '') + '>Podium</option>' +
+                    '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Location structure is required (Tower or Podium).</div></div>' +
+                    '<div class="form-field" id="ff-shaft-floor"><label>Floor Level <span class="req">*</span></label>' +
+                    '<select id="inShaftFloor" onchange="draft.shaftFloor=this.value;validateWizStep(1)"' + disAttr + '>' +
+                    '<option value="">Select floor&hellip;</option>' +
+                    SHAFT_FLOORS.map(fl => '<option value="' + fl + '" ' + (draft.shaftFloor === fl ? 'selected' : '') + '>' + fl + '</option>').join('') +
+                    '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Floor level is required.</div></div>' +
+                    '<div class="form-field full" id="ff-shaft-personnel"><label>Number of Personnel Working in Shaft <span class="req">*</span></label>' +
+                    '<input type="number" id="inNumPersonnel" min="1" max="99" placeholder="e.g. 4" value="' + escapeHtml(draft.numPersonnel || '') + '" oninput="draft.numPersonnel=this.value;validateWizStep(1)"' + disAttr + '>' +
+                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Valid number of personnel is mandatory (minimum 1).</div></div>' +
+                    '<div class="form-field full"><label>Organization / Contractor Type <span class="req">*</span></label><div class="radio-row">' +
+                    '<label class="radio-pill ' + ((draft.organization || 'ARPL') === 'ARPL' ? 'sel' : '') + '"><input type="radio" name="shaftOrg" value="ARPL" ' + ((draft.organization || 'ARPL') === 'ARPL' ? 'checked' : '') + ' onchange="onShaftOrgChange(\'ARPL\')"' + disAttr + '> ARPL</label>' +
+                    '<label class="radio-pill ' + (draft.organization === 'Subcontractor' ? 'sel' : '') + '"><input type="radio" name="shaftOrg" value="Subcontractor" ' + (draft.organization === 'Subcontractor' ? 'checked' : '') + ' onchange="onShaftOrgChange(\'Subcontractor\')"' + disAttr + '> Subcontractor</label>' +
+                    '</div></div>' +
+                    (draft.organization === 'Subcontractor'
+                        ? '<div class="form-field full" id="ff-contractor"><label>Name of Subcontractor <span class="req">*</span></label><input type="text" id="inContractor" placeholder="Enter full subcontractor company / agency name..." value="' + escapeHtml(draft.contractor || '') + '" oninput="draft.contractor=this.value;validateWizStep(1)"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Name of Subcontractor is mandatory.</div></div>'
+                        : '') +
+                    '<div class="form-field full" style="margin-top:6px;">' +
+                    '<label class="dpdp-consent-pill ' + (draft.scaffTagVerified ? 'checked' : '') + '" id="scaffTagPill" style="border-color:var(--green-brd);background:var(--green-bg);margin-bottom:8px;">' +
+                    '<input type="checkbox" id="chkScaffTag" ' + (draft.scaffTagVerified ? 'checked' : '') + ' onchange="onScaffTagToggle(this.checked)"' + disAttr + ' style="margin-top:3px;width:18px;height:18px;accent-color:var(--green);cursor:pointer;">' +
+                    '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
+                    '<strong style="color:var(--green);"><i class="fa-solid fa-tag"></i> Scaffold Tag Verification (Form-Level Rule) <span class="req">*</span>:</strong> Working platform provided and Scaff tag placed (planks secured, guard rails and toe boards for fall protection as per standard) / RSP Checked and fall protection in place with fall arrestor.' +
+                    '</span></label>' +
+                    '<div class="form-error" id="scaffTagError" style="' + (draft.scaffTagVerified ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Scaffold tag verification is a mandatory form-level requirement before proceeding.</div>' +
+                    '</div>' +
+                    '<div class="form-field full">' +
+                    '<label class="dpdp-consent-pill ' + (draft.shaftDeclaration ? 'checked' : '') + '" id="shaftDeclPill" style="border-color:var(--blue-brd);background:var(--blue-bg);">' +
+                    '<input type="checkbox" id="chkShaftDecl" ' + (draft.shaftDeclaration ? 'checked' : '') + ' onchange="onShaftDeclToggle(this.checked)"' + disAttr + ' style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);cursor:pointer;">' +
+                    '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
+                    '<strong style="color:var(--blue);"><i class="fa-solid fa-clipboard-check"></i> Pre-Proceeding Physical Inspection Declaration <span class="req">*</span>:</strong> I certify that the shaft location, floor level, access route, and working platform conditions have been physically inspected on-site and verified safe before proceeding.' +
+                    '</span></label>' +
+                    '<div class="form-error" id="shaftDeclError" style="' + (draft.shaftDeclaration ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Physical inspection declaration is mandatory before proceeding.</div>' +
+                    '</div>' +
+                    '<div class="form-field full" style="margin-top:8px;"><label>Work-Area Site Photo <span class="req">*</span></label>' +
+                    '<div style="max-width:340px;">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<div class="photo-preview"><img src="' + draft.sitePhoto + '"><button class="rm" onclick="draft.sitePhoto=null;renderWizStep();"><i class="fa-solid fa-xmark"></i></button></div>' :
+                        draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">shaft_work_area_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
+                            '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 work-area site photo is mandatory before proceeding.</div>') + '</div>' +
+                    '<div class="form-error" id="shaftPhotoError" style="' + (draft.sitePhoto ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Work-area photo is required before proceeding.</div></div>';
+            } else if (isHw) {
                 // Hot Work specific fields per EHS_PTW_002
                 html += '<div class="form-field full"><label>Description of Hot Work <span class="req">*</span></label>' +
                     '<div class="check-row-inline" id="hwTypeRow">' +
@@ -7028,13 +7344,30 @@
             renderWizStep();
             if (v === 'Subcontractor') { const ci = document.getElementById('inContractor'); if (ci) ci.focus(); }
         }
+        function onShaftOrgChange(v) {
+            draft.organization = v;
+            if (v === 'ARPL') draft.contractor = '';
+            renderWizStep();
+            if (v === 'Subcontractor') { const ci = document.getElementById('inContractor'); if (ci) ci.focus(); }
+        }
+        function onScaffTagToggle(v) {
+            draft.scaffTagVerified = !!v;
+            renderWizStep();
+        }
+        function onShaftDeclToggle(v) {
+            draft.shaftDeclaration = !!v;
+            renderWizStep();
+        }
 
         /* ---------- STEP 2 — SAFETY CHECKLIST ---------- */
         function step2Html() {
             const isHw = ptypeOf(draft) === 'hotwork';
+            const isShaft = ptypeOf(draft) === 'shaft';
             const answered = draft.checklist.filter(checklistItemComplete).length;
             const total = draft.checklist.length;
-            let html = isHw
+            let html = isShaft
+                ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Shaft Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 10 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo was captured in Step 1.</div>'
+                : isHw
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Hot Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 20 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo is mandatory before you can proceed.</div>'
                 : '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Excavation Safety Checklist — ' + pMeta(draft).form + ' &sect;II. Every item requires a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo and the drawing indicating the proposed excavation are both mandatory before you can proceed.</div>';
             html += '<div class="checklist-progress"><span style="font-size:12px;font-weight:700;color:var(--navy);" id="ck2ProgressTxt">' + answered + ' / ' + total + ' complete</span><div class="bar"><div class="fill" id="ck2ProgressFill" style="width:' + Math.round((answered / total) * 100) + '%;"></div></div></div>';
@@ -7063,7 +7396,7 @@
                 draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">work_area_site_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
                     '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 site photo is mandatory before submission.</div>') + '</div>';
 
-            if (!isHw) {
+            if (!isHw && !isShaft) {
                 html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Drawing Indicating Proposed Excavation <span class="req">*</span></div>';
                 html += '<div class="form-hint" style="margin-bottom:8px;">Mandatory per EHS_PTW_001 Note &mdash; submission is blocked without the excavation drawing. Accepted formats: PDF, DWG, DXF, JPG, PNG.</div>';
                 if (draft.drawing) {
@@ -7143,22 +7476,23 @@
         }
         function step3ValidationCardHtml() {
             const isHw = ptypeOf(draft) === 'hotwork';
+            const isShaft = ptypeOf(draft) === 'shaft';
             const prj = projectByName(draft.project);
             const prjConfigured = !!(prj && prj.configured);
-            const masterOk = prjConfigured && !!(draft.project && draft.tower && draft.location && (isHw ? (draft.hotworkTypes && draft.hotworkTypes.length && draft.welderName && draft.welderName.trim().length >= 2 && (draft.welderAffiliation !== 'Subcontractor' || (draft.welderContractor && draft.welderContractor.trim()))) : (draft.depth && draft.slope && draft.equipment.length && (!draft.equipment.includes('Others') || (draft.equipmentOther && draft.equipmentOther.trim())) && (draft.organization !== 'Subcontractor' || (draft.contractor && draft.contractor.trim())))));
+            const masterOk = prjConfigured && !!(draft.project && draft.tower && draft.location && (isShaft ? (draft.shaftLocationType && draft.shaftFloor && draft.numPersonnel && parseInt(draft.numPersonnel, 10) >= 1 && (draft.organization !== 'Subcontractor' || (draft.contractor && draft.contractor.trim())) && draft.scaffTagVerified && draft.shaftDeclaration) : isHw ? (draft.hotworkTypes && draft.hotworkTypes.length && draft.welderName && draft.welderName.trim().length >= 2 && (draft.welderAffiliation !== 'Subcontractor' || (draft.welderContractor && draft.welderContractor.trim()))) : (draft.depth && draft.slope && draft.equipment.length && (!draft.equipment.includes('Others') || (draft.equipmentOther && draft.equipmentOther.trim())) && (draft.organization !== 'Subcontractor' || (draft.contractor && draft.contractor.trim())))));
             const radius = (prj && prj.radius) || 150;
             const dist = (draft.gps && prj && prj.site) ? haversine(draft.gps.lat, draft.gps.lng, prj.site.lat, prj.site.lng) : Infinity;
             const gpsOk = !!(draft.gps && draft.gps.within && dist <= radius);
             const checklistOk = draft.checklist.every(checklistItemComplete);
-            const attachOk = !!draft.sitePhoto && (isHw || !!draft.drawing);
+            const attachOk = isShaft ? !!draft.sitePhoto : (!!draft.sitePhoto && (isHw || !!draft.drawing));
             const durOk = !!(draft.startTime && draft.validTillTime && draft.validTillTime > draft.startTime);
             function row(ok, label) { return '<div class="vcheck ' + (ok ? 'ok' : 'bad') + '"><i class="fa-solid ' + (ok ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i> ' + label + '</div>'; }
             return '<div class="card card-pad" style="margin-top:18px;"><div class="card-title">Pre-Submission Validation</div><div class="vcheck-list">' +
                 row(prjConfigured, 'Project Worksites &amp; GPS Geofencing configured by Admin') +
-                row(masterOk, 'Master Data completed') +
+                row(masterOk, isShaft ? 'Master Data completed (Structure, Floor, Personnel, Tag Verification &amp; Declaration)' : 'Master Data completed') +
                 row(gpsOk, 'GPS location verified') +
                 row(checklistOk, 'Safety Checklist completed (' + draft.checklist.filter(checklistItemComplete).length + ' of ' + draft.checklist.length + ')') +
-                row(attachOk, isHw ? 'Mandatory work-area site photo uploaded' : 'Mandatory attachments uploaded (site photo + excavation drawing)') +
+                row(attachOk, isShaft ? 'Mandatory work-area site photo uploaded (Step 1)' : isHw ? 'Mandatory work-area site photo uploaded' : 'Mandatory attachments uploaded (site photo + excavation drawing)') +
                 row(durOk, 'Start / End times valid within office hours (start &lt; end)') +
                 '</div></div>';
         }
@@ -7174,6 +7508,7 @@
         /* ---------- STEP 4 — REVIEW & SUBMIT ---------- */
         function step4Html() {
             const isHw = ptypeOf(draft) === 'hotwork';
+            const isShaft = ptypeOf(draft) === 'shaft';
             const noItems = draft.checklist.filter(c => c.ans === 'no');
             const naItems = draft.checklist.filter(c => c.ans === 'na');
             let durTxt = '&mdash;';
@@ -7181,7 +7516,9 @@
                 const sp = draft.startTime.split(':').map(Number), ep = draft.validTillTime.split(':').map(Number);
                 durTxt = fmtDur((ep[0] * 60 + ep[1]) - (sp[0] * 60 + sp[1]));
             }
-            const routeTxt = isHw
+            const routeTxt = isShaft
+                ? 'the Site Engineer for acknowledgment, then MEP Engineer for clearance, then Section Head / Tower In-charge for review, then EHS Safety Manager / Officer for verification'
+                : isHw
                 ? 'the Site Engineer for acknowledgment, then Section Head / Tower In-charge for review, then EHS Safety Manager / Officer for verification'
                 : 'the Site Engineer for acknowledgment, then parallel disciplines (MEP, P&amp;M, IT), then Excavation Section Head, then EHS';
             return '<div class="section-banner"><i class="fa-solid fa-eye"></i> ' + (correctionMode ? ('Review your corrections carefully. Re-submitting will restart the full approval workflow (' + routeTxt + ').') : ('Review every section carefully. Submitting will route this permit to ' + routeTxt + '.')) + '</div>' +
@@ -7192,7 +7529,14 @@
                 '<div class="review-item"><div class="rk">Location</div><div class="rv">' + draft.location + '</div></div>' +
                 '<div class="review-item"><div class="rk">GPS</div><div class="rv">' + (draft.gps ? draft.gps.lat.toFixed(5) + ', ' + draft.gps.lng.toFixed(5) : '&mdash;') + '</div></div>' +
                 '<div class="review-item"><div class="rk">Weather</div><div class="rv">' + draft.weather + '</div></div>' +
-                (isHw
+                (isShaft
+                    ? ('<div class="review-item"><div class="rk">Location Structure</div><div class="rv">' + (draft.shaftLocationType || 'Tower') + '</div></div>' +
+                       '<div class="review-item"><div class="rk">Floor Level</div><div class="rv">' + (draft.shaftFloor || '&mdash;') + '</div></div>' +
+                       '<div class="review-item"><div class="rk">Personnel in Shaft</div><div class="rv">' + (draft.numPersonnel || '&mdash;') + ' workers</div></div>' +
+                       '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + draft.organization + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>' +
+                       '<div class="review-item"><div class="rk">Scaffold Tag Verification</div><div class="rv" style="color:var(--green);font-weight:600;"><i class="fa-solid fa-tag"></i> ' + (draft.scaffTagVerified ? 'Verified &amp; Green Tagged' : 'Pending') + '</div></div>' +
+                       '<div class="review-item"><div class="rk">Inspection Declaration</div><div class="rv" style="color:var(--blue);font-weight:600;"><i class="fa-solid fa-clipboard-check"></i> ' + (draft.shaftDeclaration ? 'Certified Physically Safe' : 'Pending') + '</div></div>')
+                    : isHw
                     ? ('<div class="review-item"><div class="rk">Description of Hot Work</div><div class="rv">' + ((draft.hotworkTypes || []).join(', ') || '&mdash;') + '</div></div>' +
                        '<div class="review-item"><div class="rk">Name of Welder</div><div class="rv">' + (draft.welderName || '&mdash;') + '</div></div>' +
                        '<div class="review-item"><div class="rk">Welder Affiliation</div><div class="rv">' + (draft.welderAffiliation || 'ARPL') + (draft.welderContractor ? ' &mdash; ' + draft.welderContractor : '') + '</div></div>')
@@ -7209,7 +7553,7 @@
                 '</div>' +
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                 '<div class="attach-row">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<img src="' + draft.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' Work-area site photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>' +
-                (!isHw ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
+                (!isHw && !isShaft ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 noItems.filter(c => c.photo).map(() => '<div class="attach-row"><i class="fa-regular fa-image"></i> NO-item evidence photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>').join('') +
                 '</div>' +
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-clock"></i> Permit Validity</div>' +
@@ -7340,6 +7684,7 @@
             if (step === 1) {
                 if (correctionMode) { updateNextButtonState(true, 1); return true; }   // master data locked & already valid
                 const isHw = ptypeOf(draft) === 'hotwork';
+                const isShaft = ptypeOf(draft) === 'shaft';
                 const prj = projectByName(draft.project);
                 const prjConfigured = !!(prj && prj.configured);
                 const projOk = !!(draft.project && prjConfigured);
@@ -7357,7 +7702,40 @@
                 const locOk = !!(draft.location && draft.location.trim().length > 2); markField('ff-location', locOk); ok = ok && locOk;
                 ok = ok && gpsOk;
 
-                if (isHw) {
+                if (isShaft) {
+                    const locTypeOk = draft.shaftLocationType === 'Tower' || draft.shaftLocationType === 'Podium';
+                    markField('ff-shaft-loctype', locTypeOk);
+                    ok = ok && locTypeOk;
+
+                    const floorOk = !!(draft.shaftFloor && draft.shaftFloor.trim());
+                    markField('ff-shaft-floor', floorOk);
+                    ok = ok && floorOk;
+
+                    const numOk = !!(draft.numPersonnel && parseInt(draft.numPersonnel, 10) >= 1);
+                    markField('ff-shaft-personnel', numOk);
+                    ok = ok && numOk;
+
+                    if (draft.organization === 'Subcontractor') {
+                        const scOk = !!(draft.contractor && draft.contractor.trim());
+                        markField('ff-contractor', scOk);
+                        ok = ok && scOk;
+                    }
+
+                    const tagOk = !!draft.scaffTagVerified;
+                    const tagErr = document.getElementById('scaffTagError');
+                    if (tagErr) tagErr.style.display = tagOk ? 'none' : 'flex';
+                    ok = ok && tagOk;
+
+                    const declOk = !!draft.shaftDeclaration;
+                    const declErr = document.getElementById('shaftDeclError');
+                    if (declErr) declErr.style.display = declOk ? 'none' : 'flex';
+                    ok = ok && declOk;
+
+                    const photoOk = !!draft.sitePhoto;
+                    const photoErr = document.getElementById('shaftPhotoError');
+                    if (photoErr) photoErr.style.display = photoOk ? 'none' : 'flex';
+                    ok = ok && photoOk;
+                } else if (isHw) {
                     const hwTypeOk = !!(draft.hotworkTypes && draft.hotworkTypes.length > 0);
                     const hwErr = document.getElementById('hwTypeError'); if (hwErr) hwErr.style.display = hwTypeOk ? 'none' : 'flex';
                     ok = ok && hwTypeOk;
@@ -7391,8 +7769,9 @@
             }
             if (step === 2) {
                 const isHw = ptypeOf(draft) === 'hotwork';
+                const isShaft = ptypeOf(draft) === 'shaft';
                 const itemsOk = draft.checklist.every(checklistItemComplete);
-                ok = itemsOk && !!draft.sitePhoto && (isHw || !!draft.drawing);
+                ok = itemsOk && !!draft.sitePhoto && (isHw || isShaft || !!draft.drawing);
                 // Live requirements summary — any mix of YES / NO / N/A is acceptable once
                 // each item's own rules are met; this makes the Next-button state transparent.
                 const sumEl = document.getElementById('ck2Summary');
@@ -7400,7 +7779,7 @@
                     const pend = [];
                     draft.checklist.forEach((c, i) => { const m = checklistItemMissing(c, i); if (m) pend.push(m); });
                     if (!draft.sitePhoto) pend.push('Work-area site photo pending');
-                    if (!isHw && !draft.drawing) pend.push('Excavation drawing pending');
+                    if (!isHw && !isShaft && !draft.drawing) pend.push('Excavation drawing pending');
                     if (!pend.length) {
                         sumEl.className = 'ck2-summary ok';
                         sumEl.innerHTML = '<i class="fa-solid fa-circle-check"></i> All checklist requirements satisfied — any combination of YES / NO / N/A is valid. You can proceed.';
@@ -7462,9 +7841,15 @@
             // Confirmation gate before entering the enterprise approval workflow.
             const isCorrection = correctionMode;
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-paper-plane" style="color:var(--orange);"></i> Confirm ' + (isCorrection ? 'Re-submission' : 'Submission');
+            let wfDesc = 'Site Engineer acknowledgment (Step 2), parallel clearance by MEP, P&amp;M and IT Engineers (Step 3), Excavation Section Head review (Step 4), and final EHS endorsement (Step 5)';
+            if (ptypeOf(draft) === 'hotwork') {
+                wfDesc = 'Site Engineer acknowledgment (Step 2), followed by Section Head / Tower In-charge approval (Step 3) and final EHS endorsement (Step 4 &mdash; first approval activates the permit)';
+            } else if (ptypeOf(draft) === 'shaft') {
+                wfDesc = 'Site Engineer acknowledgment (Step 2), followed by single MEP clearance (Step 3), Section Head / Tower In-charge review (Step 4), and final EHS endorsement (Step 5)';
+            }
             document.getElementById('actionModalBody').innerHTML =
                 '<p style="font-size:13px;margin:0 0 8px;">Are you sure you want to ' + (isCorrection ? 're-submit' : 'submit') + ' this ' + pMeta(draft).short + ' Permit <b class="mono">' + draft.id + '</b>?</p>' +
-                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">Once submitted, the approval workflow will begin: ' + (ptypeOf(draft) === 'hotwork' ? 'Site Engineer acknowledgment (Step 2), followed by Section Head / Tower In-charge approval (Step 3) and final EHS endorsement (Step 4 &mdash; first approval activates the permit)' : 'Site Engineer acknowledgment (Step 2), parallel clearance by MEP, P&amp;M and IT Engineers (Step 3), Excavation Section Head review (Step 4), and final EHS endorsement (Step 5)') + '.</p>';
+                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">Once submitted, the approval workflow will begin: ' + wfDesc + '.</p>';
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn btn-primary" onclick="confirmFinalSubmit()"><i class="fa-solid fa-paper-plane"></i> ' + (isCorrection ? 'Re-submit Permit' : 'Submit Permit') + '</button>';
@@ -7533,10 +7918,14 @@
            ================================================================ */
         function trackerHtml(p) {
             const isHw = ptypeOf(p) === 'hotwork';
+            const isShaft = ptypeOf(p) === 'shaft';
             const a = p.approvals || newChain(ptypeOf(p));
             const isEngAckDone = !!(p.siteEngineerAck && p.siteEngineerAck.acknowledged);
+            const isMepActive = p.status === 'Pending MEP Clearance';
+            const isMepDone = !!(a.mep && a.mep.status === 'approved');
+            const isMepRejected = !!(a.mep && (a.mep.status === 'rejected' || a.mep.status === 'cancelled'));
             const isParallelActive = p.status === 'Pending Parallel Approval';
-            const isParallelDone = !isHw && !!(a.mep && a.pm && a.it && a.mep.status === 'approved' && a.pm.status === 'approved' && a.it.status === 'approved');
+            const isParallelDone = !isHw && !isShaft && !!(a.mep && a.pm && a.it && a.mep.status === 'approved' && a.pm.status === 'approved' && a.it.status === 'approved');
             const isSectionHeadActive = p.status === 'Pending Section Head';
             const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
             const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
@@ -7575,7 +7964,14 @@
             html += node('Site Engineer', engSub, engState, '', engTip);
             html += '<div class="tr-line ' + (isEngAckDone ? 'done' : '') + '"></div>';
 
-            if (!isHw) {
+            if (isShaft) {
+                // Step 3: Single MEP Clearance Step for Shaft Work
+                const mepState = isMepDone ? 'done' : (isMepRejected ? 'rejected' : (isMepActive ? 'current' : ''));
+                const mepSub = isMepDone ? 'Step 3 · Cleared' : (isMepRejected ? (a.mep && a.mep.status === 'cancelled' ? 'Cancelled' : 'Rejected') : (isMepActive ? 'Step 3 · Action Req.' : 'Step 3 · Clearance'));
+                const mepTip = isMepDone ? 'MEP clearance completed' : (isMepActive ? 'Pending MEP clearance review' : 'Awaiting MEP clearance');
+                html += node('MEP Clearance', mepSub, mepState, '', mepTip);
+                html += '<div class="tr-line ' + (isMepDone ? 'done' : '') + '"></div>';
+            } else if (!isHw) {
                 // Step 3: Parallel Gate (MEP · P&M · IT) — Excavation only
                 html += '<div class="tr-parallel-wrap"><div class="tr-parallel-row">' +
                     node('MEP', a.mep && a.mep.status === 'approved' ? 'Approved' : a.mep && a.mep.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending'), pState('mep'), '', 'MEP utility clearance status') +
@@ -7588,7 +7984,7 @@
             }
 
             // Section Head
-            const shLabel = isHw ? 'Section Head / Tower In-charge' : 'Section Head';
+            const shLabel = (isHw || isShaft) ? 'Section Head / Tower In-charge' : 'Section Head';
             const shStepNum = isHw ? 'Step 3' : 'Step 4';
             const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
             const shSub = isSectionHeadDone ? (shStepNum + ' · Approved') : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? (shStepNum + ' · Action Req.') : (shStepNum + ' · Review')));
@@ -7623,8 +8019,8 @@
                     '</div>';
             }
 
-            // Re-trigger Status Banner
-            if (p.retrigger) {
+            // Re-trigger Status Banner (Excavation only)
+            if (p.retrigger && ptypeOf(p) === 'excavation') {
                 html += '<div class="retrigger-card" style="margin-top:14px;">' +
                     '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
                     '<span style="font-weight:700;color:#1E88E5;"><i class="fa-solid fa-arrows-rotate"></i> 2-Day Re-trigger Status: <b>' + escapeHtml(p.retrigger.status) + '</b></span>' +
@@ -7689,7 +8085,8 @@
         function actionPanelHtml(p) {
             const rk = currentUser ? currentUser.key : '';
             const isHw = ptypeOf(p) === 'hotwork';
-            const isExcavation = !isHw;
+            const isShaft = ptypeOf(p) === 'shaft';
+            const isExcavation = ptypeOf(p) === 'excavation';
             const obsOpen = p.observation && p.observation.status !== 'Resolved';
             let html = '';
 
@@ -7705,11 +8102,12 @@
             if (p.status === 'Pending Site Engineer Acknowledgment') {
                 if (rk === 'site-engineer') {
                     const isReack = !!(p.siteEngineerAck && p.siteEngineerAck.reacknowledgment);
+                    const isShaft = ptypeOf(p) === 'shaft';
                     html += '<div class="approval-action-card" style="border-color:var(--blue);background:rgba(21,101,192,0.06);">' +
                         '<div class="aa-title"><i class="fa-solid fa-clipboard-check" style="color:var(--blue);"></i> ' + (isReack ? 'Re-Acknowledgment &amp; Approval Required' : 'Step 2: Site Engineer Approval &amp; Acknowledgment') + '</div>' +
-                        '<div class="aa-desc">' + (isReack ? 'Site Supervisor resubmitted the permit with corrected checklist/details. Review changes and approve to forward (your signature on file will be reused without re-entry).' : (isHw ? 'Site Supervisor (Permittee) submitted the hot work permit. Review safety arrangements, verify worksite conditions, and approve to forward to Section Head / Tower In-charge.' : 'Site Supervisor (Permittee) submitted the excavation permit. Review and approve to forward to parallel discipline clearance (MEP &middot; P&amp;M &middot; IT).')) + '</div>' +
+                        '<div class="aa-desc">' + (isReack ? 'Site Supervisor resubmitted the permit with corrected checklist/details. Review changes and approve to forward (your signature on file will be reused without re-entry).' : (isShaft ? 'Site Supervisor (Permittee) submitted the shaft work permit. Review shaft safety arrangements, floor level, and approve to forward to MEP Engineer for clearance.' : isHw ? 'Site Supervisor (Permittee) submitted the hot work permit. Review safety arrangements, verify worksite conditions, and approve to forward to Section Head / Tower In-charge.' : 'Site Supervisor (Permittee) submitted the excavation permit. Review and approve to forward to parallel discipline clearance (MEP &middot; P&amp;M &middot; IT).')) + '</div>' +
                         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
-                        '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-engineer\')"><i class="fa-solid fa-check"></i> ' + (isReack ? 'Approve &amp; Forward' : (isHw ? 'Approve &amp; Forward to Section Head' : 'Approve &amp; Forward to Parallel Gate')) + '</button>' +
+                        '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-engineer\')"><i class="fa-solid fa-check"></i> ' + (isReack ? 'Approve &amp; Forward' : (isShaft ? 'Approve &amp; Forward to MEP Engineer' : isHw ? 'Approve &amp; Forward to Section Head' : 'Approve &amp; Forward to Parallel Gate')) + '</button>' +
                         '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-engineer\')"><i class="fa-solid fa-xmark"></i> Reject &amp; Return to Supervisor</button>' +
                         '</div>' +
                         '</div>';
@@ -7728,6 +8126,25 @@
                     '<div class="aa-desc">Returned by ' + p.returnedBy + ': "' + p.returnReason + '"<br><span style="font-size:11.5px;color:var(--text);margin-top:4px;display:block;"><b>Correction Rule:</b> Master data stays locked. You can edit the safety checklist, comments, and photos before re-submitting. Unchanged approvals persist!</span></div>' +
                     '<button class="btn btn-primary" onclick="openCorrectionMode(\'' + p.id + '\')"><i class="fa-solid fa-pen-to-square"></i> Correct &amp; Resubmit</button>' +
                     '</div>';
+            }
+
+            // ---- Step 3: Single MEP Clearance (Shaft Work only) ----
+            if (p.status === 'Pending MEP Clearance') {
+                if (rk === 'mep' && roleCanActOnChain(p.approvals, rk)) {
+                    html += '<div class="approval-action-card" style="border-color:var(--blue);background:rgba(21,101,192,0.06);">' +
+                        '<div class="aa-title"><i class="fa-solid fa-plug-circle-bolt" style="color:var(--blue);"></i> Step 3: MEP Clearance Required (Shaft Work)</div>' +
+                        '<div class="aa-desc">Verify shaft utilities, electrical cabling, ventilation, and MEP shaft interfaces. Approve to route to Section Head / Tower In-charge, Reject to return to Site Supervisor for correction, or Cancel permit with comment (terminal &mdash; stops work and generates PDF). Gated by GPS geofencing (' + getProjectRadius(p) + 'm), DPDP consent, and digital signature.</div>' +
+                        '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+                        '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'approve\')"><i class="fa-solid fa-check"></i> Approve &amp; Forward to Section Head</button>' +
+                        '<button class="btn btn-warning" onclick="openApprovalGPS(\'' + p.id + '\',\'reject\')"><i class="fa-solid fa-rotate-left"></i> Reject (Return to Supervisor)</button>' +
+                        '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'cancel\')"><i class="fa-solid fa-ban"></i> Cancel Permit + Comment (Terminal)</button>' +
+                        '</div></div>';
+                } else if (rk !== 'admin') {
+                    html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);">' +
+                        '<div class="aa-title"><i class="fa-solid fa-clock"></i> Step 3: Awaiting MEP Engineer Clearance</div>' +
+                        '<div class="aa-desc">This Shaft Work permit was acknowledged by the Site Engineer and is currently pending Step 3 clearance by the <b>MEP Engineer</b>. Under production RBAC policy, please use the <b>Switch User</b> button in the top navigation bar to log in as the MEP Engineer.</div>' +
+                        '</div>';
+                }
             }
 
             // ---- Parallel Gate (Step 3: MEP, P&M, IT) — Excavation only ----
@@ -7753,19 +8170,23 @@
             // ---- Section Head Review ----
             if (p.status === 'Pending Section Head') {
                 const targetShRole = shRoleFor(p);
-                if (rk === targetShRole && roleCanActOnChain(p.approvals, rk)) {
+                const isShaft = ptypeOf(p) === 'shaft';
+                const isShRole = (rk === targetShRole) || (isShaft && (rk === 'hw-section-head' || rk === 'section-head'));
+                if (isShRole && roleCanActOnChain(p.approvals, rk)) {
                     html += '<div class="approval-action-card">' +
-                        '<div class="aa-title"><i class="fa-solid fa-gavel"></i> ' + (isHw ? 'Step 3: Section Head / Tower In-charge Review' : 'Step 4: Excavation Section Head Review') + '</div>' +
-                        '<div class="aa-desc">' + (isHw ? 'Site Engineer has acknowledged. Review hot work safety precautions and conditions. Approve to route to EHS Safety, or Cancel permit with comment (terminal &mdash; stops work and generates PDF). Gated by GPS, DPDP consent, and digital signature.' : 'All parallel disciplines have approved. Review permit conditions and drawings. Approve to route to EHS, or Cancel permit with comment (terminal &mdash; stops work and generates PDF). Gated by GPS, DPDP consent, and digital signature.') + '</div>' +
+                        '<div class="aa-title"><i class="fa-solid fa-gavel"></i> ' + (isHw ? 'Step 3: Section Head / Tower In-charge Review' : isShaft ? 'Step 4: Section Head / Tower In-charge Review' : 'Step 4: Excavation Section Head Review') + '</div>' +
+                        '<div class="aa-desc">' + (isShaft ? 'MEP Engineer has cleared the permit. Review shaft safety conditions, working platforms, and fall protection arrangements. Approve to route to EHS Safety, Reject to return for correction, or Cancel permit with comment (terminal &mdash; stops work and generates PDF). Gated by GPS, DPDP consent, and digital signature.' : isHw ? 'Site Engineer has acknowledged. Review hot work safety precautions and conditions. Approve to route to EHS Safety, Reject to return for correction, or Cancel permit with comment (terminal &mdash; stops work and generates PDF). Gated by GPS, DPDP consent, and digital signature.' : 'All parallel disciplines have approved. Review permit conditions and drawings. Approve to route to EHS, or Cancel permit with comment (terminal &mdash; stops work and generates PDF). Gated by GPS, DPDP consent, and digital signature.') + '</div>' +
                         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
                         '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'approve\')"><i class="fa-solid fa-check"></i> Approve</button>' +
+                        ((isHw || isShaft) ? '<button class="btn btn-warning" onclick="openApprovalGPS(\'' + p.id + '\',\'reject\')"><i class="fa-solid fa-rotate-left"></i> Reject (Return to Supervisor)</button>' : '') +
                         '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'cancel\')"><i class="fa-solid fa-ban"></i> Cancel Permit + Comment (Terminal)</button>' +
                         '</div></div>';
                 } else if (rk !== 'admin') {
-                    const shTitle = isHw ? 'Section Head / Tower In-charge' : 'Excavation Section Head';
+                    const shTitle = (isHw || isShaft) ? 'Section Head / Tower In-charge' : 'Excavation Section Head';
+                    const shStepNum = isHw ? 'Step 3' : 'Step 4';
                     html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);">' +
-                        '<div class="aa-title"><i class="fa-solid fa-clock"></i> ' + (isHw ? 'Step 3' : 'Step 4') + ': Awaiting ' + shTitle + ' Review</div>' +
-                        '<div class="aa-desc">The permit has been acknowledged by the Site Engineer and is awaiting review and endorsement by the <b>' + shTitle + '</b>. Please use the <b>Switch User</b> button in the top navigation bar to log in as ' + shTitle + '.</div>' +
+                        '<div class="aa-title"><i class="fa-solid fa-clock"></i> ' + shStepNum + ': Awaiting ' + shTitle + ' Review</div>' +
+                        '<div class="aa-desc">The permit has been forwarded and is awaiting review and endorsement by the <b>' + shTitle + '</b>. Please use the <b>Switch User</b> button in the top navigation bar to log in as ' + shTitle + '.</div>' +
                         '</div>';
                 }
             }
@@ -7845,13 +8266,23 @@
             }
 
             // ---- RE-TRIGGER FLOW (EXCAVATION ONLY, 2-DAY REVALIDATION) ----
-            // 1. Request Re-trigger (Site Supervisor only)
+            // 1. Request Re-trigger (Site Supervisor only, after scheduled start time)
             if (isExcavation && ['Active'].includes(p.status) && !obsOpen && (!p.retrigger || ['Revalidated', 'Rejected'].includes(p.retrigger.status)) && rk === 'site-supervisor') {
-                html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
-                    '<div class="aa-title"><i class="fa-solid fa-arrows-rotate" style="color:#1E88E5;"></i> 2-Day Re-trigger Revalidation (Excavation)</div>' +
-                    '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Section Head &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
-                    '<button class="btn btn-primary" onclick="openRequestRetriggerModal(\'' + p.id + '\')"><i class="fa-solid fa-arrows-rotate"></i> Request Re-trigger</button>' +
-                    '</div>';
+                const retriggerStarted = workStarted(p);
+                if (!retriggerStarted) {
+                    html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
+                        '<div class="aa-title"><i class="fa-solid fa-arrows-rotate" style="color:#1E88E5;"></i> 2-Day Re-trigger Revalidation (Excavation)</div>' +
+                        '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Section Head &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
+                        '<div class="form-error" style="display:flex;margin-bottom:10px;"><i class="fa-solid fa-circle-exclamation"></i> Cannot request re-trigger before scheduled work start time (' + (p.startTime || 'validity start') + ' IST).</div>' +
+                        '<button class="btn btn-primary" disabled><i class="fa-solid fa-arrows-rotate"></i> Request Re-trigger</button>' +
+                        '</div>';
+                } else {
+                    html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
+                        '<div class="aa-title"><i class="fa-solid fa-arrows-rotate" style="color:#1E88E5;"></i> 2-Day Re-trigger Revalidation (Excavation)</div>' +
+                        '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Section Head &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
+                        '<button class="btn btn-primary" onclick="openRequestRetriggerModal(\'' + p.id + '\')"><i class="fa-solid fa-arrows-rotate"></i> Request Re-trigger</button>' +
+                        '</div>';
+                }
             }
 
             // 2. Day 1: EHS Initial Approval
@@ -8042,11 +8473,15 @@
                     showToast('Access Denied: Only Site Engineer can act at this stage.', 'err');
                     return;
                 }
+                if (p.status === 'Pending MEP Clearance' && rk !== 'mep') {
+                    showToast('Access Denied: Only MEP Engineer can act at this stage.', 'err');
+                    return;
+                }
                 if (p.status === 'Pending Parallel Approval' && !['mep', 'pm', 'it'].includes(rk)) {
                     showToast('Access Denied: Only parallel discipline engineers can act at this stage.', 'err');
                     return;
                 }
-                if (p.status === 'Pending Section Head' && rk !== shRoleFor(p)) {
+                if (p.status === 'Pending Section Head' && rk !== shRoleFor(p) && !(ptypeOf(p) === 'shaft' && rk === 'section-head')) {
                     showToast('Access Denied: Only Section Head can act at this stage.', 'err');
                     return;
                 }
@@ -8667,6 +9102,14 @@
                 return;
             }
             const p = PERMITS.find(x => x.id === id);
+            if (!p || ptypeOf(p) !== 'excavation') {
+                showToast('2-Day Re-trigger is strictly an Excavation permit requirement and is not available for Shaft Work or Hot Work.', 'warn');
+                return;
+            }
+            if (!workStarted(p)) {
+                showToast('Re-trigger requests can only be submitted after the scheduled work start time (' + (p.startTime || 'validity start') + ' IST).', 'warn');
+                return;
+            }
             const existingSigner = getPermitSignatory(p, 'site-supervisor');
             const hasStoredSigner = !!(existingSigner && existingSigner.name && existingSigner.sig);
             actionModalCtx = {
@@ -8927,6 +9370,7 @@
                 photo: null,
                 remarks: '',
                 fireWatchConfirmed: false,
+                shaftClosureConfirmed: false,
                 sig: hasStoredSigner ? existingSigner.sig : null,
                 signerName: hasStoredSigner ? existingSigner.name : (currentUser.name || ''),
                 consent: hasStoredSigner ? true : false,
@@ -8938,7 +9382,7 @@
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-hand-holding" style="color:var(--green);"></i> Close &amp; Surrender — ' + p.id;
             document.getElementById('actionModalBody').innerHTML =
                 '<p style="font-size:13px;margin:0 0 8px;"><b>Are you sure you want to surrender this permit?</b></p>' +
-                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">The permit will be closed and formally surrendered to the EHS Department in one step. You will capture your current GPS location, one photo, remarks' + (ptypeOf(p) === 'hotwork' ? ', 1-hr fire watch verification' : '') + ', DPDP statutory consent, and digital signature <b>once</b>. This completes the permit lifecycle, generates the official Permit Report PDF, and cannot be undone.</p>';
+                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">The permit will be closed and formally surrendered to the EHS Department in one step. You will capture your current GPS location, one photo, remarks' + (ptypeOf(p) === 'hotwork' ? ', 1-hr fire watch verification' : (ptypeOf(p) === 'shaft' ? ', shaft closure declaration' : '')) + ', DPDP statutory consent, and digital signature <b>once</b>. This completes the permit lifecycle, generates the official Permit Report PDF, and cannot be undone.</p>';
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')"><i class="fa-solid fa-arrow-left"></i> No, Go Back</button>' +
                 '<button class="btn btn-green" onclick="renderSurrenderModal()"><i class="fa-solid fa-check"></i> Yes, Surrender Permit</button>';
@@ -8947,6 +9391,7 @@
         function renderSurrenderModal() {
             const ctx = actionModalCtx;
             const isHw = ptypeOf(ctx.p) === 'hotwork';
+            const isShaft = ptypeOf(ctx.p) === 'shaft';
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-hand-holding" style="color:var(--green);"></i> Close &amp; Surrender — ' + ctx.p.id;
             document.getElementById('actionModalBody').innerHTML =
                 '<div class="form-field" style="margin-bottom:12px;"><label>Current GPS Location <span class="req">*</span></label>' + (ctx.gps ? '<div class="gps-box captured"><div class="gps-info"><i class="fa-solid fa-location-dot" style="color:var(--green);"></i> ' + ctx.gps.lat.toFixed(5) + ', ' + ctx.gps.lng.toFixed(5) + '</div></div>' : '<button class="btn btn-sm" onclick="captureSurrGPS()"><i class="fa-solid fa-location-crosshairs"></i> Capture GPS</button>') + '</div>' +
@@ -8957,6 +9402,14 @@
                     '<input type="checkbox" id="surrFireWatchChk" ' + (ctx.fireWatchConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.fireWatchConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:#C62828;cursor:pointer;">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:#C62828;"><i class="fa-solid fa-fire-extinguisher"></i> Mandatory Fire Watch Declaration (EHS_PTW_002) <span class="req">*</span>:</strong> I certify that continuous fire watch was vigilantly maintained during hot work activities and for a minimum of one (1) hour post-completion with suitable fire extinguisher immediately available.' +
+                    '</span>' +
+                    '</label>' +
+                    '</div>') : '') +
+                (isShaft ? ('<div class="form-field" style="margin-bottom:12px;">' +
+                    '<label class="dpdp-consent-pill ' + (ctx.shaftClosureConfirmed ? 'checked' : '') + '" style="border-color:var(--blue-brd);background:var(--blue-bg);">' +
+                    '<input type="checkbox" id="surrShaftClosureChk" ' + (ctx.shaftClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.shaftClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);cursor:pointer;">' +
+                    '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
+                    '<strong style="color:var(--blue);"><i class="fa-solid fa-door-closed"></i> Shaft Closure &amp; Security Declaration (EHS_PTW_005) <span class="req">*</span>:</strong> I certify that all personnel, tools, and materials have been safely evacuated from the shaft, working platform/RSP secured, and shaft openings/gates firmly closed and locked.' +
                     '</span>' +
                     '</label>' +
                     '</div>') : '') +
@@ -8991,6 +9444,10 @@
             if (!ctx.remarks || !ctx.remarks.trim()) { showToast('Remarks are mandatory.', 'warn'); return; }
             if (ptypeOf(ctx.p) === 'hotwork' && !ctx.fireWatchConfirmed) {
                 showToast('Fire Watch Declaration is mandatory: continuous fire watch maintained during work and 1 hr post-completion.', 'warn');
+                return;
+            }
+            if (ptypeOf(ctx.p) === 'shaft' && !ctx.shaftClosureConfirmed) {
+                showToast('Shaft Closure & Security Declaration is mandatory: shaft evacuated, platform secured, and openings closed.', 'warn');
                 return;
             }
             const nameEl = document.getElementById('modalSignerName');
@@ -9119,7 +9576,11 @@
                 kv('Project', p.project, 'Tower', p.tower);
                 kv('Location / Area', p.location, 'Weather', p.weather);
                 kv('Kind of Activity', p.activity || (pMeta(p).name + ' (' + pMeta(p).code + ')'), 'Created By', p.createdBy);
-                if (ptypeOf(p) === 'hotwork') {
+                if (ptypeOf(p) === 'shaft') {
+                    kv('Location Structure', p.shaftLocationType || 'Tower', 'Floor Level', p.shaftFloor || '—');
+                    kv('Personnel in Shaft', (p.numPersonnel || '—') + ' workers', 'Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
+                    kv('Scaffold Tag Verification', p.scaffTagVerified ? 'Verified & Green Tagged' : 'Pending', 'Physical Inspection Decl.', p.shaftDeclaration ? 'Certified Physically Safe' : 'Pending');
+                } else if (ptypeOf(p) === 'hotwork') {
                     kv('Hot Work Description', (p.hotworkTypes || []).join(', ') || '—', 'Welder Name', p.welderName || '—');
                     kv('Welder Affiliation', p.welderAffiliation || 'ARPL', 'Contractor Agency', p.welderContractor || 'ARPL In-House');
                 } else {
@@ -9161,7 +9622,7 @@
                 // ---------- 3. Attachments ----------
                 sectionTitle('3. Attachments & Photographic Evidence');
                 tryImg(p.sitePhoto, 74, 50, 'Work-area site photograph (Permittee, at initiation)');
-                if (ptypeOf(p) !== 'hotwork') {
+                if (ptypeOf(p) !== 'hotwork' && ptypeOf(p) !== 'shaft') {
                     if (p.drawing) {
                         if (p.drawing.isImage && p.drawing.dataUrl) tryImg(p.drawing.dataUrl, 74, 52, 'Drawing indicating proposed excavation — ' + p.drawing.name);
                         else para('• Excavation drawing attached: ' + p.drawing.name + ' (uploaded ' + fmtDateTime(p.drawing.at) + ' IST).', 8.6);
@@ -9196,7 +9657,10 @@
                 }
                 function chainSigRows(ch) {
                     const isHw = ptypeOf(p) === 'hotwork';
-                    const rows = isHw
+                    const isShaft = ptypeOf(p) === 'shaft';
+                    const rows = isShaft
+                        ? [['mep', 'MEP Engineer — Clearance'], ['sectionHead', 'Section Head / Tower In-charge — Review & Approval']]
+                        : isHw
                         ? [['sectionHead', 'Section Head / Tower In-charge — Review & Approval']]
                         : [['mep', 'MEP Engineer — Parallel Approval'], ['pm', 'P&M Engineer — Parallel Approval'], ['it', 'IT Engineer — Parallel Approval'], ['sectionHead', 'Excavation Section Head — Approval']];
                     if (ch) {
@@ -9256,14 +9720,16 @@
                     sectionTitle('Active Operational Status');
                     kv('Operational Status', 'ACTIVE WORK PERMIT', 'Valid Till', fmtDateTime(p.validTill) + ' IST');
                     kv('Worksite Location', p.location, 'Activated At', fmtDateTime(p.activatedAt || p.submittedAt) + ' IST');
-                    para('This permit is currently ACTIVE and authorized for on-site excavation operations. All personnel and subcontractors must strictly adhere to the safety control measures specified herein.', 8.4);
+                    para('This permit is currently ACTIVE and authorized for on-site ' + (ptypeOf(p) === 'shaft' ? 'shaft' : ptypeOf(p) === 'hotwork' ? 'hot work' : 'excavation') + ' operations. All personnel and subcontractors must strictly adhere to the safety control measures specified herein.', 8.4);
                     hr();
                 }
                 // ---------- Surrender — the final completion record ----------
                 if (p.surrender) {
                     sectionTitle((p.extension ? '6' : '5') + '. Surrender to EHS Department — Completion Record');
                     kv('Closed & Surrendered By', p.surrender.by, 'Surrendered At', fmtDateTime(p.surrender.surrenderedAt || p.surrender.at) + ' IST');
-                    if (ptypeOf(p) === 'hotwork') {
+                    if (ptypeOf(p) === 'shaft') {
+                        kv('Shaft Closure Certification', 'VERIFIED: All workers evacuated, platform secured & shaft openings closed');
+                    } else if (ptypeOf(p) === 'hotwork') {
                         kv('Fire Watch Certification', 'VERIFIED: Continuous fire watch maintained during work & 1 hr post-completion');
                     }
                     kv('Remarks', p.surrender.remarks);
@@ -9321,7 +9787,25 @@
         function buildPermitSignatoriesCardHtml(p) {
             p.signatories = p.signatories || {};
             const isHw = ptypeOf(p) === 'hotwork';
-            const rolesList = isHw ? [
+            const isShaft = ptypeOf(p) === 'shaft';
+
+            // Clean up any non-applicable signatories for this permit type so no record of their name or sign exists
+            if (isShaft) {
+                delete p.signatories['pm'];
+                delete p.signatories['it'];
+            } else if (isHw) {
+                delete p.signatories['mep'];
+                delete p.signatories['pm'];
+                delete p.signatories['it'];
+            }
+
+            const rolesList = isShaft ? [
+                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
+                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
+                { key: 'mep', label: 'MEP Engineer', stage: 'Step 3: Single MEP Clearance' },
+                { key: 'hw-section-head', altKey: 'section-head', label: 'Section Head / Tower In-charge', stage: 'Step 4: Section Head Review' },
+                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Verification & Decision' }
+            ] : isHw ? [
                 { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
                 { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
                 { key: 'hw-section-head', label: 'Section Head / Tower In-charge', stage: 'Step 3: Section Head Review' },
@@ -9426,8 +9910,8 @@
                 const p = PERMITS.find(x => x.id === id);
                 if (!p) return;
                 const scope = currentUser ? roleTypeScope(currentUser.key) : null;
-                if (scope && ptypeOf(p) !== scope) {
-                    // Strict domain isolation: a Section Head can never open the other module's permits.
+                if (!permitMatchesScope(p, scope)) {
+                    // Strict domain isolation: a Section Head can never open other module's permits.
                     showToast('Access restricted — ' + pMeta(p).short + ' permits are outside your approval domain.', 'warn');
                     if (!silentRefresh) goTo('register');
                     return;
@@ -9474,7 +9958,7 @@
                     : '<div class="empty-state" style="padding:16px 0;"><i class="fa-regular fa-clock"></i>No logged activities yet.</div>';
 
                 document.getElementById('view-detail').innerHTML =
-                    '<div class="view-header"><div><div class="mono" style="font-size:22px;font-weight:800;color:var(--navy);">' + p.id + '</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + statusBadge(p.status) + '<span class="tag-type"><i class="fa-solid ' + (ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i> ' + pMeta(p).code + ' — ' + pMeta(p).short + '</span><span style="font-size:12px;color:var(--text-muted);">Issued ' + fmtDateTime(p.submittedAt || p.createdAt) + '</span></div></div>' +
+                    '<div class="view-header"><div><div class="mono" style="font-size:22px;font-weight:800;color:var(--navy);">' + p.id + '</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + statusBadge(p.status) + '<span class="tag-type"><i class="fa-solid ' + (ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i> ' + pMeta(p).code + ' — ' + pMeta(p).short + '</span><span style="font-size:12px;color:var(--text-muted);">Issued ' + fmtDateTime(p.submittedAt || p.createdAt) + '</span></div></div>' +
                     '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-ghost no-print" onclick="goTo(\'register\')"><i class="fa-solid fa-arrow-left"></i> Back</button>' +
                     downloadBtnHtml +
                     '</div></div>' +
@@ -9493,7 +9977,14 @@
                     '<div class="review-item"><div class="rk">Location</div><div class="rv">' + p.location + '</div></div>' +
                     '<div class="review-item"><div class="rk">GPS</div><div class="rv">' + (p.gps ? p.gps.lat.toFixed(5) + ', ' + p.gps.lng.toFixed(5) : '—') + '</div></div>' +
                     '<div class="review-item"><div class="rk">Permit Type</div><div class="rv">' + pMeta(p).code + ' — ' + pMeta(p).name + '</div></div>' +
-                    (ptypeOf(p) === 'hotwork' ?
+                    (ptypeOf(p) === 'shaft' ?
+                        ('<div class="review-item"><div class="rk">Location Structure</div><div class="rv">' + (p.shaftLocationType || 'Tower') + '</div></div>' +
+                         '<div class="review-item"><div class="rk">Floor Level</div><div class="rv">' + (p.shaftFloor || '—') + '</div></div>' +
+                         '<div class="review-item"><div class="rk">Personnel in Shaft</div><div class="rv">' + (p.numPersonnel || '—') + ' workers</div></div>' +
+                         '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + p.organization + (p.contractor ? ' — ' + p.contractor : '') + '</div></div>' +
+                         '<div class="review-item"><div class="rk">Scaffold Tag Verification</div><div class="rv" style="color:var(--green);font-weight:600;"><i class="fa-solid fa-tag"></i> ' + (p.scaffTagVerified ? 'Verified &amp; Green Tagged' : 'Pending') + '</div></div>' +
+                         '<div class="review-item"><div class="rk">Inspection Declaration</div><div class="rv" style="color:var(--blue);font-weight:600;"><i class="fa-solid fa-clipboard-check"></i> ' + (p.shaftDeclaration ? 'Certified Physically Safe' : 'Pending') + '</div></div>') :
+                     ptypeOf(p) === 'hotwork' ?
                         ('<div class="review-item"><div class="rk">Description of Hot Work</div><div class="rv">' + ((p.hotworkTypes || []).join(', ') || '—') + '</div></div>' +
                          '<div class="review-item"><div class="rk">Name of Welder</div><div class="rv">' + (p.welderName || '—') + '</div></div>' +
                          '<div class="review-item"><div class="rk">Welder Affiliation</div><div class="rv">' + (p.welderAffiliation || 'ARPL') + (p.welderContractor ? ' — ' + p.welderContractor : '') + '</div></div>') :
@@ -9510,7 +10001,8 @@
                     extHtml +
                     (p.closure ? '<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-box-archive"></i> Closure</div><div class="review-item"><div class="rk">Remarks</div><div class="rv">' + p.closure.remarks + '</div></div><div class="review-item"><div class="rk">Closed By</div><div class="rv">' + p.closure.by + ' &middot; ' + fmtDateTime(p.closure.closedAt) + '</div></div></div>' : '') +
                     (p.surrender ? ('<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-hand-holding"></i> Surrender</div>' +
-                        (ptypeOf(p) === 'hotwork' ? '<div class="review-item"><div class="rk">Fire Watch</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> Maintained during work &amp; 1 hr post-completion</div></div>' : '') +
+                        (ptypeOf(p) === 'shaft' ? '<div class="review-item"><div class="rk">Shaft Closure</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> Workers evacuated, platform secured &amp; openings closed</div></div>' :
+                         ptypeOf(p) === 'hotwork' ? '<div class="review-item"><div class="rk">Fire Watch</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> Maintained during work &amp; 1 hr post-completion</div></div>' : '') +
                         '<div class="review-item"><div class="rk">Remarks</div><div class="rv">' + p.surrender.remarks + '</div></div><div class="review-item"><div class="rk">Surrendered By</div><div class="rv">' + p.surrender.by + ' &middot; ' + fmtDateTime(p.surrender.surrenderedAt) + '</div></div></div>') : '') +
                     '</div>' +
                     '<div>' +
