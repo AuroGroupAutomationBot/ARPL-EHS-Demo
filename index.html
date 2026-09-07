@@ -4147,7 +4147,7 @@
                                         <th>Project / Tower</th>
                                         <th>Details</th>
                                         <th>Status</th>
-                                        <th>Tower Incharge</th>
+                                        <th>Section Head</th>
                                         <th>Valid Till</th>
                                         <th>Requested By</th>
                                         <th></th>
@@ -4466,7 +4466,7 @@
         function fmtExtDur(ext) { const m = (ext.minutes != null) ? ext.minutes : Math.round((ext.hours || 0) * 60); return fmtDur(m); }
         /* Per-item checklist completeness — the single rule used by the progress strip,
            the Next-button gate and the pre-submission validation card.
-           YES: complete as-is. NO: comment + evidence photo + GPS. N/A: comment. */
+           YES: complete as-is. NO: comment mandatory (GPS & photo not required). N/A: complete as-is (comment not required). */
         function checklistItemComplete(c, idx, ptype) {
             if (!c || !c.ans) return false;
             const pt = ptype || (draft ? ptypeOf(draft) : null);
@@ -4489,8 +4489,8 @@
                     return !!(draft && draft.confinedChecklistAttachment);
                 }
             }
-            if (c.ans === 'no') return !!(c.comment && c.comment.trim() && c.photo && c.gps);
-            if (c.ans === 'na') return !!(c.comment && c.comment.trim());
+            if (c.ans === 'no') return !!(c.comment && c.comment.trim());
+            if (c.ans === 'na') return true;
             return true;
         }
         function checklistItemMissing(c, idx, ptype) {
@@ -4520,9 +4520,7 @@
             }
             if (!c.ans) return 'Item ' + (idx + 1) + ': answer pending';
             const miss = [];
-            if ((c.ans === 'no' || c.ans === 'na') && !(c.comment && c.comment.trim())) miss.push('comment');
-            if (c.ans === 'no' && !c.photo) miss.push('photo');
-            if (c.ans === 'no' && !c.gps) miss.push('GPS');
+            if (c.ans === 'no' && !(c.comment && c.comment.trim())) miss.push('comment');
             return miss.length ? 'Item ' + (idx + 1) + ': ' + miss.join(' + ') + ' pending' : null;
         }
         function equipDisplay(rec) {
@@ -4568,7 +4566,7 @@
         /* ---------------- PERMIT TYPE METADATA ----------------
            Excavation (PT-01), Hot Work (PT-02), Guard Rail (PT-03), Confined Space (PT-04) & Shaft Work (PT-05) */
         const PTYPE_META = {
-            excavation: { key: 'excavation', code: 'PT-01', name: 'Excavation Work', short: 'Excavation', prefix: 'EXC', form: 'EHS_PTW_001', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
+            excavation: { key: 'excavation', code: 'PT-01', name: 'Excavation Work', short: 'Excavation', prefix: 'EXC', form: 'EHS_PTW_001', sh: 'excavation-head', shLabel: 'Excavation Head' },
             hotwork: { key: 'hotwork', code: 'PT-02', name: 'Hot Work', short: 'Hot Work', prefix: 'HW', form: 'EHS_PTW_002', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             guardrail: { key: 'guardrail', code: 'PT-03', name: 'Guard Rail / Floor Protection Removal', short: 'Guard Rail', prefix: 'GR', form: 'EHS_PTW_003', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             confined: { key: 'confined', code: 'PT-04', name: 'Confined Space Entry', short: 'Confined Space', prefix: 'CS', form: 'EHS_PTW_004', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
@@ -4589,7 +4587,7 @@
             if (ptypeOf(p) === 'shaft') {
                 return ['site-supervisor', 'site-engineer', 'mep', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
             }
-            return ['site-supervisor', 'site-engineer', 'mep', 'pm', 'it', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
+            return ['site-supervisor', 'site-engineer', 'mep', 'pm', 'it', 'excavation-head', 'ehs-manager', 'ehs-officer'];
         }
         function checklistFor(type) {
             if (type === 'confined') return CONFINED_CHECKLIST_ITEMS;
@@ -4599,7 +4597,9 @@
             return CHECKLIST_ITEMS;
         }
         function roleTypeScope(roleKey) {
-            if (roleKey === 'section-head' || roleKey === 'hw-section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'excavation'];
+            if (roleKey === 'excavation-head') return ['excavation'];
+            if (roleKey === 'hw-section-head') return ['hotwork', 'shaft', 'guardrail', 'confined'];
+            if (roleKey === 'section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'excavation'];
             return null;
         }
         function permitMatchesScope(p, scope) {
@@ -4757,12 +4757,13 @@
            without pre-assigned personal names. Authorised personnel enter their
            name dynamically before providing their digital signature. */
         const ROLES = [
-            { key: 'site-supervisor', label: 'Site Supervisor', sub: 'Permittee / Form Filling', icon: 'fa-user-pen', desc: 'Step 1: Fill permit forms (Excavation, Hot Work, Guard Rail, Confined Space & Shaft Work), attach work-area photos, respond to Observations, request Extensions and Re-triggers.' },
-            { key: 'site-engineer', label: 'Site Engineer', sub: 'Step 2: Acknowledger & Forwarder', icon: 'fa-hard-hat', desc: 'Step 2: Acknowledge & forward Excavation permits to parallel gate, acknowledge Hot Work, Guard Rail & Confined Space permits to Tower Incharge, acknowledge Shaft Work permits to MEP clearance, close and surrender permits.' },
+            { key: 'site-supervisor', label: 'Site Supervisor', sub: 'Permittee / Form Filling & Closure', icon: 'fa-user-pen', desc: 'Step 1: Fill permit forms (Excavation, Hot Work, Guard Rail, Confined Space & Shaft Work), attach work-area photos, respond to Observations, request Extensions and Re-triggers, and execute permit Closure & Surrender.' },
+            { key: 'site-engineer', label: 'Site Engineer', sub: 'Step 2: Acknowledger & Forwarder', icon: 'fa-hard-hat', desc: 'Step 2: Acknowledge & forward Excavation permits to parallel gate, acknowledge Hot Work, Guard Rail & Confined Space permits to Tower Incharge, and acknowledge Shaft Work permits to MEP clearance.' },
             { key: 'mep', label: 'MEP Engineer', sub: 'Clearance & Parallel Approver', icon: 'fa-plug-circle-bolt', desc: 'Step 3: Single MEP clearance step for Shaft Work; verify utilities, cabling and plumbing before excavation begins (parallel approval).' },
             { key: 'pm', label: 'P&M Engineer', sub: 'Parallel Approver', icon: 'fa-gears', desc: 'Verify plant & machinery readiness — excavators, barricading equipment, lifting gear. Parallel approval, stage 1.' },
             { key: 'it', label: 'IT Engineer', sub: 'Parallel Approver', icon: 'fa-network-wired', desc: 'Verify underground IT / data / fibre service lines are identified and protected. Parallel approval, stage 1.' },
-            { key: 'hw-section-head', label: 'Tower Incharge', sub: 'Approving Authority', icon: 'fa-user-tie', desc: 'Step 3/4 Approving Authority across all permits (Confined Space, Hot Work, Guard Rail, Shaft Work & Excavation): review after clearances. Review safety conditions and Approve, Reject or Cancel.' },
+            { key: 'excavation-head', label: 'Excavation Head', sub: 'Excavation Section Head', icon: 'fa-trowel-bricks', desc: 'Step 4 Approving Authority for Excavation Work (PT-01): review after parallel clearances (MEP, P&M, IT). Review safety conditions and Approve, Reject or Cancel.' },
+            { key: 'hw-section-head', label: 'Tower Incharge', sub: 'Approving Authority', icon: 'fa-user-tie', desc: 'Step 3/4 Approving Authority for Hot Work (PT-02), Guard Rail (PT-03), Confined Space (PT-04) & Shaft Work (PT-05): review after clearances. Review safety conditions and Approve, Reject or Cancel.' },
             { key: 'ehs-manager', label: 'EHS Manager', sub: 'Final Safety Endorsement', icon: 'fa-shield-halved', desc: 'Final safety endorsement — either EHS Manager or EHS Officer approval activates the permit.' },
             { key: 'ehs-officer', label: 'EHS Officer', sub: 'Final Safety Endorsement', icon: 'fa-user-shield', desc: 'Final safety endorsement — either EHS Manager or EHS Officer approval activates the permit.' },
             { key: 'admin', label: 'Administrator', sub: 'Site GPS & Geofence Administrator', icon: 'fa-user-gear', desc: 'Configure project site GPS coordinates (Lat/Lng), set proximity circle radius range (meters), and manage geofencing parameters.' },
@@ -5109,6 +5110,7 @@
                 const rk = currentUser.key;
                 const matches = targets.includes(rk) || targets.includes('all') ||
                     ((rk === 'hw-section-head' || rk === 'section-head') && (targets.includes('hw-section-head') || targets.includes('section-head'))) ||
+                    ((rk === 'excavation-head' || rk === 'section-head') && (targets.includes('excavation-head') || targets.includes('section-head'))) ||
                     ((rk === 'ehs-manager' || rk === 'ehs-officer') && targets.includes('ehs'));
                 if (matches) refreshNotifBell();
             }
@@ -5121,6 +5123,7 @@
                 if (!n.roleTargets) return false;
                 if (n.roleTargets.includes('all') || n.roleTargets.includes(rk)) return true;
                 if ((rk === 'hw-section-head' || rk === 'section-head') && (n.roleTargets.includes('hw-section-head') || n.roleTargets.includes('section-head'))) return true;
+                if ((rk === 'excavation-head' || rk === 'section-head') && (n.roleTargets.includes('excavation-head') || n.roleTargets.includes('section-head'))) return true;
                 if ((rk === 'ehs-manager' || rk === 'ehs-officer') && n.roleTargets.includes('ehs')) return true;
                 return false;
             });
@@ -5465,7 +5468,7 @@
             }
             if (chain.kind === 'exc-ext' || chain.kind === 'ext-flow') {
                 if (stage === 'site-engineer') return roleKey === 'site-engineer' && chain.siteEngineer && chain.siteEngineer.status === 'pending';
-                if (stage === 'section-head') return (roleKey === 'section-head' || roleKey === 'hw-section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+                if (stage === 'section-head') return (roleKey === 'excavation-head' || roleKey === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
                 if (stage === 'ehs') {
                     if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
                     if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
@@ -5479,7 +5482,12 @@
                 if (roleKey === 'it') return chain.it && chain.it.status === 'pending';
                 return false;
             }
-            if (stage === 'section-head') return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+            if (stage === 'section-head') {
+                if (chain.kind === 'exc') {
+                    return (roleKey === 'excavation-head' || roleKey === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+                }
+                return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+            }
             if (stage === 'ehs') {
                 if (roleKey === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
                 if (roleKey === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
@@ -5487,7 +5495,7 @@
             }
             return false;
         }
-        const CHAIN_ROLE_FIELD = { 'site-engineer': 'siteEngineer', 'mep': 'mep', 'pm': 'pm', 'it': 'it', 'section-head': 'sectionHead', 'hw-section-head': 'sectionHead', 'ehs-manager': 'ehsManager', 'ehs-officer': 'ehsOfficer' };
+        const CHAIN_ROLE_FIELD = { 'site-engineer': 'siteEngineer', 'mep': 'mep', 'pm': 'pm', 'it': 'it', 'section-head': 'sectionHead', 'hw-section-head': 'sectionHead', 'excavation-head': 'sectionHead', 'ehs-manager': 'ehsManager', 'ehs-officer': 'ehsOfficer' };
 
         function snapshotDisciplineFields(p) {
             if (!p) return {};
@@ -5670,12 +5678,12 @@
             logActivity(p, roleInfo(roleKey).label + ' (' + effectiveSigner + ') approved at this stage.' + (gps ? (' GPS verified within ' + prjRad + 'm.') : ''));
             if (newStage === 'section-head') {
                 p.status = 'Pending Section Head'; p.stageEnteredAt = nowTime(); p.escalation = { stage1: false, stage2: false };
-                notify([shRoleFor(p)], pLabel(p) + (ptypeOf(p) === 'shaft' ? ' cleared by MEP Engineer. Awaiting your Tower Incharge review.' : ' cleared by MEP, P&M and IT. Awaiting your holistic approval.'), 'info', p.id);
-                notify(stakeholdersFor(p), pLabel(p) + (ptypeOf(p) === 'shaft' ? ' — MEP clearance complete. Routed to Tower Incharge.' : ' — all three parallel approvals complete. Routed to Tower Incharge.'), 'success', p.id);
+                notify([shRoleFor(p)], pLabel(p) + (ptypeOf(p) === 'shaft' ? ' cleared by MEP Engineer. Awaiting your Tower Incharge review.' : (ptypeOf(p) === 'excavation' ? ' cleared by MEP, P&M and IT. Awaiting your Excavation Head review.' : ' Awaiting your holistic approval.')), 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + (ptypeOf(p) === 'shaft' ? ' — MEP clearance complete. Routed to Tower Incharge.' : (ptypeOf(p) === 'excavation' ? ' — all three parallel approvals complete. Routed to Excavation Head.' : ' Routed to Tower Incharge.')), 'success', p.id);
             } else if (newStage === 'ehs') {
                 p.status = 'Pending EHS Approval'; p.stageEnteredAt = nowTime(); p.escalation = { stage1: false, stage2: false };
                 notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' approved by ' + pMeta(p).shLabel + '. Awaiting EHS Manager or EHS Officer verification — first approval activates the permit.', 'info', p.id);
-                notify(stakeholdersFor(p), pLabel(p) + ' approved by Tower Incharge. Routed to EHS for final verification.', 'success', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' approved by ' + pMeta(p).shLabel + '. Routed to EHS for final verification.', 'success', p.id);
             } else if (newStage === 'complete') {
                 if ((roleKey === 'ehs-manager' || roleKey === 'ehs-officer')) {
                     const other = roleKey === 'ehs-manager' ? 'ehs-officer' : 'ehs-manager';
@@ -5723,7 +5731,7 @@
                 p.rejectionOrigin = {
                     workflow: 'initial',
                     roleKey: roleKey,
-                    roleLabel: (roleKey === 'section-head' || roleKey === 'hw-section-head') ? 'Tower Incharge' : roleInfo(roleKey).label,
+                    roleLabel: (roleKey === 'excavation-head') ? 'Excavation Head' : ((roleKey === 'section-head' || roleKey === 'hw-section-head') ? 'Tower Incharge' : roleInfo(roleKey).label),
                     by: effectiveSigner,
                     at: nowTime(),
                     comment: comment,
@@ -5755,7 +5763,7 @@
                 (p.siteEngineerAck && p.siteEngineerAck.rejected) ? 'site-engineer' :
                 (p.approvals.ehsManager && p.approvals.ehsManager.status === 'rejected') ? 'ehs-manager' :
                 (p.approvals.ehsOfficer && p.approvals.ehsOfficer.status === 'rejected') ? 'ehs-officer' :
-                (p.approvals.sectionHead && p.approvals.sectionHead.status === 'rejected') ? ((ptypeOf(p) === 'excavation') ? 'section-head' : 'hw-section-head') :
+                (p.approvals.sectionHead && p.approvals.sectionHead.status === 'rejected') ? ((ptypeOf(p) === 'excavation') ? 'excavation-head' : 'hw-section-head') :
                 (p.approvals.mep && p.approvals.mep.status === 'rejected') ? 'mep' :
                 (p.approvals.pm && p.approvals.pm.status === 'rejected') ? 'pm' :
                 (p.approvals.it && p.approvals.it.status === 'rejected') ? 'it' :
@@ -5765,7 +5773,7 @@
                 p.rejectionOrigin = {
                     workflow: 'initial',
                     roleKey: retRole,
-                    roleLabel: (retRole === 'section-head' || retRole === 'hw-section-head') ? 'Tower Incharge' : (roleInfo(retRole) ? roleInfo(retRole).label : retRole),
+                    roleLabel: (retRole === 'excavation-head') ? 'Excavation Head' : ((retRole === 'section-head' || retRole === 'hw-section-head') ? 'Tower Incharge' : (roleInfo(retRole) ? roleInfo(retRole).label : retRole)),
                     by: p.returnedBy || 'Approver',
                     at: nowTime(),
                     comment: p.returnReason || ''
@@ -5843,7 +5851,7 @@
                 p.status = 'Pending EHS Approval';
                 notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' re-acknowledged by Site Engineer after corrections. Returned to EHS Safety for verification.', 'info', p.id);
                 logActivity(p, 'Site Engineer (' + effectiveSigner + ') re-acknowledged permit on site after supervisor corrections. Returned directly to EHS Safety (prior clearances retained).');
-            } else if (origRole === 'section-head' || origRole === 'hw-section-head') {
+            } else if (origRole === 'section-head' || origRole === 'hw-section-head' || origRole === 'excavation-head') {
                 p.approvals.sectionHead = { status: 'pending', by: null, at: null, gps: null, comment: null };
                 p.status = 'Pending Section Head';
                 const shRole = shRoleFor(p);
@@ -6138,41 +6146,45 @@
 
         function actRetriggerDay2EngAck(p, { comment, gps, sig, signerName }) {
             const effectiveSigner = signerName || (currentUser && currentUser.name) || roleInfo('site-engineer').label;
+            const shRole = shRoleFor(p);
+            const shLbl = pMeta(p).shLabel || 'Excavation Head';
             p.status = 'Pending Re-trigger Section Head (Day 2)';
             p.retrigger.day2EngAck = { acknowledgedAt: nowTime(), by: effectiveSigner, gps, sig, comment };
-            logActivity(p, 'Re-trigger Day 2 acknowledged by Site Engineer (' + effectiveSigner + '). Routed to Tower Incharge for review.');
-            notify(['hw-section-head', 'section-head'], pLabel(p) + ' — Day 2 Re-trigger acknowledged by Site Engineer. Tower Incharge approval required.', 'info', p.id);
-            notify(stakeholdersFor(p), pLabel(p) + ' Day 2 Re-trigger acknowledged by Site Engineer. Routed to Tower Incharge.', 'info', p.id);
-            showToast('Day 2 Re-trigger acknowledged. Routed to Tower Incharge.', 'ok');
+            logActivity(p, 'Re-trigger Day 2 acknowledged by Site Engineer (' + effectiveSigner + '). Routed to ' + shLbl + ' for review.');
+            notify([shRole, 'section-head'], pLabel(p) + ' — Day 2 Re-trigger acknowledged by Site Engineer. ' + shLbl + ' approval required.', 'info', p.id);
+            notify(stakeholdersFor(p), pLabel(p) + ' Day 2 Re-trigger acknowledged by Site Engineer. Routed to ' + shLbl + '.', 'info', p.id);
+            showToast('Day 2 Re-trigger acknowledged. Routed to ' + shLbl + '.', 'ok');
             saveState();
         }
 
         function actRetriggerDay2SectionHead(p, decision, { comment, gps, sig, signerName }) {
-            const effectiveSigner = signerName || (currentUser && currentUser.name) || 'Tower Incharge';
+            const shRole = shRoleFor(p);
+            const shLbl = pMeta(p).shLabel || 'Excavation Head';
+            const effectiveSigner = signerName || (currentUser && currentUser.name) || shLbl;
             if (decision === 'approved') {
                 p.status = 'Pending Re-trigger EHS Final (Day 2)';
                 p.retrigger.day2SectionHead = { approvedAt: nowTime(), by: effectiveSigner, gps, sig, comment };
-                logActivity(p, 'Re-trigger Day 2 approved by Tower Incharge (' + effectiveSigner + '). Routed to EHS for actual approval.');
-                notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' — Day 2 Re-trigger approved by Tower Incharge. Awaiting actual EHS approval to revalidate.', 'info', p.id);
-                notify(stakeholdersFor(p), pLabel(p) + ' Day 2 Re-trigger approved by Tower Incharge. Awaiting final EHS approval.', 'info', p.id);
-                showToast('Tower Incharge approved. Routed to EHS for actual revalidation.', 'ok');
+                logActivity(p, 'Re-trigger Day 2 approved by ' + shLbl + ' (' + effectiveSigner + '). Routed to EHS for actual approval.');
+                notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' — Day 2 Re-trigger approved by ' + shLbl + '. Awaiting actual EHS approval to revalidate.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' Day 2 Re-trigger approved by ' + shLbl + '. Awaiting final EHS approval.', 'info', p.id);
+                showToast(shLbl + ' approved. Routed to EHS for actual revalidation.', 'ok');
             } else if (decision === 'rejected') {
                 p.status = 'Returned for Correction';
                 p.returnReason = comment;
-                p.returnedBy = 'Tower Incharge (' + effectiveSigner + ')';
-                p.retrigger.rejectionOrigin = { stage: 'day2SectionHead', roleKey: 'hw-section-head', roleLabel: 'Tower Incharge', by: effectiveSigner, comment: comment };
-                logActivity(p, 'Re-trigger Day 2 rejected by Tower Incharge (' + effectiveSigner + '): ' + comment);
-                notify(stakeholdersFor(p), pLabel(p) + ' Day 2 Re-trigger rejected by Tower Incharge: "' + comment + '"', 'error', p.id);
+                p.returnedBy = shLbl + ' (' + effectiveSigner + ')';
+                p.retrigger.rejectionOrigin = { stage: 'day2SectionHead', roleKey: shRole, roleLabel: shLbl, by: effectiveSigner, comment: comment };
+                logActivity(p, 'Re-trigger Day 2 rejected by ' + shLbl + ' (' + effectiveSigner + '): ' + comment);
+                notify(stakeholdersFor(p), pLabel(p) + ' Day 2 Re-trigger rejected by ' + shLbl + ': "' + comment + '"', 'error', p.id);
                 showToast('Day 2 Re-trigger rejected.', 'err');
             } else if (decision === 'cancelled') {
                 p.status = 'Cancelled';
                 p.isCancelled = true;
                 p.cancelReason = comment;
                 p.cancelledBy = effectiveSigner;
-                p.cancelledByRole = 'Tower Incharge';
+                p.cancelledByRole = shLbl;
                 p.cancelledAt = nowTime();
-                logActivity(p, 'Permit CANCELLED by Tower Incharge (' + effectiveSigner + ') during Day 2 Re-trigger: ' + comment);
-                notify(stakeholdersFor(p), pLabel(p) + ' CANCELLED by Tower Incharge. Stop work immediately.', 'error', p.id);
+                logActivity(p, 'Permit CANCELLED by ' + shLbl + ' (' + effectiveSigner + ') during Day 2 Re-trigger: ' + comment);
+                notify(stakeholdersFor(p), pLabel(p) + ' CANCELLED by ' + shLbl + '. Stop work immediately.', 'error', p.id);
                 showToast('Permit cancelled.', 'err');
             }
             saveState();
@@ -6411,6 +6423,10 @@
         function closeAndSurrenderPermit(p, { gps, photo, remarks, sig, signerName, fireWatch, guardrailReFix, confinedClosure }) {
             // Single-step completion: closure confirmation and formal surrender to EHS
             // happen in one operation with one GPS/photo/remarks capture and DPDP digital signature.
+            if (currentUser && currentUser.key !== 'site-supervisor') {
+                showToast('Access Denied: Closure and surrender is restricted strictly to Site Supervisors.', 'err');
+                return false;
+            }
             if (!workStarted(p)) {
                 showToast('This permit cannot be closed before the scheduled work start time (' + p.startTime + ' IST).', 'warn');
                 return false;
@@ -6430,7 +6446,7 @@
                 return false;
             }
             const t = nowTime();
-            const effectiveSigner = signerName || (currentUser && currentUser.name) || p.createdBy || roleInfo('site-engineer').label;
+            const effectiveSigner = signerName || (currentUser && currentUser.name) || p.createdBy || roleInfo('site-supervisor').label;
             p.closure = { gps, photo, remarks, sig, signerName: effectiveSigner, closedAt: t, by: effectiveSigner, fireWatch: !!fireWatch, guardrailReFix: !!guardrailReFix, confinedClosure: !!confinedClosure };
             p.surrender = { gps, photo, remarks, sig, signerName: effectiveSigner, surrenderedAt: t, by: effectiveSigner, fireWatch: !!fireWatch, guardrailReFix: !!guardrailReFix, confinedClosure: !!confinedClosure };
             p.status = 'Completed (Surrendered)';
@@ -7606,7 +7622,7 @@
                         if (e && e.status !== 'pending' && !e.sig && e.by) { const sd = makeSimSignature(e.by); if (sd) e.sig = sd; }
                         // ONLY record signatory if the action was already completed (not pending!)
                         if (e && e.by && e.status !== 'pending') {
-                            const rkMap = { siteEngineer: 'site-engineer', mep: 'mep', pm: 'pm', it: 'it', sectionHead: (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'confined') ? 'hw-section-head' : 'section-head', ehsManager: 'ehs-manager', ehsOfficer: 'ehs-officer' };
+                            const rkMap = { siteEngineer: 'site-engineer', mep: 'mep', pm: 'pm', it: 'it', sectionHead: (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'confined') ? 'hw-section-head' : 'excavation-head', ehsManager: 'ehs-manager', ehsOfficer: 'ehs-officer' };
                             const rk = rkMap[k] || k;
                             if (ptypeOf(p) === 'confined' && (rk === 'mep' || rk === 'pm' || rk === 'it')) return;
                             if (ptypeOf(p) === 'shaft' && (rk === 'pm' || rk === 'it')) return;
@@ -7828,7 +7844,9 @@
                 if (roleKey === 'site-engineer') return p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment' || p.status === 'Re-trigger Held Overnight (Day 1 Cleared)' || p.status === 'Observation Pending Site Engineer Acknowledgment';
                 if (roleKey === 'mep') return (p.status === 'Pending MEP Clearance') || (p.status === 'Pending Parallel Approval' && p.approvals && p.approvals.mep && p.approvals.mep.status === 'pending');
                 if (['pm', 'it'].includes(roleKey)) return p.status === 'Pending Parallel Approval' && p.approvals && p.approvals[roleKey] && p.approvals[roleKey].status === 'pending';
-                if (roleKey === 'hw-section-head' || roleKey === 'section-head') return (p.status === 'Pending Section Head' || p.status === 'Pending Tower Incharge' || p.status === 'Pending Re-trigger Section Head (Day 2)' || p.status === 'Pending Re-trigger Tower Incharge (Day 2)' || p.status === 'Observation Pending Section Head Review' || p.status === 'Observation Pending Tower Incharge Review');
+                if (roleKey === 'excavation-head') return ptypeOf(p) === 'excavation' && (p.status === 'Pending Section Head' || p.status === 'Pending Re-trigger Section Head (Day 2)' || p.status === 'Observation Pending Section Head Review');
+                if (roleKey === 'hw-section-head') return ptypeOf(p) !== 'excavation' && (p.status === 'Pending Section Head' || p.status === 'Pending Tower Incharge' || p.status === 'Observation Pending Section Head Review' || p.status === 'Observation Pending Tower Incharge Review');
+                if (roleKey === 'section-head') return (p.status === 'Pending Section Head' || p.status === 'Pending Tower Incharge' || p.status === 'Pending Re-trigger Section Head (Day 2)' || p.status === 'Pending Re-trigger Tower Incharge (Day 2)' || p.status === 'Observation Pending Section Head Review' || p.status === 'Observation Pending Tower Incharge Review');
                 if (roleKey === 'ehs-manager') return (p.status === 'Pending EHS Approval' && p.approvals && p.approvals.ehsManager && p.approvals.ehsManager.status === 'pending') || (p.status === 'Observation Pending EHS Clearance') || (p.status === 'Pending Re-trigger EHS (Day 1)' || p.status === 'Pending Re-trigger EHS Final (Day 2)');
                 if (roleKey === 'ehs-officer') return (p.status === 'Pending EHS Approval' && p.approvals && p.approvals.ehsOfficer && p.approvals.ehsOfficer.status === 'pending') || (p.status === 'Observation Pending EHS Clearance') || (p.status === 'Pending Re-trigger EHS (Day 1)' || p.status === 'Pending Re-trigger EHS Final (Day 2)');
                 return false;
@@ -7840,7 +7858,9 @@
                 if (roleKey === 'site-engineer') return p.extension.status === 'Pending Site Engineer' && p.extension.approvals && p.extension.approvals.siteEngineer && p.extension.approvals.siteEngineer.status === 'pending';
                 if (roleKey === 'mep') return (p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals.mep && p.extension.approvals.mep.status === 'pending');
                 if (['pm', 'it'].includes(roleKey)) return p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals[roleKey] && p.extension.approvals[roleKey].status === 'pending';
-                if (roleKey === 'hw-section-head' || roleKey === 'section-head') return (p.extension.status === 'Pending Section Head' || p.extension.status === 'Pending Tower Incharge');
+                if (roleKey === 'excavation-head') return ptypeOf(p) === 'excavation' && (p.extension.status === 'Pending Section Head');
+                if (roleKey === 'hw-section-head') return ptypeOf(p) !== 'excavation' && (p.extension.status === 'Pending Section Head' || p.extension.status === 'Pending Tower Incharge');
+                if (roleKey === 'section-head') return (p.extension.status === 'Pending Section Head' || p.extension.status === 'Pending Tower Incharge');
                 if (roleKey === 'ehs-manager') return p.extension.status === 'Pending EHS Approval' && (!p.extension.approvals || !p.extension.approvals.ehsManager || p.extension.approvals.ehsManager.status === 'pending');
                 if (roleKey === 'ehs-officer') return p.extension.status === 'Pending EHS Approval' && (!p.extension.approvals || !p.extension.approvals.ehsOfficer || p.extension.approvals.ehsOfficer.status === 'pending');
                 return false;
@@ -7922,11 +7942,11 @@
                         : '<div class="empty-state"><i class="fa-regular fa-circle-check"></i>No pending acknowledgments — all caught up.</div>') +
                     '</ul></div>' +
                     '<div class="card card-pad"><div class="card-title">Site Management Actions</div>' +
-                    '<p style="font-size:12.5px;color:var(--text-muted);margin:0 0 12px;">Under company SOP, permit form initiation is performed by Site Supervisors. As Site Engineer, your authority covers Step 2 Acknowledgment, Day 2 Re-trigger resumptions, and final site Closure &amp; Surrender.</p>' +
+                    '<p style="font-size:12.5px;color:var(--text-muted);margin:0 0 12px;">Under company SOP, permit form initiation and final closure/surrender are performed by Site Supervisors. As Site Engineer, your authority covers Step 2 Acknowledgment and Day 2 Re-trigger resumptions.</p>' +
                     '<button class="btn btn-primary btn-block" style="margin-bottom:10px;" onclick="goTo(\'register\')"><i class="fa-solid fa-table-list"></i> Open Permit Register</button>' +
                     '<button class="btn btn-block" onclick="goTo(\'notifications\')"><i class="fa-solid fa-bell"></i> Check Notifications</button>' +
                     '</div></div>';
-            } else if (['mep', 'pm', 'it', 'section-head', 'hw-section-head', 'ehs-manager', 'ehs-officer'].includes(rk)) {
+            } else if (['mep', 'pm', 'it', 'section-head', 'hw-section-head', 'excavation-head', 'ehs-manager', 'ehs-officer'].includes(rk)) {
                 const pending = pendingForRole(rk);
                 const extPending = pendingExtensionsForRole(rk);
                 const scope = roleTypeScope(rk);
@@ -7935,7 +7955,7 @@
                     if (!permitMatchesScope(p, scope)) return false;
                     const f = CHAIN_ROLE_FIELD[rk]; return p.approvals && p.approvals[f] && p.approvals[f].status === 'approved';
                 });
-                const scopeLabel = (rk === 'hw-section-head' || rk === 'section-head') ? 'Across all building & tower permits' : 'Across all permit types';
+                const scopeLabel = rk === 'excavation-head' ? 'Excavation permits' : ((rk === 'hw-section-head' || rk === 'section-head') ? 'Across building & tower permits' : 'Across all permit types');
                 html += '<div class="kpi-strip">' +
                     kpiCard('k-amber', 'fa-hourglass-half', 'Pending My Approval', pending.length, scopeLabel, "goTo('register')") +
                     kpiCard('k-purple', 'fa-stopwatch', 'Pending Extension Approval', extPending.length, 'Extension requests', "goTo('register')") +
@@ -8264,7 +8284,7 @@
             const disAttr = isUnconfigured ? ' disabled' : '';
 
             let html = unconfiguredBanner +
-                '<div class="section-banner"><i class="fa-solid fa-circle-info"></i> All fields in this section are mandatory. GPS location must be captured before you can proceed — submission is blocked if location access is unavailable.</div>' +
+                '<div class="section-banner"><i class="fa-solid fa-circle-info"></i> All fields in this section are mandatory. Worksite GPS coordinates will be captured automatically when submitting the final form.</div>' +
                 '<div class="form-grid">' +
                 '<div class="form-field"><label>Permit Number</label><input type="text" value="' + draft.id + '" readonly></div>' +
                 '<div class="form-field"><label>Kind of Activity</label><input type="text" value="' + (draft.confinedActivity || draft.activity) + '" readonly></div>' +
@@ -8296,12 +8316,7 @@
                     '<strong style="color:var(--purple, #5E35B1);"><i class="fa-solid fa-person-shelter"></i> Pre-Entry Physical Inspection Declaration (Form EHS_PTW_004) <span class="req">*</span>:</strong> I certify that the confined space structure, access/egress point, ventilation, and physical surroundings have been physically inspected on-site and verified ready for atmospheric testing and authorized entry.' +
                     '</span></label>' +
                     '<div class="form-error" id="confinedDeclError" style="' + (draft.confinedDeclaration ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Physical inspection declaration is mandatory before proceeding.</div>' +
-                    '</div>' +
-                    '<div class="form-field full" style="margin-top:8px;"><label>Work-Area Site Photo <span class="req">*</span></label>' +
-                    '<div style="max-width:340px;">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<div class="photo-preview"><img src="' + draft.sitePhoto + '"><button class="rm" onclick="draft.sitePhoto=null;renderWizStep();"><i class="fa-solid fa-xmark"></i></button></div>' :
-                        draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">confined_space_work_area_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
-                            '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 work-area site photo is mandatory before proceeding.</div>') + '</div>' +
-                    '<div class="form-error" id="confinedPhotoError" style="' + (draft.sitePhoto ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Work-area photo is required before proceeding.</div></div>';
+                    '</div>';
             } else if (isGuardrail) {
                 // Guard Rail PT-03 specific fields per EHS_PTW_003
                 const selActs = draft.guardrailActivities || [];
@@ -8330,13 +8345,7 @@
                     '</div></div>' +
                     (selActs.includes('Others')
                         ? '<div class="form-field full" id="ff-gr-act-other"><label>Please Specify Other Activity <span class="req">*</span></label><input type="text" id="inGrActOther" placeholder="Specify other guard rail / protection removal activity..." value="' + escapeHtml(draft.guardrailActivityOther || '') + '" oninput="draft.guardrailActivityOther=this.value;validateWizStep(1)"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Please specify the other activity.</div></div>'
-                        : '') +
-                    // Work-Area Site Photo
-                    '<div class="form-field full" id="ff-gr-photo" style="margin-top:8px;"><label>Work-Area Site Photo <span class="req">*</span></label>' +
-                    '<div style="max-width:340px;">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<div class="photo-preview"><img src="' + draft.sitePhoto + '"><button class="rm" onclick="draft.sitePhoto=null;renderWizStep();"><i class="fa-solid fa-xmark"></i></button></div>' :
-                        draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">guardrail_work_area_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
-                            '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 work-area site photo is mandatory before proceeding.</div>') + '</div>' +
-                    '<div class="form-error" id="grPhotoError" style="' + (draft.sitePhoto ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Work-area photo is required before proceeding.</div></div>';
+                        : '');
             } else if (isShaft) {
                 // Shaft Work specific fields per EHS_PTW_005
                 html += '<div class="form-field full" id="ff-shaft-personnel"><label>Number of Personnel Working in Shaft <span class="req">*</span></label>' +
@@ -8357,12 +8366,7 @@
                     '<strong style="color:var(--blue);"><i class="fa-solid fa-clipboard-check"></i> Pre-Proceeding Physical Inspection Declaration <span class="req">*</span>:</strong> I certify that the shaft location, floor level, access route, and working platform conditions have been physically inspected on-site and verified safe before proceeding.' +
                     '</span></label>' +
                     '<div class="form-error" id="shaftDeclError" style="' + (draft.shaftDeclaration ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Physical inspection declaration is mandatory before proceeding.</div>' +
-                    '</div>' +
-                    '<div class="form-field full" style="margin-top:8px;"><label>Work-Area Site Photo <span class="req">*</span></label>' +
-                    '<div style="max-width:340px;">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<div class="photo-preview"><img src="' + draft.sitePhoto + '"><button class="rm" onclick="draft.sitePhoto=null;renderWizStep();"><i class="fa-solid fa-xmark"></i></button></div>' :
-                        draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">shaft_work_area_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
-                            '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 work-area site photo is mandatory before proceeding.</div>') + '</div>' +
-                    '<div class="form-error" id="shaftPhotoError" style="' + (draft.sitePhoto ? 'display:none;' : 'display:flex;') + '"><i class="fa-solid fa-circle-exclamation"></i> Work-area photo is required before proceeding.</div></div>';
+                    '</div>';
             } else if (isHw) {
                 // Hot Work specific fields per EHS_PTW_002
                 html += '<div class="form-field full"><label>Description of Hot Work <span class="req">*</span></label>' +
@@ -8402,16 +8406,14 @@
                     '<div class="gps-row">' +
                     '<div class="gps-info"><i class="fa-solid fa-location-dot" style="color:' + (isWithin ? 'var(--green)' : '#C62828') + ';"></i> Lat <b>' + draft.gps.lat.toFixed(5) + '</b>, Lng <b>' + draft.gps.lng.toFixed(5) + '</b><br>' + escapeHtml(draft.gps.address || '') + '</div>' +
                     badgeHtml +
-                    '<button type="button" class="btn btn-sm" onclick="captureLocationForStep1()" style="margin-left:8px;"><i class="fa-solid fa-rotate"></i> Re-capture</button>' +
                     '</div>' +
                     (!isWithin
-                        ? '<div class="form-error" style="display:flex;margin:8px 0 6px 0;"><i class="fa-solid fa-circle-exclamation"></i> <b>Geofence Violation:</b> Captured coordinates are ' + Math.round(dist) + 'm away from the configured worksite center (allowed radius: ' + radius + 'm). Form submission is blocked until you are within the worksite boundary.</div>'
+                        ? '<div class="form-error" style="display:flex;margin:8px 0 6px 0;"><i class="fa-solid fa-circle-exclamation"></i> <b>Geofence Violation:</b> Captured coordinates are ' + Math.round(dist) + 'm away from the configured worksite center (allowed radius: ' + radius + 'm).</div>'
                         : '') +
                     '<div class="map-preview"><iframe loading="lazy" src="https://www.openstreetmap.org/export/embed.html?bbox=' + (draft.gps.lng - 0.006) + '%2C' + (draft.gps.lat - 0.006) + '%2C' + (draft.gps.lng + 0.006) + '%2C' + (draft.gps.lat + 0.006) + '&layer=mapnik&marker=' + draft.gps.lat + '%2C' + draft.gps.lng + '"></iframe></div>' +
                     '</div>';
             }
-            return '<div class="gps-box"><div class="gps-row"><div class="gps-info"><i class="fa-solid fa-triangle-exclamation" style="color:var(--amber);"></i> Worksite GPS must be captured within the configured geofence radius. Submission is blocked until valid on-site location is verified.</div>' +
-                '<button type="button" class="btn btn-sm btn-primary" onclick="captureLocationForStep1()" ' + (!draft.project || !isConfigured ? 'disabled' : '') + '><i class="fa-solid fa-location-crosshairs"></i> Capture Location</button></div></div>';
+            return '<div class="gps-box" style="background:#F8FAFC;border:1px solid #E2E8F0;"><div class="gps-row"><div class="gps-info" style="color:var(--text);"><i class="fa-solid fa-location-crosshairs" style="color:var(--orange);"></i> <b>Worksite GPS Capture:</b> Worksite GPS coordinates will be captured and verified against the geofence radius (' + ((prj && prj.radius) || 150) + 'm) when submitting the final form.</div></div></div>';
         }
         function captureLocationForStep1() {
             const prj = projectByName(draft.project);
@@ -8863,20 +8865,23 @@
                     '<div class="ci-opt na ' + (c.ans === 'na' ? 'sel' : '') + '" onclick="setChecklistAns(' + i + ',\'na\')">N/A</div>' +
                     '</div>' +
                     '<div class="ci-extra ' + (c.ans === 'no' || c.ans === 'na' ? 'show' : '') + '" id="ciExtra' + i + '">' +
-                    '<textarea placeholder="' + (c.ans === 'no' ? 'Describe the site condition and the practical solution applied (mandatory)&hellip;' : 'Describe why this item is not applicable (mandatory)&hellip;') + '" oninput="draft.checklist[' + i + '].comment=this.value;updateNextButtonState();">' + (c.comment || '') + '</textarea>' +
-                    (c.ans === 'no' ? '<div class="ci-actions">' +
-                        '<button type="button" class="btn btn-sm" onclick="captureChecklistPhoto(' + i + ')"><i class="fa-solid fa-camera"></i> ' + (c.photo ? 'Retake Photo' : 'Attach Photo (mandatory)') + '</button>' +
-                        '<button type="button" class="btn btn-sm" onclick="captureChecklistGPS(' + i + ')"><i class="fa-solid fa-location-crosshairs"></i> ' + (c.gps ? 'Re-capture GPS' : 'Capture GPS (mandatory)') + '</button>' +
-                        (c.photo ? '<span class="ci-chip ok"><i class="fa-solid fa-check"></i> Photo attached</span>' : '<span class="ci-chip missing"><i class="fa-solid fa-xmark"></i> Photo missing</span>') +
-                        (c.gps ? '<span class="ci-chip ok"><i class="fa-solid fa-check"></i> GPS captured</span>' : '<span class="ci-chip missing"><i class="fa-solid fa-xmark"></i> GPS missing</span>') +
-                        '</div>' : '') +
+                    '<textarea placeholder="' + (c.ans === 'no' ? 'Describe the site condition and the practical solution applied (mandatory)&hellip;' : 'Describe why this item is not applicable (optional)&hellip;') + '" oninput="draft.checklist[' + i + '].comment=this.value;updateNextButtonState();">' + (c.comment || '') + '</textarea>' +
                     '</div>' +
                     '</div>';
             });
+            const checklistDone = draft.checklist && draft.checklist.every((c, idx) => checklistItemComplete(c, idx, ptypeOf(draft)));
             html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-camera"></i> Work-Area Site Photo <span class="req">*</span></div>';
-            html += '<div style="max-width:340px;">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<div class="photo-preview"><img src="' + draft.sitePhoto + '"><button class="rm" onclick="draft.sitePhoto=null;renderWizStep();"><i class="fa-solid fa-xmark"></i></button></div>' :
-                draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">work_area_site_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
-                    '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 site photo is mandatory before submission.</div>') + '</div>';
+            if (checklistDone) {
+                html += '<div style="max-width:340px;">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<div class="photo-preview"><img src="' + draft.sitePhoto + '"><button class="rm" onclick="draft.sitePhoto=null;renderWizStep();"><i class="fa-solid fa-xmark"></i></button></div>' :
+                    draft.sitePhoto === 'demo' ? '<div class="file-card"><div class="fc-icon"><i class="fa-regular fa-image"></i></div><div class="fc-body"><div class="fc-name">work_area_site_photo.jpg</div><div class="fc-meta">Attached at permit creation</div></div><div class="fc-actions"><button class="btn btn-sm" onclick="captureSitePhoto()"><i class="fa-solid fa-rotate"></i> Replace</button></div></div>' :
+                        '<div class="photo-drop" onclick="captureSitePhoto()"><i class="fa-solid fa-camera"></i>Minimum 1 site photo is mandatory before submission.</div>') + '</div>';
+            } else {
+                html += '<div style="max-width:380px;"><div class="photo-drop" style="opacity:0.6;cursor:not-allowed;border-style:dashed;background:#F8FAFC;" onclick="captureSitePhoto()">' +
+                    '<i class="fa-solid fa-lock" style="color:var(--text-muted);"></i>' +
+                    '<div style="font-weight:600;color:var(--text);margin-top:4px;">Site Photo Locked</div>' +
+                    '<div class="form-hint" style="margin-top:2px;">Complete all checklist items above to activate Site Photo capture.</div>' +
+                    '</div></div>';
+            }
 
             if (!isHw && !isShaft && !isGuardrail && !isConfined) {
                 html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Drawing Indicating Proposed Excavation <span class="req">*</span></div>';
@@ -8933,6 +8938,11 @@
             openGPSModal({ siteCoord: site, radius: radius, gateEnabled: true, onConfirm: function (cap) { draft.checklist[i].gps = cap; renderWizStep(); } });
         }
         function captureSitePhoto() {
+            const checklistDone = draft.checklist && draft.checklist.every((c, idx) => checklistItemComplete(c, idx, ptypeOf(draft)));
+            if (!checklistDone) {
+                showToast('Please complete all checklist items above before capturing the Site Photo.', 'warn');
+                return;
+            }
             openPhotoModal({ onConfirm: function (cap) { draft.sitePhoto = cap.dataUrl; renderWizStep(); } });
         }
         function wireStep2() { validateWizStep(2); }
@@ -9262,12 +9272,6 @@
                     updateNextButtonState(false, 1);
                     return false;
                 }
-                const radius = (prj && prj.radius) || 150;
-                const dist = (draft.gps && prj && prj.site) ? haversine(draft.gps.lat, draft.gps.lng, prj.site.lat, prj.site.lng) : Infinity;
-                const gpsWithin = dist <= radius;
-                const gpsOk = !!(draft.gps && gpsWithin);
-                ok = ok && gpsOk;
-
                 // Universal Organization check
                 let orgOk = true;
                 if (draft.organization === 'Contractor' || draft.organization === 'Subcontractor') {
@@ -9329,11 +9333,6 @@
                     const declErr = document.getElementById('confinedDeclError');
                     if (declErr) declErr.style.display = declOk ? 'none' : 'flex';
                     ok = ok && declOk;
-
-                    const photoOk = !!draft.sitePhoto;
-                    const photoErr = document.getElementById('confinedPhotoError');
-                    if (photoErr) photoErr.style.display = photoOk ? 'none' : 'flex';
-                    ok = ok && photoOk;
                 } else if (isGuardrail) {
                     const actOk = !!(draft.guardrailActivities && draft.guardrailActivities.length > 0);
                     const actOtherOk = !draft.guardrailActivities || !draft.guardrailActivities.includes('Others') || !!(draft.guardrailActivityOther && draft.guardrailActivityOther.trim());
@@ -9341,11 +9340,6 @@
                     const actErr = document.getElementById('grActError');
                     if (actErr) actErr.style.display = actValid ? 'none' : 'flex';
                     ok = ok && actValid;
-
-                    const photoOk = !!draft.sitePhoto;
-                    const photoErr = document.getElementById('grPhotoError');
-                    if (photoErr) photoErr.style.display = photoOk ? 'none' : 'flex';
-                    ok = ok && photoOk;
                 } else if (isShaft) {
                     const numOk = !!(draft.numPersonnel && parseInt(draft.numPersonnel, 10) >= 1);
                     markField('ff-shaft-personnel', numOk);
@@ -9360,11 +9354,6 @@
                     const declErr = document.getElementById('shaftDeclError');
                     if (declErr) declErr.style.display = declOk ? 'none' : 'flex';
                     ok = ok && declOk;
-
-                    const photoOk = !!draft.sitePhoto;
-                    const photoErr = document.getElementById('shaftPhotoError');
-                    if (photoErr) photoErr.style.display = photoOk ? 'none' : 'flex';
-                    ok = ok && photoOk;
                 } else if (isHw) {
                     const hwTypeOk = !!(draft.hotworkTypes && draft.hotworkTypes.length > 0);
                     const hwErr = document.getElementById('hwTypeError'); if (hwErr) hwErr.style.display = hwTypeOk ? 'none' : 'flex';
@@ -9489,23 +9478,18 @@
         }
         function confirmFinalSubmit() {
             closeModal('actionModal');
-            const wasCorrection = correctionMode;
-            if (wasCorrection) {
-                const site = getProjectSiteCoord(draft);
-                const radius = getProjectRadius(draft);
-                openGPSModal({
-                    p: draft,
-                    siteCoord: site,
-                    radius: radius,
-                    gateEnabled: true,
-                    onConfirm: function (cap) {
-                        draft.gps = cap;
-                        executeFinalSubmit();
-                    }
-                });
-                return;
-            }
-            executeFinalSubmit();
+            const site = getProjectSiteCoord(draft);
+            const radius = getProjectRadius(draft);
+            openGPSModal({
+                p: draft,
+                siteCoord: site,
+                radius: radius,
+                gateEnabled: true,
+                onConfirm: function (cap) {
+                    draft.gps = cap;
+                    executeFinalSubmit();
+                }
+            });
         }
 
         function executeFinalSubmit() {
@@ -9897,7 +9881,7 @@
             const isGr = ptypeOf(p) === 'guardrail';
             const isExcavation = ptypeOf(p) === 'excavation';
             const isConfined = ptypeOf(p) === 'confined';
-            const shTitle = 'Tower Incharge';
+            const shTitle = pMeta(p).shLabel || (isExcavation ? 'Excavation Head' : 'Tower Incharge');
             const obsOpen = p.observation && p.observation.status !== 'Resolved';
             let html = '';
 
@@ -10294,7 +10278,7 @@
             }
 
             // ---- CLOSURE & SURRENDER ----
-            const canClose = ['site-supervisor', 'site-engineer'].includes(rk);
+            const canClose = rk === 'site-supervisor';
             if (canClose && ['Active', 'Expired'].includes(p.status)) {
                 if (obsOpen) {
                     html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);opacity:0.75;">' +
@@ -10366,7 +10350,7 @@
             if (!p) return;
             const rk = currentUser ? currentUser.key : '';
             const isExc = ptypeOf(p) === 'excavation';
-            const shTitle = 'Tower Incharge';
+            const shTitle = pMeta(p).shLabel || (isExc ? 'Excavation Head' : 'Tower Incharge');
 
             // RBAC verification
             if (rk === 'admin') {
@@ -10386,6 +10370,14 @@
                 const isShRole = (rk === targetShRole) || (!isExc && (rk === 'hw-section-head' || rk === 'section-head'));
                 if (!isShRole) {
                     showToast('Access Denied: Only ' + shTitle + ' can review observation rectification.', 'err');
+                    return;
+                }
+            }
+            if (action === 'retrigger-sh-approve' || action === 'retrigger-sh-reject' || action === 'retrigger-sh-cancel') {
+                const targetShRole = shRoleFor(p);
+                const isShRole = (rk === targetShRole) || (!isExc && (rk === 'hw-section-head' || rk === 'section-head'));
+                if (!isShRole) {
+                    showToast('Access Denied: Only ' + shTitle + ' can review Day 2 re-trigger.', 'err');
                     return;
                 }
             }
@@ -11480,8 +11472,8 @@
         /* ---------- CLOSURE MODAL ---------- */
         /* ---------- CLOSE & SURRENDER — SINGLE-STEP FLOW ---------- */
         function openSurrenderFlow(id) {
-            if (!currentUser || !['site-supervisor', 'site-engineer'].includes(currentUser.key)) {
-                showToast('Access Denied: Only Site Supervisors or Site Engineers can close and surrender permits.', 'err');
+            if (!currentUser || currentUser.key !== 'site-supervisor') {
+                showToast('Access Denied: Closure and surrender is restricted strictly to Site Supervisors.', 'err');
                 return;
             }
             const p = PERMITS.find(x => x.id === id);
@@ -12073,7 +12065,7 @@
                 { key: 'mep', label: 'MEP Engineer', stage: 'Step 3: Parallel Discipline Clearance' },
                 { key: 'pm', label: 'P&M Plant & Machinery', stage: 'Step 3: Parallel Discipline Clearance' },
                 { key: 'it', label: 'IT & Telecommunications', stage: 'Step 3: Parallel Discipline Clearance' },
-                { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 4: Tower Incharge Review' },
+                { key: 'excavation-head', altKey: 'section-head', label: 'Excavation Head', stage: 'Step 4: Excavation Head Review' },
                 { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Endorsement' }
             ];
 
@@ -12118,7 +12110,7 @@
                 if (p.observation.shReview && p.observation.shReview.reviewed) {
                     const shRev = p.observation.shReview;
                     const shImg = shRev.sig ? '<img src="' + shRev.sig + '" alt="Signature" style="max-height:36px;border:1px solid var(--border);border-radius:4px;background:#fff;padding:2px 6px;">' : '<i class="fa-solid fa-signature" style="color:var(--green);font-size:16px;"></i>';
-                    const shLabel = 'Tower Incharge';
+                    const shLabel = pMeta(p).shLabel || 'Section Head';
                     rowsHtml += '<div style="display:flex;align-items:center;justify-content:space-between;padding:10px 14px;border-bottom:1px solid var(--border);flex-wrap:wrap;gap:8px;">' +
                         '<div><div style="font-weight:700;font-size:12.5px;color:var(--navy);">' + shLabel + ' Rectification Endorsement</div><div style="font-size:11px;color:var(--text-muted);">Observation Rectification Review &amp; Clearance Recommendation</div></div>' +
                         '<div><div style="display:flex;align-items:center;gap:10px;justify-content:flex-end;">' +
@@ -12136,7 +12128,7 @@
                     extRows.push({ obj: extApp.siteEngineer, label: 'Site Engineer', stage: 'Extension Step 1: Re-Acknowledgment' });
                 }
                 if (extApp.sectionHead && extApp.sectionHead.by && extApp.sectionHead.status !== 'pending') {
-                    extRows.push({ obj: extApp.sectionHead, label: 'Tower Incharge', stage: 'Extension Step 2: Review & Approval' });
+                    extRows.push({ obj: extApp.sectionHead, label: pMeta(p).shLabel || 'Tower Incharge', stage: 'Extension Step 2: Review & Approval' });
                 }
                 const ehsAct = (extApp.ehsManager && extApp.ehsManager.by && extApp.ehsManager.status !== 'pending') ? extApp.ehsManager : ((extApp.ehsOfficer && extApp.ehsOfficer.by && extApp.ehsOfficer.status !== 'pending') ? extApp.ehsOfficer : null);
                 if (ehsAct) {
@@ -12160,7 +12152,7 @@
             if (p.retrigger && (p.retrigger.day2EngAck || p.retrigger.day2SectionHead || p.retrigger.day2EhsActual || p.retrigger.day2Signatories)) {
                 const day2List = [
                     { key: 'site-engineer-day2', label: 'Day 2 Site Engineer', stage: 'Re-trigger Day 2: Work Resumption Acknowledgment' },
-                    { key: 'section-head-day2', label: 'Day 2 Tower Incharge', stage: 'Re-trigger Day 2: Tower Incharge Review' },
+                    { key: 'section-head-day2', label: 'Day 2 ' + (pMeta(p).shLabel || 'Excavation Head'), stage: 'Re-trigger Day 2: ' + (pMeta(p).shLabel || 'Excavation Head') + ' Review' },
                     { key: 'ehs-day2', label: 'Day 2 EHS Officer / Manager', stage: 'Re-trigger Day 2: Actual EHS Revalidation' }
                 ];
                 let day2Rows = '';
