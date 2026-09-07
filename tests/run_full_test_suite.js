@@ -94,8 +94,10 @@ const mockEnv = {
 const exportsFn = new Function(
     ...Object.keys(mockEnv),
     js + `;\nreturn {
-        PERMITS, ROLES, PTYPE_META, PROJECTS, currentUser,
-        roleInfo, ptypeOf, pMeta, pLabel, shRoleFor, stakeholdersFor, checklistFor, roleTypeScope, permitMatchesScope,
+        PERMITS, ROLES, PTYPE_META, PROJECTS,
+        get currentUser() { return currentUser; },
+        set currentUser(v) { currentUser = v; },
+        roleInfo, ptypeOf, pMeta, pLabel, shRoleFor, stakeholdersFor, checklistFor, checklistItemComplete, checklistItemMissing, roleTypeScope, permitMatchesScope,
         newChain, chainStage, roleCanActOnChain, actOnChain,
         statusClass, statusBadge, pendingForRole, pendingExtensionsForRole,
         genPermitNumber, getProjectRadius, haversine,
@@ -148,20 +150,28 @@ function runSuite(suiteName, fn) {
 // SUITE 1: Roles, RBAC & Signatory Isolation
 // ------------------------------------------------------------------
 runSuite('Roles, RBAC & Signatory Isolation', () => {
-    assert(app.ROLES.length === 9, 'ROLES list contains exactly 9 active functional roles', `Found ${app.ROLES.length}`);
+    assert(app.ROLES.length === 10, 'ROLES list contains exactly 10 active functional roles', `Found ${app.ROLES.length}`);
     
     const roleKeys = app.ROLES.map(r => r.key);
     assert(!roleKeys.includes('section-head'), 'Legacy "section-head" key is not exposed in ROLES list');
     assert(roleKeys.includes('hw-section-head'), 'Tower Incharge key "hw-section-head" is present in ROLES');
+    assert(roleKeys.includes('excavation-head'), 'Excavation Head key "excavation-head" is present in ROLES');
 
     const tiRole = app.roleInfo('hw-section-head');
     assert(tiRole && tiRole.label === 'Tower Incharge', 'hw-section-head label is strictly "Tower Incharge"');
+
+    const excRole = app.roleInfo('excavation-head');
+    assert(excRole && excRole.label === 'Excavation Head', 'excavation-head label is strictly "Excavation Head"');
     
     const aliasRole = app.roleInfo('section-head');
     assert(aliasRole && aliasRole.label === 'Tower Incharge', 'Legacy roleInfo("section-head") resolves gracefully to Tower Incharge');
 
     const tiScope = app.roleTypeScope('hw-section-head');
-    assert(Array.isArray(tiScope) && tiScope.length === 5, 'Tower Incharge scope covers all 5 permit modules', JSON.stringify(tiScope));
+    assert(Array.isArray(tiScope) && tiScope.length === 4, 'Tower Incharge scope covers the remaining 4 permit modules', JSON.stringify(tiScope));
+    assert(!tiScope.includes('excavation'), 'Tower Incharge scope EXCLUDES excavation');
+
+    const excScope = app.roleTypeScope('excavation-head');
+    assert(Array.isArray(excScope) && excScope.length === 1 && excScope[0] === 'excavation', 'Excavation Head scope covers excavation only', JSON.stringify(excScope));
 
     // Strict Signatory Isolation
     const mockPermit = {
@@ -200,8 +210,13 @@ runSuite('Permit Metadata, Checklists & Location', () => {
     expectedPermits.forEach(ep => {
         const meta = app.PTYPE_META[ep.key];
         assert(meta && meta.code === ep.code, `PTYPE_META has correct code ${ep.code} for ${ep.key}`);
-        assert(meta && meta.shLabel === 'Tower Incharge', `${ep.code} shLabel is strictly "Tower Incharge"`);
-        assert(meta && meta.sh === 'hw-section-head', `${ep.code} approving authority role is "hw-section-head"`);
+        if (ep.key === 'excavation') {
+            assert(meta && meta.shLabel === 'Excavation Head', `${ep.code} shLabel is strictly "Excavation Head"`);
+            assert(meta && meta.sh === 'excavation-head', `${ep.code} approving authority role is "excavation-head"`);
+        } else {
+            assert(meta && meta.shLabel === 'Tower Incharge', `${ep.code} shLabel is strictly "Tower Incharge"`);
+            assert(meta && meta.sh === 'hw-section-head', `${ep.code} approving authority role is "hw-section-head"`);
+        }
 
         const pnum = app.genPermitNumber(ep.key);
         assert(pnum.startsWith(ep.prefix + '-'), `genPermitNumber for ${ep.key} has prefix ${ep.prefix}-`);
@@ -212,30 +227,47 @@ runSuite('Permit Metadata, Checklists & Location', () => {
 
     const grChecklist = app.checklistFor('guardrail');
     assert(grChecklist[2].includes('(Above, Below, Workplace)'), 'Guard Rail checklist item 3 checks multi-level fall protection');
+
+    // Checklist completeness rules:
+    // NO response: comment mandatory, GPS and photo not required
+    const itemNoWithComment = { q: 'Test Q', ans: 'no', comment: 'Solution applied', photo: null, gps: null };
+    assert(app.checklistItemComplete(itemNoWithComment, 0, 'hotwork') === true, 'Checklist NO with comment is complete without photo or GPS');
+    assert(app.checklistItemMissing(itemNoWithComment, 0, 'hotwork') === null, 'Checklist NO with comment has no missing requirements');
+
+    const itemNoWithoutComment = { q: 'Test Q', ans: 'no', comment: '', photo: null, gps: null };
+    assert(app.checklistItemComplete(itemNoWithoutComment, 0, 'hotwork') === false, 'Checklist NO without comment is incomplete');
+    assert(app.checklistItemMissing(itemNoWithoutComment, 0, 'hotwork') !== null, 'Checklist NO without comment reports missing comment');
+
+    // N/A response: comment is NOT required
+    const itemNaWithoutComment = { q: 'Test Q', ans: 'na', comment: null };
+    assert(app.checklistItemComplete(itemNaWithoutComment, 0, 'hotwork') === true, 'Checklist N/A is complete without comment');
+    assert(app.checklistItemMissing(itemNaWithoutComment, 0, 'hotwork') === null, 'Checklist N/A has no missing requirements');
 });
 
 // ------------------------------------------------------------------
 // SUITE 3: Approval Chain Engine & Positive Lifecycle (PT-01 to PT-05)
 // ------------------------------------------------------------------
 runSuite('Approval Chain Engine & Positive Lifecycle', () => {
-    // 1. PT-01 Excavation: parallel (MEP, PM, IT) -> Tower Incharge -> EHS
+    // 1. PT-01 Excavation: parallel (MEP, PM, IT) -> Excavation Head -> EHS
     const chExc = app.newChain('excavation');
     assert(app.chainStage(chExc) === 'parallel', 'Excavation starts at parallel gate');
     assert(app.roleCanActOnChain(chExc, 'mep'), 'MEP can act on parallel gate');
     assert(app.roleCanActOnChain(chExc, 'pm'), 'PM can act on parallel gate');
     assert(app.roleCanActOnChain(chExc, 'it'), 'IT can act on parallel gate');
-    assert(!app.roleCanActOnChain(chExc, 'hw-section-head'), 'Tower Incharge cannot act before parallel clearance');
+    assert(!app.roleCanActOnChain(chExc, 'excavation-head'), 'Excavation Head cannot act before parallel clearance');
+    assert(!app.roleCanActOnChain(chExc, 'hw-section-head'), 'Tower Incharge cannot act on Excavation');
 
     app.actOnChain(chExc, 'mep', 'approved', { signerName: 'MEP Eng' });
     assert(app.chainStage(chExc) === 'parallel', 'Parallel gate remains open after only MEP approves');
     
     app.actOnChain(chExc, 'pm', 'approved', { signerName: 'PM Eng' });
     app.actOnChain(chExc, 'it', 'approved', { signerName: 'IT Eng' });
-    assert(app.chainStage(chExc) === 'section-head', 'Parallel gate clears to Tower Incharge once MEP+PM+IT all approve');
-    assert(app.roleCanActOnChain(chExc, 'hw-section-head'), 'Tower Incharge can now act on Excavation');
+    assert(app.chainStage(chExc) === 'section-head', 'Parallel gate clears to Excavation Head once MEP+PM+IT all approve');
+    assert(app.roleCanActOnChain(chExc, 'excavation-head'), 'Excavation Head can now act on Excavation');
+    assert(!app.roleCanActOnChain(chExc, 'hw-section-head'), 'Tower Incharge CANNOT act on Excavation');
 
-    app.actOnChain(chExc, 'hw-section-head', 'approved', { signerName: 'TI Chief' });
-    assert(app.chainStage(chExc) === 'ehs', 'Tower Incharge approval routes to EHS');
+    app.actOnChain(chExc, 'excavation-head', 'approved', { signerName: 'Excavation Head Chief' });
+    assert(app.chainStage(chExc) === 'ehs', 'Excavation Head approval routes to EHS');
     assert(app.roleCanActOnChain(chExc, 'ehs-manager'), 'EHS Manager can act');
     assert(app.roleCanActOnChain(chExc, 'ehs-officer'), 'EHS Officer can act');
 
@@ -423,16 +455,27 @@ runSuite('Permit Closure & Surrender Lifecycle', () => {
         activityLog: []
     };
 
-    // 1. Confined space closure declaration check: failure if declaration missing
-    let threw = false;
-    // Calling closeAndSurrenderPermit
-    app.closeAndSurrenderPermit(pCs, {
+    // Requirement 1: Site Engineer does not have a closure option
+    app.currentUser = { key: 'site-engineer', name: 'Engineer Eric' };
+    const engCloseResult = app.closeAndSurrenderPermit(pCs, {
+        remarks: 'Trying to close as engineer',
+        sig: 'eng_sig',
+        signerName: 'Engineer Eric',
+        confinedClosure: true
+    });
+    assert(engCloseResult === false, 'Site Engineer CANNOT close and surrender permits (strictly restricted to Site Supervisor)');
+    assert(pCs.status === 'Active', 'Permit remains Active when Site Engineer attempts closure');
+
+    // Site Supervisor is the authorized role for closure and surrender
+    app.currentUser = { key: 'site-supervisor', name: 'Supervisor Sam' };
+    const supCloseResult = app.closeAndSurrenderPermit(pCs, {
         remarks: 'Work completed, tank manhole secured',
         photo: 'site_photo_data',
         sig: 'sup_sig',
-        signerName: 'Site Supervisor',
+        signerName: 'Supervisor Sam',
         confinedClosure: true
     });
+    assert(supCloseResult === true, 'Site Supervisor successfully closes and surrenders permit');
     assert(pCs.status === 'Completed (Surrendered)', 'Permit closure moves status to Completed (Surrendered)');
     assert(pCs.surrender && pCs.surrender.confinedClosure === true, 'Mandatory declaration that no worker remains inside recorded');
 });
@@ -617,11 +660,11 @@ runSuite('Excavation 2-Day Re-trigger Lifecycle', () => {
 
     // 3. Day 2 Morning: Site Engineer Re-acknowledgment
     app.actRetriggerDay2EngAck(pExc, { comment: 'Morning site inspection completed, trench stable', signerName: 'Site Eng' });
-    assert(pExc.status === 'Pending Re-trigger Section Head (Day 2)', 'Engineer acknowledgment routes to Tower Incharge');
+    assert(pExc.status === 'Pending Re-trigger Section Head (Day 2)', 'Engineer acknowledgment routes to Excavation Head');
 
-    // 4. Day 2 Tower Incharge Approval
-    app.actRetriggerDay2SectionHead(pExc, 'approved', { comment: 'Tower activities clear', signerName: 'Tower Incharge' });
-    assert(pExc.status === 'Pending Re-trigger EHS Final (Day 2)', 'Tower Incharge approval routes to EHS Day 2 Final');
+    // 4. Day 2 Excavation Head Approval
+    app.actRetriggerDay2SectionHead(pExc, 'approved', { comment: 'Excavation activities clear', signerName: 'Excavation Head' });
+    assert(pExc.status === 'Pending Re-trigger EHS Final (Day 2)', 'Excavation Head approval routes to EHS Day 2 Final');
 
     // 5. Day 2 EHS Final Actual Approval (Revalidation)
     app.actRetriggerDay2EhsActual(pExc, 'approved', { comment: 'Day 2 revalidation granted', signerName: 'EHS Manager' });
@@ -633,12 +676,12 @@ runSuite('Excavation 2-Day Re-trigger Lifecycle', () => {
         id: 'EXC-RETRIG-REJ',
         ptype: 'excavation',
         status: 'Pending Re-trigger Section Head (Day 2)',
-        retrigger: { status: 'Pending Day 2 Tower Incharge' },
+        retrigger: { status: 'Pending Day 2 Excavation Head' },
         activityLog: []
     };
-    app.actRetriggerDay2SectionHead(pExcRej, 'rejected', { comment: 'Trench shoring loose', signerName: 'Tower Incharge' });
+    app.actRetriggerDay2SectionHead(pExcRej, 'rejected', { comment: 'Trench shoring loose', signerName: 'Excavation Head' });
     assert(pExcRej.status === 'Returned for Correction', 'Day 2 rejection sets status to Returned for Correction');
-    assert(pExcRej.retrigger.rejectionOrigin.roleLabel === 'Tower Incharge', 'Rejection origin roleLabel is strictly Tower Incharge');
+    assert(pExcRej.retrigger.rejectionOrigin.roleLabel === 'Excavation Head', 'Rejection origin roleLabel is strictly Excavation Head');
 
     // 7. Day 2 Terminal Cancellation
     const pExcCancel = {
@@ -648,7 +691,7 @@ runSuite('Excavation 2-Day Re-trigger Lifecycle', () => {
         retrigger: {},
         activityLog: []
     };
-    app.actRetriggerDay2SectionHead(pExcCancel, 'cancelled', { comment: 'Slope collapse hazard, work terminated', signerName: 'Tower Incharge' });
+    app.actRetriggerDay2SectionHead(pExcCancel, 'cancelled', { comment: 'Slope collapse hazard, work terminated', signerName: 'Excavation Head' });
     assert(pExcCancel.status === 'Cancelled', 'Day 2 cancellation sets status to Cancelled');
     assert(pExcCancel.isCancelled === true, 'Permit marked with isCancelled flag');
 });
@@ -663,25 +706,33 @@ runSuite('Strict Role Boundaries & Delegation Rules', () => {
     assert(!app.roleCanActOnChain(ch, 'site-supervisor'), 'Supervisor cannot act on parallel gate');
     assert(!app.roleCanActOnChain(ch, 'site-engineer'), 'Site Engineer cannot act on parallel gate');
     assert(!app.roleCanActOnChain(ch, 'hw-section-head'), 'Tower Incharge cannot act on parallel gate before clearances');
+    assert(!app.roleCanActOnChain(ch, 'excavation-head'), 'Excavation Head cannot act on parallel gate before clearances');
     assert(!app.roleCanActOnChain(ch, 'ehs-manager'), 'EHS Manager cannot act on parallel gate before clearances');
 
-    // Tower Incharge step enforcement
+    // Excavation Head step enforcement (Excavation section)
     app.actOnChain(ch, 'mep', 'approved');
     app.actOnChain(ch, 'pm', 'approved');
     app.actOnChain(ch, 'it', 'approved');
 
-    assert(app.roleCanActOnChain(ch, 'hw-section-head'), 'Tower Incharge can act at section-head step');
+    assert(app.roleCanActOnChain(ch, 'excavation-head'), 'Excavation Head can act at section-head step for Excavation');
+    assert(!app.roleCanActOnChain(ch, 'hw-section-head'), 'Tower Incharge CANNOT act on Excavation section-head step');
     assert(app.roleCanActOnChain(ch, 'section-head'), 'Legacy section-head alias can act at section-head step');
     assert(!app.roleCanActOnChain(ch, 'mep'), 'MEP cannot act again once stage cleared');
-    assert(!app.roleCanActOnChain(ch, 'ehs-manager'), 'EHS cannot jump the queue before Tower Incharge');
-    assert(!app.roleCanActOnChain(ch, 'site-supervisor'), 'Supervisor cannot approve Tower Incharge step');
+    assert(!app.roleCanActOnChain(ch, 'ehs-manager'), 'EHS cannot jump the queue before Excavation Head');
+    assert(!app.roleCanActOnChain(ch, 'site-supervisor'), 'Supervisor cannot approve Excavation Head step');
 
     // EHS step enforcement
-    app.actOnChain(ch, 'hw-section-head', 'approved');
+    app.actOnChain(ch, 'excavation-head', 'approved');
     assert(app.roleCanActOnChain(ch, 'ehs-manager'), 'EHS Manager can act at EHS step');
     assert(app.roleCanActOnChain(ch, 'ehs-officer'), 'EHS Officer can act at EHS step');
     assert(!app.roleCanActOnChain(ch, 'hw-section-head'), 'Tower Incharge cannot act at EHS step');
+    assert(!app.roleCanActOnChain(ch, 'excavation-head'), 'Excavation Head cannot act at EHS step');
     assert(!app.roleCanActOnChain(ch, 'site-engineer'), 'Site Engineer cannot act at EHS step');
+
+    // Tower Incharge step enforcement for remaining four sections
+    const chHw = app.newChain('hotwork');
+    assert(app.roleCanActOnChain(chHw, 'hw-section-head'), 'Tower Incharge can act at section-head step for Hot Work');
+    assert(!app.roleCanActOnChain(chHw, 'excavation-head'), 'Excavation Head CANNOT act on Hot Work section-head step');
 });
 
 // ------------------------------------------------------------------

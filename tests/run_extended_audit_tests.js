@@ -581,14 +581,21 @@ runSuite('My Permits Filters, Search & Scoping', () => {
     assert(!tbodyEl.innerHTML.includes('FILTER-HW-002'), 'Type filter excludes Hot Work');
 
     // 7. Role-Based Scoping
-    // Tower Incharge scoping
+    // Tower Incharge scoping: covers the remaining four sections (Hot Work, Shaft, Guard Rail, Confined Space)
     setRole('hw-section-head');
     searchEl.value = 'FILTER-';
     typeEl.value = '';
     app.buildRegisterTable();
-    assert(tbodyEl.innerHTML.includes('FILTER-EXC-001'), 'Tower Incharge can view Excavation in their domain');
+    assert(!tbodyEl.innerHTML.includes('FILTER-EXC-001'), 'Tower Incharge domain EXCLUDES Excavation (Excavation Head domain)');
     assert(tbodyEl.innerHTML.includes('FILTER-HW-002'), 'Tower Incharge can view Hot Work in their domain');
     assert(tbodyEl.innerHTML.includes('FILTER-CS-003'), 'Tower Incharge can view Confined Space in their domain');
+
+    // Excavation Head scoping: covers Excavation section only
+    setRole('excavation-head');
+    app.buildRegisterTable();
+    assert(tbodyEl.innerHTML.includes('FILTER-EXC-001'), 'Excavation Head can view Excavation in their domain');
+    assert(!tbodyEl.innerHTML.includes('FILTER-HW-002'), 'Excavation Head domain EXCLUDES Hot Work');
+    assert(!tbodyEl.innerHTML.includes('FILTER-CS-003'), 'Excavation Head domain EXCLUDES Confined Space');
 
     // 8. Sorting: newest created first
     searchEl.value = 'FILTER-';
