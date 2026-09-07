@@ -97,7 +97,7 @@ The **ARPL EHS Permit-to-Work (PTW) Management System** digitises the entire hig
 | Metric | Value |
 |:---|:---|
 | Permit Types (Active) | 5 (PT-01 through PT-05 fully implemented & testable) |
-| RBAC Roles | 9 distinct roles |
+| RBAC Roles | 10 distinct roles (including separate Excavation Head) |
 | Approval Steps (Excavation) | 5-step with parallel gate |
 | Automated Test Assertions | 239 (100% pass rate) |
 | Total Codebase | Single `index.html` (~12,400 lines) |
@@ -218,12 +218,12 @@ The system intentionally uses a **zero-build, zero-framework** architecture:
 
 ### 4.1 Role Registry
 
-The system implements **9 functional roles** aligned to construction site hierarchy. Per **DPDP Act 2023** compliance, roles are functional authorizations — personal names are entered dynamically only at the moment of digital signature.
+The system implements **10 functional roles** aligned to construction site hierarchy. Per **DPDP Act 2023** compliance, roles are functional authorizations — personal names are entered dynamically only at the moment of digital signature.
 
 ```mermaid
 graph TB
-    subgraph "Step 1 - Initiation"
-        SS["Site Supervisor<br/>Permittee / Form Filling"]
+    subgraph "Step 1 - Initiation & Statutory Surrender"
+        SS["Site Supervisor<br/>Permittee / Form Filling / Exclusive Closure"]
     end
     subgraph "Step 2 - Acknowledgment"
         SiteEng["Site Engineer<br/>On-Site Acknowledger and Forwarder"]
@@ -233,8 +233,9 @@ graph TB
         PM["P and M Engineer<br/>Plant and Machinery Readiness"]
         IT["IT Engineer<br/>Data/Fibre Line Protection"]
     end
-    subgraph "Step 4 - Approving Authority"
-        TI["Tower Incharge<br/>Holistic Safety Review"]
+    subgraph "Step 4 - Approving Authority / Section Head"
+        EH["Excavation Head<br/>PT-01 Excavation Safety Review"]
+        TI["Tower Incharge<br/>PT-02 to PT-05 Safety Review"]
     end
     subgraph "Step 5 - Final Endorsement"
         EM["EHS Manager<br/>Final Safety Endorsement"]
@@ -245,33 +246,38 @@ graph TB
     end
 
     SS --> SiteEng
-    SiteEng --> MEP
-    SiteEng --> PM
-    SiteEng --> IT
-    MEP --> TI
-    PM --> TI
-    IT --> TI
+    SiteEng -->|PT-01 Excavation| MEP
+    SiteEng -->|PT-01 Excavation| PM
+    SiteEng -->|PT-01 Excavation| IT
+    SiteEng -->|PT-05 Shaft Work| MEP
+    SiteEng -->|PT-02, 03, 04| TI
+    MEP -->|PT-01| EH
+    PM -->|PT-01| EH
+    IT -->|PT-01| EH
+    MEP -->|PT-05| TI
+    EH --> EM
+    EH --> EO
     TI --> EM
     TI --> EO
 ```
 
 ### 4.2 Role Permission Matrix
 
-| Capability | Site Supervisor | Site Engineer | MEP | P&M | IT | Tower Incharge | EHS Manager | EHS Officer | Admin |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Create Permit | ✅ | — | — | — | — | — | — | — | — |
-| Acknowledge & Forward | — | ✅ | — | — | — | — | — | — | — |
-| Parallel Approval | — | — | ✅ | ✅ | ✅ | — | — | — | — |
-| Section Head Approval | — | — | — | — | — | ✅ | — | — | — |
-| EHS Final Endorsement | — | — | — | — | — | — | ✅ | ✅ | — |
-| Raise Observation | — | — | — | — | — | — | ✅ | ✅ | — |
-| Respond to Observation | ✅ | — | — | — | — | — | — | — | — |
-| Request Extension | ✅ | — | — | — | — | — | — | — | — |
-| Close & Surrender | — | ✅ | — | — | — | — | — | — | — |
-| Download PDF | — | — | — | — | — | — | ✅ | ✅ | — |
-| Configure Geofence | — | — | — | — | — | — | — | — | ✅ |
-| View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| View Notifications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Capability | Site Supervisor | Site Engineer | MEP | P&M | IT | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Create Permit | ✅ | — | — | — | — | — | — | — | — | — |
+| Acknowledge & Forward | — | ✅ | — | — | — | — | — | — | — | — |
+| Parallel Approval | — | — | ✅ | ✅ | ✅ | — | — | — | — | — |
+| Section Head Approval | — | — | — | — | — | ✅ *(PT-01)* | ✅ *(PT-02–05)* | — | — | — |
+| EHS Final Endorsement | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Raise Observation | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Respond to Observation | ✅ | — | — | — | — | — | — | — | — | — |
+| Request Extension | ✅ | — | — | — | — | — | — | — | — | — |
+| Close & Surrender | ✅ | — | — | — | — | — | — | — | — | — |
+| Download PDF | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Configure Geofence | — | — | — | — | — | — | — | — | — | ✅ |
+| View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| View Notifications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### 4.3 EHS Endorsement: First-Wins Gate
 
@@ -303,7 +309,7 @@ graph LR
     subgraph "PT-01 Excavation - 5 Stages (Parallel Spine)"
         E1["Supervisor<br/>(Permittee)"] --> E2["Site Engineer<br/>(Acknowledgment)"]
         E2 --> E3["MEP · P&M · IT<br/>(Parallel Clearance Gate)"]
-        E3 --> E4["Tower Incharge<br/>(Review & Approval)"]
+        E3 --> E4["Excavation Head<br/>(Review & Approval)"]
         E4 --> E5["EHS Safety<br/>(Manager / Officer)"]
     end
 ```
@@ -342,49 +348,56 @@ $$\text{Gas Safety Condition} = \big(0 \le \text{LEL} < 10\%\big) \land \big(0 \
 
 ### 5.4 Statutory Safety Checklist: PT-01 Excavation Work (12 Items)
 
+> [!IMPORTANT]
+> **Checklist Verification & Evidence Rules (Across All Permit Types)**:
+> 1. **"NO" Response Rule**: For any checklist question answered **"NO"**, an explanation comment is **mandatory**; device GPS tagging and evidence photos are **NOT required** for individual checklist items.
+> 2. **"N/A" Response Rule**: For any checklist question answered **"N/A"**, a comment is **NOT required**.
+> 3. **Site Photo Gate**: The **Site Photo capture option** is locked and becomes activated **only after all checklist items have been completely filled in**.
+> 4. **GPS Capture Point**: Geofencing device GPS coordinates are **not captured in initial steps**; GPS is captured exclusively when the **final permit form is submitted** (Step 4).
+
 Form ID: `EHS_PTW_001` · Evaluated via `CHECKLIST_ITEMS`:
 
-| # | Exact Statutory Inspection Item | Category | Required Response | Photo Gate | Construction Engineering Rationale |
+| # | Exact Statutory Inspection Item | Category | Required Response | Deviation Requirement | Construction Engineering Rationale |
 |:---:|:---|:---|:---:|:---:|:---|
-| **1** | Is Risk Assessment carried out based on work methodology, and hazard and control measures briefed to workers? | Risk Governance | **YES** / NA | If NO | Ensures Hazard Identification & Risk Assessment (HIRA) and toolbox safety briefing were conducted prior to breaking ground. |
-| **2** | Is necessary PPE and insulated hand tools provided for workers, in case of manual excavation? | PPE & Tool Safety | **YES** / NA | If NO | Mandates dielectric rubber boots, heavy-duty gloves, and insulated picks/spades to eliminate electric shock hazards from buried cables. |
-| **3** | Are arrangements of barricading materials for the excavation area, fixing signages & lights, ready? | Perimeter Protection | **YES** / NA | If NO | Enforces rigid Class-A physical fencing, retroreflective danger warning signboards, and solar hazard blinkers around pit perimeter. |
-| **4** | Are machinery used for excavation inspected and fit for use? | Equipment Safety | **YES** / NA | If NO | Verifies third-party fitness certification, hydraulic leak check, reverse horns, and rollover protective structures (ROPS) on excavators. |
-| **5** | Are arrangements for safe access to the excavation area (ladder / stair tower / ramp etc.) made ready? | Ingress & Egress | **YES** / NA | If NO | Mandates anchored ladders extending at least 1.0m above landing or stable ramps spaced within 7.5m lateral travel distance. |
-| **6** | Are materials stacked away from the excavation pit? | Surcharge Loading | **YES** / NA | If NO | Prevents trench lip surcharge collapse; spoils, rocks, and equipment must maintain a minimum 1.5m buffer from the edge. |
-| **7** | Are any overhead services identified, and precautionary measures taken? | Overhead Hazards | **YES** / NA | If NO | Prevents boom or mast strikes against live overhead high-tension electrical cables or overhead crane gantry lines. |
-| **8** | Is a separate pedestrian pathway and vehicle movement at ramp provided? | Traffic Management | **YES** / NA | If NO | Eliminates struck-by collisions on site ramps by segregating pedestrian walkways with physical barriers from dumpers/JCBs. |
-| **9** | Are vehicle movements near the excavation area diverted? | Vibration & Collision | **YES** / NA | If NO | Re-routes heavy haulage traffic to prevent dynamic shock vibration from destabilizing unreinforced excavation side slopes. |
-| **10** | Is the excavator operator experienced and trained? | Competency | **YES** / NA | If NO | Validates valid commercial heavy machinery operator's driving license, visual acuity certificate, and on-site competency assessment. |
-| **11** | Are materials available for shoring to prevent side collapse / is slope maintained at site? | Slope Stability | **YES** / NA | If NO | Verifies soil benching angle (e.g. 1:1.5) or presence of hydraulic shores, trench boxes, or sheet piles according to geotechnical soil class. |
-| **12** | Is the excavator swing area demarcated and barricaded? | Crush Hazard | **YES** / NA | If NO | Demarcates the 360° rotational blind spot counterweight radius to prevent pinned-against and pinch-point crushing injuries. |
+| **1** | Is Risk Assessment carried out based on work methodology, and hazard and control measures briefed to workers? | Risk Governance | **YES** / NA | Comment if NO | Ensures Hazard Identification & Risk Assessment (HIRA) and toolbox safety briefing were conducted prior to breaking ground. |
+| **2** | Is necessary PPE and insulated hand tools provided for workers, in case of manual excavation? | PPE & Tool Safety | **YES** / NA | Comment if NO | Mandates dielectric rubber boots, heavy-duty gloves, and insulated picks/spades to eliminate electric shock hazards from buried cables. |
+| **3** | Are arrangements of barricading materials for the excavation area, fixing signages & lights, ready? | Perimeter Protection | **YES** / NA | Comment if NO | Enforces rigid Class-A physical fencing, retroreflective danger warning signboards, and solar hazard blinkers around pit perimeter. |
+| **4** | Are machinery used for excavation inspected and fit for use? | Equipment Safety | **YES** / NA | Comment if NO | Verifies third-party fitness certification, hydraulic leak check, reverse horns, and rollover protective structures (ROPS) on excavators. |
+| **5** | Are arrangements for safe access to the excavation area (ladder / stair tower / ramp etc.) made ready? | Ingress & Egress | **YES** / NA | Comment if NO | Mandates anchored ladders extending at least 1.0m above landing or stable ramps spaced within 7.5m lateral travel distance. |
+| **6** | Are materials stacked away from the excavation pit? | Surcharge Loading | **YES** / NA | Comment if NO | Prevents trench lip surcharge collapse; spoils, rocks, and equipment must maintain a minimum 1.5m buffer from the edge. |
+| **7** | Are any overhead services identified, and precautionary measures taken? | Overhead Hazards | **YES** / NA | Comment if NO | Prevents boom or mast strikes against live overhead high-tension electrical cables or overhead crane gantry lines. |
+| **8** | Is a separate pedestrian pathway and vehicle movement at ramp provided? | Traffic Management | **YES** / NA | Comment if NO | Eliminates struck-by collisions on site ramps by segregating pedestrian walkways with physical barriers from dumpers/JCBs. |
+| **9** | Are vehicle movements near the excavation area diverted? | Vibration & Collision | **YES** / NA | Comment if NO | Re-routes heavy haulage traffic to prevent dynamic shock vibration from destabilizing unreinforced excavation side slopes. |
+| **10** | Is the excavator operator experienced and trained? | Competency | **YES** / NA | Comment if NO | Validates valid commercial heavy machinery operator's driving license, visual acuity certificate, and on-site competency assessment. |
+| **11** | Are materials available for shoring to prevent side collapse / is slope maintained at site? | Slope Stability | **YES** / NA | Comment if NO | Verifies soil benching angle (e.g. 1:1.5) or presence of hydraulic shores, trench boxes, or sheet piles according to geotechnical soil class. |
+| **12** | Is the excavator swing area demarcated and barricaded? | Crush Hazard | **YES** / NA | Comment if NO | Demarcates the 360° rotational blind spot counterweight radius to prevent pinned-against and pinch-point crushing injuries. |
 
 ### 5.5 Statutory Safety Checklist: PT-02 Hot Work (20 Items)
 
 Form ID: `EHS_PTW_002` · Evaluated via `HOTWORK_CHECKLIST_ITEMS`:
 
-| # | Exact Statutory Inspection Item | Category | Required Response | Photo Gate | Fire Prevention & Workmanship Rule |
+| # | Exact Statutory Inspection Item | Category | Required Response | Deviation Requirement | Fire Prevention & Workmanship Rule |
 |:---:|:---|:---|:---:|:---:|:---|
-| **1** | Are the engaged workers, fully qualified and trained and aware of Risk involved (HIRA)? | Competency | **YES** / NA | If NO | Validates welder trade certification, welder ID card, and hot work safety briefing. |
-| **2** | Is Electrode holder insulated and in good condition? | Electrical Safety | **YES** / NA | If NO | Eliminates stray arc flashes and direct electrocution from cracked or exposed copper holders. |
-| **3** | Are work areas cleared of flammable / Combustible materials? | Fire Prevention | **YES** / NA | If NO | Mandates clearing all combustibles within an 11-metre (35-foot) radius around the spark hot zone. |
-| **4** | Are Grinder / Chiseling machines free from defects, equipped with Deadman / Push Button switch & safety guard? | Tool Guarding | **YES** / NA | If NO | Enforces mandatory factory wheel guards and automatic cut-off deadman triggers to prevent runaway discs. |
-| **5** | Are sufficient and suitable Fire Extinguishers Available? | Fire Response | **YES** / NA | If NO | Requires dedicated, inspected ABC dry chemical powder or $CO_2$ extinguishers adjacent to work point. |
-| **6** | Are abrasive wheels being with required standard and compliance? | Wheel Integrity | **YES** / NA | If NO | Verifies ISI / EN 12413 certification markings, expiry dates, and absence of chipping or cracks. |
-| **7** | Has fire retardant cloth / metal sheet been placed to prevent sparks from causing fire? | Spark Containment | **YES** / NA | If NO | Mandates certified vermiculite/fiberglass fire blankets to catch dripping molten slag and bouncing sparks. |
-| **8** | Is Machine spindle speed less than the maximum speed of the wheel / Disc? | Mechanical Limits | **YES** / NA | If NO | Ensures grinder RPM does not exceed rated disc burst speed, preventing lethal disc shattering. |
-| **9** | Are Flash back arresters installed at both regulator & torch end? | Oxy-Fuel Safety | **YES** / NA | If NO | Dual-end sintered flame arresters prevent explosive flashback propagation into fuel gas cylinders. |
-| **10** | Is abrasive wheel flange (front or back) of right size and fitting? | Mechanical Mounting | **YES** / NA | If NO | Proper matching recessed flanges prevent uneven torsional stress and catastrophic wheel fracture. |
-| **11** | Are Gas cylinder and fittings, free from oil, grease, leakage and legibly marked and kept on trolley? | Gas Cylinder Safety | **YES** / NA | If NO | Hydrocarbons in contact with high-pressure oxygen cause spontaneous detonation; trolley ensures transit stability. |
-| **12** | Is working platform made for the use of grinders, not on ladders? | Working Platform | **YES** / NA | If NO | Forbids aggressive two-handed grinding operations from portable ladders due to reactive kickback torque. |
-| **13** | Is Electrical Supply given through RCCB & Return provided from Job to the welding machine insulated? | Electrical Grounding | **YES** / NA | If NO | 30mA residual current circuit breakers prevent electrocution; insulated return prevents stray current fire. |
-| **14** | Is Fire extinguisher placed near the activities? | Immediate Readiness | **YES** / NA | If NO | Secondary extinguisher stationed within arm's reach of the immediate hot work point. |
-| **15** | Are both cylinders kept upright vertically on trolley? | Cylinder Storage | **YES** / NA | If NO | Prevents liquid acetone withdrawal in dissolved acetylene cylinders; chain restraint prevents toppling. |
-| **16** | Is required & appropriate PPE provided? | Personal Protection | **YES** / NA | If NO | Leather apron, split-leather gauntlet welding gloves, auto-darkening shade-11 face shield, and spats. |
-| **17** | Is welding machine / equipment tested and free from defects (cables, holder)? | Equipment Health | **YES** / NA | If NO | No cable joints within 3m of electrode holder; pristine double insulation throughout cable runs. |
-| **18** | Is supervisor available all time & Fire Watcher available? | Active Surveillance | **YES** / NA | If NO | **1-Hour Fire Watch Rule:** Dedicated fire watcher posted during work and for 60 minutes post-shutdown. |
-| **19** | Are rated lugs used for connecting welding cables? | Electrical Terminals | **YES** / NA | If NO | Heavy-duty crimped cable lugs eliminate loose frayed wire heating, sparking, and terminal burnout. |
-| **20** | Any other precautions? | Site Specifics | **YES** / NA | If NO | Captures custom site hazards, adjacent flammable piping, or weather restrictions (e.g. rain/wind). |
+| **1** | Are the engaged workers, fully qualified and trained and aware of Risk involved (HIRA)? | Competency | **YES** / NA | Comment if NO | Validates welder trade certification, welder ID card, and hot work safety briefing. |
+| **2** | Is Electrode holder insulated and in good condition? | Electrical Safety | **YES** / NA | Comment if NO | Eliminates stray arc flashes and direct electrocution from cracked or exposed copper holders. |
+| **3** | Are work areas cleared of flammable / Combustible materials? | Fire Prevention | **YES** / NA | Comment if NO | Mandates clearing all combustibles within an 11-metre (35-foot) radius around the spark hot zone. |
+| **4** | Are Grinder / Chiseling machines free from defects, equipped with Deadman / Push Button switch & safety guard? | Tool Guarding | **YES** / NA | Comment if NO | Enforces mandatory factory wheel guards and automatic cut-off deadman triggers to prevent runaway discs. |
+| **5** | Are sufficient and suitable Fire Extinguishers Available? | Fire Response | **YES** / NA | Comment if NO | Requires dedicated, inspected ABC dry chemical powder or $CO_2$ extinguishers adjacent to work point. |
+| **6** | Are abrasive wheels being with required standard and compliance? | Wheel Integrity | **YES** / NA | Comment if NO | Verifies ISI / EN 12413 certification markings, expiry dates, and absence of chipping or cracks. |
+| **7** | Has fire retardant cloth / metal sheet been placed to prevent sparks from causing fire? | Spark Containment | **YES** / NA | Comment if NO | Mandates certified vermiculite/fiberglass fire blankets to catch dripping molten slag and bouncing sparks. |
+| **8** | Is Machine spindle speed less than the maximum speed of the wheel / Disc? | Mechanical Limits | **YES** / NA | Comment if NO | Ensures grinder RPM does not exceed rated disc burst speed, preventing lethal disc shattering. |
+| **9** | Are Flash back arresters installed at both regulator & torch end? | Oxy-Fuel Safety | **YES** / NA | Comment if NO | Dual-end sintered flame arresters prevent explosive flashback propagation into fuel gas cylinders. |
+| **10** | Is abrasive wheel flange (front or back) of right size and fitting? | Mechanical Mounting | **YES** / NA | Comment if NO | Proper matching recessed flanges prevent uneven torsional stress and catastrophic wheel fracture. |
+| **11** | Are Gas cylinder and fittings, free from oil, grease, leakage and legibly marked and kept on trolley? | Gas Cylinder Safety | **YES** / NA | Comment if NO | Hydrocarbons in contact with high-pressure oxygen cause spontaneous detonation; trolley ensures transit stability. |
+| **12** | Is working platform made for the use of grinders, not on ladders? | Working Platform | **YES** / NA | Comment if NO | Forbids aggressive two-handed grinding operations from portable ladders due to reactive kickback torque. |
+| **13** | Is Electrical Supply given through RCCB & Return provided from Job to the welding machine insulated? | Electrical Grounding | **YES** / NA | Comment if NO | 30mA residual current circuit breakers prevent electrocution; insulated return prevents stray current fire. |
+| **14** | Is Fire extinguisher placed near the activities? | Immediate Readiness | **YES** / NA | Comment if NO | Secondary extinguisher stationed within arm's reach of the immediate hot work point. |
+| **15** | Are both cylinders kept upright vertically on trolley? | Cylinder Storage | **YES** / NA | Comment if NO | Prevents liquid acetone withdrawal in dissolved acetylene cylinders; chain restraint prevents toppling. |
+| **16** | Is required & appropriate PPE provided? | Personal Protection | **YES** / NA | Comment if NO | Leather apron, split-leather gauntlet welding gloves, auto-darkening shade-11 face shield, and spats. |
+| **17** | Is welding machine / equipment tested and free from defects (cables, holder)? | Equipment Health | **YES** / NA | Comment if NO | No cable joints within 3m of electrode holder; pristine double insulation throughout cable runs. |
+| **18** | Is supervisor available all time & Fire Watcher available? | Active Surveillance | **YES** / NA | Comment if NO | **1-Hour Fire Watch Rule:** Dedicated fire watcher posted during work and for 60 minutes post-shutdown. |
+| **19** | Are rated lugs used for connecting welding cables? | Electrical Terminals | **YES** / NA | Comment if NO | Heavy-duty crimped cable lugs eliminate loose frayed wire heating, sparking, and terminal burnout. |
+| **20** | Any other precautions? | Site Specifics | **YES** / NA | Comment if NO | Captures custom site hazards, adjacent flammable piping, or weather restrictions (e.g. rain/wind). |
 
 #### Hot Work Description Registry (`HOTWORK_DESCRIPTIONS`)
 1. `Welding`: Shielded Metal Arc Welding (SMAW), Gas Metal Arc Welding (GMAW/MIG), Gas Tungsten Arc Welding (GTAW/TIG).
@@ -396,17 +409,17 @@ Form ID: `EHS_PTW_002` · Evaluated via `HOTWORK_CHECKLIST_ITEMS`:
 
 Form ID: `EHS_PTW_003` · Evaluated via `GUARDRAIL_CHECKLIST_ITEMS`:
 
-| # | Exact Statutory Inspection Item | Category | Required Response | Photo Gate | Fall Prevention & Statutory Protection Rule |
+| # | Exact Statutory Inspection Item | Category | Required Response | Deviation Requirement | Fall Prevention & Statutory Protection Rule |
 |:---:|:---|:---|:---:|:---:|:---|
-| **1** | Are workers aware of risk involved and precautions required (HIRA, SWM available)? | Risk Briefing | **YES** / NA | If NO | Verifies Safe Work Method statement was briefed to crew before unbolting edge protections. |
-| **2** | Are Fall protection gears in place (Lifeline, Eye / Ring bolt, Full body Harness, catch net etc)? | Fall Protection | **YES** / NA | If NO | **100% Tie-Off Rule:** Twin-lanyard full body harnesses clipped to overhead certified lifelines. |
-| **3** | Are Openings properly covered? (Above, Below, Workplace) | Multi-Level Safety | **YES** / NA | If NO | Verifies floor cutouts on adjacent elevations are protected to prevent falling worker or tool impact. |
-| **4** | Are Workers provided with required Personal Protective Equipment for the activity? | PPE | **YES** / NA | If NO | Chin-strap safety helmets, anti-slip footwear, safety eyewear, and cut-resistant gloves. |
-| **5** | Whether sufficient lighting available? | Illumination | **YES** / NA | If NO | Minimum 150 Lux illumination at edge zone to prevent disorientation and missteps. |
-| **6** | Is Access to work location clear and safe? | Housekeeping | **YES** / NA | If NO | Clean, trip-free passage free of cables, debris, and reinforcing steel protrusions. |
-| **7** | Are all Power Tools and Hand tools checked, hand strings provided and in good condition? | Tool Lanyard | **YES** / NA | If NO | Tool tethers / wrist lanyards mandatory to prevent dropped objects falling from heights. |
-| **8** | Are Barricades and caution sign provided on removal of guard rail / Shaft gate / Floor opening? | Warning Signage | **YES** / NA | If NO | High-visibility warning barriers placed 2.0m back from opening with prominent danger notices. |
-| **9** | Is Minimum one watcher provided in the area till guard rail / gates re-fixed? | Dedicated Watcher | **YES** / NA | If NO | **Continuous Watcher Rule:** Assigned safety spotter stationed permanently until physical restoration. |
+| **1** | Are workers aware of risk involved and precautions required (HIRA, SWM available)? | Risk Briefing | **YES** / NA | Comment if NO | Verifies Safe Work Method statement was briefed to crew before unbolting edge protections. |
+| **2** | Are Fall protection gears in place (Lifeline, Eye / Ring bolt, Full body Harness, catch net etc)? | Fall Protection | **YES** / NA | Comment if NO | **100% Tie-Off Rule:** Twin-lanyard full body harnesses clipped to overhead certified lifelines. |
+| **3** | Are Openings properly covered? (Above, Below, Workplace) | Multi-Level Safety | **YES** / NA | Comment if NO | Verifies floor cutouts on adjacent elevations are protected to prevent falling worker or tool impact. |
+| **4** | Are Workers provided with required Personal Protective Equipment for the activity? | PPE | **YES** / NA | Comment if NO | Chin-strap safety helmets, anti-slip footwear, safety eyewear, and cut-resistant gloves. |
+| **5** | Whether sufficient lighting available? | Illumination | **YES** / NA | Comment if NO | Minimum 150 Lux illumination at edge zone to prevent disorientation and missteps. |
+| **6** | Is Access to work location clear and safe? | Housekeeping | **YES** / NA | Comment if NO | Clean, trip-free passage free of cables, debris, and reinforcing steel protrusions. |
+| **7** | Are all Power Tools and Hand tools checked, hand strings provided and in good condition? | Tool Lanyard | **YES** / NA | Comment if NO | Tool tethers / wrist lanyards mandatory to prevent dropped objects falling from heights. |
+| **8** | Are Barricades and caution sign provided on removal of guard rail / Shaft gate / Floor opening? | Warning Signage | **YES** / NA | Comment if NO | High-visibility warning barriers placed 2.0m back from opening with prominent danger notices. |
+| **9** | Is Minimum one watcher provided in the area till guard rail / gates re-fixed? | Dedicated Watcher | **YES** / NA | Comment if NO | **Continuous Watcher Rule:** Assigned safety spotter stationed permanently until physical restoration. |
 
 #### Guard Rail Removal Activities Registry (`GUARDRAIL_ACTIVITIES`)
 1. `Removal of Perimeter Guard Rails` (Exterior slab edge protection)
@@ -422,23 +435,23 @@ Form ID: `EHS_PTW_003` · Evaluated via `GUARDRAIL_CHECKLIST_ITEMS`:
 
 Form ID: `EHS_PTW_004` · Evaluated via `CONFINED_CHECKLIST_ITEMS`:
 
-| # | Exact Statutory Inspection Item | Category | Required Response | Photo Gate | Confined Space Life-Safety Protocol |
+| # | Exact Statutory Inspection Item | Category | Required Response | Deviation Requirement | Confined Space Life-Safety Protocol |
 |:---:|:---|:---|:---:|:---:|:---|
-| **1** | Are approved Method Statement and Risk Assessment available and supervisors and workers are aware of the risk involved and control measures? | Safe System of Work | **YES** / NA | If NO | Approved method statement detailing isolation, purging, and rescue procedures. |
-| **2** | Is area cleared of all hazards & hazardous substances and checked with multi gas detector? | Environmental Clearance | **YES** / NA | If NO | Sludge removed, hazardous chemicals drained, and initial multi-gas atmospheric survey passed. |
-| **3** | Are workers assessed for aptitude and fitness for the specific task? | Medical Fitness | **YES** / NA | If NO | Medical screening for claustrophobia, respiratory fitness, and physical endurance. |
-| **4** | Are workers equipped with required PPE as per MSDS and Risk Assessment? | PPE & RPE | **YES** / NA | If NO | Impermeable chemical suits, nitrile/neoprene gloves, and certified breathing apparatus if needed. |
-| **5** | Are site engineer or supervisor trained for confined space activities and rescue procedure? | Emergency Competency | **YES** / NA | If NO | Certified confined space rescue training and familiarity with winch extraction operations. |
-| **6** | Are access and working platforms available / provided? | Safe Access | **YES** / NA | If NO | Securely lashed aluminum/fiberglass ladders or certified suspended entry cradle. |
-| **7** | Is control of entry to confined space in place, and watcher provided for the entire duration of work? | Entry Attendant | **YES** / NA | If NO | **Standby Attendant Rule:** Outside entry watcher logs entrant count and maintains continuous contact. |
-| **8** | Is adequate communication system in place? | Communication | **YES** / NA | If NO | Intrinsically safe two-way radios, horn signals, or hardwired communication lifelines. |
-| **9** | Are rescue and first aid arrangements in place and adequate? | Rescue Readiness | **YES** / NA | If NO | Certified tripod recovery winch, full-body retrieval harness, and oxygen resuscitator on standby. |
-| **10** | Are precautions as per MSDS of hazardous substances are in place? | Toxic Chemical Defense | **YES** / NA | If NO | Chemical neutralizers, eye wash stations, and barrier creams aligned with MSDS guidelines. |
-| **11** | Are Sufficient task lights / 24V hand lamps provided? | Low-Voltage Lighting | **YES** / NA | If NO | **Low Voltage Rule:** Strict 24V SELV or flameproof battery lights to eliminate electrocution in damp sumps. |
-| **12** | Is Adequate ventilation and exhaust fans provided? | Forced Ventilation | **YES** / NA | If NO | Continuous mechanical positive-pressure air blowers delivering fresh outdoor air to bottom of space. |
-| **13** | Is Hot work permit followed for all hot works and control measure in place. | Concurrent PTW | **YES** / NA | If NO | Cross-reference: If cutting/welding inside space, companion PT-02 permit is mandatory. |
-| **14** | Confirmed gas within limits (Combustible: %LEL, H2S: PPM, CO: PPM) and adequacy of O2 (O2: %) take from approved values. | Atmospheric Verification | **YES** / NA | If NO | Mathematical validation against `CONFINED_GAS_THRESHOLDS` documented in §5.3. |
-| **15** | Is Confined space checklist attached. | Document Evidence | **YES** / NA | If NO | Mandatory physical pre-task safety checklist uploaded to permit record. |
+| **1** | Are approved Method Statement and Risk Assessment available and supervisors and workers are aware of the risk involved and control measures? | Safe System of Work | **YES** / NA | Comment if NO | Approved method statement detailing isolation, purging, and rescue procedures. |
+| **2** | Is area cleared of all hazards & hazardous substances and checked with multi gas detector? | Environmental Clearance | **YES** / NA | Comment if NO | Sludge removed, hazardous chemicals drained, and initial multi-gas atmospheric survey passed. |
+| **3** | Are workers assessed for aptitude and fitness for the specific task? | Medical Fitness | **YES** / NA | Comment if NO | Medical screening for claustrophobia, respiratory fitness, and physical endurance. |
+| **4** | Are workers equipped with required PPE as per MSDS and Risk Assessment? | PPE & RPE | **YES** / NA | Comment if NO | Impermeable chemical suits, nitrile/neoprene gloves, and certified breathing apparatus if needed. |
+| **5** | Are site engineer or supervisor trained for confined space activities and rescue procedure? | Emergency Competency | **YES** / NA | Comment if NO | Certified confined space rescue training and familiarity with winch extraction operations. |
+| **6** | Are access and working platforms available / provided? | Safe Access | **YES** / NA | Comment if NO | Securely lashed aluminum/fiberglass ladders or certified suspended entry cradle. |
+| **7** | Is control of entry to confined space in place, and watcher provided for the entire duration of work? | Entry Attendant | **YES** / NA | Comment if NO | **Standby Attendant Rule:** Outside entry watcher logs entrant count and maintains continuous contact. |
+| **8** | Is adequate communication system in place? | Communication | **YES** / NA | Comment if NO | Intrinsically safe two-way radios, horn signals, or hardwired communication lifelines. |
+| **9** | Are rescue and first aid arrangements in place and adequate? | Rescue Readiness | **YES** / NA | Comment if NO | Certified tripod recovery winch, full-body retrieval harness, and oxygen resuscitator on standby. |
+| **10** | Are precautions as per MSDS of hazardous substances are in place? | Toxic Chemical Defense | **YES** / NA | Comment if NO | Chemical neutralizers, eye wash stations, and barrier creams aligned with MSDS guidelines. |
+| **11** | Are Sufficient task lights / 24V hand lamps provided? | Low-Voltage Lighting | **YES** / NA | Comment if NO | **Low Voltage Rule:** Strict 24V SELV or flameproof battery lights to eliminate electrocution in damp sumps. |
+| **12** | Is Adequate ventilation and exhaust fans provided? | Forced Ventilation | **YES** / NA | Comment if NO | Continuous mechanical positive-pressure air blowers delivering fresh outdoor air to bottom of space. |
+| **13** | Is Hot work permit followed for all hot works and control measure in place. | Concurrent PTW | **YES** / NA | Comment if NO | Cross-reference: If cutting/welding inside space, companion PT-02 permit is mandatory. |
+| **14** | Confirmed gas within limits (Combustible: %LEL, H2S: PPM, CO: PPM) and adequacy of O2 (O2: %) take from approved values. | Atmospheric Verification | **YES** / NA | Comment if NO | Mathematical validation against `CONFINED_GAS_THRESHOLDS` documented in §5.3. |
+| **15** | Is Confined space checklist attached. | Document Evidence | **YES** / NA | Comment if NO | Mandatory physical pre-task safety checklist uploaded to permit record. |
 
 #### Confined Space Entry Activities Registry (`CONFINED_ACTIVITIES`)
 1. `Tank Cleaning` (Underground domestic water tanks, fire tanks)
@@ -453,18 +466,18 @@ Form ID: `EHS_PTW_004` · Evaluated via `CONFINED_CHECKLIST_ITEMS`:
 
 Form ID: `EHS_PTW_005` · Evaluated via `SHAFT_CHECKLIST_ITEMS`:
 
-| # | Exact Statutory Inspection Item | Category | Required Response | Photo Gate | Vertical Void Safety & Mechanical Clearance Rule |
+| # | Exact Statutory Inspection Item | Category | Required Response | Deviation Requirement | Vertical Void Safety & Mechanical Clearance Rule |
 |:---:|:---|:---|:---:|:---:|:---|
-| **1** | Is Method statement and Risk Assessment available for the Task? | Procedure | **YES** / NA | If NO | Engineering procedure for vertical hoisting, platform loading, and floor sealing. |
-| **2** | Are workers aware of risk involved, precaution and control measures required and training given? | Training | **YES** / NA | If NO | Working-at-heights certified training and drop hazard prevention orientation. |
-| **3** | Is Overhead protection provided if required? | Overhead Defense | **YES** / NA | If NO | Heavy-duty wooden/steel impact-absorbing canopy protecting workers from dropped objects above. |
-| **4** | Are Workers provided with safety harness and all other required job specific Personal Protective equipments for the activity? | Fall Arrest | **YES** / NA | If NO | Double-lanyard full body harness with energy absorber tied off to independent vertical lifeline. |
-| **5** | Is access to shaft clear and safe? | Shaft Access | **YES** / NA | If NO | Clear landing access gates; non-slip floor threshold free of oil or loose debris. |
-| **6** | Is working platform provided and Scaff tag placed (planks secured, guard rails and toe boards for fall protection as per standard) / RSP Checked and fall protection in place with fall arrestor? | Platform Certification | **YES** / NA | If NO | **Scaff-Tag Rule:** Valid green inspection tag affixed; heavy planks wired down with zero gaps; toe boards fitted. |
-| **7** | Are Electrical tools and hand tools checked prior to use in shaft and green tag available? | Portable Appliance Testing | **YES** / NA | If NO | PAT green inspection tag affixed; insulated industrial cables free of taped joints. |
-| **8** | Are Light and ventilation as per requirement for activity ensured? | Environmental Quality | **YES** / NA | If NO | High-lumen festoon shaft lighting and forced axial draft fans ensuring fresh air exchange. |
-| **9** | Is Supervisor available full-time to monitor the activity? | Supervision | **YES** / NA | If NO | Full-time on-deck supervisor monitoring workers and coordinating floor access gates. |
-| **10** | Is Hot work permit obtained separately for all hot work? | Concurrent PTW | **YES** / NA | If NO | Cross-reference: Separate PT-02 permit required for welding or torch cutting inside vertical shaft. |
+| **1** | Is Method statement and Risk Assessment available for the Task? | Procedure | **YES** / NA | Comment if NO | Engineering procedure for vertical hoisting, platform loading, and floor sealing. |
+| **2** | Are workers aware of risk involved, precaution and control measures required and training given? | Training | **YES** / NA | Comment if NO | Working-at-heights certified training and drop hazard prevention orientation. |
+| **3** | Is Overhead protection provided if required? | Overhead Defense | **YES** / NA | Comment if NO | Heavy-duty wooden/steel impact-absorbing canopy protecting workers from dropped objects above. |
+| **4** | Are Workers provided with safety harness and all other required job specific Personal Protective equipments for the activity? | Fall Arrest | **YES** / NA | Comment if NO | Double-lanyard full body harness with energy absorber tied off to independent vertical lifeline. |
+| **5** | Is access to shaft clear and safe? | Shaft Access | **YES** / NA | Comment if NO | Clear landing access gates; non-slip floor threshold free of oil or loose debris. |
+| **6** | Is working platform provided and Scaff tag placed (planks secured, guard rails and toe boards for fall protection as per standard) / RSP Checked and fall protection in place with fall arrestor? | Platform Certification | **YES** / NA | Comment if NO | **Scaff-Tag Rule:** Valid green inspection tag affixed; heavy planks wired down with zero gaps; toe boards fitted. |
+| **7** | Are Electrical tools and hand tools checked prior to use in shaft and green tag available? | Portable Appliance Testing | **YES** / NA | Comment if NO | PAT green inspection tag affixed; insulated industrial cables free of taped joints. |
+| **8** | Are Light and ventilation as per requirement for activity ensured? | Environmental Quality | **YES** / NA | Comment if NO | High-lumen festoon shaft lighting and forced axial draft fans ensuring fresh air exchange. |
+| **9** | Is Supervisor available full-time to monitor the activity? | Supervision | **YES** / NA | Comment if NO | Full-time on-deck supervisor monitoring workers and coordinating floor access gates. |
+| **10** | Is Hot work permit obtained separately for all hot work? | Concurrent PTW | **YES** / NA | Comment if NO | Cross-reference: Separate PT-02 permit required for welding or torch cutting inside vertical shaft. |
 
 #### Shaft Floor Registry (`SHAFT_FLOORS` - 39 Distinct Elevations)
 The system models tall-structure verticality through 39 discrete structural floor selections:
@@ -554,7 +567,7 @@ stateDiagram-v2
     PendingRetriggerDay1 --> HeldOvernight : Day 1 EHS Approves Hold
     HeldOvernight --> PendingRetriggerDay2Eng : Day 2 Morning Inspection
     PendingRetriggerDay2Eng --> PendingRetriggerDay2SH : Day 2 SE Acknowledges
-    PendingRetriggerDay2SH --> PendingRetriggerDay2EHS : Day 2 Tower Incharge Approves
+    PendingRetriggerDay2SH --> PendingRetriggerDay2EHS : Day 2 Excavation Head Approves
     PendingRetriggerDay2EHS --> Active : Day 2 EHS Actual Revalidation (Active)
 ```
 
@@ -565,27 +578,27 @@ The table below enumerates all states implemented across the core permit lifecyc
 | State Name | Scope / Module | Authorized Roles | Invalidation / Reversal Impact | Description |
 |:---|:---|:---|:---|:---|
 | `Draft` | Wizard Form | Site Supervisor | Form can be edited or deleted | Initial in-memory draft before formal submission |
-| `Pending Site Engineer Acknowledgment` | Initial Spine | Site Engineer | Rejection returns to Draft with reason | On-site physical conditions and GPS verification stage |
+| `Pending Site Engineer Acknowledgment` | Initial Spine | Site Engineer | Rejection returns to Draft with reason | On-site physical conditions verification stage (no closure option) |
 | `Pending Parallel Approval` | PT-01 Excavation | MEP, P&M, IT Engineers | Rejection returns form; unchanged approvals persist | 3-way concurrent gate; all 3 disciplines must clear |
 | `Pending MEP Clearance` | PT-05 Shaft Work | MEP Engineer | Rejection returns to Supervisor | Single domain clearance for duct risers & piping |
-| `Pending Section Head` | Approving Authority | Tower Incharge (`hw-section-head`) | Can Approve, Reject, or Cancel | Holistic site safety & contractor coordination review |
+| `Pending Section Head` | Approving Authority | Excavation Head (`excavation-head` for PT-01) / Tower Incharge (`hw-section-head` for PT-02–05) | Can Approve, Reject, or Cancel | Holistic site safety & contractor coordination review |
 | `Pending EHS Approval` | Final Endorsement | EHS Manager, EHS Officer | First-wins gate; whichever acts first locks the other | Statutory safety verification of photos, gas logs & checklists |
 | `Active` | Operational Site | All Stakeholders | Normal work underway; validity countdown active | Work authorized; permits can be extended, closed, or observed |
 | `Active – Observation Open` | Safety Deviation | EHS (Owner) | **Blocks Extension and Closure requests** | Work paused due to minor or major safety non-compliance |
 | `Observation Pending Site Engineer Acknowledgment` | Observation Sub-flow | Site Engineer | Rejection loops back to Supervisor | Supervisor submitted evidence; Engineer verifying on-site |
-| `Observation Pending Section Head Review` | Observation Sub-flow | Tower Incharge | Can endorse or reject rectification | Approving authority verifies rectification efficacy |
+| `Observation Pending Section Head Review` | Observation Sub-flow | Excavation Head (PT-01) / Tower Incharge (PT-02–05) | Can endorse or reject rectification | Approving authority verifies rectification efficacy |
 | `Observation Pending EHS Clearance` | Observation Sub-flow | EHS Manager / Officer | Can clear (to `Active`) or cancel (to `Cancelled`) | Final safety clearance of physical rectification evidence |
 | `Pending Site Engineer` | Extension Sub-flow | Site Engineer | Can approve or cancel | Extension request on-site physical validity verification |
-| `Pending Section Head` | Extension Sub-flow | Tower Incharge | Can approve or cancel | Approving authority review of extended hours request |
+| `Pending Section Head` | Extension Sub-flow | Excavation Head (PT-01) / Tower Incharge (PT-02–05) | Can approve or cancel | Approving authority review of extended hours request |
 | `Pending EHS Approval` | Extension Sub-flow | EHS Manager / Officer | Can approve (extends `validTill`) or cancel | Final statutory extension authorization (capped at 20:30 IST) |
 | `Pending Re-trigger EHS (Day 1)` | PT-01 Re-trigger | EHS Manager / Officer | Can approve hold, reject, or cancel | Supervisor requested revalidation for continued excavation |
 | `Held Overnight` | PT-01 Re-trigger | System Engine | Preserves all master data, checklists & drawings | Permit held overnight; work locked until Day 2 morning checks |
 | `Pending Re-trigger Site Engineer Acknowledgment (Day 2)` | PT-01 Re-trigger | Site Engineer | Morning physical inspection of trench stability | Day 2 morning inspection for soil movement or water seepage |
-| `Pending Re-trigger Section Head (Day 2)` | PT-01 Re-trigger | Tower Incharge | Review morning safety report & site readiness | Holistic Day 2 work authorization review |
+| `Pending Re-trigger Section Head (Day 2)` | PT-01 Re-trigger | Excavation Head (`excavation-head`) | Review morning safety report & site readiness | Holistic Day 2 work authorization review for excavation |
 | `Pending Re-trigger EHS Final (Day 2)` | PT-01 Re-trigger | EHS Manager / Officer | Revalidation restores status directly to `Active` | Final revalidation enabling trench entry for Day 2 |
 | `Returned for Correction` | Rejection Loop | Site Supervisor | Unchanged sections remain approved (Stale-Approval Rule) | Approver rejected permit; editable fields unlocked for revision |
-| `Expired` | Time Enforcement | System Engine / SE | Requires immediate closure & surrender | Permit validity timestamp (`validTill`) exceeded |
-| `Closed` | Terminal Archive | EHS / Site Engineer | Permanent record; triggers Statutory PDF generation | Work complete, site surrendered, mandatory photos attached |
+| `Expired` | Time Enforcement | System Engine / SS | Requires immediate closure & surrender | Permit validity timestamp (`validTill`) exceeded |
+| `Closed` | Terminal Archive | Site Supervisor (Exclusive Closure) | Permanent record; triggers Statutory PDF generation | Work complete, site surrendered, mandatory restoration declarations & photos attached |
 | `Cancelled` | Emergency Stop | Any Authority / System | Permanent terminal deadlock; cannot be resubmitted | Permittee must raise brand new permit from scratch |
 
 ---
@@ -719,7 +732,10 @@ function roleCanActOnChain(chain, roleKey) {
         if (roleKey === 'it') return chain.it?.status === 'pending';
         return false;
     }
-    if (stage === 'section-head') return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead?.status === 'pending';
+    if (stage === 'section-head') {
+        if (chain.kind === 'exc') return roleKey === 'excavation-head' && chain.sectionHead?.status === 'pending';
+        return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead?.status === 'pending';
+    }
     if (stage === 'ehs') {
         if (roleKey === 'ehs-manager') return chain.ehsManager?.status === 'pending';
         if (roleKey === 'ehs-officer') return chain.ehsOfficer?.status === 'pending';
@@ -732,10 +748,10 @@ function roleCanActOnChain(chain, roleKey) {
 
 When a permit is rejected, the system records the exact rejecting authority in `p.rejectionOrigin = { roleKey, roleLabel, by, comment }`:
 1. **Field-Level Invalidation**: Only checklist items and metadata sections modified during the revision are reset.
-2. **Preservation of Unaffected Clearances**: If Tower Incharge rejects an Excavation permit, the parallel approvals from MEP, P&M, and IT remain marked as `approved` and are **not invalidated**.
+2. **Preservation of Unaffected Clearances**: If Excavation Head rejects an Excavation permit, the parallel approvals from MEP, P&M, and IT remain marked as `approved` and are **not invalidated**.
 3. **Fast-Track Routing (`actSiteEngineerAck`)**: Once the Site Supervisor corrects the form and the Site Engineer re-acknowledges on-site, the system reads `p.rejectionOrigin`:
-   - If rejected by EHS $\rightarrow$ bypasses Tower Incharge and parallel gate, returning directly to `Pending EHS Approval`.
-   - If rejected by Tower Incharge $\rightarrow$ bypasses parallel gate, returning directly to `Pending Section Head`.
+   - If rejected by EHS $\rightarrow$ bypasses Section Head and parallel gate, returning directly to `Pending EHS Approval`.
+   - If rejected by Section Head (Excavation Head / Tower Incharge) $\rightarrow$ bypasses parallel gate, returning directly to `Pending Section Head`.
    - If rejected by MEP $\rightarrow$ returns directly to `Pending Parallel Approval` with P&M and IT remaining cleared.
 
 ### 7.5 Core Operational Dispatch & Execution Engine
@@ -749,14 +765,17 @@ graph TD
     B -->|rejectSiteEngineer| D["Returned for Correction (Supervisor Refill)"]
     C -->|PT-01 Excavation| E["Pending Parallel Approval (MEP · P&M · IT)"]
     C -->|PT-05 Shaft Work| F["Pending MEP Clearance"]
-    C -->|PT-02, 03, 04| G["Pending Section Head (Tower Incharge)"]
-    E -->|approvePermitStage| G
-    F -->|approvePermitStage| G
-    G -->|approvePermitStage| H["Pending EHS Approval (Manager / Officer)"]
+    C -->|PT-02, 03, 04| G2["Pending Section Head (Tower Incharge)"]
+    E -->|approvePermitStage| G1["Pending Section Head (Excavation Head)"]
+    F -->|approvePermitStage| G2
+    G1 -->|approvePermitStage| H["Pending EHS Approval (Manager / Officer)"]
+    G2 -->|approvePermitStage| H
     H -->|approvePermitStage (First-Wins)| I["activatePermit(p) -> ACTIVE"]
-    G -->|rejectPermitStage| D
+    G1 -->|rejectPermitStage| D
+    G2 -->|rejectPermitStage| D
     H -->|rejectPermitStage| D
-    G -->|rejectPermitStage (cancel)| J["Cancelled (Terminal - Stop Work)"]
+    G1 -->|rejectPermitStage (cancel)| J["Cancelled (Terminal - Stop Work)"]
+    G2 -->|rejectPermitStage (cancel)| J
     H -->|rejectPermitStage (cancel)| J
 ```
 
@@ -788,13 +807,15 @@ sequenceDiagram
     participant MEP as MEP Engineer
     participant PM as P&M Engineer
     participant IT as IT Engineer
-    actor TI as Tower Incharge (Approving Authority)
+    actor EH as Excavation Head (Approving Authority)
     actor EHS as EHS Manager/Officer (Verification)
     participant SYS as System Engine
 
-    Note over SS,SYS: STEP 1 — Form Initiation & Photo Upload
-    SS->>SS: Complete 4-step wizard form + attach work-area photo
-    SS->>SS: Complete 12-item safety checklist + sign & GPS tag
+    Note over SS,SYS: STEP 1 — Form Initiation & Checklist
+    SS->>SS: Complete 4-step wizard form
+    SS->>SS: Complete 12-item safety checklist (NO requires comment; Site Photo unlocked after checklist)
+    SS->>SS: Capture Site Photo (activated after checklist complete)
+    SS->>SS: Final review & sign; GPS captured on submission
     SS->>SYS: submitPermit(EXCAVATION)
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: In-App Alert: Physical site review required
@@ -816,17 +837,17 @@ sequenceDiagram
         IT->>SYS: approveParallelStage(IT) [OFC / Data lines safe]
     end
     Note over MEP,SYS: Any Reject returns to Supervisor; unchanged sections persist
-    SYS->>SYS: Status: Pending Tower Incharge Approval
-    SYS->>TI: Alert: All clearances passed, holistic review required
+    SYS->>SYS: Status: Pending Section Head Approval (Excavation Head)
+    SYS->>EH: Alert: All clearances passed, Excavation Head review required
 
-    Note over SS,SYS: STEP 4 — Approving Authority Review
-    TI->>TI: Holistic site safety review & contractor readiness
+    Note over SS,SYS: STEP 4 — Excavation Head Review
+    EH->>EH: Holistic site safety review & contractor readiness
     alt Approve
-        TI->>SYS: approvePermitStage()
+        EH->>SYS: approvePermitStage()
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final endorsement required
     else Cancel
-        TI->>SYS: cancelPermit() + comment
+        EH->>SYS: cancelPermit() + comment
         SYS->>SYS: Status: Cancelled (Terminal) -> Generate PDF -> Notify All
     end
 
@@ -837,17 +858,18 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Work authorized to commence)
         SYS-->>SS: In-App Alert: Permit ACTIVE
         SYS-->>SE: In-App Alert: Permit ACTIVE
-        SYS-->>TI: In-App Alert: Permit ACTIVE
+        SYS-->>EH: In-App Alert: Permit ACTIVE
     else Reject
         EHS->>SYS: rejectPermit() -> Returns to Site Supervisor for correction
     else Cancel
         EHS->>SYS: cancelPermit() -> Stop work -> PDF generated (Terminal)
     end
 
-    Note over SS,SYS: STEP 6 — Site Closure & Surrender
+    Note over SS,SYS: STEP 6 — Site Closure & Surrender (Site Supervisor Exclusive)
     SYS->>SS: T-30 min auto-reminder dispatched before expiry
-    SS->>SS: Complete backfill & barricade removal declarations + photo
-    SS->>SYS: surrenderPermit()
+    SS->>SS: Complete backfill & barricade removal declarations + photo + GPS
+    Note over SS,SE: Closure & surrender strictly executed by Site Supervisor (no SE closure option)
+    SS->>SYS: closeAndSurrenderPermit()
     SYS->>SYS: Status: Closed -> Generate Statutory PDF Archive
 ```
 
@@ -1196,7 +1218,7 @@ sequenceDiagram
     actor SS as Site Supervisor
     actor EHS1 as EHS Manager/Officer (Day 1)
     actor SE2 as Site Engineer (Day 2)
-    actor TI2 as Tower Incharge (Day 2)
+    actor EH2 as Excavation Head (Day 2)
     actor EHS2 as EHS Manager/Officer (Day 2)
     participant SYS as System Engine
 
@@ -1205,6 +1227,7 @@ sequenceDiagram
     SYS->>SYS: Status: Pending Re-trigger EHS (Day 1)
     SYS->>EHS1: Alert: Day 1 overnight hold authorization required
 
+    EHS1->>EHS1: Inspect perimeter barricades & night illumination
     EHS1->>SYS: approveDay1Retrigger()
     SYS->>SYS: Status: Held Overnight (Day 1 EHS Approval Complete)
     SYS->>SYS: Permit details & initial clearances retained (no re-entry)
@@ -1213,10 +1236,10 @@ sequenceDiagram
     SYS->>SE2: Alert (Morning): Day 2 physical trench inspection required
     SE2->>SE2: Check for night soil movement, water seepage or collapse
     SE2->>SYS: acknowledgeDay2SiteEngineer()
-    SYS->>SYS: Status: Pending Day 2 Tower Incharge Approval
+    SYS->>SYS: Status: Pending Day 2 Excavation Head Approval
 
-    TI2->>TI2: Review morning safety report
-    TI2->>SYS: approveDay2TowerIncharge()
+    EH2->>EH2: Review morning safety report
+    EH2->>SYS: approveDay2ExcavationHead()
     SYS->>SYS: Status: Pending Day 2 Final EHS Revalidation
 
     EHS2->>EHS2: Final trench entry re-verification
@@ -1231,35 +1254,31 @@ sequenceDiagram
 
 In heavy construction operations, hazardous work permits cannot simply lapse or be abandoned upon shift completion. Uncontrolled cessation introduces severe catastrophic risks: unextinguished embers in hot work zones, unbarricaded excavation trenches overnight, open floor penetrations without edge protection, unsealed confined spaces with residual gas accumulation, or open hoist shafts.
 
-The system implements a **mandatory digital closure and statutory surrender gate** (`closeAndSurrenderPermit()`) requiring physical site verification, photographic restoration evidence, on-site device GPS tagging, and dual digital signatures from both the **Site Supervisor (Permittee)** and the **Site Engineer (Verification Authority)**. Successfully executing this flow transitions the permit to the terminal `Closed` state (`Surrendered - Work Completed`) and unlocks statutory PDF generation for EHS leadership.
+The system implements a **mandatory digital closure and statutory surrender gate** (`closeAndSurrenderPermit()`). Under the statutory governance model, **the Site Engineer does NOT have a closure option** — closure and statutory surrender is **strictly and exclusively reserved for the Site Supervisor (Permittee)**. 
+
+Executing this flow requires physical site restoration verification, discipline-specific declarations, photographic restoration evidence, on-site device GPS tagging within the geofence perimeter, DPDP consent, and the Site Supervisor's legal digital signature. Successfully executing this flow transitions the permit immediately to the terminal `Closed` state (`Surrendered - Work Completed`) and unlocks statutory PDF generation for EHS leadership.
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Verification)
+    actor SS as Site Supervisor (Permittee & Exclusive Closure Authority)
     actor EHS as EHS Manager / Officer
     participant SYS as System Engine
 
-    Note over SS,SYS: PHASE 1 — Physical Restoration & Surrender Request
+    Note over SS,SYS: PHASE 1 — Physical Restoration Verification & Surrender Form
     SS->>SYS: openSurrenderFlow(permitId)
     SYS->>SYS: Pre-condition Check: Status === 'Active'
+    SYS->>SYS: Pre-condition Check: currentUser.key === 'site-supervisor' (Enforce Role Gate)
     SYS->>SYS: Pre-condition Check: No Open Observation (status !== 'Open')
     SYS-->>SS: Render Discipline-Specific Restoration Form
 
     Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>• PT-01: Trench backfilled OR shoring safely left in place; hard barricades verified<br/>• PT-02: 1-Hour continuous cold watch completed; gas cylinders isolated & stowed<br/>• PT-03: Guardrails 100% re-fixed & bolted; zero open edge exposure<br/>• PT-04: All entrants evacuated & accounted for; gas testing cleared; manholes bolted<br/>• PT-05: Shaft openings sealed; green scaffold tag endorsed; hoist power locked out
 
+    Note over SS,SYS: PHASE 2 — On-Site Evidence, Geofence Tagging & Digital Signature
+    SS->>SS: Inspect physical work front: housekeeping, scrap clearance, barrier integrity
     SS->>SYS: captureSurrPhoto(restorationPhoto)
-    SS->>SYS: captureSurrGPS() [Enforces Haversine Radius]
+    SS->>SYS: captureSurrGPS() [Enforces Device Haversine Radius]
     SS->>SYS: enterSignerName("R. K. Patel") + drawSignature()
-    SS->>SYS: submitSurrender()
-    SYS->>SYS: Status: Pending Site Engineer Surrender Verification
-    SYS->>SE: In-App Alert: Physical site handback inspection required
-
-    Note over SE,SYS: PHASE 2 — Site Engineer Physical Inspection & Co-Signature
-    SE->>SE: Inspect physical work front: housekeeping, scrap clearance, barrier integrity
-    SE->>SYS: captureSurrGPS() [Device GPS Proximity Check]
-    SE->>SYS: enterSignerName("V. S. Rao") + drawSignature()
-    SE->>SYS: confirmCloseAndSurrenderPermit()
+    SS->>SYS: confirmCloseAndSurrenderPermit()
 
     Note over SYS: PHASE 3 — Terminal State Mutation & PDF Unlock
     SYS->>SYS: Status: Closed (Terminal: Surrendered - Work Completed)
@@ -1295,7 +1314,7 @@ sequenceDiagram
     participant SYS as Core System Store (PERMITS)
     actor SE as Site Engineer
 
-    Note over SS,UI: STEP 1: General Information & Worksite Verification
+    Note over SS,UI: STEP 1: General Information & Engineering Setup
     SS->>UI: Select Project & Location Structure (Tower vs Basement/Podium)
     UI->>VAL: Verify Project Configured Status
     alt Project GPS Not Configured (e.g. PRJ-ART)
@@ -1304,31 +1323,27 @@ sequenceDiagram
     else Project GPS Active (e.g. PRJ-AGR, PRJ-ABP)
         VAL-->>UI: Project Validated
     end
-    SS->>UI: Request Device GPS Location (captureLocationForStep1)
-    UI->>GEO: haversine(deviceLat, deviceLng, siteLat, siteLng)
-    alt Device Distance > Allowed Project Radius
-        GEO-->>UI: Out-of-Bounds Error (d > r)
-        UI-->>SS: Warning: Outside site geofence perimeter
-    else Device Distance <= Allowed Project Radius
-        GEO-->>UI: Geofence Verified (d <= r)
-        UI-->>SS: Green Proximity Badge Displayed
-    end
     SS->>UI: Input Organization, Contractor Name, Discipline Parameters
-    SS->>UI: Capture Work-Area Site Photo (Mandatory)
     UI->>VAL: validateWizStep(1)
     VAL-->>UI: Enable "Next: Safety Checklist" Button
 
-    Note over SS,UI: STEP 2: Interactive Statutory Safety Checklist
+    Note over SS,UI: STEP 2: Interactive Statutory Safety Checklist & Site Photo Gate
     SS->>UI: Navigate to Step 2 (renderWizStep(2))
     UI->>UI: Dynamically render checklist items (12, 20, 9, 15, or 10 items)
     loop For Every Inspection Item
         SS->>UI: Select Radio Option (YES / NO / NA)
-        opt Response is "NO" or Item requires photo (reqPhoto: true)
-            UI-->>SS: Prompt Mandatory Justification & Evidence Photo
-            SS->>UI: Input Deviation Comment + Upload Evidence Photo
+        opt Response is "NO"
+            UI-->>SS: Prompt Mandatory Explanation Comment (Photo/GPS not required)
+            SS->>UI: Input Deviation Comment
+        end
+        opt Response is "N/A"
+            UI-->>SS: Comment NOT required for N/A
         end
     end
-    UI->>VAL: validateWizStep(2) [checklistItemComplete on all items]
+    UI->>VAL: Check if 100% checklist items complete (checklistItemComplete)
+    VAL-->>UI: Unlock Site Photo Option (Locked until checklist complete)
+    SS->>UI: Capture Work-Area Site Photo (Mandatory gate before proceeding)
+    UI->>VAL: validateWizStep(2) [all items complete + sitePhoto captured]
     VAL-->>UI: Enable "Next: Permit Validity" Button
 
     Note over SS,UI: STEP 3: Working Hours & Validity Bounds Engine
@@ -1349,26 +1364,35 @@ sequenceDiagram
     UI->>VAL: validateWizStep(4) [signerVerified && signature.dataUrl]
     VAL-->>UI: Enable "Submit Permit for Acknowledgment" Button
 
-    Note over SS,SYS: SUBMISSION & TRANSITION
+    Note over SS,SYS: FINAL SUBMISSION & MANDATORY GPS CAPTURE
     SS->>UI: Click "Submit Permit"
-    UI->>SYS: finalSubmitPermit()
-    SYS->>SYS: Assign ID (genPermitNumber) e.g. "EXC-2026-000008"
-    SYS->>SYS: Initialize Approval Chain (newChain(ptype))
-    SYS->>SYS: Record Signatory in p.signatories['site-supervisor']
-    SYS->>SYS: Status = "Pending Site Engineer Acknowledgment"
-    SYS->>SYS: Append to activityLog & Save LocalStorage
-    SYS->>SE: Dispatch Real-Time Notification: "New Permit Awaiting Step 2 Acknowledgment"
-    SYS-->>UI: Route to Permit Register with Success Toast
+    UI->>GEO: Prompt openGPSModal() (GPS captured ONLY on final submit)
+    SS->>GEO: Capture Device GPS Location
+    GEO->>GEO: haversine(deviceLat, deviceLng, siteLat, siteLng)
+    alt Device Distance > Allowed Project Radius
+        GEO-->>UI: Out-of-Bounds Error (d > r)
+        UI-->>SS: Warning: Outside site geofence perimeter (Submission Blocked)
+    else Device Distance <= Allowed Project Radius
+        GEO-->>UI: Geofence Verified (d <= r)
+        UI->>SYS: finalSubmitPermit(with captured GPS)
+        SYS->>SYS: Assign ID (genPermitNumber) e.g. "EXC-2026-000008"
+        SYS->>SYS: Initialize Approval Chain (newChain(ptype))
+        SYS->>SYS: Record Signatory in p.signatories['site-supervisor']
+        SYS->>SYS: Status = "Pending Site Engineer Acknowledgment"
+        SYS->>SYS: Append to activityLog & Save LocalStorage
+        SYS->>SE: Dispatch Real-Time Notification: "New Permit Awaiting Step 2 Acknowledgment"
+        SYS-->>UI: Route to Permit Register with Success Toast
+    end
 ```
 
 #### Step-by-Step Validation Matrix (`validateWizStep`)
 
 | Step | Form Step Name | Mandatory Input Fields | Boundary Conditions & Mathematical Validation | Next Button State |
 |:---:|:---|:---|:---|:---|
-| **1** | **General Information** | Project, GPS, Org, Contractor, Location, Permit-Specifics, Photo | 1. Project must have `configured === true`<br/>2. Device GPS distance $\le \text{radius}$ (`haversine`)<br/>3. Contractor name mandatory if Org is Contractor/Subcontractor<br/>4. Tower mode requires Floor & Unit; Basement mode requires Level & Area<br/>5. Excavation: numeric depth & slope, equipment array, drawing<br/>6. Hot Work: hotwork types array, welder name $\ge 2$ chars, affiliation<br/>7. Guard Rail: activities array, work-area site photo<br/>8. Confined Space: activity, entrants $\ge 1$, declaration, gas readings, site photo<br/>9. Shaft Work: personnel $\ge 1$, scaff-tag verified, declaration, site photo | Disabled until all fields valid |
-| **2** | **Safety Checklist** | All checklist items across permit form | 1. Every checklist item must satisfy `checklistItemComplete(item)`<br/>2. If answer is `NO`, comment is mandatory and photo is mandatory<br/>3. High-risk items require photo regardless of answer<br/>4. Work-area site photo must be present<br/>5. Live progress bar updates $0\text{ to }100\%$ | Disabled until 100% complete |
+| **1** | **General Information** | Project, Org, Contractor, Location, Discipline Parameters | 1. Project must have `configured === true`<br/>2. Contractor name mandatory if Org is Contractor/Subcontractor<br/>3. Tower mode requires Floor & Unit; Basement mode requires Level & Area<br/>4. Excavation: numeric depth & slope, equipment array, drawing<br/>5. Hot Work: hotwork types array, welder name $\ge 2$ chars, affiliation<br/>6. Confined Space: activity, entrants $\ge 1$, declaration, gas readings<br/>7. Shaft Work: personnel $\ge 1$, scaff-tag verified, declaration<br/>*(Note: GPS is captured only at final submission; Site Photo is captured in Step 2)* | Disabled until all fields valid |
+| **2** | **Safety Checklist** | All checklist items across permit form + Site Photo | 1. Every checklist item must satisfy `checklistItemComplete(item)`<br/>2. If answer is `NO`, comment is mandatory; photo and GPS are NOT required<br/>3. If answer is `N/A`, comment is NOT required<br/>4. **Site Photo option is locked and activated ONLY after all checklist questions are answered**<br/>5. Work-area site photo must be captured to proceed<br/>6. Live progress bar updates $0\text{ to }100\%$ | Disabled until 100% complete and Site Photo captured |
 | **3** | **Permit Validity** | Planned Start Time, Planned End Time | 1. `startTime` must satisfy $08:30 \le t \le 18:30\text{ IST}$ (`START_LATEST_MIN`)<br/>2. `startTime` cannot be in the past ($t \ge \text{now()}$)<br/>3. `validTillTime` must be strictly greater than `startTime`<br/>4. `validTillTime` cannot exceed $19:30\text{ IST}$ (`OFFICE_END_MIN`) | Disabled until valid duration derived |
-| **4** | **Review & Submit** | Signer Name, DPDP Consent, Canvas Signature | 1. Signer name string length $\ge 2$<br/>2. DPDP Act statutory consent checkbox checked<br/>3. Canvas signature pad has recorded strokes (`dataUrl` generated) | Disabled until consent & signature captured |
+| **4** | **Review & Submit** | Signer Name, DPDP Consent, Canvas Signature | 1. Signer name string length $\ge 2$<br/>2. DPDP Act statutory consent checkbox checked<br/>3. Canvas signature pad has recorded strokes (`dataUrl` generated)<br/>4. **Final submission prompts GPS modal: device GPS distance $\le \text{radius}$ (`haversine`)** | Disabled until consent & signature captured |
 
 ---
 
@@ -1571,7 +1595,7 @@ function runEscalationTick() {
 | **T-30 Minute Close Warning** | $le 1800	ext{ seconds}$ ($30	ext{m}$) | $30	ext{ minutes}$ | Site Supervisor (`site-supervisor`), Site Engineer (`site-engineer`) | `warn` (Amber) | Flags `p.warn30 = true`; alerts site front to begin housekeeping |
 | **Natural Validity Expiry** | $	ext{Clock} ge 	ext{validTill}$ | Real-time IST | Broadcast to All Stakeholders (`'all'`) | `error` (Red) | Status transitions to `Expired`; all work must cease immediately |
 | **Observation Auto-Cancel** | $	ext{Clock} ge 	ext{validTill}$ | Real-time IST | Broadcast to All Stakeholders (`'all'`) | `error` (Red) | **Emergency Stop-Work**: `status = 'Cancelled'`, `isCancelled: true` |
-| **Surrender Handback Cycle** | Every $6	ext{th}$ tick ($30	ext{s}$) | $30	ext{ minutes}$ | Site Supervisor, Site Engineer | `info` (Blue) | Recurring reminder until dual-signature surrender is finalized |
+| **Surrender Handback Cycle** | Every $6\text{th}$ tick ($30\text{s}$) | $30\text{ minutes}$ | Site Supervisor (`site-supervisor`) | `info` (Blue) | Recurring reminder until statutory surrender is finalized by Site Supervisor |
 
 ---
 
@@ -1873,10 +1897,11 @@ The notification dispatcher supports precise functional targeting and legacy ali
 
 | Target Pattern | Resolved Roles | Operational Use Case |
 |:---|:---|:---|
-| `'site-supervisor'` | Site Supervisor (Permittee) | Form corrections, approval milestones, extension grants |
-| `'site-engineer'` | Site Engineer | Initial acknowledgments, physical surrenders, day 2 checks |
+| `'site-supervisor'` | Site Supervisor (Permittee) | Form corrections, approval milestones, extension grants, closure & surrender |
+| `'site-engineer'` | Site Engineer | Initial acknowledgments, forwarder, Day 2 morning checks (no closure option) |
 | `['mep', 'pm', 'it']` | Multi-cast Parallel Gate | Excavation parallel clearance requests |
-| `'hw-section-head'` / `'section-head'` | **Tower Incharge** (Alias resolved) | Approving authority reviews, escalations |
+| `'excavation-head'` | **Excavation Head** | PT-01 Excavation section head reviews, Day 2 checks |
+| `'hw-section-head'` / `'section-head'` | **Tower Incharge** (Alias resolved) | Section head reviews for PT-02 through PT-05, escalations |
 | `['ehs-manager', 'ehs-officer']` | EHS Leadership Team | Final safety endorsements, statutory audit reports |
 | `'admin'` | System Administrator | Geofence modifications, project parameter updates |
 | `'all'` | Global System Broadcast | Auto-expiry alerts, emergency stop-work cancellations |
@@ -2034,7 +2059,7 @@ The PDF engine constructs an enterprise-grade statutory report rendered on stand
 
 ## 17. Role-Specific Dashboards & KPIs
 
-To provide immediate operational focus without information overload, the system renders a customized dashboard view tailored to each of the 9 roles.
+To provide immediate operational focus without information overload, the system renders a customized dashboard view tailored to each of the 10 roles.
 
 ### 17.1 KPI Card Calculation Dictionary
 
@@ -2049,10 +2074,13 @@ To provide immediate operational focus without information overload, the system 
 | **Site Engineer** | **Pending Acknowledgment** | `PERMITS.filter(p => p.status === 'Pending Site Engineer Acknowledgment').length` | New submissions awaiting initial on-site check |
 | | **Day 2 Re-trigger Acks** | `PERMITS.filter(p => p.status.includes('Day 2') && p.status.includes('Engineer')).length` | Morning trench re-acknowledgments |
 | | **Active On-Site** | `PERMITS.filter(p => p.status === 'Active').length` | Active permits operating on the project |
-| | **Surrendered Permits** | `PERMITS.filter(p => p.status === 'Closed').length` | Completed works verified and closed |
-| **Tower Incharge** | **Pending My Approval** | `PERMITS.filter(p => roleCanActOnChain(p.approvals, 'hw-section-head')).length` | Permits waiting for approving authority decision |
+| | **Archived Closed** | `PERMITS.filter(p => p.status === 'Closed').length` | Completed works on site (surrendered by Supervisor) |
+| **Excavation Head** | **Pending My Approval** | `PERMITS.filter(p => p.ptype === 'excavation' && roleCanActOnChain(p.approvals, 'excavation-head')).length` | Excavation permits waiting for section head decision |
+| | **Pending Day 2 Re-trigger** | `PERMITS.filter(p => p.status === 'Pending Re-trigger Section Head (Day 2)').length` | Morning trench re-trigger approvals |
+| | **Approved by Me** | `PERMITS.filter(p => p.approvals?.sectionHead?.status === 'approved' && p.ptype === 'excavation').length` | Historical excavation permits endorsed |
+| **Tower Incharge** | **Pending My Approval** | `PERMITS.filter(p => roleCanActOnChain(p.approvals, 'hw-section-head')).length` | Permits (PT-02–05) waiting for section head decision |
 | | **Pending Extension Approval** | `PERMITS.filter(p => p.extension && p.extension.stage === 'sectionHead').length` | Overtime requests awaiting review |
-| | **Approved by Me** | `PERMITS.filter(p => p.approvals?.sectionHead?.status === 'approved').length` | Historical permits endorsed by Tower Incharge |
+| | **Approved by Me** | `PERMITS.filter(p => p.approvals?.sectionHead?.status === 'approved' && p.ptype !== 'excavation').length` | Historical permits endorsed by Tower Incharge |
 | **EHS Manager / Officer** | **Active Permits** | `PERMITS.filter(p => p.status === 'Active').length` | Total active hazardous works under safety audit |
 | | **Pending Endorsement** | `PERMITS.filter(p => roleCanActOnChain(p.approvals, activeRole)).length` | Permits awaiting final safety activation |
 | | **Open Observations** | `PERMITS.filter(p => p.observation && p.observation.status !== 'Resolved').length` | Active safety non-conformances on site |
@@ -2356,19 +2384,22 @@ tests/
 #### Suite 1: Base Lifecycle & Core Engines (165 Assertions)
 - **State Machine Transitions (all 5 permit types)**: Positive approvals, negative rejections, and cancellation terminal locks.
 - **3-Way Parallel Gate Evaluator**: Validates concurrent approvals across MEP, P&M, and IT; ensures no sequential deadlocks.
+- **Section Head Specialization**: Proves PT-01 Excavation requires Excavation Head (`excavation-head`), while PT-02 through PT-05 require Tower Incharge (`hw-section-head`).
 - **Single EHS Approver Clearance Rule**: Validates that first approval by either EHS Manager or Officer locks the stage and advances permit to Active.
-- **Stale-Approval Invalidation & Fast-Track Routing**: Proves that rejection by Tower Incharge preserves parallel clearances; proves re-ack routes directly back to rejector.
+- **Stale-Approval Invalidation & Fast-Track Routing**: Proves that rejection by Excavation Head preserves parallel clearances; proves re-ack routes directly back to rejector.
 - **Safety Observation Lifecycle**: Proves observation blocks extension and closure; tests 4-stage rectification flow; verifies fast-track return to EHS.
 - **Permit Extension Engine**: Tests 18:30 IST request cutoff gate; tests 20:30 IST hard validity ceiling; tests 3-stage extension approval pipeline.
-- **Excavation 2-Day Re-trigger**: Tests Day 1 overnight hold; tests Day 2 morning Site Engineer physical check; tests Tower Incharge and EHS revalidation.
-- **Gas Reading Safety Evaluator (PT-04)**: Tests safe and dangerous boundary conditions across $	ext{O}_2, 	ext{LEL}, 	ext{CO}, 	ext{H}_2	ext{S}$.
-- **Checklist Integrity**: Validates mandatory YES/NO/NA responses and photo requirement gates.
+- **Excavation 2-Day Re-trigger**: Tests Day 1 overnight hold; tests Day 2 morning Site Engineer physical check; tests Excavation Head and EHS revalidation.
+- **Gas Reading Safety Evaluator (PT-04)**: Tests safe and dangerous boundary conditions across $\text{O}_2, \text{LEL}, \text{CO}, \text{H}_2\text{S}$.
+- **Checklist Integrity & Gating Rules**: Validates that NO requires comment without photo/GPS; N/A requires no comment; Site Photo is gated until 100% checklist completion; GPS is captured on final submission.
+- **Site Supervisor Exclusive Closure**: Verifies that Site Engineer closure is rejected (`engCloseResult === false`) and only Site Supervisor can execute closure & surrender.
 
 #### Suite 2: Extended Audit, Security & UI Math (74 Assertions)
 - **Notification Engine & Role Dispatch**: Single-role, multi-role, alias resolution (`hw-section-head` <-> `section-head`), broadcast (`'all'`), and `markAllRead()`.
+- **10-Role RBAC Scoping & Filtering**: Proves role scoping where Excavation Head covers Excavation only, and Tower Incharge covers Hot Work, Guard Rail, Confined Space, and Shaft Work.
 - **Escalation & Auto-Expiry**: Stage 1 SLA (45s), Stage 2 SLA (120s), T-30 minute close warning, natural expiry at `validTill`, and **emergency auto-cancel on open observation**.
 - **PDF Generation & Role Security**: Proves strict denial of PDF generation to non-EHS roles; verifies clean execution for EHS Manager and Officer across all 5 permit types.
-- **KPI Dashboard Calculations**: Validates KPI card counts for Supervisor, Engineer, Tower Incharge, and Administrator; **proves zero-division and undefined resilience on empty permit store (`PERMITS = []`)**.
+- **KPI Dashboard Calculations**: Validates KPI card counts for Supervisor, Engineer, Excavation Head, Tower Incharge, and Administrator; **proves zero-division and undefined resilience on empty permit store (`PERMITS = []`)**.
 - **Register Search & Filters**: Multi-field tokenized search across ID, Contractor, Location, Tower; validates null-safety on optional fields; verifies newest-first sorting.
 
 ### 23.3 Automated Test Execution Results
