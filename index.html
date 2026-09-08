@@ -929,9 +929,14 @@
             background: #FAFBFD;
         }
 
-        .table-scroll {
+        .table-scroll,
+        .table-responsive,
+        .table-wrap {
             overflow-x: auto;
             -webkit-overflow-scrolling: touch;
+            overscroll-behavior-x: contain;
+            width: 100%;
+            max-width: 100%;
         }
 
         .truncate {
@@ -1867,6 +1872,8 @@
         .modal-body {
             padding: 20px 22px;
             overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+            overscroll-behavior: contain;
         }
 
         .modal-foot {
@@ -3016,11 +3023,16 @@
                 gap: 14px;
             }
 
-            .table-scroll {
+            .table-scroll,
+            .table-responsive,
+            .table-wrap {
                 -webkit-overflow-scrolling: touch;
+                overscroll-behavior-x: contain;
             }
 
-            .table-scroll thead th {
+            .table-scroll thead th,
+            .table-responsive thead th,
+            .table-wrap thead th {
                 position: sticky;
                 top: 0;
                 z-index: 2;
@@ -3101,16 +3113,23 @@
             }
 
             /* Sticky First Column for Tables on Mobile */
-            .table-scroll {
+            .table-scroll,
+            .table-responsive,
+            .table-wrap {
                 border-radius: 8px;
                 border: 1px solid var(--border);
                 background: var(--surface);
                 position: relative;
                 -webkit-overflow-scrolling: touch;
+                overscroll-behavior-x: contain;
             }
 
             .table-scroll table th:first-child,
-            .table-scroll table td:first-child {
+            .table-scroll table td:first-child,
+            .table-responsive table th:first-child,
+            .table-responsive table td:first-child,
+            .table-wrap table th:first-child,
+            .table-wrap table td:first-child {
                 position: sticky;
                 left: 0;
                 background: var(--surface);
@@ -3118,11 +3137,15 @@
                 box-shadow: 2px 0 6px rgba(10, 22, 40, .07);
             }
 
-            .table-scroll table th:first-child {
+            .table-scroll table th:first-child,
+            .table-responsive table th:first-child,
+            .table-wrap table th:first-child {
                 z-index: 4;
             }
 
-            .table-scroll table tr:hover td:first-child {
+            .table-scroll table tr:hover td:first-child,
+            .table-responsive table tr:hover td:first-child,
+            .table-wrap table tr:hover td:first-child {
                 background: #FAFBFD;
             }
 
@@ -3585,6 +3608,7 @@
                 max-height: calc(92dvh - 125px);
                 -webkit-overflow-scrolling: touch;
                 overflow-y: auto;
+                overscroll-behavior: contain;
             }
 
             .modal-foot {
@@ -3649,6 +3673,33 @@
 
             .role-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .step-node .circ {
+                width: 24px;
+                height: 24px;
+                font-size: 10px;
+            }
+
+            .step-line {
+                min-width: 4px;
+                margin: 0 2px;
+            }
+
+            .step-node.current .lbl {
+                font-size: 10px;
+                max-width: 70px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+
+            .btn {
+                padding: 8px 10px;
+                font-size: 12px;
+            }
+
+            .card-pad {
+                padding: 14px 12px;
             }
         }
 
@@ -3962,6 +4013,32 @@
             .content {
                 padding: 0;
             }
+        }
+
+        /* Navigation & Stepper Consistency Polish */
+        .step-node.clickable {
+            cursor: pointer;
+        }
+
+        .step-node.clickable:hover .circ {
+            transform: scale(1.08);
+            box-shadow: 0 0 0 4px rgba(232, 96, 10, 0.22);
+            transition: transform .2s ease, box-shadow .2s ease;
+        }
+
+        @keyframes pulseAttention {
+            0% { box-shadow: 0 0 0 0 rgba(232, 96, 10, 0.45); }
+            70% { box-shadow: 0 0 0 10px rgba(232, 96, 10, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(232, 96, 10, 0); }
+        }
+
+        .pulse-attention {
+            animation: pulseAttention 1.3s ease-out;
+            border-color: var(--orange) !important;
+        }
+
+        body.modal-open {
+            overflow: hidden;
         }
     </style>
 </head>
@@ -4769,8 +4846,10 @@
             { key: 'admin', label: 'Administrator', sub: 'Site GPS & Geofence Administrator', icon: 'fa-user-gear', desc: 'Configure project site GPS coordinates (Lat/Lng), set proximity circle radius range (meters), and manage geofencing parameters.' },
         ];
         function roleInfo(key) {
+            if (!key) return { key: '', label: 'Authorized Signatory', sub: '', icon: 'fa-user' };
             if (key === 'section-head') return ROLES.find(r => r.key === 'hw-section-head') || { key: 'hw-section-head', label: 'Tower Incharge', sub: 'Approving Authority', icon: 'fa-user-tie' };
-            return ROLES.find(r => r.key === key);
+            const r = ROLES.find(r => r.key === key);
+            return r || { key: key, label: (key === 'admin' ? 'Administrator' : 'Authorized Signatory'), sub: '', icon: 'fa-user' };
         }
 
         /* ---------------- STATE ---------------- */
@@ -5167,7 +5246,7 @@
             const radius = opts.radius || (p ? getProjectRadius(p) : (GPS_RADIUS_M || 150));
             gpsModalCtx = Object.assign({ captured: null }, opts, { siteCoord: site, radius: radius });
             renderGPSModalBody();
-            document.getElementById('gpsModal').classList.add('show');
+            openModal('gpsModal');
             // Auto-simulate on-site location so the user can immediately click Confirm without extra friction
             simulateGPS(true);
         }
@@ -5260,7 +5339,7 @@
             photoModalCtx = Object.assign({ captured: null }, opts);
             document.getElementById('photoConfirmBtn').disabled = true;
             renderPhotoModalBody();
-            document.getElementById('photoModal').classList.add('show');
+            openModal('photoModal');
         }
         function renderPhotoModalBody() {
             const ctx = photoModalCtx;
@@ -5355,7 +5434,23 @@
             if (cb) cb(cap);
         }
 
-        function closeModal(id) { document.getElementById(id).classList.remove('show'); }
+        function openModal(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.add('show');
+            const mb = el.querySelector('.modal-body');
+            if (mb) mb.scrollTop = 0;
+            if (document.body) document.body.classList.add('modal-open');
+        }
+        function closeModal(id) {
+            const el = document.getElementById(id);
+            if (!el) return;
+            el.classList.remove('show');
+            const mb = el.querySelector('.modal-body');
+            if (mb) mb.scrollTop = 0;
+            const anyOpen = document.querySelector('.modal-overlay.show');
+            if (!anyOpen && document.body) document.body.classList.remove('modal-open');
+        }
 
         /* ================================================================
            APPROVAL CHAIN ENGINE
@@ -5635,14 +5730,15 @@
                 p.approvals.it && p.approvals.it.status === 'approved';
 
             p.status = allParallelDone ? 'Pending Section Head' : 'Pending Parallel Approval';
-            logActivity(p, 'Site Engineer (' + effectiveSigner + ') acknowledged & forwarded permit' + (allParallelDone ? ' to Tower Incharge (parallel approvals previously cleared).' : ' to parallel gate (MEP · P&M · IT).') + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
+            const shTargetLabel = (pMeta(p) && pMeta(p).shLabel) || (ptypeOf(p) === 'excavation' ? 'Excavation Head' : 'Tower Incharge');
+            logActivity(p, 'Site Engineer (' + effectiveSigner + ') acknowledged & forwarded permit' + (allParallelDone ? (' to ' + shTargetLabel + ' (parallel approvals previously cleared).') : ' to parallel gate (MEP · P&M · IT).') + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
             if (allParallelDone) {
-                notify([shRoleFor(p)], pLabel(p) + ' re-acknowledged by Site Engineer — Tower Incharge approval required.', 'info', p.id);
+                notify([shRoleFor(p)], pLabel(p) + ' re-acknowledged by Site Engineer — ' + shTargetLabel + ' approval required.', 'info', p.id);
             } else {
                 notify(['mep', 'pm', 'it'], pLabel(p) + ' acknowledged by Site Engineer — parallel MEP, P&M and IT approvals required.', 'info', p.id);
             }
             notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Site Engineer and forwarded.', 'info', p.id);
-            showToast('Permit acknowledged & forwarded' + (allParallelDone ? ' to Tower Incharge.' : ' to parallel gate.'), 'ok');
+            showToast('Permit acknowledged & forwarded' + (allParallelDone ? (' to ' + shTargetLabel + '.') : ' to parallel gate.'), 'ok');
             saveState();
         }
 
@@ -5952,7 +6048,7 @@
                 comment: comment
             };
             const isExcavation = ptypeOf(p) === 'excavation';
-            const approverLabel = 'Tower Incharge';
+            const approverLabel = (pMeta(p) && pMeta(p).shLabel) || (isExcavation ? 'Excavation Head' : 'Tower Incharge');
             const shRole = shRoleFor(p);
 
             // Check if EHS originally rejected rectification
@@ -5978,7 +6074,7 @@
 
         function reviewObservationSectionHead(p, ok, { comment, gps, sig, signerName }) {
             const isExcavation = ptypeOf(p) === 'excavation';
-            const approverLabel = 'Tower Incharge';
+            const approverLabel = (pMeta(p) && pMeta(p).shLabel) || (isExcavation ? 'Excavation Head' : 'Tower Incharge');
             const effectiveSigner = signerName || (currentUser && currentUser.name) || approverLabel;
             if (!p.observation) return;
 
@@ -6324,7 +6420,7 @@
             const ext = p.extension;
             const isExc = ptypeOf(p) === 'excavation';
             const isConfined = ptypeOf(p) === 'confined';
-            const approverLabel = 'Tower Incharge';
+            const approverLabel = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
             const rInfo = roleInfo(roleKey);
             const effectiveSigner = signerName || (currentUser && currentUser.name) || (rInfo && rInfo.label) || approverLabel;
 
@@ -6354,7 +6450,7 @@
                     notify([shRoleFor(p)], pLabel(p) + ' extension re-acknowledged by Site Engineer — awaiting ' + approverLabel + ' review.', 'info', p.id);
                 }
                 ext.stageEnteredAt = nowTime();
-            } else if (roleKey === 'section-head' || roleKey === 'hw-section-head') {
+            } else if (roleKey === 'section-head' || roleKey === 'hw-section-head' || roleKey === 'excavation-head') {
                 ext.approvals.sectionHead = { status: 'approved', by: effectiveSigner, at: nowTime(), gps, comment, sig };
                 ext.status = 'Pending EHS Approval';
                 ext.stageEnteredAt = nowTime();
@@ -6389,7 +6485,7 @@
             const isExc = ptypeOf(p) === 'excavation';
             const isConfined = ptypeOf(p) === 'confined';
             const rInfo = roleInfo(roleKey);
-            const approverLabel = (roleKey === 'section-head' || roleKey === 'hw-section-head') ? 'Tower Incharge' : ((rInfo && rInfo.label) || 'Approver');
+            const approverLabel = (roleKey === 'excavation-head') ? 'Excavation Head' : ((roleKey === 'section-head' || roleKey === 'hw-section-head') ? (isExc ? 'Excavation Head' : 'Tower Incharge') : ((rInfo && rInfo.label) || 'Approver'));
             const effectiveSigner = signerName || (currentUser && currentUser.name) || approverLabel;
             ext.status = 'Returned for Correction';
             ext.rejectionOrigin = {
@@ -6839,7 +6935,7 @@
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn btn-primary" onclick="confirmSaveGeofence()"><i class="fa-solid fa-check"></i> Confirm &amp; Apply</button>';
 
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
         }
 
         function confirmSaveGeofence() {
@@ -6876,9 +6972,12 @@
            ================================================================ */
         const STAGE1_MS = 45 * 1000;   // demo Stage-1 escalation window
         const STAGE2_MS = 120 * 1000;  // demo Stage-2 escalation window
-        function stageLabelFor(status) {
+        function stageLabelFor(status, p) {
             if (status === 'Pending Parallel Approval') return 'MEP / P&M / IT parallel approval';
-            if (status === 'Pending Section Head' || status === 'Pending Tower Incharge') return 'Tower Incharge approval';
+            if (status === 'Pending Section Head' || status === 'Pending Tower Incharge' || status === 'Pending Excavation Head') {
+                const isExc = p && (ptypeOf(p) === 'excavation');
+                return ((p && pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge')) + ' approval';
+            }
             if (status === 'Pending EHS Approval') return 'EHS endorsement';
             return status;
         }
@@ -6892,11 +6991,11 @@
                     if (!p.escalation) p.escalation = { stage1: false, stage2: false };
                     if (elapsed > STAGE1_MS && !p.escalation.stage1) {
                         p.escalation.stage1 = true;
-                        notify([shRoleFor(p), 'ehs-manager'], 'ESCALATION (Stage 1): ' + pLabel(p) + ' has been pending ' + stageLabelFor(p.status) + ' beyond the expected window.', 'warn', p.id);
+                        notify([shRoleFor(p), 'ehs-manager'], 'ESCALATION (Stage 1): ' + pLabel(p) + ' has been pending ' + stageLabelFor(p.status, p) + ' beyond the expected window.', 'warn', p.id);
                     }
                     if (elapsed > STAGE2_MS && !p.escalation.stage2) {
                         p.escalation.stage2 = true;
-                        notify(['ehs-manager', 'ehs-officer'], 'ESCALATION (Stage 2): ' + pLabel(p) + ' is significantly overdue at ' + stageLabelFor(p.status) + '. Project Manager / EHS Head visibility required.', 'error', p.id);
+                        notify(['ehs-manager', 'ehs-officer'], 'ESCALATION (Stage 2): ' + pLabel(p) + ' is significantly overdue at ' + stageLabelFor(p.status, p) + '. Project Manager / EHS Head visibility required.', 'error', p.id);
                     }
                 }
                 // Observation auto-escalate to Cancel if validity expires while open
@@ -7674,8 +7773,12 @@
         }
         function doLogout() {
             currentUser = null; currentDetailId = null;
+            closeModal('actionModal'); closeModal('gpsModal'); closeModal('photoModal');
+            const loading = document.getElementById('loadingOverlay');
+            if (loading) loading.classList.remove('show');
             document.getElementById('appRoot').style.display = 'none';
             document.getElementById('landingScreen').style.display = 'flex';
+            window.scrollTo({ top: 0, behavior: 'instant' });
         }
         function switchRole(roleKey) {
             currentUser = Object.assign({ name: '' }, roleInfo(roleKey));
@@ -7714,11 +7817,55 @@
         function setActiveNav(id) {
             document.querySelectorAll('.nav-link').forEach(a => a.classList.toggle('active', a.dataset.nav === id));
         }
-        document.addEventListener('DOMContentLoaded', () => {
-            document.getElementById('sidebarToggle').addEventListener('click', () => document.getElementById('sidebar').classList.toggle('collapsed'));
-        });
+        if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
+            document.addEventListener('DOMContentLoaded', () => {
+                const sbToggle = document.getElementById('sidebarToggle');
+                if (sbToggle) sbToggle.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('collapsed'));
 
-        function goTo(view) {
+                // Global backdrop click dismissal for all modals
+                if (document.querySelectorAll) {
+                    document.querySelectorAll('.modal-overlay').forEach(modal => {
+                        if (modal && typeof modal.addEventListener === 'function') {
+                            modal.addEventListener('click', function (e) {
+                                if (e.target === modal) {
+                                    closeModal(modal.id);
+                                }
+                            });
+                        }
+                    });
+
+                    // Global Escape key listener to close topmost active modal
+                    document.addEventListener('keydown', function (e) {
+                        if (e.key === 'Escape' || e.keyCode === 27) {
+                            const openModals = document.querySelectorAll('.modal-overlay.show');
+                            if (openModals.length > 0) {
+                                const topModal = openModals[openModals.length - 1];
+                                closeModal(topModal.id);
+                            }
+                        }
+                    });
+                }
+            });
+        }
+
+        // Browser Back / Forward History Listener
+        if (typeof window !== 'undefined' && typeof window.addEventListener === 'function') {
+            window.addEventListener('popstate', function (e) {
+                if (!currentUser) return;
+                const state = e.state;
+                if (state) {
+                    if (state.view === 'detail' && state.id) {
+                        viewDetail(state.id, false, true);
+                    } else if (state.view) {
+                        goTo(state.view, true);
+                    }
+                } else {
+                    goTo('dashboard', true);
+                }
+            });
+        }
+
+        function goTo(view, skipHistory) {
             // Strict RBAC Route Guards
             if ((view === 'ptype' || view === 'create') && currentUser && currentUser.key !== 'site-supervisor') {
                 showToast('Access Denied: Only Site Supervisors (Permittees) have authority to create permits.', 'warn');
@@ -7730,9 +7877,17 @@
                 goTo('dashboard');
                 return;
             }
+            // Dismiss any open modals or overlays so they never persist across views
+            closeModal('actionModal');
+            closeModal('gpsModal');
+            closeModal('photoModal');
+            const loading = document.getElementById('loadingOverlay');
+            if (loading) loading.classList.remove('show');
+
             toggleMobileNav(false);
             document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
-            document.getElementById('view-' + view).classList.add('active');
+            const targetEl = document.getElementById('view-' + view);
+            if (targetEl) targetEl.classList.add('active');
             setActiveNav(view === 'create' ? 'ptype' : view);
             const titles = {
                 dashboard: ['Dashboard', 'Role-based overview'],
@@ -7752,7 +7907,13 @@
             if (view === 'notifications') buildNotifList();
             if (view === 'admin-config') renderAdminConfigView();
             applyRoleVisibility();
-            window.scrollTo(0, 0);
+            window.scrollTo({ top: 0, behavior: 'instant' });
+            const hist = (typeof history !== 'undefined' ? history : (typeof window !== 'undefined' ? window.history : null));
+            if (!skipHistory && hist && hist.pushState) {
+                try {
+                    hist.pushState({ view: view }, '', '#' + view);
+                } catch (e) {}
+            }
         }
 
         /* ================================================================
@@ -7787,7 +7948,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Close</button>' +
                 '<button class="btn btn-primary" onclick="closeModal(\'actionModal\');startNewPermit(\'excavation\');"><i class="fa-solid fa-person-digging"></i> Create Excavation Permit Instead</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
         }
         function applyRoleVisibility() {
             document.querySelectorAll('.act-btn').forEach(el => {
@@ -7809,17 +7970,20 @@
                 'Returned for Correction': 'returned',
                 'Pending Section Head': 'sectionhead',
                 'Pending Tower Incharge': 'sectionhead',
+                'Pending Excavation Head': 'sectionhead',
                 'Pending EHS Approval': 'ehs',
                 'Active': 'active',
                 'Active – Observation Open': 'returned',
                 'Observation Pending Site Engineer Acknowledgment': 'parallel',
                 'Observation Pending Section Head Review': 'sectionhead',
                 'Observation Pending Tower Incharge Review': 'sectionhead',
+                'Observation Pending Excavation Head Review': 'sectionhead',
                 'Observation Pending EHS Clearance': 'ehs',
                 'Pending Re-trigger EHS (Day 1)': 'ehs',
                 'Re-trigger Held Overnight (Day 1 Cleared)': 'parallel',
                 'Pending Re-trigger Section Head (Day 2)': 'sectionhead',
                 'Pending Re-trigger Tower Incharge (Day 2)': 'sectionhead',
+                'Pending Re-trigger Excavation Head (Day 2)': 'sectionhead',
                 'Pending Re-trigger EHS Final (Day 2)': 'ehs',
                 'Expired': 'expired',
                 'Closed – Pending Surrender': 'closed',
@@ -7827,12 +7991,14 @@
                 'Cancelled': 'cancelled'
             })[status] || 'draft';
         }
-        function statusBadge(status) {
+        function statusBadge(status, permitOrType) {
             let s = status;
-            if (s === 'Pending Section Head') s = 'Pending Tower Incharge';
-            else if (s === 'Observation Pending Section Head Review') s = 'Observation Pending Tower Incharge Review';
-            else if (s === 'Pending Re-trigger Section Head (Day 2)') s = 'Pending Re-trigger Tower Incharge (Day 2)';
-            return '<span class="badge st-' + statusClass(status) + '">' + s + '</span>';
+            const isExc = permitOrType && (typeof permitOrType === 'object' ? ptypeOf(permitOrType) === 'excavation' : permitOrType === 'excavation');
+            const shTitle = isExc ? 'Excavation Head' : 'Tower Incharge';
+            if (s === 'Pending Section Head') s = 'Pending ' + shTitle;
+            else if (s === 'Observation Pending Section Head Review') s = 'Observation Pending ' + shTitle + ' Review';
+            else if (s === 'Pending Re-trigger Section Head (Day 2)') s = 'Pending Re-trigger ' + shTitle + ' (Day 2)';
+            return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
         }
 
         /* ================================================================
@@ -7875,7 +8041,7 @@
             return '<li onclick="viewDetail(\'' + p.id + '\')" style="cursor:pointer;">' +
                 '<div class="feed-ic"><i class="fa-solid ' + (ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i></div>' +
                 '<div class="feed-body"><div class="feed-title">' + p.id + ' &middot; ' + p.project + (locName ? ' — ' + locName : '') + '</div><div class="feed-meta">' + pMeta(p).code + ' ' + pMeta(p).short + ' &middot; ' + p.location + '</div></div>' +
-                '<div style="text-align:right;">' + statusBadge(p.status) + '<div class="feed-time" style="margin-top:4px;">Valid till ' + fmtTime(p.validTill) + '</div></div>' +
+                '<div style="text-align:right;">' + statusBadge(p.status, p) + '<div class="feed-time" style="margin-top:4px;">Valid till ' + fmtTime(p.validTill) + '</div></div>' +
                 '</li>';
         }
         function buildDashboard() {
@@ -8045,7 +8211,15 @@
                 }
             }
             const sSel = document.getElementById('regStatusFilter');
-            sSel.innerHTML = '<option value="">All Statuses</option>' + ALL_STATUSES.map(s => '<option value="' + s + '">' + s + '</option>').join('');
+            const isExcUser = currentUser && currentUser.key === 'excavation-head';
+            const isTiUser = currentUser && currentUser.key === 'hw-section-head';
+            sSel.innerHTML = '<option value="">All Statuses</option>' + ALL_STATUSES.map(s => {
+                let lbl = s;
+                if (s === 'Pending Section Head') lbl = isExcUser ? 'Pending Excavation Head' : isTiUser ? 'Pending Tower Incharge' : 'Pending Section Head';
+                else if (s === 'Observation Pending Section Head Review') lbl = isExcUser ? 'Observation Pending Excavation Head Review' : isTiUser ? 'Observation Pending Tower Incharge Review' : 'Observation Pending Section Head Review';
+                else if (s === 'Pending Re-trigger Section Head (Day 2)') lbl = isExcUser ? 'Pending Re-trigger Excavation Head (Day 2)' : isTiUser ? 'Pending Re-trigger Tower Incharge (Day 2)' : 'Pending Re-trigger Section Head (Day 2)';
+                return '<option value="' + s + '">' + lbl + '</option>';
+            }).join('');
             const pSel = document.getElementById('regProjectFilter');
             pSel.innerHTML = '<option value="">All Projects</option>' + PROJECTS.map(p => '<option value="' + p.name + '">' + p.name + '</option>').join('');
         }
@@ -8058,7 +8232,7 @@
             let rows = PERMITS.filter(p => {
                 if (!permitMatchesScope(p, scope)) return false;   // Tower Incharge only sees allowed modules
                 if (tf && ptypeOf(p) !== tf) return false;
-                if (sf && p.status !== sf) return false;
+                if (sf && p.status !== sf && !(sf === 'Pending Section Head' && (p.status === 'Pending Tower Incharge' || p.status === 'Pending Excavation Head'))) return false;
                 if (pf && p.project !== pf) return false;
                 if (q && !((p.id || '').toLowerCase().includes(q) || (p.project || '').toLowerCase().includes(q) || (p.location || '').toLowerCase().includes(q) || (p.tower || '').toLowerCase().includes(q) || (pMeta(p).name || '').toLowerCase().includes(q) || (pMeta(p).code || '').toLowerCase().includes(q) || (p.contractor || '').toLowerCase().includes(q))) return false;
                 return true;
@@ -8073,7 +8247,7 @@
                     '<td><span class="badge" style="font-size:10px;' + pBadgeStyle + '"><i class="fa-solid ' + pIcon + '"></i> ' + pMeta(p).code + '</span></td>' +
                     '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + p.tower + '</span></td>' +
                     '<td><span style="font-size:11.5px;">' + pSubText + '</span></td>' +
-                    '<td>' + statusBadge(p.status) + '</td>' +
+                    '<td>' + statusBadge(p.status, p) + '</td>' +
                     '<td><span style="font-size:11.5px;">' + pMeta(p).shLabel + '</span></td>' +
                     '<td>' + (p.validTill ? fmtDateTime(p.validTill) : '<span style="color:var(--text-faint);">&mdash; Draft</span>') + '</td>' +
                     '<td>' + p.createdBy + '</td>' +
@@ -8178,13 +8352,105 @@
             WIZ_STEPS.forEach((label, i) => {
                 const n = i + 1;
                 const cls = n < wizStep ? 'done' : n === wizStep ? 'current' : '';
-                html += '<div class="step-node ' + cls + '"><div class="circ">' + (n < wizStep ? '<i class="fa-solid fa-check"></i>' : n) + '</div><span class="lbl">' + label + '</span></div>';
+                const isClickable = n <= wizStep;
+                html += '<div class="step-node ' + cls + (isClickable ? ' clickable' : '') + '" onclick="goToWizStep(' + n + ')" title="Step ' + n + ': ' + label + '"><div class="circ">' + (n < wizStep ? '<i class="fa-solid fa-check"></i>' : n) + '</div><span class="lbl">' + label + '</span></div>';
                 if (i < WIZ_STEPS.length - 1) html += '<div class="step-line ' + (n < wizStep ? 'done' : '') + '"></div>';
             });
             document.getElementById('stepIndicator').innerHTML = html;
         }
-        function wizNext() { if (!validateWizStep(wizStep)) return; if (wizStep === 4) { finalSubmitPermit(); return; } wizStep++; renderStepIndicator(); renderWizStep(); }
-        function wizPrev() { if (wizStep > 1) { wizStep--; renderStepIndicator(); renderWizStep(); } }
+        function goToWizStep(targetStep) {
+            if (targetStep < 1 || targetStep > 4 || targetStep === wizStep) return;
+            if (targetStep < wizStep) {
+                wizStep = targetStep;
+                renderStepIndicator();
+                renderWizStep();
+                window.scrollTo({ top: 0, behavior: 'instant' });
+                return;
+            }
+            for (let s = wizStep; s < targetStep; s++) {
+                if (!validateWizStep(s)) {
+                    showToast('Please complete required fields on Step ' + s + ' (' + WIZ_STEPS[s - 1] + ') before proceeding.', 'warn');
+                    scrollToStepError(s);
+                    return;
+                }
+            }
+            wizStep = targetStep;
+            renderStepIndicator();
+            renderWizStep();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        function scrollToStepError(step) {
+            if (step === 1) {
+                const firstErr = document.querySelector('.form-field.invalid, .form-error[style*="flex"]');
+                if (firstErr) {
+                    firstErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    const inp = firstErr.querySelector('input, select, textarea');
+                    if (inp) inp.focus();
+                }
+            } else if (step === 2) {
+                if (draft && draft.checklist) {
+                    const incompleteIdx = draft.checklist.findIndex((c, idx) => !checklistItemComplete(c, idx, ptypeOf(draft)));
+                    if (incompleteIdx >= 0) {
+                        const items = document.querySelectorAll('.checklist-item');
+                        if (items && items[incompleteIdx]) {
+                            items[incompleteIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+                            items[incompleteIdx].classList.add('pulse-attention');
+                            setTimeout(() => items[incompleteIdx].classList.remove('pulse-attention'), 1400);
+                            return;
+                        }
+                    }
+                    if (!draft.sitePhoto) {
+                        const pDrop = document.querySelector('.photo-drop, .photo-preview');
+                        if (pDrop) pDrop.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return;
+                    }
+                    const isExc = ptypeOf(draft) === 'excavation';
+                    if (isExc && !draft.drawing) {
+                        const dDrop = document.querySelector('#drawingDropzone, .file-card');
+                        if (dDrop) dDrop.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        return;
+                    }
+                }
+            } else if (step === 3) {
+                const sErr = document.getElementById('startTimeError');
+                const vErr = document.getElementById('validTimeError');
+                if (sErr && sErr.style.display === 'flex') {
+                    sErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                } else if (vErr && vErr.style.display === 'flex') {
+                    vErr.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            } else if (step === 4) {
+                if (!draft.signerVerified) {
+                    const nameEl = document.getElementById('seSignerName');
+                    if (nameEl) {
+                        nameEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                        nameEl.focus();
+                    }
+                } else if (!(draft.signature && draft.signature.dataUrl)) {
+                    const sigWrap = document.getElementById('seSigPad-wrap') || document.querySelector('.sig-wrap');
+                    if (sigWrap) sigWrap.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }
+        }
+        function wizNext() {
+            if (!validateWizStep(wizStep)) {
+                scrollToStepError(wizStep);
+                return;
+            }
+            if (wizStep === 4) { finalSubmitPermit(); return; }
+            wizStep++;
+            renderStepIndicator();
+            renderWizStep();
+            window.scrollTo({ top: 0, behavior: 'instant' });
+        }
+        function wizPrev() {
+            if (wizStep > 1) {
+                wizStep--;
+                renderStepIndicator();
+                renderWizStep();
+                window.scrollTo({ top: 0, behavior: 'instant' });
+            }
+        }
         function saveDraftAndExit() {
             draft.status = 'Draft';
             if (!PERMITS.find(p => p.id === draft.id)) PERMITS.push(draft);
@@ -8926,16 +9192,33 @@
                     draft.checklist[i].subChecks = { above: true, below: true, workplace: true };
                 }
             }
+            const currentY = window.scrollY;
             renderWizStep();
+            window.scrollTo({ top: currentY, behavior: 'instant' });
         }
         function captureChecklistPhoto(i) {
-            openPhotoModal({ onConfirm: function (cap) { draft.checklist[i].photo = cap.dataUrl; renderWizStep(); } });
+            openPhotoModal({
+                onConfirm: function (cap) {
+                    draft.checklist[i].photo = cap.dataUrl;
+                    const currentY = window.scrollY;
+                    renderWizStep();
+                    window.scrollTo({ top: currentY, behavior: 'instant' });
+                }
+            });
         }
         function captureChecklistGPS(i) {
             const prj = projectByName(draft.project);
             const site = prj ? prj.site : (draft.gps || null);
             const radius = prj ? prj.radius : 150;
-            openGPSModal({ siteCoord: site, radius: radius, gateEnabled: true, onConfirm: function (cap) { draft.checklist[i].gps = cap; renderWizStep(); } });
+            openGPSModal({
+                siteCoord: site, radius: radius, gateEnabled: true,
+                onConfirm: function (cap) {
+                    draft.checklist[i].gps = cap;
+                    const currentY = window.scrollY;
+                    renderWizStep();
+                    window.scrollTo({ top: currentY, behavior: 'instant' });
+                }
+            });
         }
         function captureSitePhoto() {
             const checklistDone = draft.checklist && draft.checklist.every((c, idx) => checklistItemComplete(c, idx, ptypeOf(draft)));
@@ -8943,7 +9226,14 @@
                 showToast('Please complete all checklist items above before capturing the Site Photo.', 'warn');
                 return;
             }
-            openPhotoModal({ onConfirm: function (cap) { draft.sitePhoto = cap.dataUrl; renderWizStep(); } });
+            openPhotoModal({
+                onConfirm: function (cap) {
+                    draft.sitePhoto = cap.dataUrl;
+                    const currentY = window.scrollY;
+                    renderWizStep();
+                    window.scrollTo({ top: currentY, behavior: 'instant' });
+                }
+            });
         }
         function wireStep2() { validateWizStep(2); }
 
@@ -9058,7 +9348,7 @@
                 ? 'the Site Engineer for acknowledgment, then MEP Engineer for clearance, then Tower Incharge for review, then EHS Safety Manager / Officer for verification'
                 : isHw
                 ? 'the Site Engineer for acknowledgment, then Tower Incharge for review, then EHS Safety Manager / Officer for verification'
-                : 'the Site Engineer for acknowledgment, then parallel disciplines (MEP, P&amp;M, IT), then Tower Incharge, then EHS';
+                : 'the Site Engineer for acknowledgment, then parallel disciplines (MEP, P&amp;M, IT), then Excavation Head, then EHS';
             return '<div class="section-banner"><i class="fa-solid fa-eye"></i> ' + (correctionMode ? ('Review your corrections carefully. Re-submitting will restart the full approval workflow (' + routeTxt + ').') : ('Review every section carefully. Submitting will route this permit to ' + routeTxt + '.')) + '</div>' +
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-clipboard-list"></i> General Information</div>' +
                 '<div class="review-item"><div class="rk">Permit No.</div><div class="rv mono">' + draft.id + '</div></div>' +
@@ -9132,7 +9422,7 @@
                     '<b>' + escapeHtml(draft.signature.by) + '</b> <span style="font-size:11.5px;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span>' +
                     '<div style="color:var(--green);font-size:11.5px;font-weight:700;margin-top:3px;"><i class="fa-solid fa-shield-check"></i> DPDP Statutory Consent Verified &bull; Signed ' + fmtDateTime(draft.signature.at) + '</div>' +
                     '</div>' +
-                    '<button type="button" class="btn btn-sm btn-ghost" style="margin-left:auto;" onclick="draft.signature=null;draft.signerVerified=false;renderWizStep();"><i class="fa-solid fa-eraser"></i> Change Signatory / Re-sign</button>' +
+                    '<button type="button" class="btn btn-sm btn-ghost" style="margin-left:auto;" onclick="editWizSigner()"><i class="fa-solid fa-eraser"></i> Change Signatory / Re-sign</button>' +
                     '</div>'
                     : (!draft.signerVerified
                         ? '<div class="dpdp-box">' +
@@ -9228,11 +9518,24 @@
             draft.createdBy = val;
             renderWizStep();
             showToast('Signatory verified. Please provide your digital signature below.', 'ok');
+            setTimeout(function () {
+                const sigSec = document.getElementById('seSigPad-wrap') || document.getElementById('wizSigSection') || document.querySelector('.sig-wrap');
+                if (sigSec) {
+                    sigSec.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                }
+            }, 50);
         }
         function editWizSigner() {
             draft.signerVerified = false;
             draft.signature = null;
             renderWizStep();
+            setTimeout(function () {
+                const nameEl = document.getElementById('seSignerName');
+                if (nameEl) {
+                    nameEl.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    nameEl.focus();
+                }
+            }, 50);
         }
         function wireStep1() {
             const nowSel = document.getElementById('inTower');
@@ -9458,7 +9761,7 @@
             // Confirmation gate before entering the enterprise approval workflow.
             const isCorrection = correctionMode;
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-paper-plane" style="color:var(--orange);"></i> Confirm ' + (isCorrection ? 'Re-submission' : 'Submission');
-            let wfDesc = 'Site Engineer acknowledgment (Step 2), parallel clearance by MEP, P&amp;M and IT Engineers (Step 3), Tower Incharge review (Step 4), and final EHS endorsement (Step 5)';
+            let wfDesc = 'Site Engineer acknowledgment (Step 2), parallel clearance by MEP, P&amp;M and IT Engineers (Step 3), Excavation Head review (Step 4), and final EHS endorsement (Step 5)';
             if (ptypeOf(draft) === 'confined') {
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by Tower Incharge review (Step 3) and final EHS endorsement (Step 4 &mdash; first approval by EHS Manager or Officer activates the permit)';
             } else if (ptypeOf(draft) === 'guardrail') {
@@ -9474,7 +9777,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn btn-primary" onclick="confirmFinalSubmit()"><i class="fa-solid fa-paper-plane"></i> ' + (isCorrection ? 'Re-submit Permit' : 'Submit Permit') + '</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
         }
         function confirmFinalSubmit() {
             closeModal('actionModal');
@@ -9648,7 +9951,7 @@
 
             // Section Head
             const isExc = ptypeOf(p) === 'excavation';
-            const shLabel = 'Tower Incharge';
+            const shLabel = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
             const shStepNum = (isHw || isGr || isConfined) ? 'Step 3' : 'Step 4';
             const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
             const shSub = isSectionHeadDone ? (shStepNum + ' · Approved') : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? (shStepNum + ' · Action Req.') : (shStepNum + ' · Review')));
@@ -9673,7 +9976,7 @@
             // Observation Status Banner
             if (p.observation && p.observation.status !== 'Resolved') {
                 const obsId = p.observation.id || ('OBS-' + p.id);
-                const shApproverTitle = 'Tower Incharge';
+                const shApproverTitle = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
                 const hasResp = !!p.observation.response;
                 const hasEng = !!(p.observation.engAck && p.observation.engAck.acknowledged);
                 const hasSh = !!(p.observation.shReview && p.observation.shReview.reviewed);
@@ -9718,7 +10021,7 @@
                     '<div style="font-size:11.5px;color:var(--text-muted);">' +
                     'Day 1 Initial EHS: ' + (p.retrigger.day1Ehs ? '<b style="color:var(--green);">Approved (Held Overnight)</b>' : '<b>Pending</b>') + ' &middot; ' +
                     'Day 2 Engineer Ack: ' + (p.retrigger.day2EngAck ? '<b style="color:var(--green);">Acknowledged</b>' : '<b>Pending</b>') + ' &middot; ' +
-                    'Day 2 Tower Incharge: ' + (p.retrigger.day2SectionHead ? '<b style="color:var(--green);">Approved</b>' : '<b>Pending</b>') + ' &middot; ' +
+                    'Day 2 Excavation Head: ' + (p.retrigger.day2SectionHead ? '<b style="color:var(--green);">Approved</b>' : '<b>Pending</b>') + ' &middot; ' +
                     'Day 2 Actual EHS: ' + (p.retrigger.day2EhsActual ? '<b style="color:var(--green);">Revalidated</b>' : '<b>Pending</b>') +
                     '</div>' +
                     '</div>';
@@ -9731,7 +10034,7 @@
             const a = ext.approvals || {};
             const isExc = p && ptypeOf(p) === 'excavation';
             const isConfined = p && ptypeOf(p) === 'confined';
-            const shLabel = 'Tower Incharge';
+            const shLabel = (p && pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
             function node(label, sub, state) {
                 return '<div class="tr-node ' + state + '"><div class="tr-circ">' +
                     (state === 'done' ? '<i class="fa-solid fa-check"></i>' :
@@ -10103,14 +10406,14 @@
                 if (!retriggerStarted) {
                     html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
                         '<div class="aa-title"><i class="fa-solid fa-arrows-rotate" style="color:#1E88E5;"></i> 2-Day Re-trigger Revalidation (Excavation)</div>' +
-                        '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Tower Incharge &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
+                        '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Excavation Head &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
                         '<div class="form-error" style="display:flex;margin-bottom:10px;"><i class="fa-solid fa-circle-exclamation"></i> Cannot request re-trigger before scheduled work start time (' + (p.startTime || 'validity start') + ' IST).</div>' +
                         '<button class="btn btn-primary" disabled><i class="fa-solid fa-arrows-rotate"></i> Request Re-trigger</button>' +
                         '</div>';
                 } else {
                     html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
                         '<div class="aa-title"><i class="fa-solid fa-arrows-rotate" style="color:#1E88E5;"></i> 2-Day Re-trigger Revalidation (Excavation)</div>' +
-                        '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Tower Incharge &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
+                        '<div class="aa-desc">Dedicated post-activation revalidation path distinct from Extension and Observation, spanning two days. EHS initial approval on Day 1 &rarr; holds overnight &rarr; Day 2 Engineer ack &rarr; Excavation Head &rarr; EHS actual approval. Retains all permit details and checklists.</div>' +
                         '<button class="btn btn-primary" onclick="openRequestRetriggerModal(\'' + p.id + '\')"><i class="fa-solid fa-arrows-rotate"></i> Request Re-trigger</button>' +
                         '</div>';
                 }
@@ -10132,15 +10435,15 @@
             if (p.status === 'Re-trigger Held Overnight (Day 1 Cleared)' && rk === 'site-engineer') {
                 html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
                     '<div class="aa-title"><i class="fa-solid fa-sun" style="color:#1E88E5;"></i> Re-trigger Day 2: Site Engineer Acknowledgment</div>' +
-                    '<div class="aa-desc">Day 1 EHS initial approval was granted. Acknowledge Day 2 work resumption to forward to Tower Incharge and EHS. Gated by GPS, DPDP consent, and signature.</div>' +
+                    '<div class="aa-desc">Day 1 EHS initial approval was granted. Acknowledge Day 2 work resumption to forward to ' + shTitle + ' and EHS. Gated by GPS, DPDP consent, and signature.</div>' +
                     '<button class="btn btn-primary" onclick="openApprovalGPS(\'' + p.id + '\',\'retrigger-eng-ack\')"><i class="fa-solid fa-clipboard-check"></i> Acknowledge Day 2 Work Resumption</button>' +
                     '</div>';
             }
 
-            // 4. Day 2: Tower Incharge Review
-            if ((p.status === 'Pending Re-trigger Section Head (Day 2)' || p.status === 'Pending Re-trigger Tower Incharge (Day 2)') && (rk === 'hw-section-head' || rk === 'section-head')) {
+            // 4. Day 2: Excavation Head Review
+            if ((p.status === 'Pending Re-trigger Section Head (Day 2)' || p.status === 'Pending Re-trigger Tower Incharge (Day 2)') && (rk === 'excavation-head' || rk === 'hw-section-head' || rk === 'section-head')) {
                 html += '<div class="approval-action-card" style="border-color:#1E88E5;background:rgba(30,136,229,0.06);">' +
-                    '<div class="aa-title"><i class="fa-solid fa-gavel" style="color:#1E88E5;"></i> Re-trigger Day 2: Tower Incharge Review</div>' +
+                    '<div class="aa-title"><i class="fa-solid fa-gavel" style="color:#1E88E5;"></i> Re-trigger Day 2: ' + shTitle + ' Review</div>' +
                     '<div class="aa-desc">Review Day 2 site conditions for revalidation. Approve to route to EHS for actual revalidation, or Reject/Cancel. Gated by GPS, DPDP consent, and signature.</div>' +
                     '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
                     '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'retrigger-sh-approve\')"><i class="fa-solid fa-check"></i> Approve Day 2</button>' +
@@ -10602,6 +10905,8 @@
                 reusedSignatory: hasStoredSigner
             };
 
+            const isExc = ptypeOf(p) === 'excavation';
+            const shLabelModal = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
             let modalTitle = '<i class="fa-solid fa-check" style="color:var(--green);"></i> Confirm Approval';
             if (decision === 'ack') modalTitle = '<i class="fa-solid fa-clipboard-check" style="color:var(--green);"></i> Site Engineer Approval &amp; Acknowledgment';
             else if (decision === 'ack-eng-return') {
@@ -10610,12 +10915,12 @@
             }
             else if (decision === 'reject-engineer') modalTitle = '<i class="fa-solid fa-xmark" style="color:var(--red);"></i> Reject &amp; Return to Site Supervisor';
             else if (decision === 'obs-eng-ack') modalTitle = '<i class="fa-solid fa-clipboard-check" style="color:var(--blue);"></i> Acknowledge Observation Rectification';
-            else if (decision === 'obs-sh-approved') modalTitle = '<i class="fa-solid fa-gavel" style="color:var(--green);"></i> Tower Incharge Rectification Endorsement';
+            else if (decision === 'obs-sh-approved') modalTitle = '<i class="fa-solid fa-gavel" style="color:var(--green);"></i> ' + escapeHtml(shLabelModal) + ' Rectification Endorsement';
             else if (decision === 'obs-sh-rejected') modalTitle = '<i class="fa-solid fa-xmark" style="color:var(--red);"></i> Reject Observation &amp; Return to Supervisor';
             else if (decision === 'obs-clear-reject') modalTitle = '<i class="fa-solid fa-rotate-left" style="color:var(--red);"></i> Reject Observation Rectification &amp; Return to Supervisor';
             else if (decision === 'retrigger-day1-approved') modalTitle = '<i class="fa-solid fa-moon" style="color:var(--blue);"></i> Re-trigger Day 1: EHS Overnight Hold Approval';
             else if (decision === 'retrigger-eng-ack') modalTitle = '<i class="fa-solid fa-sun" style="color:#E65100;"></i> Re-trigger Day 2: Site Engineer Acknowledgment';
-            else if (decision === 'retrigger-sh-approved') modalTitle = '<i class="fa-solid fa-gavel" style="color:#E65100;"></i> Re-trigger Day 2: Tower Incharge Approval';
+            else if (decision === 'retrigger-sh-approved') modalTitle = '<i class="fa-solid fa-gavel" style="color:#E65100;"></i> Re-trigger Day 2: ' + escapeHtml(shLabelModal) + ' Approval';
             else if (decision === 'retrigger-ehs-approved') modalTitle = '<i class="fa-solid fa-shield-check" style="color:var(--green);"></i> Re-trigger Day 2: Actual EHS Revalidation';
             else if (decision.includes('cancelled') || decision === 'cancelled' || decision === 'obs-cancel') modalTitle = '<i class="fa-solid fa-ban" style="color:var(--red);"></i> Confirm Cancellation';
             else if (decision.includes('rejected') || decision === 'rejected') modalTitle = '<i class="fa-solid fa-xmark" style="color:var(--red);"></i> Confirm Rejection / Return';
@@ -10631,7 +10936,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn ' + (needsComment ? 'btn-danger-solid' : 'btn-green') + '" onclick="submitActionModal()"><i class="fa-solid fa-check"></i> Confirm</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!hasStoredSigner && !isDay1EhsApproval) {
                 setTimeout(function () {
@@ -10686,12 +10991,16 @@
             document.getElementById('modalSignerIdBox').style.display = 'none';
             const sigBox = document.getElementById('modalSigBox');
             sigBox.style.display = 'block';
-            document.getElementById('modalVerifiedSignerTitle').innerHTML = 'Signatory: <b>' + escapeHtml(val) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + roleInfo(actionModalCtx.rk).label + ')</span>';
+            const rkObj = roleInfo(actionModalCtx.rk) || {};
+            document.getElementById('modalVerifiedSignerTitle').innerHTML = 'Signatory: <b>' + escapeHtml(val) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + (rkObj.label || 'Authorized Signatory') + ')</span>';
 
             initSigPad('apprSigPad', function (dataUrl) {
                 actionModalCtx.sig = dataUrl;
             });
             showToast('Signatory verified. Please provide your digital signature below.', 'ok');
+            setTimeout(function () {
+                if (sigBox) sigBox.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+            }, 50);
         }
 
         function editModalSigner() {
@@ -10715,7 +11024,7 @@
                 '<div style="margin-bottom:12px;">' +
                 '<label class="dpdp-consent-pill" id="modalConsentPill">' +
                 '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
-                '<span style="font-size:11.5px;line-height:1.55;color:var(--text);"><strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my personal name, role designation (' + roleInfo(rk).label + '), timestamp, GPS, and digital signature.</span>' +
+                '<span style="font-size:11.5px;line-height:1.55;color:var(--text);"><strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my personal name, role designation (' + ((roleInfo(rk) || {}).label || 'Authorized Signatory') + '), timestamp, GPS, and digital signature.</span>' +
                 '</label>' +
                 '<div id="modalConsentErr" class="form-error" style="display:none;margin-top:4px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP consent checkbox must be selected before you can sign.</div>' +
                 '</div>' +
@@ -10742,6 +11051,13 @@
                     });
                 }
             }
+            setTimeout(function () {
+                const nameInp = document.getElementById('modalSignerName');
+                if (nameInp) {
+                    nameInp.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+                    nameInp.focus();
+                }
+            }, 50);
         }
 
         function submitActionModal() {
@@ -10902,7 +11218,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn btn-danger" onclick="submitRaiseObservation()"><i class="fa-solid fa-triangle-exclamation"></i> Raise Observation</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!hasStoredSigner) {
                 setTimeout(function () {
@@ -11002,7 +11318,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn btn-primary" onclick="submitRespondObservation()"><i class="fa-solid fa-paper-plane"></i> Submit Rectification</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!hasStoredSigner) {
                 setTimeout(function () {
@@ -11117,7 +11433,7 @@
                 '<div style="font-weight:700;color:#1E88E5;margin-bottom:4px;"><i class="fa-solid fa-info-circle"></i> Dedicated 2-Day Revalidation Path:</div>' +
                 '<div style="font-size:12px;color:var(--text);line-height:1.5;">' +
                 '<b>Day 1:</b> EHS initial approval authorises re-trigger &rarr; holds overnight.<br>' +
-                '<b>Day 2:</b> Site Engineer acknowledges &rarr; Tower Incharge reviews &rarr; EHS actual approval revalidates permit.<br>' +
+                '<b>Day 2:</b> Site Engineer acknowledges &rarr; Excavation Head reviews &rarr; EHS actual approval revalidates permit.<br>' +
                 '<i>All previously entered permit details and checklists are retained; no re-entry required.</i>' +
                 '</div>' +
                 '</div>' +
@@ -11128,7 +11444,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button>' +
                 '<button class="btn btn-primary" onclick="submitRequestRetrigger()"><i class="fa-solid fa-paper-plane"></i> Submit Re-trigger Request</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!hasStoredSigner) {
                 setTimeout(function () {
@@ -11245,7 +11561,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">No</button>' +
                 '<button class="btn btn-primary" onclick="renderExtensionModal()"><i class="fa-solid fa-check"></i> Yes, Request Extension</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
         }
         function renderExtensionModal() {
             const ctx = actionModalCtx; const p = ctx.p;
@@ -11256,7 +11572,7 @@
                     '<div class="form-field" style="margin-bottom:12px;"><label>Current Expiry (locked date)</label><input type="text" value="' + fmtDateTime(p.validTill) + '" readonly></div>' +
                     '<div class="form-error" style="display:flex;"><i class="fa-solid fa-circle-exclamation"></i> No extension is possible — this permit\'s validity already reaches or exceeds the maximum permissible limit (08:30 PM IST).</div>';
                 document.getElementById('actionModalFoot').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Close</button>';
-                document.getElementById('actionModal').classList.add('show');
+                openModal('actionModal');
                 return;
             }
             const e = new Date(p.validTill); const endMin = e.getHours() * 60 + e.getMinutes();
@@ -11273,7 +11589,7 @@
                 '<div class="form-field" style="margin-bottom:12px;"><label>Photo Evidence <span class="req">*</span></label>' + (ctx.photo ? '<div class="photo-preview"><img src="' + ctx.photo + '"></div>' : '<button class="btn btn-sm" onclick="captureExtPhoto()"><i class="fa-solid fa-camera"></i> Attach Photo</button>') + '</div>' +
                 buildSignatorySectionHtml(p, ctx.rk);
             document.getElementById('actionModalFoot').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button><button class="btn btn-primary" onclick="submitExtensionRequest()"><i class="fa-solid fa-paper-plane"></i> Submit Extension Request</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!ctx.reusedSignatory) {
                 setTimeout(function () {
@@ -11384,7 +11700,7 @@
                     '<div class="form-field" style="margin-bottom:12px;"><label>Current Expiry (locked date)</label><input type="text" value="' + fmtDateTime(p.validTill) + '" readonly></div>' +
                     '<div class="form-error" style="display:flex;"><i class="fa-solid fa-circle-exclamation"></i> No extension is possible — this permit\'s validity already reaches or exceeds the maximum permissible limit (08:30 PM IST).</div>';
                 document.getElementById('actionModalFoot').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Close</button>';
-                document.getElementById('actionModal').classList.add('show');
+                openModal('actionModal');
                 return;
             }
 
@@ -11411,7 +11727,7 @@
                 buildSignatorySectionHtml(p, ctx.rk);
 
             document.getElementById('actionModalFoot').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button><button class="btn btn-primary" onclick="submitReviseExtensionRequest()"><i class="fa-solid fa-paper-plane"></i> Submit Revised Extension</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!ctx.reusedSignatory) {
                 setTimeout(function () {
@@ -11510,7 +11826,7 @@
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')"><i class="fa-solid fa-arrow-left"></i> No, Go Back</button>' +
                 '<button class="btn btn-green" onclick="renderSurrenderModal()"><i class="fa-solid fa-check"></i> Yes, Surrender Permit</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
         }
         function renderSurrenderModal() {
             const ctx = actionModalCtx;
@@ -11557,7 +11873,7 @@
                     '</div>') : '') +
                 buildSignatorySectionHtml(ctx.p, ctx.rk);
             document.getElementById('actionModalFoot').innerHTML = '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Cancel</button><button class="btn btn-green" onclick="submitSurrender()"><i class="fa-solid fa-hand-holding"></i> Close &amp; Surrender Permit</button>';
-            document.getElementById('actionModal').classList.add('show');
+            openModal('actionModal');
 
             if (!ctx.reusedSignatory) {
                 setTimeout(function () {
@@ -11856,7 +12172,7 @@
                 function chainSigRows(ch, isExt) {
                     const isExc = ptypeOf(p) === 'excavation';
                     const isConf = ptypeOf(p) === 'confined';
-                    const shLabel = 'Tower Incharge — Review & Approval';
+                    const shLabel = ((pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge')) + ' — Review & Approval';
                     if (isExt) {
                         const extRows = [];
                         extRows.push(['siteEngineer', 'Site Engineer — Verification & Re-acknowledgment']);
@@ -11908,7 +12224,7 @@
                     const obsRef = p.observation.id || ('OBS-' + p.id);
                     const isExc = ptypeOf(p) === 'excavation';
                     const isConf = ptypeOf(p) === 'confined';
-                    const shTitle = 'Tower Incharge';
+                    const shTitle = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
                     kv('Work Permit Number', p.id, 'Observation Reference', obsRef);
                     kv('Raised By', p.observation.raisedBy + (p.observation.raisedByRole ? ' (' + p.observation.raisedByRole + ')' : ''), 'Raised At', fmtDateTime(p.observation.raisedAt) + ' IST');
                     kv('Deviation Reported', p.observation.comment, 'Observation Status', p.observation.status);
@@ -12195,7 +12511,7 @@
         }
 
         /* ---------- MAIN DETAIL RENDER ---------- */
-        function viewDetail(id, silentRefresh) {
+        function viewDetail(id, silentRefresh, skipHistory) {
             try {
                 const p = PERMITS.find(x => x.id === id);
                 if (!p) return;
@@ -12255,7 +12571,7 @@
                     : '<div class="empty-state" style="padding:16px 0;"><i class="fa-regular fa-clock"></i>No logged activities yet.</div>';
 
                 document.getElementById('view-detail').innerHTML =
-                    '<div class="view-header"><div><div class="mono" style="font-size:22px;font-weight:800;color:var(--navy);">' + p.id + '</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + statusBadge(p.status) + '<span class="tag-type"><i class="fa-solid ' + (ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i> ' + pMeta(p).code + ' — ' + pMeta(p).short + '</span><span style="font-size:12px;color:var(--text-muted);">Issued ' + fmtDateTime(p.submittedAt || p.createdAt) + '</span></div></div>' +
+                    '<div class="view-header"><div><div class="mono" style="font-size:22px;font-weight:800;color:var(--navy);">' + p.id + '</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + statusBadge(p.status, p) + '<span class="tag-type"><i class="fa-solid ' + (ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i> ' + pMeta(p).code + ' — ' + pMeta(p).short + '</span><span style="font-size:12px;color:var(--text-muted);">Issued ' + fmtDateTime(p.submittedAt || p.createdAt) + '</span></div></div>' +
                     '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-ghost no-print" onclick="goTo(\'register\')"><i class="fa-solid fa-arrow-left"></i> Back</button>' +
                     downloadBtnHtml +
                     '</div></div>' +
@@ -12369,10 +12685,19 @@
                 document.querySelectorAll('.view').forEach(v => v.classList.remove('active'));
                 document.getElementById('view-detail').classList.add('active');
                 if (!silentRefresh) {
+                    closeModal('actionModal');
+                    closeModal('gpsModal');
+                    closeModal('photoModal');
                     document.getElementById('topbarTitle').textContent = 'Permit Detail';
                     document.getElementById('topbarSub').textContent = p.id + ' — ' + p.project;
                     setActiveNav('register');
-                    window.scrollTo(0, 0);
+                    window.scrollTo({ top: 0, behavior: 'instant' });
+                    const hist = (typeof history !== 'undefined' ? history : (typeof window !== 'undefined' ? window.history : null));
+                    if (!skipHistory && hist && hist.pushState) {
+                        try {
+                            hist.pushState({ view: 'detail', id: id }, '', '#detail/' + id);
+                        } catch (e) {}
+                    }
                 }
             } catch (err) {
                 console.error('viewDetail rendering error:', err);
