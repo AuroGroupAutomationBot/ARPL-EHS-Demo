@@ -305,10 +305,9 @@ evalInVM(`
 draft.project = 'Auro Grand Residency';
 draft.projectNum = 'PRJ-AGR';
 draft.organization = 'Internal';
-draft.locationStructure = 'Tower';
-draft.tower = 'Tower A';
-draft.locFloor = 'Ground Floor';
-draft.locUnit = 'Unit 1';
+draft.locationStructure = 'Basement/Podium';
+draft.locBasementPodium = 'Basement 1';
+draft.locArea = 'North Trench Zone';
 draft.depth = '1.5';
 draft.slope = '45';
 draft.equipment = ['Excavator'];

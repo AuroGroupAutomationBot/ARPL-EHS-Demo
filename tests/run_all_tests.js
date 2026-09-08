@@ -59,6 +59,16 @@ try {
     process.exit(1);
 }
 
+const script6 = path.join(__dirname, 'test_location_selection_mode.js');
+
+try {
+    console.log('\n>>> RUNNING TEST SUITE 6: LOCATION SELECTION MODE & SAFETY RESTRICTION MATRIX');
+    const out6 = execSync(`node "${script6}"`, { encoding: 'utf8', stdio: 'inherit' });
+} catch (e) {
+    console.error('FAILED IN SUITE 6');
+    process.exit(1);
+}
+
 console.log('\n================================================================');
-console.log('MASTER TEST SUITE SUMMARY: ALL 5 SUITES PASSED CLEANLY (100% PASS RATE)');
+console.log('MASTER TEST SUITE SUMMARY: ALL 6 SUITES PASSED CLEANLY (100% PASS RATE)');
 console.log('================================================================');

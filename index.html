@@ -8267,6 +8267,7 @@
             correctionMode = false;
             const t = type || 'excavation';
             const meta = PTYPE_META[t] || PTYPE_META.excavation;
+            const defLocMode = (t === 'excavation') ? 'Basement/Podium' : 'Tower';
             draft = {
                 id: genPermitNumber(t), ptype: t, activity: meta.name + ' (' + meta.code + ')',
                 createdBy: currentUser.name || '',
@@ -8276,8 +8277,9 @@
                 weather: WEATHER_OPTIONS[Math.floor(Math.random() * WEATHER_OPTIONS.length)],
                 project: '', tower: '', location: '', gps: null,
                 organization: 'ARPL', contractor: '',
-                locationStructure: 'Tower',
+                locationStructure: defLocMode,
                 locFloor: '', locUnit: '', locBasementPodium: '', locArea: '',
+                locManual: '', locManualArea: '',
                 checklist: checklistFor(t).map((q, idx) => ({
                     q, ans: null, comment: null, photo: null, gps: null,
                     subChecks: (t === 'guardrail' && idx === 2) ? { above: false, below: false, workplace: false } : null
@@ -8500,6 +8502,9 @@
                     (draft.locationStructure === 'Basement/Podium'
                         ? ('<div class="review-item"><div class="rk">Basement / Podium</div><div class="rv">' + (draft.locBasementPodium || draft.grBasementPodium || '&mdash;') + '</div></div>' +
                            '<div class="review-item"><div class="rk">Area</div><div class="rv">' + (draft.locArea || draft.grArea || '&mdash;') + '</div></div>')
+                        : draft.locationStructure === 'Manual'
+                        ? ('<div class="review-item"><div class="rk">Specific Location</div><div class="rv">' + (draft.locManual || '&mdash;') + '</div></div>' +
+                           '<div class="review-item"><div class="rk">Area / Grid Ref</div><div class="rv">' + (draft.locManualArea || '&mdash;') + '</div></div>')
                         : ('<div class="review-item"><div class="rk">Tower</div><div class="rv">' + (draft.tower || '&mdash;') + '</div></div>' +
                            '<div class="review-item"><div class="rk">Floor Level</div><div class="rv">' + (draft.locFloor || draft.grFloor || draft.shaftFloor || '&mdash;') + '</div></div>' +
                            '<div class="review-item"><div class="rk">Unit</div><div class="rv">' + (draft.locUnit || draft.grUnit || '&mdash;') + '</div></div>')
@@ -8712,21 +8717,51 @@
             if (!currentUser || currentUser.key !== 'admin') {
                 switchRole('admin');
             }
-            goTo('admin-config');
-            renderAdminConfigView();
+            showView('admin-config');
         }
+
         function onNumericField(el, field) {
-            const v = el.value;
+            let v = el.value.replace(/[^0-9.]/g, '');
+            const parts = v.split('.');
+            if (parts.length > 2) v = parts[0] + '.' + parts.slice(1).join('');
+            el.value = v;
             draft[field] = v;
             validateWizStep(1);
         }
 
         /* ---------------- UNIVERSAL ORGANIZATION & LOCATION ---------------- */
+        const LOCATION_MODES_BY_PERMIT = {
+            excavation: ['Basement/Podium', 'Manual'],
+            hotwork: ['Tower', 'Basement/Podium', 'Manual'],
+            guardrail: ['Tower', 'Basement/Podium'],
+            confined: ['Tower', 'Basement/Podium', 'Manual'],
+            shaft: ['Tower', 'Basement/Podium']
+        };
+
+        function getAllowedLocationModes(ptype) {
+            return LOCATION_MODES_BY_PERMIT[ptype] || ['Tower', 'Basement/Podium', 'Manual'];
+        }
+
         function renderUniversalOrgAndLocationHtml(disAttr) {
             const prj = projectByName(draft.project);
             const isConfigured = !!(prj && prj.configured);
+            const pt = ptypeOf(draft);
+            const allowedModes = getAllowedLocationModes(pt);
+
+            // If current draft.locationStructure is not allowed for this permit type, fallback to first allowed
+            if (!allowedModes.includes(draft.locationStructure)) {
+                draft.locationStructure = allowedModes[0];
+                syncUniversalLocation();
+            }
+
             const isTower = (draft.locationStructure || 'Tower') === 'Tower';
+            const isBp = draft.locationStructure === 'Basement/Podium';
+            const isManual = draft.locationStructure === 'Manual';
             const isContractor = draft.organization === 'Contractor';
+
+            const towerAllowed = allowedModes.includes('Tower');
+            const bpAllowed = allowedModes.includes('Basement/Podium');
+            const manualAllowed = allowedModes.includes('Manual');
 
             let html = '';
             // Organization (ARPL / Contractor)
@@ -8737,31 +8772,57 @@
                 (isContractor
                     ? '<div class="form-field full" id="ff-contractor"><label>Contractor Agency / Company Name <span class="req">*</span></label><input type="text" id="inContractor" placeholder="Enter full contractor company / agency name..." value="' + escapeHtml(draft.contractor || '') + '" oninput="draft.contractor=this.value;draft.welderContractor=this.value;validateWizStep(1)"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Contractor name is mandatory.</div></div>'
                     : '') +
-                // Location Selection Mode (Tower vs Basement/Podium)
-                '<div class="form-field full"><label>Location Selection Mode (Select either Tower or Basement/Podium) <span class="req">*</span></label><div class="radio-row">' +
-                '<label class="radio-pill ' + (isTower ? 'sel' : '') + '"><input type="radio" name="univLocMode" value="Tower" ' + (isTower ? 'checked' : '') + ' onchange="onUniversalLocationStructureChange(\'Tower\')"' + disAttr + '> 🏢 Tower</label>' +
-                '<label class="radio-pill ' + (!isTower ? 'sel' : '') + '"><input type="radio" name="univLocMode" value="Basement/Podium" ' + (!isTower ? 'checked' : '') + ' onchange="onUniversalLocationStructureChange(\'Basement/Podium\')"' + disAttr + '> 🏗️ Basement / Podium</label>' +
-                '</div></div>' +
+                // Location Selection Mode (Select either Tower or Basement/Podium or Manual)
+                '<div class="form-field full"><label>Location Selection Mode (Select either Tower or Basement/Podium or Manual) <span class="req">*</span></label><div class="radio-row">' +
+                (towerAllowed
+                    ? ('<label class="radio-pill ' + (isTower ? 'sel' : '') + '"><input type="radio" name="univLocMode" value="Tower" ' + (isTower ? 'checked' : '') + ' onchange="onUniversalLocationStructureChange(\'Tower\')"' + disAttr + '> 🏢 Tower</label>')
+                    : ('<label class="radio-pill disabled" style="opacity:0.45;cursor:not-allowed;background:#F1F5F9;border-color:#CBD5E1;color:#94A3B8;" title="Tower &amp; Floor is restricted for ' + pMeta(draft).name + ' (cannot excavate on suspended slab)"><input type="radio" name="univLocMode" value="Tower" disabled> 🏢 Tower <span style="font-size:10px;padding:2px 5px;background:#E2E8F0;border-radius:4px;margin-left:4px;color:#64748B;">Restricted</span></label>')) +
+                (bpAllowed
+                    ? ('<label class="radio-pill ' + (isBp ? 'sel' : '') + '"><input type="radio" name="univLocMode" value="Basement/Podium" ' + (isBp ? 'checked' : '') + ' onchange="onUniversalLocationStructureChange(\'Basement/Podium\')"' + disAttr + '> 🏗️ Basement / Podium</label>')
+                    : ('<label class="radio-pill disabled" style="opacity:0.45;cursor:not-allowed;background:#F1F5F9;border-color:#CBD5E1;color:#94A3B8;" title="Basement / Podium is restricted for ' + pMeta(draft).name + '"><input type="radio" name="univLocMode" value="Basement/Podium" disabled> 🏗️ Basement / Podium <span style="font-size:10px;padding:2px 5px;background:#E2E8F0;border-radius:4px;margin-left:4px;color:#64748B;">Restricted</span></label>')) +
+                (manualAllowed
+                    ? ('<label class="radio-pill ' + (isManual ? 'sel' : '') + '"><input type="radio" name="univLocMode" value="Manual" ' + (isManual ? 'checked' : '') + ' onchange="onUniversalLocationStructureChange(\'Manual\')"' + disAttr + '> 📍 Manual</label>')
+                    : ('<label class="radio-pill disabled" style="opacity:0.45;cursor:not-allowed;background:#F1F5F9;border-color:#CBD5E1;color:#94A3B8;" title="Manual location entry is restricted for ' + pMeta(draft).name + ' (high-risk structural hazard requires exact structural grid mapping)"><input type="radio" name="univLocMode" value="Manual" disabled> 📍 Manual <span style="font-size:10px;padding:2px 5px;background:#E2E8F0;border-radius:4px;margin-left:4px;color:#64748B;">Restricted</span></label>')) +
+                '</div>' +
+                (pt === 'excavation'
+                    ? '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--orange);"></i> <b>Safety Rule (Excavation):</b> Tower &amp; Floor is restricted because excavation cannot occur on suspended slabs. Excavation is restricted to <b>Basement/Podium</b> foundations or <b>Manual</b> external trenches/boundary areas.</div>'
+                    : (pt === 'guardrail'
+                        ? '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--blue);"></i> <b>Safety Rule (Guardrail Removal):</b> Manual location is restricted. Removing edge protection creates critical fall hazards requiring exact structural grid mapping (Tower or Basement).</div>'
+                        : (pt === 'shaft'
+                            ? '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--blue);"></i> <b>Safety Rule (Shaft Work):</b> Manual location is restricted. Working in shaft voids requires exact structural level mapping (Tower or Basement).</div>'
+                            : ''))) +
+                '</div>' +
+
                 // Tower branch controls
-                '<div class="form-field" id="ff-tower" style="' + (isTower ? '' : 'opacity:0.45;') + '"><label>Tower ' + (isTower ? '<span class="req">*</span>' : '<span style="font-size:11px;color:var(--text-muted);">(active only for Tower)</span>') + '</label>' +
+                '<div class="form-field" id="ff-tower" style="' + (isTower ? '' : 'display:none;') + '"><label>Tower <span class="req">*</span></label>' +
                 '<select id="inTower" onchange="draft.tower=this.value;onUniversalLocationUpdate()"' + (isTower ? disAttr : ' disabled') + '><option value="">Select tower&hellip;</option>' +
                 (prj && isConfigured ? prj.towers.map(t => '<option value="' + t + '" ' + (draft.tower === t ? 'selected' : '') + '>' + t + '</option>').join('') : '') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Tower is required for Tower selection.</div></div>' +
-                '<div class="form-field" id="ff-loc-floor" style="' + (isTower ? '' : 'opacity:0.45;') + '"><label>Floor Level ' + (isTower ? '<span class="req">*</span>' : '<span style="font-size:11px;color:var(--text-muted);">(active only for Tower)</span>') + '</label>' +
+                '<div class="form-field" id="ff-loc-floor" style="' + (isTower ? '' : 'display:none;') + '"><label>Floor Level <span class="req">*</span></label>' +
                 '<select id="inLocFloor" onchange="draft.locFloor=this.value;draft.grFloor=this.value;draft.shaftFloor=this.value;onUniversalLocationUpdate()"' + (isTower ? disAttr : ' disabled') + '><option value="">Select floor level&hellip;</option>' +
                 SHAFT_FLOORS.map(fl => '<option value="' + fl + '" ' + ((draft.locFloor || draft.grFloor || draft.shaftFloor) === fl ? 'selected' : '') + '>' + fl + '</option>').join('') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Floor Level is required for Tower selection.</div></div>' +
-                '<div class="form-field" id="ff-loc-unit" style="' + (isTower ? '' : 'opacity:0.45;') + '"><label>Unit (Manual Entry) ' + (isTower ? '<span class="req">*</span>' : '<span style="font-size:11px;color:var(--text-muted);">(active only for Tower)</span>') + '</label>' +
+                '<div class="form-field" id="ff-loc-unit" style="' + (isTower ? '' : 'display:none;') + '"><label>Unit (Manual Entry) <span class="req">*</span></label>' +
                 '<input type="text" id="inLocUnit" placeholder="e.g. Flat 1402, Lift Lobby Core, Corridor West" value="' + escapeHtml(draft.locUnit || draft.grUnit || '') + '" oninput="draft.locUnit=this.value;draft.grUnit=this.value;onUniversalLocationUpdate()"' + (isTower ? disAttr : ' disabled') + '>' +
                 '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Unit entry is required for Tower selection.</div></div>' +
+
                 // Basement/Podium branch controls
-                '<div class="form-field" id="ff-loc-bp" style="' + (!isTower ? '' : 'opacity:0.45;') + '"><label>Basement / Podium ' + (!isTower ? '<span class="req">*</span>' : '<span style="font-size:11px;color:var(--text-muted);">(active only for Basement/Podium)</span>') + '</label>' +
-                '<select id="inLocBasementPodium" onchange="draft.locBasementPodium=this.value;draft.grBasementPodium=this.value;onUniversalLocationUpdate()"' + (!isTower ? disAttr : ' disabled') + '><option value="">Select basement / podium&hellip;</option>' +
+                '<div class="form-field" id="ff-loc-bp" style="' + (isBp ? '' : 'display:none;') + '"><label>Basement / Podium <span class="req">*</span></label>' +
+                '<select id="inLocBasementPodium" onchange="draft.locBasementPodium=this.value;draft.grBasementPodium=this.value;onUniversalLocationUpdate()"' + (isBp ? disAttr : ' disabled') + '><option value="">Select basement / podium&hellip;</option>' +
                 BASEMENT_PODIUM_OPTIONS.map(bp => '<option value="' + bp + '" ' + ((draft.locBasementPodium || draft.grBasementPodium) === bp ? 'selected' : '') + '>' + bp + '</option>').join('') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Basement / Podium selection is required.</div></div>' +
-                '<div class="form-field" id="ff-loc-area" style="' + (!isTower ? '' : 'opacity:0.45;') + '"><label>Area (Manual Entry) ' + (!isTower ? '<span class="req">*</span>' : '<span style="font-size:11px;color:var(--text-muted);">(active only for Basement/Podium)</span>') + '</label>' +
-                '<input type="text" id="inLocArea" placeholder="e.g. Ramp Grid B3-B5, Pump Room Sump, Retention Pit" value="' + escapeHtml(draft.locArea || draft.grArea || '') + '" oninput="draft.locArea=this.value;draft.grArea=this.value;onUniversalLocationUpdate()"' + (!isTower ? disAttr : ' disabled') + '>' +
+                '<div class="form-field" id="ff-loc-area" style="' + (isBp ? '' : 'display:none;') + '"><label>Area (Manual Entry) <span class="req">*</span></label>' +
+                '<input type="text" id="inLocArea" placeholder="e.g. Ramp Grid B3-B5, Pump Room Sump, Retention Pit" value="' + escapeHtml(draft.locArea || draft.grArea || '') + '" oninput="draft.locArea=this.value;draft.grArea=this.value;onUniversalLocationUpdate()"' + (isBp ? disAttr : ' disabled') + '>' +
                 '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Area entry is required for Basement/Podium selection.</div></div>' +
+
+                // Manual branch controls
+                '<div class="form-field" id="ff-loc-manual" style="' + (isManual ? '' : 'display:none;') + '"><label>Location / Landmark (Manual Entry) <span class="req">*</span></label>' +
+                '<input type="text" id="inLocManual" placeholder="e.g. External Utility Trench, Fabrication Yard, Boundary Wall, Manhole MH-04" value="' + escapeHtml(draft.locManual || '') + '" oninput="draft.locManual=this.value;onUniversalLocationUpdate()"' + (isManual ? disAttr : ' disabled') + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Location / Landmark manual entry is required.</div></div>' +
+                '<div class="form-field" id="ff-loc-manual-area" style="' + (isManual ? '' : 'display:none;') + '"><label>Specific Area / Grid Reference (Manual Entry) <span class="req">*</span></label>' +
+                '<input type="text" id="inLocManualArea" placeholder="e.g. North Perimeter Road Grid P1-P4, Near Gate 2 Laydown, East Ditch" value="' + escapeHtml(draft.locManualArea || '') + '" oninput="draft.locManualArea=this.value;onUniversalLocationUpdate()"' + (isManual ? disAttr : ' disabled') + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Specific Area / Grid Reference is required.</div></div>' +
+
                 // GPS Coordinates
                 '<div class="form-field full"><label>GPS Coordinates <span class="req">*</span></label>' +
                 '<div id="gpsFieldBox">' + gpsFieldBoxHtml() + '</div></div>';
@@ -8784,20 +8845,41 @@
         }
 
         function onUniversalLocationStructureChange(mode) {
+            const pt = ptypeOf(draft);
+            const allowed = getAllowedLocationModes(pt);
+            if (!allowed.includes(mode)) {
+                showToast('Location mode ' + mode + ' is restricted for ' + (pMeta(draft).name || pt) + '.', 'warn');
+                return;
+            }
             draft.locationStructure = mode;
-            draft.shaftLocationType = mode === 'Basement/Podium' ? 'Podium' : 'Tower';
+            draft.shaftLocationType = mode === 'Basement/Podium' ? 'Podium' : (mode === 'Manual' ? 'Manual' : 'Tower');
             if (mode === 'Tower') {
                 draft.locBasementPodium = '';
                 draft.locArea = '';
                 draft.grBasementPodium = '';
                 draft.grArea = '';
-            } else {
+                draft.locManual = '';
+                draft.locManualArea = '';
+            } else if (mode === 'Basement/Podium') {
                 draft.tower = '';
                 draft.locFloor = '';
                 draft.locUnit = '';
                 draft.grFloor = '';
                 draft.shaftFloor = '';
                 draft.grUnit = '';
+                draft.locManual = '';
+                draft.locManualArea = '';
+            } else if (mode === 'Manual') {
+                draft.tower = '';
+                draft.locFloor = '';
+                draft.locUnit = '';
+                draft.grFloor = '';
+                draft.shaftFloor = '';
+                draft.grUnit = '';
+                draft.locBasementPodium = '';
+                draft.locArea = '';
+                draft.grBasementPodium = '';
+                draft.grArea = '';
             }
             syncUniversalLocation();
             renderWizStep();
@@ -8805,10 +8887,13 @@
 
         function syncUniversalLocation() {
             if (!draft) return;
+            const mode = draft.locationStructure || 'Tower';
             draft.locFloor = draft.locFloor || draft.grFloor || draft.shaftFloor || '';
             draft.locUnit = draft.locUnit || draft.grUnit || '';
             draft.locBasementPodium = draft.locBasementPodium || draft.grBasementPodium || '';
             draft.locArea = draft.locArea || draft.grArea || '';
+            draft.locManual = draft.locManual || '';
+            draft.locManualArea = draft.locManualArea || '';
 
             // keep legacy fields in sync
             draft.grFloor = draft.locFloor;
@@ -8816,12 +8901,16 @@
             draft.grUnit = draft.locUnit;
             draft.grBasementPodium = draft.locBasementPodium;
             draft.grArea = draft.locArea;
-            draft.shaftLocationType = draft.locationStructure === 'Basement/Podium' ? 'Podium' : 'Tower';
+            draft.shaftLocationType = mode === 'Basement/Podium' ? 'Podium' : (mode === 'Manual' ? 'Manual' : 'Tower');
 
-            if (draft.locationStructure === 'Basement/Podium') {
+            if (mode === 'Basement/Podium') {
                 draft.tower = draft.locBasementPodium || '';
                 draft.location = (draft.locBasementPodium ? draft.locBasementPodium : '') +
                     (draft.locArea ? ', Area: ' + draft.locArea : '');
+            } else if (mode === 'Manual') {
+                draft.tower = draft.locManual ? ('Manual: ' + draft.locManual) : 'Manual';
+                draft.location = (draft.locManual ? draft.locManual : 'Manual Location') +
+                    (draft.locManualArea ? ', Area/Grid: ' + draft.locManualArea : '');
             } else {
                 draft.location = (draft.tower ? 'Tower ' + draft.tower : '') +
                     (draft.locFloor ? ', ' + draft.locFloor : '') +
@@ -9586,10 +9675,17 @@
                 }
                 ok = ok && orgOk;
 
-                // Universal Location check: Tower vs Basement/Podium
-                const isTower = (draft.locationStructure || 'Tower') === 'Tower';
+                // Universal Location check: Tower vs Basement/Podium vs Manual
+                const allowedModes = getAllowedLocationModes(ptypeOf(draft));
+                let locMode = draft.locationStructure || (allowedModes.includes('Tower') ? 'Tower' : allowedModes[0]);
+                if (!allowedModes.includes(locMode)) {
+                    locMode = allowedModes[0];
+                    draft.locationStructure = locMode;
+                    syncUniversalLocation();
+                }
+
                 let locOk = false;
-                if (isTower) {
+                if (locMode === 'Tower') {
                     const towerOk = !!draft.tower;
                     markField('ff-tower', towerOk);
                     markField('ff-gr-tower', towerOk);
@@ -9605,7 +9701,17 @@
                     markField('ff-unit', unitOk);
                     markField('ff-gr-unit', unitOk);
                     locOk = towerOk && floorOk && unitOk;
-                } else {
+
+                    // Clear inactive branch error indicators
+                    markField('ff-loc-bp', true);
+                    markField('ff-loc-area', true);
+                    markField('ff-bp', true);
+                    markField('ff-area', true);
+                    markField('ff-gr-bp', true);
+                    markField('ff-gr-area', true);
+                    markField('ff-loc-manual', true);
+                    markField('ff-loc-manual-area', true);
+                } else if (locMode === 'Basement/Podium') {
                     const bpVal = draft.locBasementPodium || draft.grBasementPodium;
                     const bpOk = !!(bpVal && bpVal.trim());
                     markField('ff-loc-bp', bpOk);
@@ -9617,6 +9723,44 @@
                     markField('ff-area', areaOk);
                     markField('ff-gr-area', areaOk);
                     locOk = bpOk && areaOk;
+
+                    // Clear inactive branch error indicators
+                    markField('ff-tower', true);
+                    markField('ff-gr-tower', true);
+                    markField('ff-loc-floor', true);
+                    markField('ff-floor', true);
+                    markField('ff-gr-floor', true);
+                    markField('ff-shaft-floor', true);
+                    markField('ff-loc-unit', true);
+                    markField('ff-unit', true);
+                    markField('ff-gr-unit', true);
+                    markField('ff-loc-manual', true);
+                    markField('ff-loc-manual-area', true);
+                } else if (locMode === 'Manual') {
+                    const manualVal = draft.locManual;
+                    const manualOk = !!(manualVal && manualVal.trim());
+                    markField('ff-loc-manual', manualOk);
+                    const manualAreaVal = draft.locManualArea;
+                    const manualAreaOk = !!(manualAreaVal && manualAreaVal.trim());
+                    markField('ff-loc-manual-area', manualAreaOk);
+                    locOk = manualOk && manualAreaOk;
+
+                    // Clear inactive branch error indicators
+                    markField('ff-tower', true);
+                    markField('ff-gr-tower', true);
+                    markField('ff-loc-floor', true);
+                    markField('ff-floor', true);
+                    markField('ff-gr-floor', true);
+                    markField('ff-shaft-floor', true);
+                    markField('ff-loc-unit', true);
+                    markField('ff-unit', true);
+                    markField('ff-gr-unit', true);
+                    markField('ff-loc-bp', true);
+                    markField('ff-loc-area', true);
+                    markField('ff-bp', true);
+                    markField('ff-area', true);
+                    markField('ff-gr-bp', true);
+                    markField('ff-gr-area', true);
                 }
                 ok = ok && locOk;
 
@@ -10135,15 +10279,21 @@
             let locDetails = '';
             const locStruct = p.locationStructure;
             if (locStruct && typeof locStruct === 'object') {
-                if (locStruct.mode === 'basement_podium' || locStruct.mode === 'Basement/Podium') {
+                if (locStruct.mode === 'manual' || locStruct.mode === 'Manual') {
+                    locDetails = '<b>Mode:</b> Manual / External &middot; <b>Specific Location:</b> ' + escapeHtml(locStruct.manualLocation || p.locManual || '—') + ' &middot; <b>Area / Grid:</b> ' + escapeHtml(locStruct.manualArea || p.locManualArea || '—');
+                } else if (locStruct.mode === 'basement_podium' || locStruct.mode === 'Basement/Podium') {
                     locDetails = '<b>Structure:</b> Basement / Podium &middot; <b>Zone:</b> ' + escapeHtml(locStruct.basementPodium || p.locBasementPodium || '—') + ' &middot; <b>Area:</b> ' + escapeHtml(locStruct.area || p.locArea || '—');
                 } else {
                     locDetails = '<b>Tower:</b> ' + escapeHtml(p.tower || '—') + ' &middot; <b>Floor Level:</b> ' + escapeHtml(locStruct.floor || p.locFloor || '—') + ' &middot; <b>Unit:</b> ' + escapeHtml(locStruct.unit || p.locUnit || '—');
                 }
+            } else if (locStruct === 'Manual') {
+                locDetails = '<b>Mode:</b> Manual / External &middot; <b>Specific Location:</b> ' + escapeHtml(p.locManual || '—') + ' &middot; <b>Area / Grid:</b> ' + escapeHtml(p.locManualArea || '—');
             } else if (locStruct === 'Basement/Podium') {
                 locDetails = '<b>Structure:</b> Basement / Podium &middot; <b>Zone:</b> ' + escapeHtml(p.locBasementPodium || '—') + ' &middot; <b>Area:</b> ' + escapeHtml(p.locArea || '—');
             } else if (locStruct === 'Tower') {
                 locDetails = '<b>Tower:</b> ' + escapeHtml(p.tower || '—') + ' &middot; <b>Floor Level:</b> ' + escapeHtml(p.locFloor || '—') + ' &middot; <b>Unit:</b> ' + escapeHtml(p.locUnit || '—');
+            } else if (p.locManual) {
+                locDetails = '<b>Mode:</b> Manual / External &middot; <b>Specific Location:</b> ' + escapeHtml(p.locManual) + ' &middot; <b>Area / Grid:</b> ' + escapeHtml(p.locManualArea || '—');
             } else if (p.locBasementPodium) {
                 locDetails = '<b>Structure:</b> Basement / Podium &middot; <b>Zone:</b> ' + escapeHtml(p.locBasementPodium) + ' &middot; <b>Area:</b> ' + escapeHtml(p.locArea || '—');
             } else if (p.locFloor || p.locUnit) {

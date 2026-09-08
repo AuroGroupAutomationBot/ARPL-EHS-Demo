@@ -7,7 +7,7 @@
 **PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-281%2B%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-306%2B%20Passed-success?style=for-the-badge)](/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-blue?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -37,6 +37,7 @@
    - 5.8 [PT-05 Shaft Work Safety Checklist (10 Items)](#58-statutory-safety-checklist-pt-05-shaft-work-10-items)
    - 5.9 [Enterprise Projects Master Registry](#59-enterprise-project-master-data--worksite-registry-projects)
    - 5.10 [Master Constants & Configuration Registries](#510-master-constants--configuration-registries)
+   - 5.11 [Location Selection Mode & Safety Restriction Matrix](#511-location-selection-mode--safety-restriction-matrix)
 6. [Core Workflow: Permit Lifecycle State Machine](#6-core-workflow-permit-lifecycle-state-machine)
 7. [Approval Chain Architecture](#7-approval-chain-architecture)
    - 7.1 [Chain Data Schema per Permit Type](#71-chain-data-schema-per-permit-type-newchain)
@@ -512,6 +513,47 @@ In `index.html`, enterprise project sites are registered with exact coordinates,
   - Extension request operational cutoff: `EXT_REQUEST_CUTOFF_MIN = 1110` ($18:30\text{ IST}$).
   - Maximum extended validity ceiling: `EXT_MAX_CEILING_MIN = 1230` ($20:30\text{ IST}$).
   - Time increment step: `EXTENSION_STEP_MIN = 10` minutes.
+
+### 5.11 Location Selection Mode & Safety Restriction Matrix
+
+Restricting location options based on the permit type is an essential construction safety best practice. It prevents user error, keeps data clean for statutory audits, and ensures high-risk work is pinpointed precisely where it occurs.
+
+In the Step 1 Creation Wizard, users select from:
+`Location Selection Mode (Select either Tower or Basement/Podium or Manual)`
+
+#### Location Mapping Matrix
+
+| Permit Type | Tower & Floor | Basement / Podium | Manual | Default Mode |
+|---|:---:|:---:|:---:|:---:|
+| **Excavation Work (PT-01)** | ❌ **Restricted** | ✅ **Enabled** | ✅ **Enabled** | **Basement / Podium** |
+| **Hot Work (PT-02)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
+| **Guardrail / Edge Protection (PT-03)** | ✅ **Enabled** | ✅ **Enabled** | ❌ **Restricted** | **Tower** |
+| **Confined Space (PT-04)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
+| **Shaft Work (PT-05)** | ✅ **Enabled** | ✅ **Enabled** | ❌ **Restricted** | **Tower** |
+
+#### Why this mapping works (The Technical & Safety Logic)
+
+1. **Excavation Work (PT-01)**
+   * **Restrict: Tower & Floor.** Excavation cannot occur on suspended slabs. Restricting this prevents absurd data entries (e.g., *"Excavating on Tower A, Floor 12"*).
+   * **Enable: Basement / Podium & Manual.** Excavation takes place for deep foundations (basements) or outside the building footprint for utility trenches, boundary walls, and perimeter landscaping (where the **Manual** option becomes essential).
+
+2. **Hot Work (PT-02 - Welding, Cutting, Grinding)**
+   * **Enable All.** Hot work occurs across the entire site — on elevated tower slabs (e.g., structural steel welding on Floor 15), in basement parking levels, and in temporary external fabrication yards or laydown zones (Manual).
+
+3. **Guardrail or Floor Protection Removal (PT-03)**
+   * **Restrict: Manual.** Removing edge protection creates an immediate, fatal fall hazard. Safety managers need to know *exactly* which floor and zone has an exposed edge so they can barricade the area below or halt overlapping work. A manual text entry like *"near the edge"* is unacceptable for safety tracking.
+   * **Enable: Tower & Basement.** Enforces exact structural grid and floor level selection so the hazard is tied to a specific architectural coordinate.
+
+4. **Confined Space Entry (PT-04)**
+   * **Enable All.** Confined spaces are distributed across all site domains:
+     * *Basement:* Lift pits, underground water sumps, Sewage Treatment Plant (STP) tanks.
+     * *Tower:* Overhead water tanks on roofs, tight mechanical ducts.
+     * *Manual:* External manholes, deep drainage inspection chambers, or temporary silos outside building footprints.
+
+5. **Shaft Work (PT-05)**
+   * **Restrict: Manual.** Similar to edge protection, shafts (lift shafts, MEP vertical cutouts) are highly specific, high-risk structural voids. Working inside them creates extreme fall and dropped-object hazards. Manual free-text entry is too vague.
+   * **Enable: Tower & Basement.** Shafts run vertically through the building, starting from the basement foundation levels and ascending through the towers.
+
 ---
 
 ---
@@ -2542,6 +2584,15 @@ tests/
 - **Modal Scroll Isolation**: `overscroll-behavior: contain` on base and mobile `.modal-body` to eliminate background scroll bleed.
 - **High-DPI / Retina Canvas**: `touch-action: none` and `getBoundingClientRect()` scaling for signatures and radar preview.
 
+#### Suite 6: Location Selection Mode & Safety Restriction Matrix (test_location_selection_mode.js)
+- **Exact Section Label Verification**: Verifies `Location Selection Mode (Select either Tower or Basement/Podium or Manual)` title text.
+- **Three Mode Tiles**: Verifies `🏢 Tower`, `🏗️ Basement / Podium`, and `📍 Manual` tile options.
+- **Safety Restriction Matrix Enforcement**: Validates `LOCATION_MODES_BY_PERMIT` table across all 5 permit modules.
+- **Excavation Suspended Slab Protection**: Proves Tower is restricted with tooltip and safety banner; asserts default is Basement/Podium; tests illegal mode switch blocking.
+- **Guardrail & Shaft Void Fall Hazard Protection**: Proves Manual free-text mode is disabled/restricted with explicit safety rationales.
+- **Manual Mode Field Validation & Formatting**: Tests mandatory validation of `locManual` and `locManualArea` and verified string formatting.
+- **Normalization & Detail View Integrity**: Verifies schema normalization `{ mode: 'manual', manualLocation, manualArea }` and scope summary box rendering.
+
 ### 23.3 Automated Test Execution Results
 
 ```
@@ -2564,9 +2615,12 @@ MASTER TEST SUITE EXECUTION SUMMARY
 >>> SUITE 5: RESPONSIVE DESIGN & CROSS-DEVICE ERGONOMICS (test_responsive_viewports.js)
   All 15 viewport tiers, touch ergonomics, elastic tables & scroll isolation tests passed cleanly
 
+>>> SUITE 6: LOCATION SELECTION MODE & SAFETY RESTRICTION MATRIX (test_location_selection_mode.js)
+  All 10 static tokens, dynamic restrictions, matrix validations & UI rendering tests passed cleanly
+
 ================================================================
-GRAND TOTAL: 296+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
-Zero Regressions · Deterministic Navigation · Fully Responsive · Production Ready
+GRAND TOTAL: 306+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
+Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully Responsive · Production Ready
 ================================================================
 ```
 
