@@ -29,6 +29,36 @@ try {
     process.exit(1);
 }
 
+const script3 = path.join(__dirname, 'test_tracker_labels.js');
+
+try {
+    console.log('\n>>> RUNNING TEST SUITE 3: UI & PDF SECTION HEAD LABEL RESOLUTION TESTS');
+    const out3 = execSync(`node "${script3}"`, { encoding: 'utf8', stdio: 'inherit' });
+} catch (e) {
+    console.error('FAILED IN SUITE 3');
+    process.exit(1);
+}
+
+const script4 = path.join(__dirname, 'test_navigation_application_wide.js');
+
+try {
+    console.log('\n>>> RUNNING TEST SUITE 4: APPLICATION-WIDE NAVIGATION & CONSISTENCY TESTS');
+    const out4 = execSync(`node "${script4}"`, { encoding: 'utf8', stdio: 'inherit' });
+} catch (e) {
+    console.error('FAILED IN SUITE 4');
+    process.exit(1);
+}
+
+const script5 = path.join(__dirname, 'test_responsive_viewports.js');
+
+try {
+    console.log('\n>>> RUNNING TEST SUITE 5: RESPONSIVE DESIGN & CROSS-DEVICE ERGONOMICS');
+    const out5 = execSync(`node "${script5}"`, { encoding: 'utf8', stdio: 'inherit' });
+} catch (e) {
+    console.error('FAILED IN SUITE 5');
+    process.exit(1);
+}
+
 console.log('\n================================================================');
-console.log('MASTER TEST SUITE SUMMARY: ALL 239 TESTS PASSED CLEANLY (100% PASS RATE)');
+console.log('MASTER TEST SUITE SUMMARY: ALL 5 SUITES PASSED CLEANLY (100% PASS RATE)');
 console.log('================================================================');
