@@ -288,12 +288,10 @@ evalInVM("draft.blastingRigHoleDepthM = '4.5'; draft.blastingRigHoleDepthFt = '4
 assert.strictEqual(evalInVM("validateWizStep(2)"), true, "Step 2 passes with positive rig hole depth in meters (4.5 m)");
 console.log('  ✓ PASS: Safe distance and rig hole depth strictly validated as positive numbers in meters');
 
-// Step 3: Planned start and drawing suppression
 evalInVM(`
-const nowH = new Date(nowTime()).getHours();
-const startH = Math.max(9, Math.min(nowH + 1, 17));
-draft.startTime = (startH < 10 ? '0' : '') + startH + ':00';
-draft.validTillTime = (startH + 1 < 10 ? '0' : '') + (startH + 1) + ':30';
+nowTime = () => new Date(2026, 8, 9, 11, 0, 0);
+draft.startTime = '11:30';
+draft.validTillTime = '16:00';
 `);
 assert.strictEqual(evalInVM("validateWizStep(3)"), true, "Step 3 passes without drawing (drawings suppressed for PT-07)");
 console.log('  ✓ PASS: Step 3 passes without requiring excavation drawing');
@@ -530,6 +528,36 @@ try {
 }
 assert.strictEqual(pdfDrillSuccess, true, "generatePermitPDF must execute cleanly for Drilling permit");
 console.log('  ✓ PASS: PDF generation executes cleanly for Drilling permit');
+
+// --- 13. Blasting In-charge as Permittee Direct Flow ---
+console.log('\n--- 13. Blasting In-charge as Permittee Direct Flow ---');
+
+evalInVM("currentUser = { key: 'blasting-incharge', name: 'Licensed Blaster Sharma', role: 'Blasting In-charge' };");
+const blasterNav = evalInVM("navItemsFor('blasting-incharge')");
+assert(blasterNav.some(it => it.id === 'ptype'), "Blasting In-charge must have Create Permit in navigation");
+
+evalInVM("startNewPermit('blasting');");
+assert.strictEqual(evalInVM("draft.ptype"), 'blasting', "Permit type must be blasting");
+evalInVM("draft.project = PROJECTS[0].name; draft.drillingBlastingType = 'blasting'; draft.dbOperationType = 'Blasting';");
+evalInVM("draft.dbDateTime = '2026-09-10T11:00'; draft.dbChargeAmount = '30.0'; draft.dbBlastDiameter = '0.2'; draft.dbBlastDepth = '4.0'; draft.dbHolesCount = '15'; draft.dbExplosiveType = 'ANFO (Ammonium Nitrate Fuel Oil)';");
+evalInVM("draft.locManual = 'Pit West Zone'; draft.locManualArea = 'Rock Face #3';");
+evalInVM("draft.checklist = BLASTING_CHECKLIST_ITEMS.map(q => ({ q, ans: 'yes', comment: null, photo: null }));");
+evalInVM("draft.sitePhoto = 'demo'; draft.blastingRigHolesLoaded = '15'; draft.blastingRigHoleDepthM = '4.0'; draft.blastingMufflerLayers = '3'; draft.blastingSafeDistance = '3.0'; draft.dbOtherPrecautions = 'Safe perimeter';");
+evalInVM(`
+nowTime = () => new Date(2026, 8, 9, 11, 0, 0);
+draft.startTime = '11:30';
+draft.validTillTime = '16:00';
+validateWizStep(3);
+`);
+evalInVM("draft.signerName = 'Licensed Blaster Sharma'; draft.signerConsent = true; draft.signerVerified = true; draft.blastingStatutoryDecl = true;");
+evalInVM("draft.signature = { dataUrl: makeSimSignature('Licensed Blaster Sharma'), at: nowTime(), by: 'Licensed Blaster Sharma' };");
+evalInVM("draft.gps = { lat: 17.44, lng: 78.38, within: true, distance: 10 };");
+evalInVM("executeFinalSubmit();");
+
+const blasterPermit = evalInVM("PERMITS[PERMITS.length - 1]");
+assert.strictEqual(blasterPermit.status, 'Pending Site Engineer Acknowledgment', "When Blasting In-charge fills and submits form with PESA declaration, it routes directly to Site Engineer");
+assert.strictEqual(blasterPermit.signatories['blasting-incharge'].name, 'Licensed Blaster Sharma');
+console.log('  ✓ PASS: Blasting In-charge can initiate permit as Permittee with PESA statutory declaration routing directly to Site Engineer');
 
 console.log('\n==================================================');
 console.log('ALL PT-07 DRILLING & BLASTING TESTS PASSED (100% SUCCESS RATE)');

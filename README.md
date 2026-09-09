@@ -7,7 +7,7 @@
 **PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work · PT-07 Drilling & Blasting**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-341%2B%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-342%2B%20Passed-success?style=for-the-badge)](/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-blue?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -232,14 +232,15 @@ The system implements **11 functional roles** aligned to construction site hiera
 
 ```mermaid
 graph TB
-    subgraph "Step 1 - Initiation & Statutory Surrender"
-        SS["Site Supervisor<br/>Permittee / Form Filling / Exclusive Closure"]
+    subgraph "Step 1 - Initiation & Permittee Authority"
+        SS["Site Supervisor<br/>Permittee (PT-01 to 05, PT-07)"]
+        BIC["Blasting / Drilling In-charge<br/>Permittee (PT-07) / Statutory PESO Compliance"]
     end
-    subgraph "Step 1b - Statutory Blasting Acknowledgment"
-        BIC["Blasting In-charge<br/>PESO Compliance & Photo Acknowledgment"]
+    subgraph "Step 1b - Statutory Blasting Acknowledgment (Supervisor Initiated)"
+        BICAck["Blasting / Drilling In-charge<br/>PESO Compliance & On-Site Photo Verification"]
     end
-    subgraph "Step 2 - Acknowledgment"
-        SiteEng["Site Engineer<br/>On-Site Acknowledger and Forwarder"]
+    subgraph "Step 2 - Site Engineer Acknowledgment"
+        SiteEng["Site Engineer<br/>On-Site Technical Verification (Approve/Return Only — Cannot Cancel)"]
     end
     subgraph "Step 3 - Parallel Approvals for Excavation Only"
         MEP["MEP Engineer<br/>Utilities and Services Clearance"]
@@ -251,23 +252,24 @@ graph TB
         TI["Tower Incharge<br/>PT-02 to PT-05 Safety Review"]
     end
     subgraph "Step 5 - Final Endorsement"
-        EM["EHS Manager<br/>Final Safety Endorsement"]
-        EO["EHS Officer<br/>Final Safety Endorsement"]
+        EM["EHS Manager<br/>Final Safety Endorsement & Sole Cancel Authority"]
+        EO["EHS Officer<br/>Final Safety Endorsement & Sole Cancel Authority"]
     end
     subgraph "Administration"
         AD["Administrator<br/>GPS and Geofence Config"]
     end
 
-    SS -->|PT-07 Blasting| BIC
-    BIC --> SiteEng
+    BIC -->|PT-07 Initiated by In-charge (On-Form PESA Decl)| SiteEng
+    SS -->|PT-07 Blasting Initiated by Supervisor| BICAck
+    BICAck -->|Acknowledged + Photo| SiteEng
     SS -->|PT-01 to 05, PT-07 Drilling| SiteEng
     SiteEng -->|PT-01 Excavation| MEP
     SiteEng -->|PT-01 Excavation| PM
     SiteEng -->|PT-01 Excavation| IT
     SiteEng -->|PT-05 Shaft Work| MEP
     SiteEng -->|PT-02, 03, 04| TI
-    SiteEng -->|PT-07 Drilling & Blasting| EM
-    SiteEng -->|PT-07 Drilling & Blasting| EO
+    SiteEng -->|PT-07 Drilling & Blasting Direct Bypass| EM
+    SiteEng -->|PT-07 Drilling & Blasting Direct Bypass| EO
     MEP -->|PT-01| EH
     PM -->|PT-01| EH
     IT -->|PT-01| EH
@@ -280,18 +282,19 @@ graph TB
 
 ### 4.2 Role Permission Matrix
 
-| Capability | Site Supervisor | Blasting In-charge | Site Engineer | MEP | P&M | IT | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
+| Capability | Site Supervisor | Blasting / Drilling In-charge | Site Engineer | MEP | P&M | IT | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Create Permit | ✅ | — | — | — | — | — | — | — | — | — | — |
+| Create Permit | ✅ | ✅ *(PT-07)* | — | — | — | — | — | — | — | — | — |
 | Statutory PESO Acknowledgment | — | ✅ *(PT-07 Blasting)* | — | — | — | — | — | — | — | — | — |
-| Acknowledge & Forward | — | — | ✅ | — | — | — | — | — | — | — | — |
+| Acknowledge & Forward | — | — | ✅ *(Cannot Cancel)* | — | — | — | — | — | — | — | — |
 | Parallel Approval | — | — | — | ✅ | ✅ | ✅ | — | — | — | — | — |
 | Section Head Approval | — | — | — | — | — | — | ✅ *(PT-01)* | ✅ *(PT-02–05)* | — | — | — |
 | EHS Final Endorsement | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
 | Raise Observation | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Respond to Observation | ✅ | — | — | — | — | — | — | — | — | — | — |
-| Request Extension | ✅ | — | — | — | — | — | — | — | — | — | — |
-| Close & Surrender | ✅ | — | — | — | — | — | — | — | — | — | — |
+| Respond to Observation | ✅ | ✅ *(If PT-07 Permittee)* | — | — | — | — | — | — | — | — | — |
+| Request Extension | ✅ | ✅ *(If PT-07 Permittee)* | — | — | — | — | — | — | — | — | — |
+| Close & Surrender | ✅ | ✅ *(If PT-07 Permittee)* | — | — | — | — | — | — | — | — | — |
+| Cancel Permit (Stop-Work) | — | — | — *(No Authority)* | — | — | — | — | — | ✅ | ✅ | — |
 | Download PDF | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
 | Configure Geofence | — | — | — | — | — | — | — | — | — | — | ✅ |
 | View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
@@ -319,7 +322,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 | **PT-03** | Guard Rail / Floor Protection Removal | `EHS_PTW_003` | 9 | 4-Stage (Direct) | 100% tie-off mandatory; full-body harness; watcher assigned until re-fixed; mandatory physical restoration photo gate upon surrender. |
 | **PT-04** | Confined Space Entry | `EHS_PTW_004` | 15 | 4-Stage (Direct) | 4-gas multi-detector test ($O_2, LEL, CO, H_2S$); forced air ventilation; physical inspection declaration; pre-task checklist doc upload. |
 | **PT-05** | Shaft Work | `EHS_PTW_005` | 10 | 5-Stage (Sequential) | Dedicated MEP clearance step; scaffolding green tag verification; fall arresters; physical safety declaration across 39 floor levels. |
-| **PT-07** | Drilling & Blasting | `EHS_PTW_007` | 15 | 4-Stage (Blasting) / 3-Stage (Drilling) | Mutually exclusive operation toggle; Blasting In-charge statutory PESO declaration + on-site photo; 4 mandatory post-checklist rig parameters; 18:30 IST sunset stop rule; Post-blast misfire clearance; Night shift linkage strictly forbidden. |
+| **PT-07** | Drilling & Blasting | `EHS_PTW_007` | 15 | 4-Stage (Blasting) / 3-Stage (Drilling) | Dual Permittee model (Site Supervisor or Blasting / Drilling In-charge); Mutually exclusive operation toggle; Mandatory on-form PESA statutory declaration or Step 1b In-charge statutory acknowledgment + on-site photo; 4 mandatory post-checklist rig parameters; Site Engineer verification (cannot cancel); 18:30 IST sunset stop rule (zero extension runway for blasting); Post-blast misfire clearance; Night shift linkage strictly forbidden. |
 
 ### 5.2 Approval Chain Topology per Permit Type
 
@@ -354,17 +357,25 @@ graph LR
 
 ```mermaid
 graph LR
-    subgraph "PT-07 Blasting - 4 Stages (Statutory PESO Spine)"
-        B1["Supervisor<br/>(Permittee)"] --> B2["Blasting In-charge<br/>(PESO Decl + Photo)"]
-        B2 --> B3["Site Engineer<br/>(Acknowledgment)"]
+    subgraph "PT-07 Blasting - Case A: In-charge Initiated (3 Stages - Direct Spine)"
+        BIA1["Blasting / Drilling In-charge<br/>(Permittee & PESA Decl)"] --> BIA2["Site Engineer<br/>(Approve/Return Only)"]
+        BIA2 --> BIA3["EHS Safety<br/>(Manager / Officer)"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "PT-07 Blasting - Case B: Supervisor Initiated (4 Stages - Statutory PESO Spine)"
+        B1["Site Supervisor<br/>(Permittee)"] --> B2["Blasting / Drilling In-charge<br/>(PESO Decl + Photo)"]
+        B2 --> B3["Site Engineer<br/>(Approve/Return Only)"]
         B3 --> B4["EHS Safety<br/>(Manager / Officer)"]
     end
 ```
 
 ```mermaid
 graph LR
-    subgraph "PT-07 Drilling - 3 Stages (Direct Spine)"
-        D1["Supervisor<br/>(Permittee)"] --> D2["Site Engineer<br/>(Acknowledgment)"]
+    subgraph "PT-07 Drilling - Case C: Either Initiator (3 Stages - Direct Spine)"
+        D1["Permittee<br/>(Supervisor or In-charge)"] --> D2["Site Engineer<br/>(Approve/Return Only)"]
         D2 --> D3["EHS Safety<br/>(Manager / Officer)"]
     end
 ```
@@ -603,7 +614,7 @@ Under the Petroleum and Explosives Safety Organization (PESO), Indian Explosives
 | **7** | Are Explosives transported in approved vehicle & detonators placed separately & kept isolated with caution signage’s? | PESO Transit Compliance | **YES** / NA | Comment mandatory if NO | Licensed PESO explosive van; detonators and high explosives strictly separated. |
 | **8** | Are the environmental conditions considered? | Meteorological Safety | **YES** / NA | User reviews auto-picked weather | Auto-reads live site weather telemetry (Rain, Sunny, Wind, Thunders, Lightning); supervisor reviews and clicks YES. |
 | **9** | Are wooden tamping sticks available for the stemming of holes? | Anti-Spark Stemming | **YES** / NA | Comment mandatory if NO | Spark-proof non-metallic wooden or antistatic plastic tamping rods. |
-| **10** | Is licensed Blasting in charge/Supervisor available at site all time? | Statutory Supervision | **YES** / NA | Comment mandatory if NO | Statutory continuous physical presence of PESO-licensed Blasting In-charge. |
+| **10** | Is licensed Blasting in charge available at site all time? | Statutory Supervision | **YES** / NA | Comment mandatory if NO | Statutory continuous physical presence of PESO-licensed Blasting In-charge. |
 | **11** | Are all the Mufflers(rubber mat) placed in Good Conditions? | Flyrock Suppression | **YES** / NA | Comment mandatory if NO | Heavy rubber blast mats / wire-mesh mufflers prevent rock fragmentation ejection. |
 | **12** | Any misfire detected? Are all mis-fired charges removed prior to drilling operations? | Misfire Protocol | **YES** / NA | Comment mandatory if NO | Thorough visual scan; safe water jetting or secondary charge protocols for misfires. |
 | **13** | Are all the excessive cartridges removed from the work spot? | Explosives Accounting | **YES** / NA | Comment mandatory if NO | Immediate reconciliation and return of unused cartridges to licensed magazine. |
@@ -623,10 +634,10 @@ When `operationCategory === 'blasting'`, the system validates:
 * **Number of Blast Holes (`dbHolesCount`):** Mandatory integer ($\ge 1$).
 * **Explosive Type (`dbExplosiveType`):** Selected from master `BLASTING_EXPLOSIVE_TYPES`.
 * **Mandatory Post-Checklist Rig Parameters (Blasting ONLY):**
-  1. `blastingRigHolesLoaded`: Total holes loaded ($\ge 1$).
-  2. `blastingRigHoleDepthM`: Depth of rig hole in meters ($> 0\text{ m}$, backward-compatible with `blastingRigHoleDepthFt`).
-  3. `blastingMufflerLayers`: Protective muffler / rubber mat layers ($\ge 1$).
-  4. `blastingSafeDistance`: Safe distance between rig holes in meters (strictly numeric $> 0\text{ m}$).
+  1. `How many rig holes had been loaded for blasting?`: Total holes loaded ($\ge 1$, stored in `draft.blastingRigHolesLoaded`).
+  2. `What is the depth of the Rig Hole in feet?`: Depth of rig hole ($> 0$, stored in `draft.blastingRigHoleDepthFt` and `draft.blastingRigHoleDepthM`).
+  3. `How many layers of mufflers are placed on top of rig holes?`: Protective muffler / blast mat layers ($\ge 1$, stored in `draft.blastingMufflerLayers`).
+  4. `Specify Safe distance provided in between each rig holes ?`: Safe distance between rig holes (strictly numeric $> 0$, stored in `draft.blastingSafeDistance`).
 
 #### 2. Drilling Technical Parameters
 When `operationCategory === 'drilling'`, blast rig and muffler fields are suppressed, and the system validates:
@@ -948,21 +959,21 @@ graph TD
 
 | Operational Function | Implementation Signature | Authoritative Role | State Transition & Business Rules |
 |:---|:---|:---|:---|
-| **`submitPermit`** | `submitPermit(p)` | Site Supervisor | Sets `submittedAt = nowTime()`, `stageEnteredAt = nowTime()`, clears escalations. If PT-07 Blasting, sets status to `Pending Blasting In-charge Acknowledgment`. Otherwise sets status to `Pending Site Engineer Acknowledgment`. |
-| **`acknowledgeBlastingIncharge`** | `acknowledgeBlastingIncharge(p, { gps, comment, sig, signerName, statutoryDeclaration, photo })` | Blasting In-charge | Step 1b statutory PESO compliance acknowledgment. Validates mandatory statutory PESO declaration checkbox and mandatory on-site photo. Records in `p.signatories['blasting-incharge']` and routes forward to `Pending Site Engineer Acknowledgment`. |
-| **`rejectBlastingIncharge`** | `rejectBlastingIncharge(p, { gps, comment, sig, signerName })` | Blasting In-charge | Step 1b rejection. Mutates status to `Returned for Correction`, logs return reason, and dispatches correction request notification to Site Supervisor. |
-| **`acknowledgeSiteEngineer`** | `acknowledgeSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 on-site verification. Captures GPS (enforces site proximity), records signature and DPDP consent in `p.signatories['site-engineer']`. Routes PT-02/03/04 to Tower Incharge, PT-05 to MEP, PT-01 to parallel gate, and PT-07 directly to `Pending EHS Approval`. |
-| **`rejectSiteEngineer`** | `rejectSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 rejection. Mutates status to `Returned for Correction`, logs return reason, and dispatches correction request notification to Site Supervisor. |
+| **`submitPermit`** | `submitPermit(p)` | Site Supervisor / Blasting In-charge | Sets `submittedAt = nowTime()`, `stageEnteredAt = nowTime()`, clears escalations. If PT-07 Blasting initiated by Blasting In-charge with PESA statutory declaration, routes directly to `Pending Site Engineer Acknowledgment`. If PT-07 Blasting initiated by Site Supervisor, routes to `Pending Blasting In-charge Acknowledgment`. If PT-07 Drilling, routes to `Pending Site Engineer Acknowledgment`. Otherwise sets status to `Pending Site Engineer Acknowledgment`. |
+| **`acknowledgeBlastingIncharge`** | `acknowledgeBlastingIncharge(p, { gps, comment, sig, signerName, statutoryDeclaration, photo })` | Blasting / Drilling In-charge | Step 1b statutory PESO compliance acknowledgment. Validates mandatory statutory PESO declaration checkbox and mandatory on-site photo. Records in `p.signatories['blasting-incharge']` and routes forward to `Pending Site Engineer Acknowledgment`. |
+| **`rejectBlastingIncharge`** | `rejectBlastingIncharge(p, { gps, comment, sig, signerName })` | Blasting / Drilling In-charge | Step 1b rejection. Mutates status to `Returned for Correction`, logs return reason, and dispatches correction request notification to Site Supervisor. |
+| **`acknowledgeSiteEngineer`** | `acknowledgeSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 on-site technical verification. Captures GPS (enforces site proximity), records signature and DPDP consent in `p.signatories['site-engineer']`. Routes PT-02/03/04 to Tower Incharge, PT-05 to MEP, PT-01 to parallel gate, and PT-07 directly to `Pending EHS Approval`. **Site Engineer CANNOT cancel permits.** |
+| **`rejectSiteEngineer`** | `rejectSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 rejection. Mutates status to `Returned for Correction`, logs return reason, and dispatches correction request notification to Permittee (Site Supervisor or Blasting In-charge). **Cannot issue terminal cancellation.** |
 | **`actOnChain`** | `actOnChain(chain, roleKey, decision, payload)` | Core Engine | Core low-level node mutator. Writes decision (`'approved'` \| `'rejected'` \| `'cancelled'`), signer, timestamp, GPS, comment, and signature into `chain[CHAIN_ROLE_FIELD[roleKey]]`. Returns `chainStage(chain)`. |
 | **`approvePermitStage`** | `approvePermitStage(p, roleKey, gpsOrOpt, comment, sig, signerName)` | Assigned Reviewer | Gated by `roleCanActOnChain`. Executes `actOnChain`. If next stage is `'section-head'`, routes to Tower Incharge; if `'ehs'`, routes to EHS; if `'complete'`, triggers `activatePermit(p)`. |
-| **`rejectPermitStage`** | `rejectPermitStage(p, roleKey, gpsOrOpt, comment, sig, signerName, isCancel)` | Assigned Reviewer | Evaluates `isCancel`: If `true`, mutates status to `Cancelled` (`isCancelled = true`), triggering immediate work halt and unlocking PDF report. If `false`, records `rejectionOrigin` and routes to `Returned for Correction`. |
+| **`rejectPermitStage`** | `rejectPermitStage(p, roleKey, gpsOrOpt, comment, sig, signerName, isCancel)` | Assigned Reviewer (EHS Only for Cancel) | Evaluates `isCancel`: If `true`, mutates status to `Cancelled` (`isCancelled = true`), triggering immediate work halt and unlocking PDF report (reserved for EHS Safety Manager/Officer). If `false`, records `rejectionOrigin` and routes to `Returned for Correction`. |
 | **`activatePermit`** | `activatePermit(p)` | EHS Safety | Final endorsement gate. Sets status to `Active`, sets `activatedAt = nowTime()`, resets escalation counters, and broadcasts site-wide authorization to commence high-risk operations until `validTill`. |
 
 ---
 
 ## 8. Swimlane Diagrams
 
-Comprehensive sequence and swimlane specifications covering all **5 active permit types (PT-01 through PT-05)** and all **4 cross-cutting lifecycle engines** (Rejection & Resubmission, Safety Observation, Extension, and 2-Day Re-trigger).
+Comprehensive sequence and swimlane specifications covering all **6 active permit types (PT-01 through PT-05, and PT-07)** and all **4 cross-cutting lifecycle engines** (Rejection & Resubmission, Safety Observation, Extension, and 2-Day Re-trigger).
 
 ---
 
@@ -1284,39 +1295,46 @@ sequenceDiagram
 
 ### 8.6 PT-07 Drilling & Blasting: End-to-End Statutory Approval Lifecycle
 
-PT-07 enforces a statutory approval pipeline with **dual topology**, **statutory PESO compliance declaration**, **mandatory on-site photo verification**, **direct bypass to EHS Safety**, **18:30 IST sunset stop rule**, and **mandatory post-blast misfire clearance**:
+PT-07 enforces a statutory safety approval pipeline with **flexible dual-initiator Permittee architecture (Blasting / Drilling In-charge or Site Supervisor)**, **statutory PESO compliance declaration**, **mandatory on-site photo verification**, **direct bypass to EHS Safety**, **Site Engineer non-cancellation governance**, **18:30 IST sunset hard stop rule**, and **mandatory post-blast misfire clearance**:
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor BIC as Blasting In-charge (PESO Officer)
-    actor SE as Site Engineer (Acknowledgment)
-    actor EHS as EHS Manager/Officer (Endorsement)
+    actor P as Permittee (In-charge or Supervisor)
+    actor BIC as Blasting / Drilling In-charge (Statutory)
+    actor SE as Site Engineer (Acknowledgment Only)
+    actor EHS as EHS Manager/Officer (Final Endorsement)
     participant SYS as System Engine
 
-    Note over SS,SYS: STEP 1 — Form Initiation (Manual Location Locked)
-    SS->>SS: Select Manual Location Mode (Tower & Basement strictly locked)
-    alt Blasting Operation
-        SS->>SS: Enter Charge (kg), Diameter, Depth, Holes & Explosive Type
-        SS->>SS: Complete 15-item checklist (Item 8 auto-weather, Item 15 custom precautions)
-        SS->>SS: Fill 4 Post-Checklist Rig fields (Holes loaded, Depth ft, Mufflers, Safe distance)
-        SS->>SYS: submitPermit(BLASTING)
-        SYS->>SYS: Status: Pending Blasting In-charge Acknowledgment
-        SYS->>BIC: Alert: Statutory PESO acknowledgment required
-    else Drilling Operation
-        SS->>SS: Enter Drill Machine Type, Hole Diameter, Depth & Holes Count
-        SS->>SS: Complete 15-item checklist (rig/muffler fields suppressed)
-        SS->>SYS: submitPermit(DRILLING)
+    Note over P,SYS: STEP 1 — Form Initiation (Manual Location Locked)
+    P->>P: Select Manual Location Mode (Tower & Basement strictly locked with safety tooltips)
+    alt Blasting Operation Selected
+        P->>P: Enter Charge (kg), Diameter, Depth, Holes & Explosive Type (9 PESO Types)
+        P->>P: Complete 15-item checklist (Item 8 auto-weather telemetry, Item 15 custom precautions)
+        P->>P: Fill 4 Post-Checklist Rig fields (Holes loaded, Depth ft, Mufflers, Safe distance)
+        alt Case A: Initiated by Blasting / Drilling In-charge
+            P->>P: Check on-form Mandatory PESA Statutory Safety Declaration Card
+            P->>SYS: submitPermit(BLASTING) as Blasting In-charge
+            SYS->>SYS: Status: Pending Site Engineer Acknowledgment (Direct Route)
+            SYS->>SE: Alert: Site Engineer technical acknowledgment required
+        else Case B: Initiated by Site Supervisor
+            P->>SYS: submitPermit(BLASTING) as Site Supervisor
+            SYS->>SYS: Status: Pending Blasting In-charge Acknowledgment
+            SYS->>BIC: Alert: Statutory PESO verification & on-site photo required
+        end
+    else Drilling Operation Selected (Case C)
+        P->>P: Enter Drill Machine Type, Hole Diameter, Depth & Holes Count
+        P->>P: Complete 15-item checklist (rig/muffler fields suppressed)
+        P->>SYS: submitPermit(DRILLING)
         SYS->>SYS: Status: Pending Site Engineer Acknowledgment (Bypasses Blasting In-charge)
-        SYS->>SE: Alert: Site Engineer acknowledgment required
+        SYS->>SE: Alert: Site Engineer technical acknowledgment required
     end
 
-    opt Blasting Operation Only: Step 1b — Blasting In-charge Statutory Gate
+    opt Case B Only: Step 1b — Blasting In-charge Statutory Gate
         Note over BIC,SYS: STEP 1b — Statutory PESO Compliance & Photo Verification
         BIC->>BIC: Verify explosive transit van license, shot firer credentials & danger cordon
-        BIC->>BIC: Check statutory PESO declaration: "I confirm on-site compliance with PESO & statutory blasting safety rules"
+        BIC->>BIC: Check statutory PESO declaration: "I confirm on-site compliance with PESO rules"
         BIC->>SYS: captureBlastingAckPhoto() [Mandatory on-site physical evidence photo]
-        alt Acknowledge
+        alt Acknowledge & Forward
             BIC->>SYS: acknowledgeBlastingIncharge()
             SYS->>SYS: Status: Pending Site Engineer Acknowledgment
             SYS->>SE: Alert: Forwarded to Site Engineer for physical acknowledgment
@@ -1327,37 +1345,38 @@ sequenceDiagram
 
     Note over SE,SYS: STEP 2 — Site Engineer Acknowledgment
     SE->>SE: Verify physical perimeter barricades, siren positions & sentry postings
+    Note over SE: Governance Rule: Site Engineer CANNOT cancel permits (Approve/Reject only)
     alt Approve & Forward
         SE->>SYS: acknowledgeSiteEngineer()
         Note over SE,SYS: Direct Bypass: Skips Parallel Gate and Section Head
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final EHS endorsement required
-    else Reject
-        SE->>SYS: rejectSiteEngineer() -> Returns to Site Supervisor
+    else Reject & Return
+        SE->>SYS: rejectSiteEngineer() -> Returns to Permittee for correction
     end
 
     Note over EHS,SYS: STEP 3 — EHS Final Endorsement (First-Wins Gate)
     EHS->>EHS: Verify weather conditions, blast timing (<= 18:30 IST) & PPE
-    alt Endorse
+    alt Endorse & Activate
         EHS->>SYS: approvePermitStage()
         SYS->>SYS: Status: Active (Drilling / Blasting authorized)
-        SYS-->>SS: In-App Alert: Permit ACTIVE
-    else Reject
-        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor
-    else Cancel
-        EHS->>SYS: cancelPermit() -> Terminal stop-work -> PDF generated
+        SYS-->>P: In-App Alert: Permit ACTIVE
+    else Reject & Return
+        EHS->>SYS: rejectPermit() -> Returns to Permittee for correction
+    else Cancel (Stop-Work)
+        EHS->>SYS: cancelPermit() -> Terminal stop-work directive -> Audit PDF generated
     end
 
-    Note over SS,SYS: STEP 4 — Closure & Mandatory Post-Blast Clearance
+    Note over P,SYS: STEP 4 — Closure & Mandatory Post-Blast Clearance
     alt Blasting Operation Surrender
-        SS->>SS: Certified Shot Firer sweeps blast floor: zero unexploded charges or misfires
-        SS->>SS: Check mandatory Post-Blast Clearance & Misfire Declaration checkbox
-        SS->>SS: Attach post-blast restoration photograph
-        SS->>SYS: closeAndSurrenderPermit(blastingClearanceConfirmed: true)
+        P->>P: Certified Shot Firer sweeps blast floor: zero unexploded charges or misfires
+        P->>P: Check mandatory Post-Blast Clearance & Misfire Declaration checkbox
+        P->>P: Attach post-blast restoration photograph
+        P->>SYS: closeAndSurrenderPermit(blastingClearanceConfirmed: true)
         SYS->>SYS: Status: Closed -> PDF generated with Post-Blast Clearance Certification
     else Drilling Operation Surrender
-        SS->>SS: Remove drill rig, cap drilled holes, attach restoration photograph
-        SS->>SYS: closeAndSurrenderPermit()
+        P->>P: Remove drill rig, cap drilled holes, attach restoration photograph
+        P->>SYS: closeAndSurrenderPermit()
         SYS->>SYS: Status: Closed -> PDF generated
     end
 ```
@@ -2833,6 +2852,7 @@ tests/
 - **Rejection & Statutory Re-Acknowledgment Flow**: Tests rejection by Blasting In-charge, returns to Site Supervisor for correction, and asserts resubmission routes to `Pending Blasting In-charge Re-Acknowledgment` then `Pending Site Engineer Re-Acknowledgment`.
 - **Observation Blocking & Post-Blast Clearance**: Verifies that open observation blocks extension and surrender; validates that closing a Blasting permit requires certified Post-Blast Clearance & Misfire Declaration (`blastingClearanceConfirmed`).
 - **Night Shift Linkage Exclusion & PDF Generation**: Proves `canLinkToNightShift('blasting') === false`; asserts clean execution of `generatePermitPDF()` for both Blasting and Drilling permits.
+- **Blasting In-charge as Permittee Direct Flow**: Validates that Blasting / Drilling In-charge can initiate permit with on-form PESA statutory declaration routing directly to Site Engineer (bypassing duplicate In-charge review).
 
 ### 23.3 Automated Test Execution Results
 
@@ -2860,10 +2880,10 @@ MASTER TEST SUITE EXECUTION SUMMARY
   All 10 static tokens, dynamic restrictions, matrix validations & UI rendering tests passed cleanly
 
 >>> SUITE 7: PT-07 DRILLING & BLASTING SPECIFICATION & COMPLIANCE (test_pt07_drilling_blasting.js)
-  All 12 scenario groups, statutory PESO gates, sunset hard stop & clearance declarations passed cleanly
+  All 13 scenario groups, statutory PESO gates, dual Permittee initiation, sunset hard stop & clearance declarations passed cleanly
 
 ================================================================
-GRAND TOTAL: 341+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
+GRAND TOTAL: 342+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
 Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully Responsive · PT-07 Statutory Compliance · Production Ready
 ================================================================
 ```

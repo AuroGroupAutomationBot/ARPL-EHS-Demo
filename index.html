@@ -2070,25 +2070,26 @@
             position: relative;
             z-index: 1;
             text-align: center;
-            max-width: 760px;
+            max-width: 960px;
+            width: 100%;
         }
 
         .landing-mark {
-            width: 64px;
-            height: 64px;
-            border-radius: 14px;
+            width: 68px;
+            height: 68px;
+            border-radius: 16px;
             background: linear-gradient(135deg, var(--orange), var(--orange-dark));
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 26px;
+            font-size: 30px;
             color: #fff;
-            margin: 0 auto 18px;
+            margin: 0 auto 16px;
             box-shadow: 0 10px 30px rgba(232, 96, 10, .35);
         }
 
         .landing-title {
-            font-size: 26px;
+            font-size: 27px;
             font-weight: 800;
             color: #fff;
             letter-spacing: .2px;
@@ -2097,50 +2098,215 @@
             justify-content: center;
             gap: 10px;
             flex-wrap: wrap;
+            margin: 0;
         }
 
         .landing-sub {
-            font-size: 13px;
+            font-size: 13.5px;
             color: #9BAAC4;
-            letter-spacing: .4px;
-            margin: 6px 0 0;
+            letter-spacing: .3px;
+            margin: 8px 0 0;
             display: flex;
             align-items: center;
             justify-content: center;
             gap: 8px;
         }
 
-        .landing-banner {
+        /* Supported Permit Modules Pills */
+        .landing-permits-bar {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            flex-wrap: wrap;
+            margin-top: 16px;
+        }
+
+        .ptype-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 7px;
+            padding: 5px 13px;
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .12);
+            border-radius: 20px;
+            font-size: 11.5px;
+            font-weight: 600;
+            color: #E2E8F0;
+            transition: all .2s ease;
+        }
+
+        .ptype-pill i {
+            color: var(--orange);
+            font-size: 12px;
+        }
+
+        .landing-statutory-row {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-top: 14px;
+        }
+
+        .statutory-tag {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            font-size: 11.8px;
+            color: #CBD1DA;
+            font-weight: 500;
+        }
+
+        .statutory-tag i {
+            color: #60A5FA;
+        }
+
+        /* 4-Stage Governance Workflow Ribbon */
+        .landing-workflow-strip {
             position: relative;
             z-index: 1;
             display: flex;
-            align-items: center;
+            align-items: stretch;
+            justify-content: space-between;
             gap: 10px;
-            background: rgba(120, 160, 220, .10);
-            border: 1px solid rgba(120, 160, 220, .25);
-            color: #C7D6EE;
-            font-size: 12px;
-            line-height: 1.5;
-            border-radius: 8px;
-            padding: 11px 18px;
-            margin: 22px 0 36px;
-            max-width: 760px;
-            text-align: left;
+            background: rgba(22, 40, 63, .65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, .11);
+            border-radius: 14px;
+            padding: 16px 20px;
+            margin: 26px 0 26px;
+            max-width: 1220px;
+            width: 100%;
+            box-shadow: 0 8px 30px rgba(0, 0, 0, .25);
         }
 
-        .landing-banner i {
-            color: #8FB6E8;
-            font-size: 14px;
+        .lw-step {
+            display: flex;
+            align-items: flex-start;
+            gap: 11px;
+            flex: 1;
+            min-width: 0;
+        }
+
+        .lw-num {
+            width: 26px;
+            height: 26px;
+            border-radius: 8px;
+            background: linear-gradient(135deg, var(--orange), var(--orange-dark));
+            color: #fff;
+            font-weight: 800;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             flex-shrink: 0;
+            margin-top: 2px;
+            box-shadow: 0 4px 10px rgba(232, 96, 10, .3);
+        }
+
+        .lw-content {
+            display: flex;
+            flex-direction: column;
+            gap: 3px;
+            min-width: 0;
+        }
+
+        .lw-title {
+            font-size: 12.8px;
+            font-weight: 700;
+            color: #FFFFFF;
+            letter-spacing: .2px;
+        }
+
+        .lw-desc {
+            font-size: 11.2px;
+            color: #9BAAC4;
+            line-height: 1.45;
+        }
+
+        .lw-arrow {
+            display: flex;
+            align-items: center;
+            color: rgba(255, 255, 255, .25);
+            font-size: 14px;
+            padding: 0 4px;
+        }
+
+        /* Role Section & Filter Tabs */
+        .landing-role-section {
+            position: relative;
+            z-index: 1;
+            max-width: 1220px;
+            width: 100%;
+        }
+
+        .landing-role-header {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 16px;
+            flex-wrap: wrap;
+            margin-bottom: 20px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid rgba(255, 255, 255, .08);
+        }
+
+        .landing-role-header h2 {
+            font-size: 17.5px;
+            font-weight: 700;
+            color: #FFFFFF;
+            margin: 0 0 4px;
+            display: flex;
+            align-items: center;
+            gap: 9px;
+        }
+
+        .landing-role-header p {
+            font-size: 12.5px;
+            color: #9BAAC4;
+            margin: 0;
+        }
+
+        .role-filter-tabs {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+            flex-wrap: wrap;
+        }
+
+        .rf-tab {
+            background: rgba(255, 255, 255, .05);
+            border: 1px solid rgba(255, 255, 255, .10);
+            color: #9BAAC4;
+            font-size: 11.6px;
+            font-weight: 600;
+            padding: 6px 14px;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all .18s ease;
+        }
+
+        .rf-tab:hover {
+            background: rgba(255, 255, 255, .10);
+            color: #FFF;
+        }
+
+        .rf-tab.active {
+            background: var(--orange);
+            border-color: var(--orange);
+            color: #FFF;
+            box-shadow: 0 4px 12px rgba(232, 96, 10, .35);
         }
 
         .role-grid {
             position: relative;
             z-index: 1;
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
             gap: 18px;
-            max-width: 1220px;
             width: 100%;
         }
 
@@ -2148,11 +2314,11 @@
             background: rgba(255, 255, 255, .04);
             border: 1px solid rgba(255, 255, 255, .09);
             border-radius: 14px;
-            padding: 22px 20px;
+            padding: 20px;
             cursor: pointer;
             display: flex;
             flex-direction: column;
-            gap: 12px;
+            gap: 10px;
             transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
             text-align: left;
             position: relative;
@@ -2166,16 +2332,23 @@
             box-shadow: 0 16px 36px rgba(0, 0, 0, .28);
         }
 
+        .role-card-top {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            gap: 10px;
+        }
+
         .role-card-icon {
-            width: 42px;
-            height: 42px;
+            width: 38px;
+            height: 38px;
             border-radius: 10px;
             background: rgba(232, 96, 10, .15);
             color: var(--orange);
             display: flex;
             align-items: center;
             justify-content: center;
-            font-size: 17px;
+            font-size: 16px;
             transition: background .18s ease, color .18s ease;
         }
 
@@ -2184,11 +2357,31 @@
             color: #fff;
         }
 
+        .role-tier-badge {
+            font-size: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: .4px;
+            padding: 3px 8px;
+            border-radius: 6px;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
         .role-card-name {
-            font-size: 14.5px;
+            font-size: 15px;
             font-weight: 700;
             color: #fff;
             margin: 0;
+        }
+
+        .role-card-sub {
+            font-size: 11px;
+            color: #CBD1DA;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: .4px;
         }
 
         .role-card-desc {
@@ -2208,6 +2401,7 @@
             color: var(--orange);
             text-transform: uppercase;
             letter-spacing: .5px;
+            margin-top: 4px;
         }
 
         .landing-footer {
@@ -2220,7 +2414,7 @@
             line-height: 1.8;
             border-top: 1px solid rgba(255, 255, 255, .08);
             padding-top: 16px;
-            max-width: 560px;
+            max-width: 680px;
         }
 
         .landing-footer .lf-title {
@@ -3201,14 +3395,32 @@
                 font-size: 12px;
             }
 
-            .landing-banner {
-                padding: 10px 14px;
-                font-size: 11.5px;
-                margin: 14px 0 20px;
+            .landing-workflow-strip {
+                flex-direction: column;
+                gap: 12px;
+                padding: 14px 16px;
+                margin: 18px 0 20px;
+            }
+
+            .lw-arrow {
+                display: none;
+            }
+
+            .landing-role-header {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 12px;
+            }
+
+            .role-filter-tabs {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: 4px;
+                -webkit-overflow-scrolling: touch;
             }
 
             .role-grid {
-                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                grid-template-columns: 1fr;
                 gap: 12px;
             }
 
@@ -4054,32 +4266,91 @@
         <i class="fa-solid fa-clipboard-check landing-decor d6"></i>
 
         <div class="landing-brand">
-            <div class="landing-mark"><i class="fa-solid fa-person-digging"></i></div>
-            <h1 class="landing-title"><i class="fa-solid fa-shield-halved" style="color:var(--orange);font-size:22px;"></i>
-                ARPL EHS Permit-to-Work</h1>
-            <p class="landing-sub"><i class="fa-solid fa-building"></i> Auro Realty Private Limited &bull; Environmental
-                Health &amp; Safety</p>
-            <div
-                style="margin-top:10px;display:flex;align-items:center;justify-content:center;gap:10px;flex-wrap:wrap;">
+            <div class="landing-mark"><i class="fa-solid fa-shield-halved"></i></div>
+            <h1 class="landing-title">
+                <i class="fa-solid fa-shield-heart" style="color:var(--orange);font-size:24px;"></i>
+                ARPL Digital Permit-to-Work Portal
+            </h1>
+            <p class="landing-sub">
+                <i class="fa-solid fa-building"></i> Auro Realty Private Limited &bull; Environmental Health &amp; Safety
+            </p>
+
+            <!-- Supported Permit Modules Pills -->
+            <div class="landing-permits-bar">
+                <span class="ptype-pill"><i class="fa-solid fa-person-digging"></i> PT-01 Excavation</span>
+                <span class="ptype-pill"><i class="fa-solid fa-fire-burner"></i> PT-02 Hot Work</span>
+                <span class="ptype-pill"><i class="fa-solid fa-shield-halved"></i> PT-03 Guard Rail</span>
+                <span class="ptype-pill"><i class="fa-solid fa-dungeon"></i> PT-04 Confined Space</span>
+                <span class="ptype-pill"><i class="fa-solid fa-arrow-down-up-across-line"></i> PT-05 Shaft Work</span>
+                <span class="ptype-pill"><i class="fa-solid fa-bomb"></i> PT-07 Drilling &amp; Blasting</span>
+            </div>
+
+            <!-- Key System Badges -->
+            <div class="landing-statutory-row">
                 <span class="dpdp-tag"><i class="fa-solid fa-shield-check"></i> DPDP Act 2023 Compliant</span>
-                <span style="font-size:11.8px;color:#CBD1DA;"><i class="fa-solid fa-user-lock"></i> No names tagged to
-                    roles &bull; Name &amp; statutory consent required before signature</span>
+                <span class="statutory-tag"><i class="fa-solid fa-clock"></i> Live Indian Standard Time (IST)</span>
+                <span class="statutory-tag"><i class="fa-solid fa-location-crosshairs"></i> GPS Geofence Verification</span>
             </div>
         </div>
 
-        <div class="landing-banner">
-            <i class="fa-solid fa-circle-info"></i>
-            <span>Frontend demonstration environment with full <b>Digital Personal Data Protection (DPDP) Act</b>
-                compliance. Roles represent functional authorizations only without pre-linked personal identities.
-                Authorised users enter their name and provide explicit consent at the point of digital signing. All
-                dates and times run on live Indian Standard Time (IST).</span>
+        <!-- 4-Stage Governance Workflow Ribbon -->
+        <div class="landing-workflow-strip">
+            <div class="lw-step">
+                <div class="lw-num">1</div>
+                <div class="lw-content">
+                    <div class="lw-title">Initiation &amp; Checklist</div>
+                    <div class="lw-desc">Site Supervisor or Blasting / Drilling In-charge fills permit form, on-site safety checklist &amp; uploads geo-tagged photo.</div>
+                </div>
+            </div>
+            <div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>
+            <div class="lw-step">
+                <div class="lw-num">2</div>
+                <div class="lw-content">
+                    <div class="lw-title">Field Verification</div>
+                    <div class="lw-desc">Site Engineer verifies site ground safety &amp; forwards (can Approve or Return; cannot Cancel).</div>
+                </div>
+            </div>
+            <div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>
+            <div class="lw-step">
+                <div class="lw-num">3</div>
+                <div class="lw-content">
+                    <div class="lw-title">Clearances &amp; Section Head</div>
+                    <div class="lw-desc">Parallel MEP, P&amp;M, IT clearances verified, followed by Section Head (Tower Incharge / Excavation Head) approval.</div>
+                </div>
+            </div>
+            <div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>
+            <div class="lw-step">
+                <div class="lw-num">4</div>
+                <div class="lw-content">
+                    <div class="lw-title">EHS Safety Endorsement</div>
+                    <div class="lw-desc">EHS Safety Manager / Officer conducts final statutory review to activate permit, audit observations, or stop work.</div>
+                </div>
+            </div>
         </div>
 
-        <div class="role-grid" id="roleCardsGrid"></div>
+        <!-- Interactive Role Switcher Header & Filter Tabs -->
+        <div class="landing-role-section">
+            <div class="landing-role-header">
+                <div>
+                    <h2><i class="fa-solid fa-users-gear" style="color:var(--orange);"></i> Select a Role to Enter the Demonstration</h2>
+                    <p>Click any persona below to simulate their permit creation, verification, or approval experience. You can switch roles at any time from the top navigation bar.</p>
+                </div>
+                <div class="role-filter-tabs" id="roleFilterTabs">
+                    <button class="rf-tab active" onclick="filterRoles('all', this)"><i class="fa-solid fa-border-all"></i> All Roles (11)</button>
+                    <button class="rf-tab" onclick="filterRoles('initiator', this)"><i class="fa-solid fa-user-pen"></i> Initiators (2)</button>
+                    <button class="rf-tab" onclick="filterRoles('verification', this)"><i class="fa-solid fa-hard-hat"></i> Field &amp; Clearances (4)</button>
+                    <button class="rf-tab" onclick="filterRoles('approver', this)"><i class="fa-solid fa-user-tie"></i> Section Heads (2)</button>
+                    <button class="rf-tab" onclick="filterRoles('ehs', this)"><i class="fa-solid fa-shield-halved"></i> EHS Safety (2)</button>
+                    <button class="rf-tab" onclick="filterRoles('admin', this)"><i class="fa-solid fa-user-gear"></i> Admin (1)</button>
+                </div>
+            </div>
+
+            <div class="role-grid" id="roleCardsGrid"></div>
+        </div>
 
         <div class="landing-footer">
-            <div class="lf-title"><i class="fa-solid fa-shield-halved"></i> EHS Permit-to-Work Management System</div>
-            <div>PT-01 Excavation &bull; PT-02 Hot Work &bull; PT-03 Guard Rail &bull; PT-04 Confined Space &bull; PT-05 Shaft Work</div>
+            <div class="lf-title"><i class="fa-solid fa-shield-halved" style="color:var(--orange);"></i> ARPL Digital Permit-to-Work (PTW) Management System</div>
+            <div>PT-01 Excavation &bull; PT-02 Hot Work &bull; PT-03 Guard Rail &bull; PT-04 Confined Space &bull; PT-05 Shaft Work &bull; PT-07 Drilling &amp; Blasting</div>
             <div>Demo Build &bull; September 2026</div>
             <div style="margin-top:8px;"><a href="#" onclick="resetDemoData();return false;"
                     style="color:var(--orange);font-weight:700;"><i class="fa-solid fa-rotate-left"></i> Reset Demo
@@ -4106,7 +4377,7 @@
                     title="Close Navigation"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="navContainer"></div>
-            <div class="sidebar-footer">PT-01 to PT-05 Integrated Permits &middot; v3.0<br>Demo build &middot; September 2026</div>
+            <div class="sidebar-footer">PT-01 to PT-07 Integrated Permits &middot; v3.0<br>Demo build &middot; September 2026</div>
         </aside>
 
         <div class="main">
@@ -4871,7 +5142,7 @@
             "Are  Explosives transported in approved vehicle & detonators placed separately & kept isolated with caution signage’s?",
             "Are the environmental conditions considered?",
             "Are wooden tamping sticks available for the stemming of holes?",
-            "Is licensed Blasting in charge/Supervisor available at site all time?",
+            "Is licensed Blasting in charge available at site all time?",
             "Are  all the Mufflers(rubber mat) placed in Good Conditions?",
             "Any misfire detected? Are all mis-fired charges removed prior to drilling operations?",
             "Are all the excessive cartridges removed from the work spot?",
@@ -4907,17 +5178,127 @@
            without pre-assigned personal names. Authorised personnel enter their
            name dynamically before providing their digital signature. */
         const ROLES = [
-            { key: 'site-supervisor', label: 'Site Supervisor', sub: 'Permittee / Form Filling & Closure', icon: 'fa-user-pen', desc: 'Step 1: Fill permit forms (Excavation, Hot Work, Guard Rail, Confined Space, Shaft Work & Drilling and Blasting), attach work-area photos, respond to Observations, request Extensions and Re-triggers, and execute permit Closure & Surrender.' },
-            { key: 'blasting-incharge', label: 'Blasting In-charge', sub: 'Step 2: Licensed Blasting Supervisor', icon: 'fa-bomb', desc: 'Step 2: Licensed Blasting In-charge / Supervisor. Mandatory presence on site at all times during blasting operations. Acknowledges Form EHS_PTW_007 with statutory safety declaration & mandatory on-site inspection photo.' },
-            { key: 'site-engineer', label: 'Site Engineer', sub: 'Step 2/3: Acknowledger & Forwarder', icon: 'fa-hard-hat', desc: 'Step 2/3: Acknowledge & forward Excavation permits to parallel gate, Hot Work/Guard Rail/Confined Space to Tower Incharge, Shaft Work to MEP, and Drilling & Blasting to EHS Review.' },
-            { key: 'mep', label: 'MEP Engineer', sub: 'Clearance & Parallel Approver', icon: 'fa-plug-circle-bolt', desc: 'Step 3: Single MEP clearance step for Shaft Work; verify utilities, cabling and plumbing before excavation begins (parallel approval).' },
-            { key: 'pm', label: 'P&M Engineer', sub: 'Parallel Approver', icon: 'fa-gears', desc: 'Verify plant & machinery readiness — excavators, barricading equipment, lifting gear. Parallel approval, stage 1.' },
-            { key: 'it', label: 'IT Engineer', sub: 'Parallel Approver', icon: 'fa-network-wired', desc: 'Verify underground IT / data / fibre service lines are identified and protected. Parallel approval, stage 1.' },
-            { key: 'excavation-head', label: 'Excavation Head', sub: 'Excavation Section Head', icon: 'fa-trowel-bricks', desc: 'Step 4 Approving Authority for Excavation Work (PT-01): review after parallel clearances (MEP, P&M, IT). Section Head review for Drilling & Blasting extensions.' },
-            { key: 'hw-section-head', label: 'Tower Incharge', sub: 'Approving Authority', icon: 'fa-user-tie', desc: 'Step 3/4 Approving Authority for Hot Work (PT-02), Guard Rail (PT-03), Confined Space (PT-04) & Shaft Work (PT-05): review after clearances. Review safety conditions and Approve, Reject or Cancel.' },
-            { key: 'ehs-manager', label: 'EHS Manager', sub: 'Final Safety Endorsement', icon: 'fa-shield-halved', desc: 'Final safety endorsement — either EHS Manager or EHS Officer approval activates the permit.' },
-            { key: 'ehs-officer', label: 'EHS Officer', sub: 'Final Safety Endorsement', icon: 'fa-user-shield', desc: 'Final safety endorsement — either EHS Manager or EHS Officer approval activates the permit.' },
-            { key: 'admin', label: 'Administrator', sub: 'Site GPS & Geofence Administrator', icon: 'fa-user-gear', desc: 'Configure project site GPS coordinates (Lat/Lng), set proximity circle radius range (meters), and manage geofencing parameters.' },
+            {
+                key: 'site-supervisor',
+                label: 'Site Supervisor',
+                sub: 'Field Initiator & Permittee (PT-01 to PT-05, PT-07)',
+                icon: 'fa-user-pen',
+                tier: 'Tier 1 · Permittee / Initiator',
+                cat: 'initiator',
+                tierBg: 'rgba(232, 96, 10, .18)',
+                tierColor: 'var(--orange)',
+                desc: 'Permittee / form initiator for PT-01 to PT-05 and PT-07. Completes 15-item safety checklists, uploads work-area photos, responds to Safety Observations, requests extensions, and executes final permit closure & surrender.'
+            },
+            {
+                key: 'blasting-incharge',
+                label: 'Blasting / Drilling In-charge',
+                sub: 'Specialist Permittee & Statutory In-charge (PT-07)',
+                icon: 'fa-burst',
+                tier: 'Tier 1 · Permittee & Specialist (PT-07)',
+                cat: 'initiator',
+                tierBg: 'rgba(232, 96, 10, .18)',
+                tierColor: 'var(--orange)',
+                desc: 'Specialist In-charge for Form EHS_PTW_007 (Drilling & Blasting). Can initiate permits directly as Permittee with statutory safety declaration, or provide mandatory on-site statutory concurrence when initiated by a supervisor. Manages pre-operation photos, safe distance perimeter, and blast clearance.'
+            },
+            {
+                key: 'site-engineer',
+                label: 'Site Engineer',
+                sub: 'Field Verification & Acknowledgment',
+                icon: 'fa-hard-hat',
+                tier: 'Tier 2 · Field Verification',
+                cat: 'verification',
+                tierBg: 'rgba(27, 95, 174, .18)',
+                tierColor: '#60A5FA',
+                desc: 'Conducts physical on-site inspection of barricades, trenches, edge protection, and safety barriers. Forwards permits to technical clearances or Section Heads. Authority is strictly limited to \'Approve & Forward\' or \'Return for Correction\' (holds no cancellation authority).'
+            },
+            {
+                key: 'mep',
+                label: 'MEP Engineer',
+                sub: 'Technical Clearance (Mechanical, Electrical & Plumbing)',
+                icon: 'fa-plug-circle-bolt',
+                tier: 'Tier 2 · Technical Clearance',
+                cat: 'verification',
+                tierBg: 'rgba(14, 124, 134, .18)',
+                tierColor: '#2DD4BF',
+                desc: 'Parallel clearance authority for PT-01 Excavation and PT-05 Shaft Work. Verifies electrical power isolation, live cabling, underground pipes, drainage lines, and plumbing utilities before work starts.'
+            },
+            {
+                key: 'pm',
+                label: 'P&M Engineer',
+                sub: 'Technical Clearance (Plant & Machinery)',
+                icon: 'fa-gears',
+                tier: 'Tier 2 · Technical Clearance',
+                cat: 'verification',
+                tierBg: 'rgba(14, 124, 134, .18)',
+                tierColor: '#2DD4BF',
+                desc: 'Parallel machinery clearance for PT-01 Excavation. Verifies mechanical fitness, valid third-party inspection (TPI) certificates, operator competency cards, and equipment safety guards.'
+            },
+            {
+                key: 'it',
+                label: 'IT Engineer',
+                sub: 'Technical Clearance (IT & Telecom Infrastructure)',
+                icon: 'fa-network-wired',
+                tier: 'Tier 2 · Technical Clearance',
+                cat: 'verification',
+                tierBg: 'rgba(14, 124, 134, .18)',
+                tierColor: '#2DD4BF',
+                desc: 'Parallel infrastructure clearance for PT-01 Excavation. Identifies, locates, and marks underground optical fiber lines, telecom conduits, and data backbones to prevent cable strikes.'
+            },
+            {
+                key: 'excavation-head',
+                label: 'Excavation Head',
+                sub: 'Approving Authority (Section Head — Civil & Earthwork)',
+                icon: 'fa-trowel-bricks',
+                tier: 'Tier 3 · Approving Authority',
+                cat: 'approver',
+                tierBg: 'rgba(154, 100, 0, .22)',
+                tierColor: '#FBBF24',
+                desc: 'Section Head approving authority for PT-01 Excavation permits following MEP, P&M, and IT clearances. Also reviews extension requests for PT-07 Drilling & Blasting. Approves or returns for correction.'
+            },
+            {
+                key: 'hw-section-head',
+                label: 'Tower Incharge',
+                sub: 'Approving Authority (Section Head — Tower & Structure)',
+                icon: 'fa-user-tie',
+                tier: 'Tier 3 · Approving Authority',
+                cat: 'approver',
+                tierBg: 'rgba(154, 100, 0, .22)',
+                tierColor: '#FBBF24',
+                desc: 'Section Head approving authority for PT-02 Hot Work, PT-03 Guard Rail, PT-04 Confined Space, and PT-05 Shaft Work (after MEP clearance). Evaluates site precautions and grants Stage Approval or Returns for Correction.'
+            },
+            {
+                key: 'ehs-manager',
+                label: 'EHS Safety Manager',
+                sub: 'Statutory Endorsement & Stop-Work Authority',
+                icon: 'fa-shield-halved',
+                tier: 'Tier 4 · Statutory Endorsement',
+                cat: 'ehs',
+                tierBg: 'rgba(30, 122, 61, .22)',
+                tierColor: '#4ADE80',
+                desc: 'Final statutory safety authority. Endorses permits into Active status, conducts surprise surveillance audits, logs corrective Safety Observations, approves permit extensions, and holds exclusive terminal stop-work / cancellation authority.'
+            },
+            {
+                key: 'ehs-officer',
+                label: 'EHS Safety Officer',
+                sub: 'Statutory Endorsement & Field Surveillance',
+                icon: 'fa-user-shield',
+                tier: 'Tier 4 · Statutory Endorsement',
+                cat: 'ehs',
+                tierBg: 'rgba(30, 122, 61, .22)',
+                tierColor: '#4ADE80',
+                desc: 'On-site safety enforcement authority. Authorized to endorse and activate permits, verify PPE and multi-gas detector test readings, conduct continuous field audits, and issue formal Safety Observations.'
+            },
+            {
+                key: 'admin',
+                label: 'System Administrator',
+                sub: 'System & GPS Geofencing Administration',
+                icon: 'fa-user-gear',
+                tier: 'System Administration',
+                cat: 'admin',
+                tierBg: 'rgba(105, 65, 198, .22)',
+                tierColor: '#C084FC',
+                desc: 'Manages project site GPS boundaries (Lat/Lng), geofence proximity threshold radius (meters), system configuration, user role mappings, and demonstration reset controls.'
+            },
         ];
         function roleInfo(key) {
             if (!key) return { key: '', label: 'Authorized Signatory', sub: '', icon: 'fa-user' };
@@ -5752,16 +6133,24 @@
             }
             if (ptypeOf(p) === 'blasting') {
                 const isBlastingOp = p.dbOperationType === 'Blasting';
-                if (isBlastingOp) {
+                const isCreatorIncharge = (currentUser && currentUser.key === 'blasting-incharge') || p.createdRoleKey === 'blasting-incharge';
+                if (isCreatorIncharge && isBlastingOp) {
+                    p.blastingStatutoryDecl = true;
+                    p.signatories['blasting-incharge'] = { name: creator, sig: p.signature ? (p.signature.dataUrl || p.signature) : 'Signed', consent: true, at: nowTime() };
+                    p.status = 'Pending Site Engineer Acknowledgment';
+                    logActivity(p, 'Drilling & Blasting permit (Blasting operation) submitted by Blasting / Drilling In-charge (' + creator + ') with PESA statutory safety declaration. Awaiting Site Engineer acknowledgment (Step 3).');
+                    notify(['site-engineer'], pLabel(p) + ' submitted by Blasting / Drilling In-charge — Site Engineer acknowledgment required.', 'info', p.id);
+                    notify(stakeholdersFor(p), pLabel(p) + ' submitted by Blasting / Drilling In-charge. Awaiting Site Engineer acknowledgment.', 'info', p.id);
+                } else if (isBlastingOp) {
                     p.status = 'Pending Blasting In-charge Acknowledgment';
-                    logActivity(p, 'Drilling & Blasting permit (Blasting operation) submitted by Site Supervisor (' + creator + '). Awaiting Blasting In-charge statutory acknowledgment (Step 2).');
-                    notify(['blasting-incharge'], pLabel(p) + ' submitted by Site Supervisor — Blasting In-charge statutory acknowledgment required.', 'info', p.id);
-                    notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Blasting In-charge statutory acknowledgment.', 'info', p.id);
+                    logActivity(p, 'Drilling & Blasting permit (Blasting operation) submitted by Site Supervisor (' + creator + '). Awaiting Blasting / Drilling In-charge statutory acknowledgment before Site Engineer.');
+                    notify(['blasting-incharge'], pLabel(p) + ' submitted by Site Supervisor — Blasting / Drilling In-charge statutory acknowledgment required.', 'info', p.id);
+                    notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Blasting / Drilling In-charge statutory acknowledgment.', 'info', p.id);
                 } else {
                     p.status = 'Pending Site Engineer Acknowledgment';
-                    logActivity(p, 'Drilling & Blasting permit (Drilling operation) submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2).');
-                    notify(['site-engineer'], pLabel(p) + ' submitted by Site Supervisor — Site Engineer acknowledgment required.', 'info', p.id);
-                    notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Site Engineer acknowledgment.', 'info', p.id);
+                    logActivity(p, 'Drilling & Blasting permit (Drilling operation) submitted by ' + (isCreatorIncharge ? 'Blasting / Drilling In-charge' : 'Site Supervisor') + ' (' + creator + '). Awaiting Site Engineer acknowledgment.');
+                    notify(['site-engineer'], pLabel(p) + ' submitted — Site Engineer acknowledgment required.', 'info', p.id);
+                    notify(stakeholdersFor(p), pLabel(p) + ' submitted. Awaiting Site Engineer acknowledgment.', 'info', p.id);
                 }
                 saveState();
                 return;
@@ -5798,10 +6187,10 @@
             const isReack = p.status === 'Pending Blasting In-charge Re-Acknowledgment' || !!(p.blastingInchargeAck && p.blastingInchargeAck.reacknowledgment);
             p.status = isReack ? 'Pending Site Engineer Re-Acknowledgment' : 'Pending Site Engineer Acknowledgment';
 
-            logActivity(p, 'Blasting In-charge (' + effectiveSigner + ') completed statutory inspection, confirmed PESO safety declaration, attached on-site photo, and forwarded permit to Site Engineer (' + (isReack ? 'Re-Acknowledgment' : 'Step 3') + ').' + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
-            notify(['site-engineer'], pLabel(p) + ' statutory ' + (isReack ? 're-acknowledgment' : 'acknowledgment') + ' completed by Blasting In-charge — Site Engineer ' + (isReack ? 're-acknowledgment' : 'acknowledgment') + ' required.', 'info', p.id);
-            notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Blasting In-charge and forwarded to Site Engineer.', 'info', p.id);
-            showToast('Blasting In-charge acknowledgment completed & forwarded to Site Engineer.', 'ok');
+            logActivity(p, 'Blasting / Drilling In-charge (' + effectiveSigner + ') completed statutory inspection, confirmed PESO safety declaration, attached on-site photo, and forwarded permit to Site Engineer (' + (isReack ? 'Re-Acknowledgment' : 'Step 3') + ').' + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
+            notify(['site-engineer'], pLabel(p) + ' statutory ' + (isReack ? 're-acknowledgment' : 'acknowledgment') + ' completed by Blasting / Drilling In-charge — Site Engineer ' + (isReack ? 're-acknowledgment' : 'acknowledgment') + ' required.', 'info', p.id);
+            notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Blasting / Drilling In-charge and forwarded to Site Engineer.', 'info', p.id);
+            showToast('Blasting / Drilling In-charge acknowledgment completed & forwarded to Site Engineer.', 'ok');
             saveState();
         }
 
@@ -5809,14 +6198,14 @@
             const effectiveSigner = signerName || (currentUser && currentUser.name) || roleInfo('blasting-incharge').label;
             const effectiveSig = sig || makeSimSignature(effectiveSigner);
             p.status = 'Returned for Correction';
-            p.returnReason = comment || 'Returned by Blasting In-charge for corrections';
-            p.returnedBy = 'Blasting In-charge (' + effectiveSigner + ')';
+            p.returnReason = comment || 'Returned by Blasting / Drilling In-charge for corrections';
+            p.returnedBy = 'Blasting / Drilling In-charge (' + effectiveSigner + ')';
             p.returnedByRoleKey = 'blasting-incharge';
             p.blastingInchargeAck = { acknowledged: false, rejected: true, at: nowTime(), by: effectiveSigner, gps, comment, sig: effectiveSig };
             p.rejectionOrigin = {
                 workflow: 'initial',
                 roleKey: 'blasting-incharge',
-                roleLabel: 'Blasting In-charge',
+                roleLabel: 'Blasting / Drilling In-charge',
                 by: effectiveSigner,
                 at: nowTime(),
                 comment: comment || ''
@@ -5824,9 +6213,9 @@
             p.stageEnteredAt = nowTime();
             p.signatories = p.signatories || {};
             p.signatories['blasting-incharge'] = { name: effectiveSigner, sig: effectiveSig, consent: true, at: nowTime() };
-            logActivity(p, 'Blasting In-charge (' + effectiveSigner + ') returned permit to Site Supervisor for corrections. Reason: ' + (comment || 'Not specified'));
-            notify(['site-supervisor'], pLabel(p) + ' returned by Blasting In-charge: ' + (comment || 'Corrections requested.'), 'warn', p.id);
-            notify(stakeholdersFor(p), pLabel(p) + ' returned to Site Supervisor by Blasting In-charge.', 'warn', p.id);
+            logActivity(p, 'Blasting / Drilling In-charge (' + effectiveSigner + ') returned permit to Site Supervisor for corrections. Reason: ' + (comment || 'Not specified'));
+            notify(['site-supervisor'], pLabel(p) + ' returned by Blasting / Drilling In-charge: ' + (comment || 'Corrections requested.'), 'warn', p.id);
+            notify(stakeholdersFor(p), pLabel(p) + ' returned to Site Supervisor by Blasting / Drilling In-charge.', 'warn', p.id);
             showToast('Permit returned to Site Supervisor for corrections.', 'info');
             saveState();
         }
@@ -6047,19 +6436,19 @@
                 p.rejectionOrigin = {
                     workflow: 'initial',
                     roleKey: retRole,
-                    roleLabel: (retRole === 'blasting-incharge') ? 'Blasting In-charge' : ((retRole === 'excavation-head') ? 'Excavation Head' : ((retRole === 'section-head' || retRole === 'hw-section-head') ? 'Tower Incharge' : (roleInfo(retRole) ? roleInfo(retRole).label : retRole))),
+                    roleLabel: (retRole === 'blasting-incharge') ? 'Blasting / Drilling In-charge' : ((retRole === 'excavation-head') ? 'Excavation Head' : ((retRole === 'section-head' || retRole === 'hw-section-head') ? 'Tower Incharge' : (roleInfo(retRole) ? roleInfo(retRole).label : retRole))),
                     by: p.returnedBy || 'Approver',
                     at: nowTime(),
                     comment: p.returnReason || ''
                 };
             }
 
-            // For Blasting operations, Blasting In-charge statutory acknowledgment comes first before Site Engineer
+            // For Blasting operations, Blasting / Drilling In-charge statutory acknowledgment comes first before Site Engineer
             if (ptypeOf(p) === 'blasting' && p.dbOperationType === 'Blasting') {
                 p.status = 'Pending Blasting In-charge Re-Acknowledgment';
                 p.blastingInchargeAck = { acknowledged: false, rejected: false, at: null, by: null, reacknowledgment: true };
-                notify(['blasting-incharge'], pLabel(p) + ' resubmitted after correction by Site Supervisor — Blasting In-charge statutory re-acknowledgment required before Site Engineer.', 'info', p.id);
-                logActivity(p, 'Permit corrected and resubmitted by Site Supervisor (' + resubmitter + '). Routed to Blasting In-charge for statutory re-acknowledgment before Site Engineer.');
+                notify(['blasting-incharge'], pLabel(p) + ' resubmitted after correction by ' + resubmitter + ' — Blasting / Drilling In-charge statutory re-acknowledgment required before Site Engineer.', 'info', p.id);
+                logActivity(p, 'Permit corrected and resubmitted by ' + resubmitter + '. Routed to Blasting / Drilling In-charge for statutory re-acknowledgment before Site Engineer.');
             } else if (p.retrigger && p.retrigger.rejectionOrigin) {
                 p.status = 'Pending Site Engineer Re-Acknowledgment';
                 notify(['site-engineer'], pLabel(p) + ' re-trigger request corrected by Site Supervisor — Site Engineer re-acknowledgment required before returning to ' + p.retrigger.rejectionOrigin.roleLabel + '.', 'info', p.id);
@@ -7940,7 +8329,7 @@
                 status: 'Pending Blasting In-charge Acknowledgment', stageEnteredAt: new Date(nowTime() - 35 * 60000), escalation: { stage1: false, stage2: false },
                 approvals: { kind: 'blasting', ehsManager: mkPending(), ehsOfficer: mkPending() },
                 activityLog: [
-                    { ts: new Date(nowTime() - 35 * 60000), actor: 'Duty Site Supervisor', text: 'Drilling & Blasting permit submitted. Statutory Blasting In-charge acknowledgment required.' }
+                    { ts: new Date(nowTime() - 35 * 60000), actor: 'Duty Site Supervisor', text: 'Drilling & Blasting permit submitted. Statutory Blasting / Drilling In-charge acknowledgment required.' }
                 ],
                 extension: null, closure: null, surrender: null
             }));
@@ -7984,9 +8373,9 @@
                 if (p.signature) {
                     p.signatories['site-supervisor'] = { name: p.createdBy || (p.signature && p.signature.by), sig: p.signature.dataUrl || p.signature, consent: true, at: (p.signature && p.signature.at) || p.createdAt };
                 }
-                // Blasting In-charge acknowledgment
+                // Blasting / Drilling In-charge acknowledgment
                 if (p.blastingInchargeAck && p.blastingInchargeAck.acknowledged && p.blastingInchargeAck.by) {
-                    p.signatories['blasting-incharge'] = { name: p.blastingInchargeAck.by || 'Licensed Blasting In-charge', sig: p.blastingInchargeAck.sig || makeSimSignature(p.blastingInchargeAck.by || 'Licensed Blasting In-charge'), consent: true, at: p.blastingInchargeAck.at };
+                    p.signatories['blasting-incharge'] = { name: p.blastingInchargeAck.by || 'Licensed Blasting / Drilling In-charge', sig: p.blastingInchargeAck.sig || makeSimSignature(p.blastingInchargeAck.by || 'Licensed Blasting / Drilling In-charge'), consent: true, at: p.blastingInchargeAck.at };
                 }
                 // Site Engineer NEVER inherits from Site Supervisor
                 if (p.siteEngineerAck && p.siteEngineerAck.acknowledged && p.siteEngineerAck.by) {
@@ -8035,14 +8424,29 @@
         /* ================================================================
            AUTH / LANDING
            ================================================================ */
+        let currentRoleFilter = 'all';
+        function filterRoles(cat, btn) {
+            currentRoleFilter = cat || 'all';
+            document.querySelectorAll('.rf-tab').forEach(b => b.classList.remove('active'));
+            if (btn) btn.classList.add('active');
+            buildRoleCards();
+        }
         function buildRoleCards() {
-            document.getElementById('roleCardsGrid').innerHTML = ROLES.map(r =>
+            const grid = document.getElementById('roleCardsGrid');
+            if (!grid) return;
+            const list = (currentRoleFilter && currentRoleFilter !== 'all')
+                ? ROLES.filter(r => r.cat === currentRoleFilter)
+                : ROLES;
+            grid.innerHTML = list.map(r =>
                 '<div class="role-card" onclick="doLogin(\'' + r.key + '\')">' +
+                '<div class="role-card-top">' +
                 '<div class="role-card-icon"><i class="fa-solid ' + r.icon + '"></i></div>' +
-                '<h3 class="role-card-name">' + r.label + '</h3>' +
-                '<div style="font-size:11px;color:var(--orange);font-weight:700;text-transform:uppercase;letter-spacing:.4px;">' + r.sub + '</div>' +
-                '<p class="role-card-desc">' + r.desc + '</p>' +
-                '<div class="role-card-cta">Enter as ' + r.label + ' <i class="fa-solid fa-arrow-right"></i></div>' +
+                '<span class="role-tier-badge" style="background:' + (r.tierBg || 'rgba(232,96,10,0.15)') + ';color:' + (r.tierColor || 'var(--orange)') + ';"><i class="fa-solid fa-layer-group"></i> ' + escapeHtml(r.tier || 'Role') + '</span>' +
+                '</div>' +
+                '<h3 class="role-card-name">' + escapeHtml(r.label) + '</h3>' +
+                '<div class="role-card-sub">' + escapeHtml(r.sub) + '</div>' +
+                '<p class="role-card-desc">' + escapeHtml(r.desc) + '</p>' +
+                '<div class="role-card-cta">Enter as ' + escapeHtml(r.label) + ' <i class="fa-solid fa-arrow-right"></i></div>' +
                 '</div>'
             ).join('');
         }
@@ -8085,15 +8489,15 @@
            ================================================================ */
         function navItemsFor(roleKey) {
             const items = [{ id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high' }];
-            // Strict RBAC: Only Site Supervisor (Permittee) can initiate and create permits
-            if (roleKey === 'site-supervisor') {
+            // Strict RBAC: Site Supervisor or Blasting In-charge (for PT-07) can initiate and create permits
+            if (roleKey === 'site-supervisor' || roleKey === 'blasting-incharge') {
                 items.push({ id: 'ptype', label: 'Create Permit', icon: 'fa-file-circle-plus' });
             }
             // Strict RBAC: Only Administrator can configure worksite GPS coordinates and proximity circle radius
             if (roleKey === 'admin') {
                 items.push({ id: 'admin-config', label: 'Site GPS & Geofence', icon: 'fa-map-location-dot' });
             }
-            items.push({ id: 'register', label: (roleKey === 'site-supervisor' || roleKey === 'site-engineer') ? 'My Permits' : 'Permit Register', icon: 'fa-table-list' });
+            items.push({ id: 'register', label: (roleKey === 'site-supervisor' || roleKey === 'site-engineer' || roleKey === 'blasting-incharge') ? 'My Permits' : 'Permit Register', icon: 'fa-table-list' });
             items.push({ id: 'notifications', label: 'Notifications', icon: 'fa-bell', badge: true });
             return items;
         }
@@ -8210,23 +8614,29 @@
            PERMIT TYPE SELECTION
            ================================================================ */
         function openPermitTypeSelection() {
-            if (!currentUser || currentUser.key !== 'site-supervisor') {
-                showToast('Access Denied: Only Site Supervisors (Permittees) have authority to create permits.', 'warn');
+            if (!currentUser || (currentUser.key !== 'site-supervisor' && currentUser.key !== 'blasting-incharge')) {
+                showToast('Access Denied: Only Site Supervisors or Blasting / Drilling In-charge have authority to create permits.', 'warn');
                 return;
             }
             goTo('ptype');
         }
         function buildPermitTypeCards() {
-            document.getElementById('ptypeGrid').innerHTML = PERMIT_TYPES.map(t =>
-                '<div class="ptype-card ' + (t.available ? 'available' : 'disabled-module') + '" onclick="selectPermitType(\'' + t.key + '\')">' +
-                '<div class="ptype-icon"><i class="fa-solid ' + t.icon + '"></i></div>' +
-                '<div><div class="ptype-code">' + t.code + '</div><div class="ptype-name">' + t.name + '</div></div>' +
-                '<div class="ptype-desc">' + t.desc + '</div>' +
-                '<span class="ptype-status ' + (t.available ? 'live' : 'future') + '"><i class="fa-solid ' + (t.available ? 'fa-circle-check' : 'fa-clock') + '"></i> ' + (t.available ? 'Available' : 'Future Module') + '</span>' +
-                '</div>'
-            ).join('');
+            const isBlaster = currentUser && currentUser.key === 'blasting-incharge';
+            document.getElementById('ptypeGrid').innerHTML = PERMIT_TYPES.map(t => {
+                const isAvail = isBlaster ? (t.key === 'blasting') : t.available;
+                return '<div class="ptype-card ' + (isAvail ? 'available' : 'disabled-module') + '" onclick="selectPermitType(\'' + t.key + '\')">' +
+                    '<div class="ptype-icon"><i class="fa-solid ' + t.icon + '"></i></div>' +
+                    '<div><div class="ptype-code">' + t.code + '</div><div class="ptype-name">' + t.name + '</div></div>' +
+                    '<div class="ptype-desc">' + t.desc + '</div>' +
+                    '<span class="ptype-status ' + (isAvail ? 'live' : 'future') + '"><i class="fa-solid ' + (isAvail ? 'fa-circle-check' : 'fa-clock') + '"></i> ' + (isAvail ? 'Available' : (isBlaster ? 'Restricted to Blasting / Drilling In-charge' : 'Future Module')) + '</span>' +
+                    '</div>';
+            }).join('');
         }
         function selectPermitType(key) {
+            if (currentUser && currentUser.key === 'blasting-incharge' && key !== 'blasting') {
+                showToast('Role Restriction: Blasting / Drilling In-charge can only initiate Form EHS_PTW_007 (PT-07 Drilling & Blasting).', 'warn');
+                return;
+            }
             const t = PERMIT_TYPES.find(x => x.key === key);
             if (!t) return;
             if (t.available) { startNewPermit(t.key); return; }
@@ -8234,7 +8644,7 @@
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid ' + t.icon + '" style="color:var(--grey);"></i> ' + t.name;
             document.getElementById('actionModalBody').innerHTML =
                 '<p style="font-size:13px;margin:0 0 10px;">The <b>' + t.name + ' (' + t.code + ')</b> module is part of the ARPL Permit-to-Work platform roadmap and is scheduled for a future implementation phase.</p>' +
-                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">The <b>PT-01 Excavation</b>, <b>PT-02 Hot Work</b>, <b>PT-03 Guard Rail</b>, <b>PT-04 Confined Space</b>, and <b>PT-05 Shaft Work</b> workflows are enabled in this deployment. The platform architecture supports adding remaining permit types without redesign, per SOP 02 scope.</p>';
+                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">The <b>PT-01 Excavation</b>, <b>PT-02 Hot Work</b>, <b>PT-03 Guard Rail</b>, <b>PT-04 Confined Space</b>, <b>PT-05 Shaft Work</b>, and <b>PT-07 Drilling &amp; Blasting</b> workflows are enabled in this deployment. The platform architecture supports adding remaining permit types without redesign, per SOP 02 scope.</p>';
             document.getElementById('actionModalFoot').innerHTML =
                 '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Close</button>' +
                 '<button class="btn btn-primary" onclick="closeModal(\'actionModal\');startNewPermit(\'excavation\');"><i class="fa-solid fa-person-digging"></i> Create Excavation Permit Instead</button>';
@@ -8554,19 +8964,20 @@
            CREATE PERMIT WIZARD
            ================================================================ */
         function startNewPermit(type) {
-            if (!currentUser || currentUser.key !== 'site-supervisor') {
-                showToast('Access Denied: Only Site Supervisors (Permittees) have authority to create permits.', 'err');
+            if (!currentUser || (currentUser.key !== 'site-supervisor' && currentUser.key !== 'blasting-incharge')) {
+                showToast('Access Denied: Only Site Supervisors or Blasting / Drilling In-charge have authority to create permits.', 'err');
                 goTo('dashboard');
                 return;
             }
             correctionMode = false;
-            const t = type || 'excavation';
+            const t = (currentUser.key === 'blasting-incharge') ? 'blasting' : (type || 'excavation');
             const meta = PTYPE_META[t] || PTYPE_META.excavation;
             const defLocMode = (t === 'blasting') ? 'Manual' : (t === 'excavation') ? 'Basement/Podium' : 'Tower';
             const defWeather = WEATHER_OPTIONS[Math.floor(Math.random() * WEATHER_OPTIONS.length)];
             draft = {
                 id: genPermitNumber(t), ptype: t, activity: meta.name + ' (' + meta.code + ')',
                 createdBy: currentUser.name || '',
+                createdRoleKey: currentUser.key,
                 signerName: currentUser.name || '',
                 signerConsent: false,
                 signerVerified: false,
@@ -8986,18 +9397,18 @@
                     '<label class="radio-pill ' + (!isOpBlasting ? 'sel' : '') + '"><input type="radio" name="drillingBlastingType" value="drilling" ' + (!isOpBlasting ? 'checked' : '') + ' onchange="onDrillingBlastingTypeChange(\'drilling\')"' + disAttr + '> 🔩 Drilling</label>' +
                     '<label class="radio-pill ' + (isOpBlasting ? 'sel' : '') + '"><input type="radio" name="drillingBlastingType" value="blasting" ' + (isOpBlasting ? 'checked' : '') + ' onchange="onDrillingBlastingTypeChange(\'blasting\')"' + disAttr + '> 💥 Blasting</label>' +
                     '</div><div class="form-error" id="dbTypeError" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Select either Drilling or Blasting.</div></div>' +
-                    '<div class="form-field full" id="ff-db-datetime"><label>Date &amp; Time of Blast / Drill <span class="req">*</span></label>' +
+                    '<div class="form-field full" id="ff-db-datetime"><label>Date &amp; Time of Blast <span class="req">*</span></label>' +
                     '<input type="datetime-local" id="inDbDateTime" value="' + escapeHtml(draft.dbDateTime || '') + '" oninput="draft.dbDateTime=this.value;validateWizStep(1)"' + disAttr + '>' +
-                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Date &amp; Time is mandatory.</div></div>';
+                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Date &amp; Time of Blast is mandatory.</div></div>';
 
                 if (isOpBlasting) {
-                    html += '<div class="form-field" id="ff-db-charge"><label>Amount of Charge (Kg) <span class="req">*</span></label>' +
+                    html += '<div class="form-field" id="ff-db-charge"><label>Amount of charge (Kg) <span class="req">*</span></label>' +
                         '<input type="text" id="inDbCharge" placeholder="e.g. 25.0" value="' + escapeHtml(draft.dbChargeAmount || '') + '" oninput="onNumericField(this,\'dbChargeAmount\')"' + disAttr + '>' +
                         '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Valid amount of charge (>0 kg) is mandatory.</div></div>' +
                         '<div class="form-field" id="ff-db-blast-dia"><label>Diameter of Blast (m) <span class="req">*</span></label>' +
                         '<input type="text" id="inDbBlastDia" placeholder="e.g. 0.15" value="' + escapeHtml(draft.dbBlastDiameter || '') + '" oninput="onNumericField(this,\'dbBlastDiameter\')"' + disAttr + '>' +
                         '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Valid blast diameter (>0 m) is mandatory.</div></div>' +
-                        '<div class="form-field" id="ff-db-blast-depth"><label>Depth of Blast (m) <span class="req">*</span></label>' +
+                        '<div class="form-field" id="ff-db-blast-depth"><label>Depth of blast (m) <span class="req">*</span></label>' +
                         '<input type="text" id="inDbBlastDepth" placeholder="e.g. 3.5" value="' + escapeHtml(draft.dbBlastDepth || '') + '" oninput="onNumericField(this,\'dbBlastDepth\')"' + disAttr + '>' +
                         '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Valid blast depth (>0 m) is mandatory.</div></div>' +
                         '<div class="form-field" id="ff-db-holes"><label>Number of Holes <span class="req">*</span></label>' +
@@ -9657,18 +10068,18 @@
                     'Statutory safety requirement: Enter rig holes, hole depths, muffler blast mats, and safe distance between rig holes before proceeding.' +
                     '</div>' +
                     '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:12px;">' +
-                    '<div class="form-field" id="ff-blasting-rig-holes"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">Rig Holes Loaded <span class="req">*</span></label>' +
+                    '<div class="form-field" id="ff-blasting-rig-holes"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">How many rig holes had been loaded for blasting? <span class="req">*</span></label>' +
                     '<input type="number" min="1" id="inBlastingRigHoles" placeholder="e.g. 12" value="' + escapeHtml(draft.blastingRigHolesLoaded || '') + '" oninput="draft.blastingRigHolesLoaded=this.value;validateWizStep(2);" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">' +
                     '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Rig holes loaded (min 1) is mandatory.</div></div>' +
-                    '<div class="form-field" id="ff-blasting-rig-depth"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">Depth of Rig Hole in Meters (m) <span class="req">*</span></label>' +
-                    '<input type="number" step="0.1" min="0.1" id="inBlastingRigDepth" placeholder="e.g. 3.5" value="' + escapeHtml(draft.blastingRigHoleDepthM || draft.blastingRigHoleDepthFt || '') + '" oninput="draft.blastingRigHoleDepthM=this.value;draft.blastingRigHoleDepthFt=this.value;validateWizStep(2);" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">' +
-                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Rig hole depth in meters (number > 0) is mandatory.</div></div>' +
-                    '<div class="form-field" id="ff-blasting-muffler-layers"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">Layers of Mufflers <span class="req">*</span></label>' +
+                    '<div class="form-field" id="ff-blasting-rig-depth"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">What is the depth of the Rig Hole in feet? <span class="req">*</span></label>' +
+                    '<input type="number" step="0.1" min="0.1" id="inBlastingRigDepth" placeholder="e.g. 10.5" value="' + escapeHtml(draft.blastingRigHoleDepthFt || draft.blastingRigHoleDepthM || '') + '" oninput="draft.blastingRigHoleDepthM=this.value;draft.blastingRigHoleDepthFt=this.value;validateWizStep(2);" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">' +
+                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Depth of rig hole (number > 0) is mandatory.</div></div>' +
+                    '<div class="form-field" id="ff-blasting-muffler-layers"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">How many layers of mufflers are placed on top of rig holes? <span class="req">*</span></label>' +
                     '<input type="number" min="1" id="inBlastingMufflerLayers" placeholder="e.g. 3" value="' + escapeHtml(draft.blastingMufflerLayers || '') + '" oninput="draft.blastingMufflerLayers=this.value;validateWizStep(2);" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">' +
                     '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Layers of mufflers (min 1) is mandatory.</div></div>' +
-                    '<div class="form-field" id="ff-blasting-safe-dist"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">Safe Distance Between Rig Holes in Meters (m) <span class="req">*</span></label>' +
+                    '<div class="form-field" id="ff-blasting-safe-dist"><label style="font-size:11.5px;font-weight:600;color:var(--navy);">Specify Safe distance provided in between each rig holes ? <span class="req">*</span></label>' +
                     '<input type="number" step="0.1" min="0.1" id="inBlastingSafeDist" placeholder="e.g. 2.5" value="' + escapeHtml(draft.blastingSafeDistance || '') + '" oninput="draft.blastingSafeDistance=this.value;validateWizStep(2);" style="width:100%;padding:7px 10px;border:1px solid var(--border);border-radius:6px;font-size:12.5px;">' +
-                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Safe distance between rig holes in meters (number > 0) is mandatory.</div></div>' +
+                    '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Safe distance between rig holes (number > 0) is mandatory.</div></div>' +
                     '</div></div>';
             }
 
@@ -9904,10 +10315,13 @@
                 const sp = draft.startTime.split(':').map(Number), ep = draft.validTillTime.split(':').map(Number);
                 durTxt = fmtDur((ep[0] * 60 + ep[1]) - (sp[0] * 60 + sp[1]));
             }
+            const isBlasterPermittee = (currentUser && currentUser.key === 'blasting-incharge') || draft.createdRoleKey === 'blasting-incharge';
             const routeTxt = isBlasting
                 ? (draft.drillingBlastingType === 'blasting'
-                    ? 'the Blasting In-charge for statutory acknowledgment and site photo verification, then Site Engineer for acknowledgment, then EHS Safety Manager / Officer for review'
-                    : 'the Site Engineer for acknowledgment, then EHS Safety Manager / Officer for review')
+                    ? (isBlasterPermittee
+                        ? 'the Site Engineer for acknowledgment, then EHS Safety Manager / Officer for final statutory endorsement'
+                        : 'the Blasting / Drilling In-charge for statutory acknowledgment and on-site photo verification, then Site Engineer for acknowledgment, then EHS Safety Manager / Officer for final statutory endorsement')
+                    : 'the Site Engineer for acknowledgment, then EHS Safety Manager / Officer for final statutory endorsement')
                 : isConfined
                 ? 'the Site Engineer for acknowledgment, then Tower Incharge for review, then EHS Safety Manager / Officer for verification (first approval activates permit)'
                 : isGuardrail
@@ -9997,13 +10411,36 @@
                 '<div class="review-item"><div class="rk">Planned Start</div><div class="rv">' + fmtDate(nowTime()) + ' &middot; ' + (draft.startTime || '&mdash;') + '</div></div>' +
                 '<div class="review-item"><div class="rk">End</div><div class="rv">' + fmtDate(draft.validTillDate) + ' &middot; ' + draft.validTillTime + '</div></div>' +
                 '<div class="review-item"><div class="rk">Planned Duration</div><div class="rv">' + durTxt + '</div></div>' +
-                '</div>' +
-                '<div class="dsec" id="wizSigSection"><div class="dsec-title"><i class="fa-solid fa-signature"></i> Digital Signature of Permittee <span class="req">*</span></div>' +
+                '</div>';
+
+            const isBlastingPermit = draft.ptype === 'blasting';
+            const isBlastingOp = isBlastingPermit && draft.drillingBlastingType === 'blasting';
+            const isBlasterRole = (currentUser && currentUser.key === 'blasting-incharge') || draft.createdRoleKey === 'blasting-incharge';
+            const pRoleKey = (isBlastingPermit && isBlasterRole) ? 'blasting-incharge' : 'site-supervisor';
+            const pRoleLabel = roleInfo(pRoleKey).label;
+            let wizPesaHtml = '';
+            if (isBlastingOp) {
+                if (draft.blastingStatutoryDecl === undefined) draft.blastingStatutoryDecl = true;
+                wizPesaHtml = '<div style="margin-bottom:14px;">' +
+                    '<div id="wizBlastingStatutoryDeclCard" onclick="const chk=document.getElementById(\'chkWizBlastingStatutoryDecl\');if(event.target!==chk){chk.checked=!chk.checked;chk.dispatchEvent(new Event(\'change\'));}" style="border:2.5px solid #EA580C;background:#FFF7ED;padding:14px 16px;border-radius:12px;cursor:pointer;display:flex;align-items:flex-start;gap:14px;box-shadow:0 2px 8px rgba(234,88,12,0.1);">' +
+                    '<input type="checkbox" id="chkWizBlastingStatutoryDecl" ' + (draft.blastingStatutoryDecl ? 'checked' : '') + ' onchange="draft.blastingStatutoryDecl=this.checked;updateNextButtonState();" style="margin-top:3px;width:24px;height:24px;min-width:24px;accent-color:#EA580C;cursor:pointer;">' +
+                    '<div style="flex:1;">' +
+                    '<div style="font-weight:800;font-size:13px;color:#9A3412;margin-bottom:4px;display:flex;align-items:center;gap:6px;">' +
+                    '<i class="fa-solid fa-shield-halved" style="color:#EA580C;"></i> MANDATORY PESA / PESO STATUTORY DECLARATION (FORM EHS_PTW_007) <span class="req" style="color:#DC2626;">*</span>' +
+                    '</div>' +
+                    '<div style="font-size:12px;line-height:1.5;color:#431407;">' +
+                    'I, certified <strong>Blasting / Drilling In-charge</strong>, confirm that I am physically present on site, have verified explosive types and charge limits, inspected rock face and blast pattern, ensured wiremesh blast mats/mufflers are laid, and cleared the exclusion perimeter before authorization.' +
+                    '</div>' +
+                    '</div></div></div>';
+            }
+
+            html += '<div class="dsec" id="wizSigSection"><div class="dsec-title"><i class="fa-solid fa-signature"></i> Digital Signature of Permittee (' + pRoleLabel + ') <span class="req">*</span></div>' +
+                wizPesaHtml +
                 (draft.signature && draft.signature.dataUrl
                     ? '<div class="sig-preview" style="background:#F4FBF6;border-color:var(--green-brd);padding:14px;border-radius:9px;">' +
                     '<img src="' + draft.signature.dataUrl + '" alt="signature" style="max-height:64px;border:1px solid var(--border);border-radius:6px;background:#fff;padding:4px 8px;">' +
                     '<div style="font-size:12.5px;">' +
-                    '<b>' + escapeHtml(draft.signature.by) + '</b> <span style="font-size:11.5px;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span>' +
+                    '<b>' + escapeHtml(draft.signature.by) + '</b> <span style="font-size:11.5px;color:var(--text-muted);">(' + pRoleLabel + ')</span>' +
                     '<div style="color:var(--green);font-size:11.5px;font-weight:700;margin-top:3px;"><i class="fa-solid fa-shield-check"></i> DPDP Statutory Consent Verified &bull; Signed ' + fmtDateTime(draft.signature.at) + '</div>' +
                     '</div>' +
                     '<button type="button" class="btn btn-sm btn-ghost" style="margin-left:auto;" onclick="editWizSigner()"><i class="fa-solid fa-eraser"></i> Change Signatory / Re-sign</button>' +
@@ -10013,10 +10450,10 @@
                         '<div style="display:flex;align-items:center;gap:8px;margin-bottom:10px;">' +
                         '<div style="width:32px;height:32px;border-radius:6px;background:rgba(232,96,10,0.12);color:var(--orange);display:flex;align-items:center;justify-content:center;font-size:15px;"><i class="fa-solid fa-shield-halved"></i></div>' +
                         '<div><div style="font-size:13.5px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;">Signatory Identification &amp; DPDP Consent <span class="dpdp-tag">DPDP Mandatory</span></div>' +
-                        '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">No person name is tagged to the <b>Site Supervisor</b> role. Enter any name and grant statutory consent before signature.</div></div>' +
+                        '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">No person name is tagged to the <b>' + pRoleLabel + '</b> role. Enter any name and grant statutory consent before signature.</div></div>' +
                         '</div>' +
                         '<div class="form-field" style="margin-bottom:12px;">' +
-                        '<label for="seSignerName" style="font-weight:600;font-size:12.5px;">Signatory Full Name (Site Supervisor / Permittee) <span class="req">*</span></label>' +
+                        '<label for="seSignerName" style="font-weight:600;font-size:12.5px;">Signatory Full Name (' + pRoleLabel + ' / Permittee) <span class="req">*</span></label>' +
                         '<input type="text" id="seSignerName" value="' + escapeHtml(draft.signerName || currentUser.name || '') + '" placeholder="Enter any name (e.g., your full name)" class="input-lg" style="width:100%;max-width:480px;" oninput="onWizSignerInput()">' +
                         '<div class="form-hint" style="margin-top:4px;">Enter any name. Under the DPDP Act 2023, this name will be stamped against this permit\'s digital signature.</div>' +
                         '<div id="seSignerNameErr" class="form-error" style="display:none;margin-top:5px;"><i class="fa-solid fa-circle-exclamation"></i> Please enter any name (at least 2 characters).</div>' +
@@ -10025,7 +10462,7 @@
                         '<label class="dpdp-consent-pill ' + (draft.signerConsent ? 'checked' : '') + '" id="seConsentPill">' +
                         '<input type="checkbox" id="seDpdpConsentChk" ' + (draft.signerConsent ? 'checked' : '') + ' onchange="onWizSignerInput()" style="margin-top:3px;width:18px;height:18px;accent-color:var(--orange);cursor:pointer;">' +
                         '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
-                        '<strong style="color:var(--navy);">Consent Declaration (DPDP Act, 2023) <span class="req">*</span>:</strong> I hereby give voluntary and explicit consent under the Digital Personal Data Protection (DPDP) Act, 2023 for recording and processing my personal name, role designation (Site Supervisor / Permittee), timestamp, worksite GPS coordinates, and digital signature strictly for statutory Permit-to-Work execution and safety audit compliance.' +
+                        '<strong style="color:var(--navy);">Consent Declaration (DPDP Act, 2023) <span class="req">*</span>:</strong> I hereby give voluntary and explicit consent under the Digital Personal Data Protection (DPDP) Act, 2023 for recording and processing my personal name, role designation (' + pRoleLabel + ' / Permittee), timestamp, worksite GPS coordinates, and digital signature strictly for statutory Permit-to-Work execution and safety audit compliance.' +
                         '</span>' +
                         '</label>' +
                         '<div id="seConsentErr" class="form-error" style="display:none;margin-top:5px;"><i class="fa-solid fa-circle-exclamation"></i> DPDP statutory consent checkbox must be selected before you can sign.</div>' +
@@ -10040,13 +10477,13 @@
                         '<div style="display:flex;align-items:center;gap:10px;">' +
                         '<div style="width:34px;height:34px;border-radius:50%;background:rgba(46,125,50,0.15);color:var(--green);display:flex;align-items:center;justify-content:center;font-size:15px;"><i class="fa-solid fa-shield-check"></i></div>' +
                         '<div>' +
-                        '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Signatory: <b>' + escapeHtml(draft.signerName) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + roleInfo('site-supervisor').label + ')</span></div>' +
+                        '<div style="font-size:13.5px;font-weight:700;color:var(--navy);">Signatory: <b>' + escapeHtml(draft.signerName) + '</b> <span style="font-weight:500;color:var(--text-muted);">(' + pRoleLabel + ')</span></div>' +
                         '<div style="font-size:11.5px;color:var(--green);font-weight:600;margin-top:2px;"><i class="fa-solid fa-circle-check"></i> DPDP Statutory Consent Verified &amp; Granted</div>' +
                         '</div>' +
                         '</div>' +
                         '<button type="button" class="btn btn-sm btn-ghost" onclick="editWizSigner()" style="font-size:11.5px;"><i class="fa-solid fa-pen-to-square"></i> Change Name / Consent</button>' +
                         '</div>' +
-                        '<p style="font-size:12px;color:var(--text-muted);margin:0 0 10px;">By signing below, <b>' + escapeHtml(draft.signerName) + '</b> (' + roleInfo('site-supervisor').label + ') declares that all safety checklist precautions and requirements are in place (' + pMeta(draft).form + ' &sect;II). The signature is reproduced on the final Permit Report PDF.</p>' +
+                        '<p style="font-size:12px;color:var(--text-muted);margin:0 0 10px;">By signing below, <b>' + escapeHtml(draft.signerName) + '</b> (' + pRoleLabel + ') declares that all safety checklist precautions and requirements are in place (' + pMeta(draft).form + ' &sect;II). The signature is reproduced on the final Permit Report PDF.</p>' +
                         sigPadHtml('seSigPad', 'Sign here as ' + escapeHtml(draft.signerName))
                     )
                 ) +
@@ -10466,7 +10903,9 @@
                 }
             }
             if (step === 4) {
-                ok = !!(draft && draft.signerVerified && draft.signature && draft.signature.dataUrl);
+                const isBlastingOp = ptypeOf(draft) === 'blasting' && draft.drillingBlastingType === 'blasting';
+                const pesaOk = !isBlastingOp || draft.blastingStatutoryDecl !== false;
+                ok = !!(draft && draft.signerVerified && draft.signature && draft.signature.dataUrl && pesaOk);
             }
             updateNextButtonState(ok, step);
             return ok;
@@ -10491,6 +10930,16 @@
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by Tower Incharge approval (Step 3) and final EHS endorsement (Step 4 &mdash; first approval activates the permit)';
             } else if (ptypeOf(draft) === 'shaft') {
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by single MEP clearance (Step 3), Tower Incharge review (Step 4), and final EHS endorsement (Step 5)';
+            } else if (ptypeOf(draft) === 'blasting') {
+                const isBlastingOp = draft.dbOperationType === 'Blasting' || draft.drillingBlastingType === 'blasting';
+                const isBlasterCreator = (currentUser && currentUser.key === 'blasting-incharge') || draft.createdRoleKey === 'blasting-incharge';
+                if (isBlastingOp && isBlasterCreator) {
+                    wfDesc = 'Blasting / Drilling In-charge statutory declaration, followed directly by Site Engineer acknowledgment (Step 3) and final EHS endorsement (Step 4)';
+                } else if (isBlastingOp) {
+                    wfDesc = 'Blasting / Drilling In-charge statutory acknowledgment, followed by Site Engineer acknowledgment (Step 3) and final EHS endorsement (Step 4)';
+                } else {
+                    wfDesc = 'Site Engineer acknowledgment (Step 3), followed directly by final EHS endorsement (Step 4)';
+                }
             }
             document.getElementById('actionModalBody').innerHTML =
                 '<p style="font-size:13px;margin:0 0 8px;">Are you sure you want to ' + (isCorrection ? 're-submit' : 'submit') + ' this ' + pMeta(draft).short + ' Permit <b class="mono">' + draft.id + '</b>?</p>' +
@@ -10654,8 +11103,8 @@
                     const isBlastingAckDone = !!(p.blastingInchargeAck && p.blastingInchargeAck.acknowledged);
                     const blastState = (isBlastingAckDone && !isPendingBlastingAck) ? 'done' : (isPendingBlastingAck ? 'current' : '');
                     const blastSub = (isBlastingAckDone && !isPendingBlastingAck) ? ('Step ' + stepNum + ' · Statutory Ack') : (p.status === 'Pending Blasting In-charge Re-Acknowledgment' ? ('Step ' + stepNum + ' · Re-Ack Req.') : (p.status === 'Pending Blasting In-charge Acknowledgment' ? ('Step ' + stepNum + ' · Action Req.') : ('Step ' + stepNum + ' · Statutory Ack')));
-                    const blastTip = (isBlastingAckDone && !isPendingBlastingAck) ? 'Blasting In-charge statutory acknowledgment & photo completed' : 'Blasting In-charge statutory declaration and on-site photo verification';
-                    html += node('Blasting In-charge', blastSub, blastState, '', blastTip);
+                    const blastTip = (isBlastingAckDone && !isPendingBlastingAck) ? 'Blasting / Drilling In-charge statutory acknowledgment & photo completed' : 'Blasting / Drilling In-charge statutory declaration and on-site photo verification';
+                    html += node('Blasting / Drilling In-charge', blastSub, blastState, '', blastTip);
                     html += '<div class="tr-line ' + ((isBlastingAckDone && !isPendingBlastingAck) ? 'done' : '') + '"></div>';
                     stepNum++;
                 }
@@ -10830,7 +11279,7 @@
             let html = '<div class="tracker" style="margin-top:10px;">';
             html += node('Supervisor Request', '+' + fmtExtDur(ext), 'done');
             html += '<div class="tr-line ' + (engApproved ? 'done' : '') + '"></div>';
-            html += node('Site Engineer', engApproved ? (a.siteEngineer.by || 'Re-Ack') : (engCancelled ? 'Cancelled' : (ext.status === 'Pending Site Engineer' ? 'Re-Ack Req.' : 'Awaiting Re-Ack')), engState);
+            html += node('Site Engineer', engApproved ? (a.siteEngineer.by || 'Re-Ack') : (engCancelled ? 'Returned' : (ext.status === 'Pending Site Engineer' ? 'Re-Ack Req.' : 'Awaiting Re-Ack')), engState);
             html += '<div class="tr-line ' + (shApproved ? 'done' : '') + '"></div>';
             html += node(shLabel, shApproved ? (a.sectionHead.by || 'Approved') : (shCancelled ? 'Cancelled' : (ext.status === 'Pending Section Head' ? 'Review & Approve' : 'Awaiting Review')), shState);
             html += '<div class="tr-line ' + (ehsApproved ? 'done' : '') + '"></div>';
@@ -10972,6 +11421,7 @@
             const isBlasting = ptypeOf(p) === 'blasting';
             const shTitle = pMeta(p).shLabel || (isExcavation ? 'Excavation Head' : 'Tower Incharge');
             const obsOpen = p.observation && p.observation.status !== 'Resolved';
+            const isPermitteeForP = (rk === 'site-supervisor' || (isBlasting && rk === 'blasting-incharge'));
             let html = '';
 
             // ---- STRICT RBAC: Administrator Oversight Mode ----
@@ -10986,8 +11436,8 @@
             if (p.status === 'Pending Blasting In-charge Acknowledgment') {
                 if (rk === 'blasting-incharge') {
                     html += '<div class="approval-action-card" style="border-color:var(--orange, #E65100);background:rgba(230,81,0,0.06);">' +
-                        '<div class="aa-title"><i class="fa-solid fa-burst" style="color:var(--orange, #E65100);"></i> Blasting In-charge Statutory Acknowledgment Required</div>' +
-                        '<div class="aa-desc">Site Supervisor (Permittee) submitted a Drilling &amp; Blasting permit (Blasting operation). As certified Blasting In-charge, verify explosive types, blast parameters, flyrock mufflers, blast-warning siren arrangements, and PESO statutory compliance. Mandatory statutory declaration and on-site photo required before forwarding to Site Engineer.</div>' +
+                        '<div class="aa-title"><i class="fa-solid fa-burst" style="color:var(--orange, #E65100);"></i> Blasting / Drilling In-charge Statutory Acknowledgment Required</div>' +
+                        '<div class="aa-desc">Site Supervisor (Permittee) submitted a Drilling &amp; Blasting permit (Blasting operation). As certified <b>Blasting / Drilling In-charge</b>, verify explosive types, blast parameters, flyrock mufflers, blast-warning siren arrangements, and PESO statutory compliance. Mandatory statutory declaration and on-site photo required before forwarding to Site Engineer.</div>' +
                         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
                         '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-blasting-incharge\')"><i class="fa-solid fa-check"></i> Statutory Acknowledge &amp; Forward to Site Engineer</button>' +
                         '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-blasting-incharge\')"><i class="fa-solid fa-xmark"></i> Reject &amp; Return to Supervisor</button>' +
@@ -10995,8 +11445,8 @@
                         '</div>';
                 } else {
                     html += '<div class="approval-action-card" style="border-color:var(--orange, #E65100);background:rgba(230,81,0,0.04);">' +
-                        '<div class="aa-title" style="color:var(--navy);"><i class="fa-solid fa-clock" style="color:var(--orange, #E65100);"></i> Awaiting Blasting In-charge Statutory Acknowledgment</div>' +
-                        '<div class="aa-desc">This Blasting permit is currently pending mandatory statutory safety verification and on-site photo acknowledgment by the <b>Blasting In-charge</b>. Under production RBAC policy, please use the <b>Switch User</b> button in the top navigation bar to log in as the designated Blasting In-charge.</div>' +
+                        '<div class="aa-title" style="color:var(--navy);"><i class="fa-solid fa-clock" style="color:var(--orange, #E65100);"></i> Awaiting Blasting / Drilling In-charge Statutory Acknowledgment</div>' +
+                        '<div class="aa-desc">This Blasting permit is currently pending mandatory statutory safety verification and on-site photo acknowledgment by the <b>Blasting / Drilling In-charge</b>. Under production RBAC policy, please use the <b>Switch User</b> button in the top navigation bar to log in as the designated Blasting / Drilling In-charge.</div>' +
                         '</div>';
                 }
             }
@@ -11005,7 +11455,7 @@
             if (p.status === 'Pending Blasting In-charge Re-Acknowledgment') {
                 if (rk === 'blasting-incharge') {
                     html += '<div class="approval-action-card" style="border-color:var(--orange, #E65100);background:rgba(230,81,0,0.06);">' +
-                        '<div class="aa-title"><i class="fa-solid fa-rotate" style="color:var(--orange, #E65100);"></i> Blasting In-charge Statutory Re-Acknowledgment Required</div>' +
+                        '<div class="aa-title"><i class="fa-solid fa-rotate" style="color:var(--orange, #E65100);"></i> Blasting / Drilling In-charge Statutory Re-Acknowledgment Required</div>' +
                         '<div class="aa-desc">Site Supervisor corrected and resubmitted the Blasting permit. Verify on-site corrections, confirm statutory compliance declaration, attach fresh on-site photo, and forward to Site Engineer for re-acknowledgment.</div>' +
                         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
                         '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-blasting-incharge-return\')"><i class="fa-solid fa-check"></i> Re-Acknowledge &amp; Forward to Site Engineer</button>' +
@@ -11014,8 +11464,8 @@
                         '</div>';
                 } else {
                     html += '<div class="approval-action-card" style="border-color:var(--orange, #E65100);background:rgba(230,81,0,0.04);">' +
-                        '<div class="aa-title" style="color:var(--navy);"><i class="fa-solid fa-clock" style="color:var(--orange, #E65100);"></i> Awaiting Blasting In-charge Re-Acknowledgment</div>' +
-                        '<div class="aa-desc">This Blasting permit was resubmitted after supervisor corrections and is currently pending statutory re-acknowledgment by the <b>Blasting In-charge</b> before proceeding to Site Engineer.</div>' +
+                        '<div class="aa-title" style="color:var(--navy);"><i class="fa-solid fa-clock" style="color:var(--orange, #E65100);"></i> Awaiting Blasting / Drilling In-charge Re-Acknowledgment</div>' +
+                        '<div class="aa-desc">This Blasting permit was resubmitted after supervisor corrections and is currently pending statutory re-acknowledgment by the <b>Blasting / Drilling In-charge</b> before proceeding to Site Engineer.</div>' +
                         '</div>';
                 }
             }
@@ -11024,18 +11474,21 @@
             if (p.status === 'Pending Site Engineer Acknowledgment') {
                 if (rk === 'site-engineer') {
                     const isReack = !!(p.siteEngineerAck && p.siteEngineerAck.reacknowledgment);
+                    const pCreatorName = (p.createdByRole === 'blasting-incharge') ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)';
+                    const pReturnTarget = (p.createdByRole === 'blasting-incharge') ? 'In-charge' : 'Supervisor';
                     html += '<div class="approval-action-card" style="border-color:var(--blue);background:rgba(21,101,192,0.06);">' +
                         '<div class="aa-title"><i class="fa-solid fa-clipboard-check" style="color:var(--blue);"></i> ' + (isReack ? 'Re-Acknowledgment &amp; Approval Required' : 'Step 2: Site Engineer Approval &amp; Acknowledgment') + '</div>' +
-                        '<div class="aa-desc">' + (isReack ? 'Site Supervisor resubmitted the permit with corrected checklist/details. Review changes and approve to forward (your signature on file will be reused without re-entry).' : (isShaft ? 'Site Supervisor (Permittee) submitted the shaft work permit. Review shaft safety arrangements, floor level, and approve to forward to MEP Engineer for clearance.' : isHw ? 'Site Supervisor (Permittee) submitted the hot work permit. Review safety arrangements, verify worksite conditions, and approve to forward to Tower Incharge.' : isGr ? 'Site Supervisor (Permittee) submitted the guard rail &amp; floor protection removal permit. Review safety arrangements, edge protections/opening covers, and approve to forward to Tower Incharge.' : isConfined ? 'Site Supervisor (Permittee) submitted the confined space entry permit. Review ventilation, watcher presence, multi-gas readings, and approve to forward to Tower Incharge.' : isBlasting ? 'Site Supervisor (Permittee) submitted the drilling &amp; blasting permit. Review safety arrangements, manual work area boundaries, and approve to forward directly to EHS Safety for verification.' : 'Site Supervisor (Permittee) submitted the excavation permit. Review and approve to forward to parallel discipline clearance (MEP &middot; P&amp;M &middot; IT).')) + '</div>' +
+                        '<div class="aa-desc">' + (isReack ? (pCreatorName + ' resubmitted the permit with corrected checklist/details. Review changes and approve to forward (your signature on file will be reused without re-entry).') : (isShaft ? 'Site Supervisor (Permittee) submitted the shaft work permit. Review shaft safety arrangements, floor level, and approve to forward to MEP Engineer for clearance.' : isHw ? 'Site Supervisor (Permittee) submitted the hot work permit. Review safety arrangements, verify worksite conditions, and approve to forward to Tower Incharge.' : isGr ? 'Site Supervisor (Permittee) submitted the guard rail &amp; floor protection removal permit. Review safety arrangements, edge protections/opening covers, and approve to forward to Tower Incharge.' : isConfined ? 'Site Supervisor (Permittee) submitted the confined space entry permit. Review ventilation, watcher presence, multi-gas readings, and approve to forward to Tower Incharge.' : isBlasting ? (pCreatorName + ' submitted the drilling &amp; blasting permit. Review safety arrangements, manual work area boundaries, and approve to forward directly to EHS Safety for verification.') : 'Site Supervisor (Permittee) submitted the excavation permit. Review and approve to forward to parallel discipline clearance (MEP &middot; P&amp;M &middot; IT).')) + '</div>' +
                         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
                         '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-engineer\')"><i class="fa-solid fa-check"></i> ' + (isReack ? 'Approve &amp; Forward' : (isShaft ? 'Approve &amp; Forward to MEP Engineer' : (isHw || isGr || isConfined) ? 'Approve &amp; Forward to Tower Incharge' : isBlasting ? 'Approve &amp; Forward to EHS Safety' : 'Approve &amp; Forward to Parallel Gate')) + '</button>' +
-                        '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-engineer\')"><i class="fa-solid fa-xmark"></i> Reject &amp; Return to Supervisor</button>' +
+                        '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-engineer\')"><i class="fa-solid fa-xmark"></i> Reject &amp; Return to ' + pReturnTarget + '</button>' +
                         '</div>' +
                         '</div>';
                 } else {
+                    const pCreatorName = (p.createdByRole === 'blasting-incharge') ? 'Blasting / Drilling In-charge' : 'Site Supervisor';
                     html += '<div class="approval-action-card" style="border-color:var(--blue);background:rgba(21,101,192,0.04);">' +
                         '<div class="aa-title" style="color:var(--navy);"><i class="fa-solid fa-clock" style="color:var(--blue);"></i> Step 2: Awaiting Site Engineer Acknowledgment</div>' +
-                        '<div class="aa-desc">This ' + pMeta(p).short + ' permit was submitted by the Site Supervisor and is currently pending Step 2 verification and acknowledgment by the <b>Site Engineer</b>. Under production RBAC policy, please use the <b>Switch User</b> button in the top navigation bar to log in as the designated Site Engineer.</div>' +
+                        '<div class="aa-desc">This ' + pMeta(p).short + ' permit was submitted by the ' + pCreatorName + ' and is currently pending Step 2 verification and acknowledgment by the <b>Site Engineer</b>. Under production RBAC policy, please use the <b>Switch User</b> button in the top navigation bar to log in as the designated Site Engineer.</div>' +
                         '</div>';
                 }
             }
@@ -11060,8 +11513,8 @@
                 }
             }
 
-            // ---- Returned for correction: Site Supervisor (Permittee) refills/resubmits ----
-            if (p.status === 'Returned for Correction' && rk === 'site-supervisor') {
+            // ---- Returned for correction: Permittee (Site Supervisor or Blasting In-charge) refills/resubmits ----
+            if (p.status === 'Returned for Correction' && isPermitteeForP) {
                 html += '<div class="approval-action-card" style="border-color:var(--red);background:var(--red-bg);">' +
                     '<div class="aa-title"><i class="fa-solid fa-triangle-exclamation" style="color:var(--red);"></i> Returned for Correction</div>' +
                     '<div class="aa-desc">Returned by ' + p.returnedBy + ': "' + p.returnReason + '"<br><span style="font-size:11.5px;color:var(--text);margin-top:4px;display:block;"><b>Correction Rule:</b> Master data stays locked. You can edit the safety checklist, comments, and photos before re-submitting. Unchanged approvals persist!</span></div>' +
@@ -11174,9 +11627,9 @@
                 html += '<div class="approval-action-card" style="border-color:#E65100;background:#FFF3E0;">' +
                     '<div class="aa-title" style="color:#BF360C;"><i class="fa-solid fa-triangle-exclamation"></i> Safety Deviation Reported by EHS</div>' +
                     '<div class="aa-desc"><b>Deviation:</b> "' + escapeHtml(p.observation ? p.observation.comment : '') + '"<br><span style="color:#C62828;font-weight:700;">Extension and Closure are currently BLOCKED.</span> Rectify the site condition and attach photo evidence.</div>' +
-                    ((rk === 'site-supervisor')
+                    (isPermitteeForP
                         ? '<button class="btn btn-primary" onclick="openRespondObservationModal(\'' + p.id + '\')"><i class="fa-solid fa-camera"></i> Respond to Observation (Photo + Comment)</button>'
-                        : '<div style="font-size:12px;color:var(--text-muted);"><i class="fa-solid fa-clock"></i> Awaiting Site Supervisor corrective response with photo evidence.</div>') +
+                        : '<div style="font-size:12px;color:var(--text-muted);"><i class="fa-solid fa-clock"></i> Awaiting Permittee corrective response with photo evidence.</div>') +
                     '</div>';
             }
 
@@ -11289,8 +11742,8 @@
             }
 
             // ---- EXTENSION FLOW ----
-            // Request Extension (Site Supervisor only)
-            if (rk === 'site-supervisor' && ['Active', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status))) {
+            // Request Extension (Permittee only: Site Supervisor, or Blasting In-charge for PT-07)
+            if (isPermitteeForP && ['Active', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status))) {
                 const started = workStarted(p);
                 const extChainDesc = 'Chain: Site Engineer Re-Ack &rarr; ' + shTitle + ' &rarr; EHS Safety.';
                 if (obsOpen) {
@@ -11330,7 +11783,7 @@
                     const origLabel = ext.rejectionOrigin ? ext.rejectionOrigin.roleLabel : 'Approver';
                     const origComment = ext.rejectionOrigin ? ext.rejectionOrigin.comment : '';
                     const extResubmitDesc = 'Revise the requested duration or remarks. Upon resubmission, it will route to the Site Engineer for on-site re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.';
-                    if (rk === 'site-supervisor') {
+                    if (isPermitteeForP) {
                         html += '<div class="approval-action-card" style="border-color:var(--red);background:var(--red-bg);">' +
                             '<div class="aa-title"><i class="fa-solid fa-rotate-left" style="color:var(--red);"></i> Extension Returned for Correction</div>' +
                             '<div class="aa-desc">Extension request was returned by <b>' + escapeHtml(origLabel) + '</b>: "' + escapeHtml(origComment) + '"<br><span style="font-size:11.5px;color:var(--text);margin-top:4px;display:block;">' + extResubmitDesc + '</span></div>' +
@@ -11405,7 +11858,7 @@
             }
 
             // ---- CLOSURE & SURRENDER ----
-            const canClose = rk === 'site-supervisor';
+            const canClose = isPermitteeForP;
             if (canClose && ['Active', 'Expired'].includes(p.status)) {
                 if (obsOpen) {
                     html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);opacity:0.75;">' +
@@ -11782,9 +12235,9 @@
             const shLabelModal = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
             let modalTitle = '<i class="fa-solid fa-check" style="color:var(--green);"></i> Confirm Approval';
             if (decision === 'ack') modalTitle = '<i class="fa-solid fa-clipboard-check" style="color:var(--green);"></i> Site Engineer Approval &amp; Acknowledgment';
-            else if (decision === 'ack-blasting-incharge') modalTitle = '<i class="fa-solid fa-burst" style="color:var(--orange, #E65100);"></i> Blasting In-charge Statutory Safety Acknowledgment';
-            else if (decision === 'ack-blasting-incharge-return') modalTitle = '<i class="fa-solid fa-rotate" style="color:var(--orange, #E65100);"></i> Blasting In-charge Statutory Safety Re-Acknowledgment';
-            else if (decision === 'reject-blasting-incharge') modalTitle = '<i class="fa-solid fa-xmark" style="color:var(--red);"></i> Reject Blasting Permit &amp; Return to Supervisor';
+            else if (decision === 'ack-blasting-incharge') modalTitle = '<i class="fa-solid fa-burst" style="color:var(--orange, #E65100);"></i> Blasting / Drilling In-charge Statutory Safety Acknowledgment';
+            else if (decision === 'ack-blasting-incharge-return') modalTitle = '<i class="fa-solid fa-rotate" style="color:var(--orange, #E65100);"></i> Blasting / Drilling In-charge Statutory Safety Re-Acknowledgment';
+            else if (decision === 'reject-blasting-incharge') modalTitle = '<i class="fa-solid fa-xmark" style="color:var(--red);"></i> Reject Permit &amp; Return to Permittee';
             else if (decision === 'ack-eng-return') {
                 const orig = (p.retrigger && p.retrigger.rejectionOrigin) ? p.retrigger.rejectionOrigin.roleLabel : ((p.rejectionOrigin && p.rejectionOrigin.roleLabel) || 'Approver');
                 modalTitle = '<i class="fa-solid fa-clipboard-check" style="color:var(--green);"></i> Site Engineer Re-Acknowledgment &amp; Return to ' + escapeHtml(orig);
@@ -11813,7 +12266,7 @@
                     '<i class="fa-solid fa-shield-halved" style="color:#EA580C;font-size:16px;"></i> MANDATORY PESO STATUTORY DECLARATION (FORM EHS_PTW_007) <span class="req" style="color:#DC2626;font-size:14px;">*</span>' +
                     '</div>' +
                     '<div style="font-size:12.5px;line-height:1.55;color:#431407;font-weight:500;">' +
-                    'I, certified <strong>Blasting In-charge</strong>, confirm that I am physically present on site, have verified explosive types and charge limits, inspected the rock face and blast hole pattern, ensured wiremesh blast mats/mufflers are securely anchored, and cleared the exclusion perimeter before authorizing blast initiation.' +
+                    'I, certified <strong>Blasting / Drilling In-charge</strong>, confirm that I am physically present on site, have verified explosive types and charge limits, inspected the rock face and blast hole pattern, ensured wiremesh blast mats/mufflers are securely anchored, and cleared the exclusion perimeter before authorizing blast initiation.' +
                     '</div>' +
                     '<div style="margin-top:8px;font-size:11.5px;font-weight:700;color:#C2410C;display:flex;align-items:center;gap:6px;">' +
                     '<i class="fa-solid fa-triangle-exclamation"></i> Required under Petroleum and Explosives Safety Organization (PESO) Rules.' +
@@ -13096,9 +13549,9 @@
                 } else if (ptypeOf(p) === 'blasting') {
                     if (p.blastingInchargeAck && p.blastingInchargeAck.photo) {
                         if (p.blastingInchargeAck.photo !== 'demo' && /^data:image\//.test(p.blastingInchargeAck.photo)) {
-                            tryImg(p.blastingInchargeAck.photo, 74, 52, 'Blasting In-charge statutory on-site inspection photograph');
+                            tryImg(p.blastingInchargeAck.photo, 74, 52, 'Blasting / Drilling In-charge statutory on-site inspection photograph');
                         } else {
-                            para('• Blasting In-charge statutory on-site inspection photograph on file (verified).', 8.6);
+                            para('• Blasting / Drilling In-charge statutory on-site inspection photograph on file (verified).', 8.6);
                         }
                     }
                 } else if (ptypeOf(p) !== 'hotwork' && ptypeOf(p) !== 'shaft' && ptypeOf(p) !== 'guardrail') {
@@ -13130,9 +13583,10 @@
                     }
                     y += 30;
                 }
-                sigBlock('Site Supervisor (Permittee) — Submission', { gps: p.gps, comment: null }, p.signature && p.signature.dataUrl, p.createdBy, (p.signature && p.signature.at) || p.submittedAt);
+                const pCreatorSigRole = (p.createdByRole === 'blasting-incharge') ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)';
+                sigBlock(pCreatorSigRole + ' — Submission', { gps: p.gps, comment: null }, p.signature && p.signature.dataUrl, p.createdBy, (p.signature && p.signature.at) || p.submittedAt);
                 if (ptypeOf(p) === 'blasting' && p.blastingInchargeAck && p.blastingInchargeAck.acknowledged) {
-                    sigBlock('Blasting In-charge — Statutory Safety Acknowledgment (PESO)', { gps: p.blastingInchargeAck.gps, comment: p.blastingInchargeAck.comment }, p.blastingInchargeAck.sig, p.blastingInchargeAck.by, p.blastingInchargeAck.at);
+                    sigBlock('Blasting / Drilling In-charge — Statutory Safety Acknowledgment (PESO)', { gps: p.blastingInchargeAck.gps, comment: p.blastingInchargeAck.comment }, p.blastingInchargeAck.sig, p.blastingInchargeAck.by, p.blastingInchargeAck.at);
                 }
                 if (p.siteEngineerAck && p.siteEngineerAck.acknowledged) {
                     sigBlock('Site Engineer — Verification & Acknowledgment', { gps: p.siteEngineerAck.gps, comment: p.siteEngineerAck.comment }, p.siteEngineerAck.sig, p.siteEngineerAck.by, p.siteEngineerAck.at);
@@ -13346,13 +13800,18 @@
                 }
             }
 
-            const rolesList = isBlast ? (isDbBlasting ? [
-                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'blasting-incharge', label: 'Blasting In-charge', stage: 'Step 2: Statutory PESO Verification & In-charge Acknowledgment' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 3: Site Engineer Verification & Acknowledgment' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
+            const isBlasterCreator = (p.createdByRole === 'blasting-incharge');
+            const rolesList = isBlast ? (isDbBlasting ? (isBlasterCreator ? [
+                { key: 'blasting-incharge', label: 'Blasting / Drilling In-charge (Permittee)', stage: 'Step 1: Form Filling & PESA Statutory Declaration' },
+                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Engineer Verification & Acknowledgment' },
+                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 3: Safety Verification & Decision' }
             ] : [
                 { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
+                { key: 'blasting-incharge', label: 'Blasting / Drilling In-charge', stage: 'Step 2: Statutory PESO Verification & In-charge Acknowledgment' },
+                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 3: Site Engineer Verification & Acknowledgment' },
+                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
+            ]) : [
+                { key: isBlasterCreator ? 'blasting-incharge' : 'site-supervisor', label: isBlasterCreator ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
                 { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Engineer Verification & Acknowledgment' },
                 { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 3: Safety Verification & Decision' }
             ]) : isShaft ? [
