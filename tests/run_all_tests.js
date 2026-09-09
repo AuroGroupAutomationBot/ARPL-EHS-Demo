@@ -79,6 +79,16 @@ try {
     process.exit(1);
 }
 
+const script8 = path.join(__dirname, 'test_pt06_electrical_work.js');
+
+try {
+    console.log('\n>>> RUNNING TEST SUITE 8: PT-06 ELECTRICAL WORK (HT / LT) SPECIFICATION & COMPLIANCE');
+    const out8 = execSync(`node "${script8}"`, { encoding: 'utf8', stdio: 'inherit' });
+} catch (e) {
+    console.error('FAILED IN SUITE 8');
+    process.exit(1);
+}
+
 console.log('\n================================================================');
-console.log('MASTER TEST SUITE SUMMARY: ALL 7 SUITES PASSED CLEANLY (100% PASS RATE)');
+console.log('MASTER TEST SUITE SUMMARY: ALL 8 SUITES PASSED CLEANLY (100% PASS RATE)');
 console.log('================================================================');

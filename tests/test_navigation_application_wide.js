@@ -385,15 +385,9 @@ console.log('  ✓ PASS: Step 3 validation failure blocks advancement when times
 
 // Complete Step 3 requirements (set planned times within valid office hours)
 evalInVM(`
-const now = new Date(nowTime());
-const nowTotalMin = now.getHours() * 60 + now.getMinutes();
-const sM = Math.min(Math.max(nowTotalMin + 15, 9 * 60), 17 * 60 + 30);
-const eM = Math.min(sM + 60, 19 * 60);
-const sH = Math.floor(sM / 60), sMin = sM % 60;
-const eH = Math.floor(eM / 60), eMin = eM % 60;
-draft.startTime = (sH < 10 ? '0' : '') + sH + ':' + (sMin < 10 ? '0' : '') + sMin;
-draft.validTillTime = (eH < 10 ? '0' : '') + eH + ':' + (eMin < 10 ? '0' : '') + eMin;
-
+nowTime = () => new Date(2026, 8, 9, 11, 0, 0);
+draft.startTime = '11:30';
+draft.validTillTime = '16:00';
 `);
 
 // Advance to Step 4

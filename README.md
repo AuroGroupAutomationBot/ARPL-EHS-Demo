@@ -4,10 +4,10 @@
 
 ### Enterprise-Grade Digital Safety Governance for Construction Operations
 
-**PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work · PT-07 Drilling & Blasting**
+**PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work · PT-06 Electrical Work · PT-07 Drilling & Blasting**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-342%2B%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-8%20Suites%20Passed-success?style=for-the-badge)](/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-blue?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -40,6 +40,8 @@
    - 5.11 [Location Selection Mode & Safety Restriction Matrix](#511-location-selection-mode--safety-restriction-matrix)
    - 5.12 [PT-07 Drilling & Blasting Safety Checklist (15 Items)](#512-statutory-safety-checklist-pt-07-drilling--blasting-15-items)
    - 5.13 [Blasting & Drilling Technical Specifications & Registries](#513-blasting--drilling-technical-specifications--registries)
+   - 5.14 [PT-06 Electrical Work Safety Checklist (14 Items)](#514-statutory-safety-checklist-pt-06-electrical-work-ht--lt-14-items)
+   - 5.15 [PT-06 Electrical Work Master Specifications & Dual Topologies](#515-pt-06-electrical-work-master-specifications--dual-topologies)
 6. [Core Workflow: Permit Lifecycle State Machine](#6-core-workflow-permit-lifecycle-state-machine)
 7. [Approval Chain Architecture](#7-approval-chain-architecture)
    - 7.1 [Chain Data Schema per Permit Type](#71-chain-data-schema-per-permit-type-newchain)
@@ -228,28 +230,31 @@ The system intentionally uses a **zero-build, zero-framework** architecture:
 
 ### 4.1 Role Registry
 
-The system implements **11 functional roles** aligned to construction site hierarchy. Per **DPDP Act 2023** compliance, roles are functional authorizations — personal names are entered dynamically only at the moment of digital signature.
+The system implements **13 functional roles** aligned to construction site hierarchy. Per **DPDP Act 2023** compliance, roles are functional authorizations — personal names are entered dynamically only at the moment of digital signature.
 
 ```mermaid
 graph TB
     subgraph "Step 1 - Initiation & Permittee Authority"
         SS["Site Supervisor<br/>Permittee (PT-01 to 05, PT-07)"]
         BIC["Blasting / Drilling In-charge<br/>Permittee (PT-07) / Statutory PESO Compliance"]
+        EL["Permittee Electrician<br/>Permittee (PT-06 Electrical Work)"]
     end
-    subgraph "Step 1b - Statutory Blasting Acknowledgment (Supervisor Initiated)"
+    subgraph "Step 1b - Statutory Blasting Acknowledgment"
         BICAck["Blasting / Drilling In-charge<br/>PESO Compliance & On-Site Photo Verification"]
     end
-    subgraph "Step 2 - Site Engineer Acknowledgment"
-        SiteEng["Site Engineer<br/>On-Site Technical Verification (Approve/Return Only — Cannot Cancel)"]
+    subgraph "Step 2 - Technical Acknowledgment"
+        SiteEng["Site Engineer<br/>On-Site Verification (PT-01–05, PT-06 Site, PT-07)"]
+        PMAck["P&M Engineer<br/>Batching Plant Isolation & LOTO Verification (PT-06 BP)"]
     end
-    subgraph "Step 3 - Parallel Approvals for Excavation Only"
-        MEP["MEP Engineer<br/>Utilities and Services Clearance"]
-        PM["P and M Engineer<br/>Plant and Machinery Readiness"]
-        IT["IT Engineer<br/>Data/Fibre Line Protection"]
+    subgraph "Step 3 - Domain Clearances & Parallel Gates"
+        MEP["MEP Engineer<br/>Utilities Clearance (PT-01, PT-05, PT-06 Site)"]
+        PM["P&M Engineer<br/>Plant Clearance (PT-01, PT-06 Site)"]
+        IT["IT Engineer<br/>Data/Fibre Line Protection (PT-01)"]
+        QE["Quality Engineer<br/>Quality Clearance & Megohm Test (PT-06 BP)"]
     end
     subgraph "Step 4 - Approving Authority / Section Head"
         EH["Excavation Head<br/>PT-01 Excavation Safety Review"]
-        TI["Tower Incharge<br/>PT-02 to PT-05 Safety Review"]
+        TI["Tower Incharge<br/>PT-02 to PT-06 Safety Review"]
     end
     subgraph "Step 5 - Final Endorsement"
         EM["EHS Manager<br/>Final Safety Endorsement & Sole Cancel Authority"]
@@ -263,6 +268,13 @@ graph TB
     SS -->|PT-07 Blasting Initiated by Supervisor| BICAck
     BICAck -->|Acknowledged + Photo| SiteEng
     SS -->|PT-01 to 05, PT-07 Drilling| SiteEng
+    EL -->|PT-06 Batching Plant Flow| PMAck
+    PMAck -->|Step 2 Ack + Statutory Decl| QE
+    QE -->|Step 3 Quality Clearance| EM
+    QE -->|Step 3 Quality Clearance| EO
+    EL -->|PT-06 Site Flow| SiteEng
+    SiteEng -->|PT-06 Site Flow| MEP
+    SiteEng -->|PT-06 Site Flow| PM
     SiteEng -->|PT-01 Excavation| MEP
     SiteEng -->|PT-01 Excavation| PM
     SiteEng -->|PT-01 Excavation| IT
@@ -274,6 +286,8 @@ graph TB
     PM -->|PT-01| EH
     IT -->|PT-01| EH
     MEP -->|PT-05| TI
+    MEP -->|PT-06 Site Either/Or| TI
+    PM -->|PT-06 Site Either/Or| TI
     EH --> EM
     EH --> EO
     TI --> EM
@@ -282,23 +296,23 @@ graph TB
 
 ### 4.2 Role Permission Matrix
 
-| Capability | Site Supervisor | Blasting / Drilling In-charge | Site Engineer | MEP | P&M | IT | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Create Permit | ✅ | ✅ *(PT-07)* | — | — | — | — | — | — | — | — | — |
-| Statutory PESO Acknowledgment | — | ✅ *(PT-07 Blasting)* | — | — | — | — | — | — | — | — | — |
-| Acknowledge & Forward | — | — | ✅ *(Cannot Cancel)* | — | — | — | — | — | — | — | — |
-| Parallel Approval | — | — | — | ✅ | ✅ | ✅ | — | — | — | — | — |
-| Section Head Approval | — | — | — | — | — | — | ✅ *(PT-01)* | ✅ *(PT-02–05)* | — | — | — |
-| EHS Final Endorsement | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Raise Observation | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Respond to Observation | ✅ | ✅ *(If PT-07 Permittee)* | — | — | — | — | — | — | — | — | — |
-| Request Extension | ✅ | ✅ *(If PT-07 Permittee)* | — | — | — | — | — | — | — | — | — |
-| Close & Surrender | ✅ | ✅ *(If PT-07 Permittee)* | — | — | — | — | — | — | — | — | — |
-| Cancel Permit (Stop-Work) | — | — | — *(No Authority)* | — | — | — | — | — | ✅ | ✅ | — |
-| Download PDF | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Configure Geofence | — | — | — | — | — | — | — | — | — | — | ✅ |
-| View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| View Notifications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Capability | Site Supervisor | Permittee Electrician | Blasting / Drilling In-charge | Site Engineer | MEP | P&M | IT | Quality Engineer | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Create Permit | ✅ | ✅ *(PT-06)* | ✅ *(PT-07)* | — | — | — | — | — | — | — | — | — | — |
+| Statutory Declarations | — | ✅ *(PT-06 Step 1)* | ✅ *(PT-07 Blasting)* | — | — | ✅ *(PT-06 Step 2)* | — | ✅ *(PT-06 Step 3)* | — | — | — | — | — |
+| Acknowledge & Forward | — | — | — | ✅ *(Cannot Cancel)* | — | ✅ *(PT-06 BP)* | — | — | — | — | — | — | — |
+| Parallel / Domain Clearance | — | — | — | — | ✅ | ✅ | ✅ | ✅ *(PT-06 BP)* | — | — | — | — | — |
+| Section Head Approval | — | — | — | — | — | — | — | — | ✅ *(PT-01)* | ✅ *(PT-02–06)* | — | — | — |
+| EHS Final Endorsement | — | — | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Raise Observation | — | — | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Respond to Observation | ✅ | ✅ *(PT-06)* | ✅ *(PT-07 Permittee)* | — | — | — | — | — | — | — | — | — | — |
+| Request Extension | ✅ | ✅ *(PT-06)* | ✅ *(PT-07 Permittee)* | — | — | — | — | — | — | — | — | — | — |
+| Close & Surrender | ✅ | ✅ *(PT-06 De-isolation)* | ✅ *(PT-07 Permittee)* | — | — | — | — | — | — | — | — | — | — |
+| Cancel Permit (Stop-Work) | — | — | — | — *(No Authority)* | — | — | — | — | — | — | ✅ | ✅ | — |
+| Download PDF | — | — | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Configure Geofence | — | — | — | — | — | — | — | — | — | — | — | — | ✅ |
+| View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| View Notifications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### 4.3 EHS Endorsement: First-Wins Gate
 
@@ -322,6 +336,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 | **PT-03** | Guard Rail / Floor Protection Removal | `EHS_PTW_003` | 9 | 4-Stage (Direct) | 100% tie-off mandatory; full-body harness; watcher assigned until re-fixed; mandatory physical restoration photo gate upon surrender. |
 | **PT-04** | Confined Space Entry | `EHS_PTW_004` | 15 | 4-Stage (Direct) | 4-gas multi-detector test ($O_2, LEL, CO, H_2S$); forced air ventilation; physical inspection declaration; pre-task checklist doc upload. |
 | **PT-05** | Shaft Work | `EHS_PTW_005` | 10 | 5-Stage (Sequential) | Dedicated MEP clearance step; scaffolding green tag verification; fall arresters; physical safety declaration across 39 floor levels. |
+| **PT-06** | Electrical Work (HT / LT) | `EHS_PTW_006` | 14 | 4-Stage (BP) / 5-Stage (Site) | Initiated exclusively by Permittee Electrician; Facility scope radio toggle (Batching Plant vs Site); Batching Plant location strictly locked to Manual only; Mandatory reason for shutdown textarea; 10 apparatus multi-select options; Approximate shutdown hours ($from < to$); 3 Step 1 checkboxes (safe to work, LOTO register Sl. No & datetime, pre-work statutory declaration); Dual topology (Batching Plant vs Site); Exclusive Electrician surrender gate with mandatory photo and electrical de-isolation declaration. |
 | **PT-07** | Drilling & Blasting | `EHS_PTW_007` | 15 | 4-Stage (Blasting) / 3-Stage (Drilling) | Dual Permittee model (Site Supervisor or Blasting / Drilling In-charge); Mutually exclusive operation toggle; Mandatory on-form PESA statutory declaration or Step 1b In-charge statutory acknowledgment + on-site photo; 4 mandatory post-checklist rig parameters; Site Engineer verification (cannot cancel); 18:30 IST sunset stop rule (zero extension runway for blasting); Post-blast misfire clearance; Night shift linkage strictly forbidden. |
 
 ### 5.2 Approval Chain Topology per Permit Type
@@ -352,6 +367,25 @@ graph LR
         S2 --> S3["MEP Engineer<br/>(Shaft Clearance)"]
         S3 --> S4["Tower Incharge<br/>(Review & Approval)"]
         S4 --> S5["EHS Safety<br/>(Manager / Officer)"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "PT-06 Electrical Work - Topology 1: Batching Plant Flow (4 Stages)"
+        EL1["Permittee Electrician<br/>(Pre-Work Statutory Decl)"] --> EL2["P&M Engineer<br/>(Step 2 Ack & LOTO Decl)"]
+        EL2 --> EL3["Quality Engineer<br/>(Step 3 Quality Clearance)"]
+        EL3 --> EL4["EHS Safety<br/>(Manager / Officer)"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "PT-06 Electrical Work - Topology 2: Site Flow (5 Stages)"
+        ELS1["Permittee Electrician<br/>(Pre-Work Statutory Decl)"] --> ELS2["Site Engineer<br/>(Step 2 Technical Ack)"]
+        ELS2 --> ELS3["MEP or P&M Engineer<br/>(Step 3 Domain Clearance Gate)"]
+        ELS3 --> ELS4["Tower Incharge<br/>(Step 4 Review & Approval)"]
+        ELS4 --> ELS5["EHS Safety<br/>(Manager / Officer)"]
     end
 ```
 
@@ -570,6 +604,8 @@ In the Step 1 Creation Wizard, users select from:
 | **Guardrail / Edge Protection (PT-03)** | ✅ **Enabled** | ✅ **Enabled** | ❌ **Restricted** | **Tower** |
 | **Confined Space (PT-04)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 | **Shaft Work (PT-05)** | ✅ **Enabled** | ✅ **Enabled** | ❌ **Restricted** | **Tower** |
+| **Electrical Work - Batching Plant (PT-06)** | ❌ **Restricted** | ❌ **Restricted** | ✅ **Enabled** | **Manual** |
+| **Electrical Work - Site (PT-06)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 | **Drilling & Blasting (PT-07)** | ❌ **Restricted** | ❌ **Restricted** | ✅ **Enabled** | **Manual** |
 
 #### Why this mapping works (The Technical & Safety Logic)
@@ -595,7 +631,11 @@ In the Step 1 Creation Wizard, users select from:
    * **Restrict: Manual.** Similar to edge protection, shafts (lift shafts, MEP vertical cutouts) are highly specific, high-risk structural voids. Working inside them creates extreme fall and dropped-object hazards. Manual free-text entry is too vague.
    * **Enable: Tower & Basement.** Shafts run vertically through the building, starting from the basement foundation levels and ascending through the towers.
 
-6. **Drilling & Blasting (PT-07)**
+6. **Electrical Work (PT-06 - Batching Plant vs Site)**
+   * **Batching Plant Scope:** Concrete batching plants operate as standalone external industrial installations with heavy motor control centers (MCC), aggregates bins, conveyors, and silo distribution panels located outside standard building structures. Selecting Tower or Basement/Podium is physically invalid. Location mode is strictly locked to **Manual Only** (`Manual Location Only`).
+   * **Site Scope:** High-voltage (HT) and low-voltage (LT) installations, transformer yards, riser busducts, tap-off boxes, and main distribution panels span across elevated tower floors, basement sub-stations, and external yard substations. All three location modes are fully enabled.
+
+7. **Drilling & Blasting (PT-07)**
    * **Restrict: Tower & Basement / Podium.** Drilling and blasting operations involve energetic chemical explosives and heavy rock drilling rigs that can only occur on open ground rock formations. Structural slabs, towers, and basements cannot withstand dynamic shock waves, seismic vibrations, and rock fragmentation.
    * **Enable: Manual Only.** Pinpoints the exact open-pit blast zone, quarry face, or rock trench coordinates using explicit manual chainage and area descriptors (`locManual` and `locManualArea`). Tower and Basement/Podium mode radio buttons are strictly locked with descriptive statutory safety tooltips.
 
@@ -654,6 +694,59 @@ When `operationCategory === 'drilling'`, blast rig and muffler fields are suppre
 
 ##### Drilling Machine Types Registry (`DRILLING_MACHINE_TYPES` - 8 Options)
 `Crawler Drilling Rig`, `DTH (Down-the-Hole) Rig`, `Rotary Blast Hole Drill`, `Top Hammer Drill Rig`, `Pneumatic Jackhammer & Air Compressor`, `Hydraulic Rock Drill`, `Handheld Rock Drill`, `Others`.
+
+### 5.14 Statutory Safety Checklist: PT-06 Electrical Work (HT / LT) (14 Items)
+
+Under the Central Electricity Authority (Measures relating to Safety and Electric Supply) Regulations, Indian Electricity Rules, and OSHA 1910 Subpart S standards, all High Tension (HT) and Low Tension (LT) electrical activities require mandatory verification of 14 statutory precautions:
+
+| Item | Statutory Precaution Description | Discipline / Risk Domain | Permitted Responses | Conditional Validation Rules | Statutory Engineering Rationale |
+|:---:|:---|:---|:---:|:---|:---|
+| **1** | Is the work carried out by qualified / trained electrician? | Competency & Licensing | **YES** / NA | Comment mandatory if NO | Licensed Wireman / Supervisor certificate verification before touching apparatus. |
+| **2** | Has the electrical circuit / equipment been physically isolated from all power sources? | De-Energization | **YES** / NA | Comment mandatory if NO | Physical breaker racking out and isolator disconnect verified open. |
+| **3** | Has Lockout / Tagout (LOTO) been applied and keys in possession of the electrician? | LOTO Enforcement | **YES** / NA | Comment mandatory if NO | LOTO padlock placed with unique key held by working electrician. |
+| **4** | Has the isolated circuit been tested for zero voltage (voltage detector / multimeter)? | Zero-Energy Verification | **YES** / NA | Comment mandatory if NO | Calibrated contact/non-contact voltage testing proves zero electrical energy. |
+| **5** | Has residual electrical energy been safely discharged and temporary earthing applied? | Residual Energy & Earthing | **YES** / NA | Comment mandatory if NO | Discharge capacitive charge; apply earth lead clamps before touch. |
+| **6** | Are insulated tools, rubber gloves, and rubber mats of appropriate voltage class available and in use? | Dielectric Tooling | **YES** / NA | Comment mandatory if NO | IS 4770 / ASTM D120 class-rated gloves, 1000V insulated tools, IS 15652 mats. |
+| **7** | Is personal protective equipment (PPE) including arc flash suit, face shield, and safety shoes in use? | Arc Flash Protection | **YES** / NA | Comment mandatory if NO | Arc-rated clothing (cal/cm² rated), dielectric boots, face shield with chin cup. |
+| **8** | Are warning signs and physical barricades placed around the electrical work zone? | Perimeter Security | **YES** / NA | Comment mandatory if NO | "DANGER - MEN AT WORK" red danger tags and insulated rope barriers. |
+| **9** | Is emergency rescue equipment (insulated rescue hook, first aid kit, fire extinguisher) available at site? | Emergency Preparedness | **YES** / NA | Comment mandatory if NO | Body rescue hook for electrical shock extraction, $CO_2$ electrical fire extinguisher. |
+| **10** | Has adjacent live electrical equipment been shrouded, insulated, or guarded against accidental contact? | Proximity Guarding | **YES** / NA | Comment mandatory if NO | Dielectric blankets / insulating barriers prevent touch with adjacent live busbars. |
+| **11** | Is proper lighting and ventilation provided in the electrical room / work area? | Ergonomic Environment | **YES** / NA | Comment mandatory if NO | Minimum 200 Lux battery work lights; ventilation for battery room acid fumes. |
+| **12** | Is a competent electrical safety standby person (watcher) stationed during high-voltage work? | Safety Standby | **YES** / NA | Comment mandatory if NO | Dedicated safety watcher trained in CPR / first aid stationed outside flash boundary. |
+| **13** | Has the single-line diagram (SLD) / circuit schematic been reviewed and verified for the apparatus? | Schematic Verification | **YES** / NA | Comment mandatory if NO | Approved SLD confirms backfeed paths, interlocks, and upstream feed sources. |
+| **14** | Have underground or concealed electrical conduits in the work vicinity been identified and marked? | Concealed Utilities | **YES** / NA | Comment mandatory if NO | Cable tracer / scanner prevents drill penetration into embedded live conduits. |
+
+### 5.15 PT-06 Electrical Work Master Specifications & Dual Topologies
+
+#### 1. Facility Scope & Location Rules
+* **Facility Scope Switch:** Radio selection between **Batching Plant** and **Site**.
+* **Batching Plant Mode:** Location selection is strictly locked to **Manual Only** (`getAllowedLocationModes('electrical', { facilityScope: 'batching_plant' }) === ['Manual']`). Tower and Basement/Podium modes are blocked with statutory safety warnings.
+* **Site Mode:** Freely enables **Tower**, **Basement/Podium**, or **Manual** mode.
+
+#### 2. Electrical Apparatus Options Registry (`ELECTRICAL_APPARATUS_OPTIONS` - 10 Options)
+`HT Switchgear / RMU`, `Transformers (HT / LT)`, `LT Main Distribution Panels (PCC / MCC)`, `Sub-Distribution Boards (SDB / DB)`, `Cables / Busbars`, `DG Sets & Synchronizing Panels`, `Capacitor Banks / APFC`, `Motors & Motor Control Centers`, `Temporary Construction Power Distribution`, `Others`.
+
+#### 3. Step 1 Initiation & LOTO Gating
+* **Requester Role:** Restricted to **Permittee Electrician** (`roleTypeScope('electrician') === ['electrical']`).
+* **Why Shutdown:** Mandatory textarea (`draft.shutdownWhy`).
+* **Shutdown Window:** Approximate shutdown hours (`shutdownTimeFrom` to `shutdownTimeTo`), validated strictly with $from < to$.
+* **Three Mandatory Step 1 Checkboxes:**
+  1. `Electrician taken to make the apparatus safe to work` (`draft.electricalSafeToWork`).
+  2. `Lockout done and key handed over to working crew and tag out placed and Sl. No maintained in register` (`draft.lotoDone`), accompanied by mandatory **Register Sl. No** (`draft.lotoRegisterNo`) and **Placed Date & Time** (`draft.lotoDateTime`).
+  3. Pre-work statutory Electrician undertaking (`draft.electricalStatutoryDecl`).
+
+#### 4. Dual Approval Workflows
+* **Batching Plant Flow (4 Stages):**
+  $$\text{Electrician (Init)} \xrightarrow{\text{Submit}} \text{P\&M Eng (Ack + Statutory Decl)} \xrightarrow{\text{Approve}} \text{Quality Eng (Insulation & Quality Clearance)} \xrightarrow{\text{Endorse}} \text{EHS Safety} \xrightarrow{} \text{Active}$$
+* **Site Flow (5 Stages):**
+  $$\text{Electrician (Init)} \xrightarrow{\text{Submit}} \text{Site Eng (Technical Ack)} \xrightarrow{\text{Ack}} \text{MEP or P\&M Eng (Domain Clearance Gate)} \xrightarrow{\text{Approve}} \text{Tower Incharge} \xrightarrow{\text{Approve}} \text{EHS Safety} \xrightarrow{} \text{Active}$$
+  *(Step 3 Either/Or Rule: Approval by either MEP or P&M satisfies the domain gate and advances permit to Tower Incharge).*
+
+#### 5. Exclusive Electrician Surrender Gate
+* **Role Check:** Only `currentUser.key === 'electrician'` can close/surrender a PT-06 permit.
+* **Photo Mandatory:** Clear on-site photo evidence required before surrender.
+* **Statutory De-Isolation Declaration:** Mandatory confirmation of `surrElectricalClosureChk`:
+  > *"I certify that electrical work is completed, all personnel withdrawn, all tools and test equipment removed, lockout padlocks and tagout tags physically removed and Sl. No logged in register. Lockouts surrendered and key returned to supervisor, covers re-fixed, and the apparatus is declared safe for de-isolation and re-energization."*
 
 ---
 
@@ -2756,12 +2849,12 @@ The application's visual architecture is powered by a comprehensive, design-toke
 
 ## 23. Testing & Quality Assurance
 
-The system is validated by an autonomous, zero-dependency Node.js test suite comprising **341+ automated test assertions with a 100% pass rate across 7 specialized test suites**.
+The system is validated by an autonomous, zero-dependency Node.js test suite comprising **375+ automated test assertions with a 100% pass rate across 8 specialized test suites**.
 
 ### 23.1 Test Suite Execution
 
 ```bash
-# Execute master test suite (runs all 7 suites sequentially)
+# Execute master test suite (runs all 8 suites sequentially)
 npm test
 # OR
 node tests/run_all_tests.js
@@ -2771,14 +2864,15 @@ node tests/run_all_tests.js
 
 ```
 tests/
-├── run_all_tests.js                     # Master Runner: orchestrates all 7 test suites sequentially
+├── run_all_tests.js                     # Master Runner: orchestrates all 8 test suites sequentially
 ├── run_full_test_suite.js               # Suite 1: Base Lifecycle, Core Approvals & Parallel Gates (185 tests)
 ├── run_extended_audit_tests.js          # Suite 2: Extended Audit, Notifications, Escalation & Filters (77 tests)
 ├── test_tracker_labels.js               # Suite 3: UI & PDF Section Head Dynamic Label Resolution Tests
 ├── test_navigation_application_wide.js  # Suite 4: Application-Wide Deterministic Navigation & Consistency (19 tests)
 ├── test_responsive_viewports.js         # Suite 5: Responsive Design & Cross-Device Ergonomics (15 tests)
 ├── test_location_selection_mode.js      # Suite 6: Location Selection Mode & Safety Restriction Matrix (10 tests)
-└── test_pt07_drilling_blasting.js       # Suite 7: PT-07 Drilling & Blasting Specification & Compliance (35+ tests)
+├── test_pt07_drilling_blasting.js       # Suite 7: PT-07 Drilling & Blasting Specification & Compliance (35+ tests)
+└── test_pt06_electrical_work.js         # Suite 8: PT-06 Electrical Work (HT/LT) Form EHS_PTW_006 Specification & Compliance (11 Sections)
 ```
 
 #### Suite 1: Base Lifecycle & Core Engines (185 Assertions)
@@ -2854,6 +2948,19 @@ tests/
 - **Night Shift Linkage Exclusion & PDF Generation**: Proves `canLinkToNightShift('blasting') === false`; asserts clean execution of `generatePermitPDF()` for both Blasting and Drilling permits.
 - **Blasting In-charge as Permittee Direct Flow**: Validates that Blasting / Drilling In-charge can initiate permit with on-form PESA statutory declaration routing directly to Site Engineer (bypassing duplicate In-charge review).
 
+#### Suite 8: PT-06 Electrical Work (HT/LT) Specification & Compliance (test_pt06_electrical_work.js - 11 Comprehensive Sections)
+- **Metadata & Master Registries**: Asserts `PT-06`, `Form EHS_PTW_006`, `EW` prefix, 14 statutory checklist items, 10 electrical apparatus options, and registration of `electrician` and `quality-engineer` roles.
+- **Facility Scope & Location Matrix**: Proves `getAllowedLocationModes('electrical', { facilityScope: 'batching_plant' })` returns strictly `['Manual']` and blocks Tower and Basement/Podium mode switches; proves `getAllowedLocationModes('electrical', { facilityScope: 'site' })` enables all 3 modes; proves role scoping restricts Electrician and Quality Engineer exclusively to `['electrical']`.
+- **Permittee Electrician Step 1 & LOTO Gating**: Validates that Step 1 strictly enforces mandatory reason for shutdown (`shutdownWhy`), apparatus selection (`electricalApparatus`), shutdown hours ($from < to$), safe to work confirmation (`electricalSafeToWork`), LOTO register Sl. No and placement timestamp (`lotoRegisterNo`, `lotoDateTime`), and pre-work statutory undertaking (`electricalStatutoryDecl`).
+- **Suppression of Civil Constraints**: Verifies Step 2 and Step 3 execute cleanly without requiring excavation civil drawings.
+- **Batching Plant Dual Approval Flow**: Proves submission routes directly to `Pending P&M Acknowledgment`; validates P&M Engineer acknowledgment with statutory declaration (`chkPmStatutoryDecl`) advancing to `Pending Quality Engineer Approval`; validates Quality Engineer review with insulation test declaration (`chkQualityStatutoryDecl`) advancing to `Pending EHS Approval`; verifies EHS endorsement activates the permit.
+- **Site Dual Approval Flow & Either/Or Rule**: Proves submission routes to `Pending Site Engineer Acknowledgment`; validates Site Engineer acknowledgment routing to `Pending MEP or P&M Approval`; validates that Stage 3 either/or clearance is satisfied by either MEP or P&M with domain declaration (`chkMepPmStatutoryDecl`) and advances to `Pending Section Head` (Tower Incharge); verifies Tower Incharge approval advances to EHS and EHS activates the permit.
+- **Rejection & Statutory Re-acknowledgment**: Tests rejection by P&M Engineer returning permit for correction (`returnStage === 'pm'`), resubmission routing to `Pending P&M Re-Acknowledgment`, and P&M re-acknowledgment routing forward to Quality Engineer.
+- **Active Observations Lock**: Verifies that active safety observation strictly blocks closure/surrender and extension, displaying prominent warning cards; verifies resolving observation restores the Close & Surrender permit flow.
+- **Exclusive Electrician Surrender & De-isolation Gate**: Asserts that non-electrician roles cannot surrender PT-06; validates that surrender modal contains statutory `MANDATORY ELECTRICAL DE-ISOLATION & RESTORATION DECLARATION` with `surrElectricalClosureChk`; verifies closure records `electricalClosureConfirmed === true`.
+- **Statutory Audit PDF Generation**: Proves jsPDF report generation executes cleanly for both Batching Plant and Site electrical permits (with certified de-isolation confirmation).
+- **Detail View Rendering**: Verifies `viewDetail()` renders all PT-06 specific fields (Facility Scope badge, Reason for Shutdown, Apparatus chips, LOTO Register & Placed Time, Pre-work Statutory Declaration, and Surrender Electrical De-Isolation confirmation).
+
 ### 23.3 Automated Test Execution Results
 
 ```
@@ -2882,10 +2989,13 @@ MASTER TEST SUITE EXECUTION SUMMARY
 >>> SUITE 7: PT-07 DRILLING & BLASTING SPECIFICATION & COMPLIANCE (test_pt07_drilling_blasting.js)
   All 13 scenario groups, statutory PESO gates, dual Permittee initiation, sunset hard stop & clearance declarations passed cleanly
 
+>>> SUITE 8: PT-06 ELECTRICAL WORK (HT/LT) SPECIFICATION & COMPLIANCE (test_pt06_electrical_work.js)
+  All 11 scenario sections, dual approval topologies, LOTO enforcement, either/or domain gate & de-isolation surrender passed cleanly
+
 ================================================================
-GRAND TOTAL: 342+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
-Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully Responsive · PT-07 Statutory Compliance · Production Ready
+GRAND TOTAL: ALL 8 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
 ================================================================
+Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully Responsive · PT-06/PT-07 Statutory Compliance · Production Ready
 ```
 
 ---
