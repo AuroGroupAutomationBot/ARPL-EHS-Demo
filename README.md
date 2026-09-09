@@ -4,10 +4,10 @@
 
 ### Enterprise-Grade Digital Safety Governance for Construction Operations
 
-**PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work**
+**PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work · PT-07 Drilling & Blasting**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-306%2B%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-341%2B%20Passed-success?style=for-the-badge)](/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-blue?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -38,6 +38,8 @@
    - 5.9 [Enterprise Projects Master Registry](#59-enterprise-project-master-data--worksite-registry-projects)
    - 5.10 [Master Constants & Configuration Registries](#510-master-constants--configuration-registries)
    - 5.11 [Location Selection Mode & Safety Restriction Matrix](#511-location-selection-mode--safety-restriction-matrix)
+   - 5.12 [PT-07 Drilling & Blasting Safety Checklist (15 Items)](#512-statutory-safety-checklist-pt-07-drilling--blasting-15-items)
+   - 5.13 [Blasting & Drilling Technical Specifications & Registries](#513-blasting--drilling-technical-specifications--registries)
 6. [Core Workflow: Permit Lifecycle State Machine](#6-core-workflow-permit-lifecycle-state-machine)
 7. [Approval Chain Architecture](#7-approval-chain-architecture)
    - 7.1 [Chain Data Schema per Permit Type](#71-chain-data-schema-per-permit-type-newchain)
@@ -51,14 +53,15 @@
    - 8.3 [PT-03 Guard Rail Removal (Re-Fixing Photo Gate)](#83-pt-03-guard-rail--floor-protection-removal-re-fixing-verification)
    - 8.4 [PT-04 Confined Space Entry (Gas Testing & Direct Spine)](#84-pt-04-confined-space-entry-direct-to-ti-spine--atmospheric-testing)
    - 8.5 [PT-05 Shaft Work (Dedicated MEP Clearance & Floor Dropdown)](#85-pt-05-shaft-work-dedicated-mep-clearance--floor-dropdown)
-   - 8.6 [Rejection & Resubmission (Stale-Approval Rule)](#86-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
-   - 8.7 [Safety Observation & Stop-Work Lifecycle](#87-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
-   - 8.8 [Permit Extension Lifecycle](#88-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
-   - 8.9 [Excavation 2-Day Re-trigger Lifecycle](#89-cross-cutting-workflow-excavation-2-day-re-trigger-lifecycle)
-   - 8.10 [Work Completion, Housekeeping & Surrender Gate](#810-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
-   - 8.11 [4-Step Creation & Initiation Wizard Flow](#811-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
-   - 8.12 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#812-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
-   - 8.13 [Application-Wide Deterministic Navigation & Consistency Architecture](#813-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-architecture)
+   - 8.6 [PT-07 Drilling & Blasting (Statutory PESO Clearance & Sunset Stop)](#86-pt-07-drilling--blasting-statutory-peso-clearance-dual-topology--sunset-hard-stop)
+   - 8.7 [Rejection & Resubmission (Stale-Approval Rule)](#87-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
+   - 8.8 [Safety Observation & Stop-Work Lifecycle](#88-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
+   - 8.9 [Permit Extension Lifecycle](#89-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
+   - 8.10 [Excavation 2-Day Re-trigger Lifecycle](#810-cross-cutting-workflow-excavation-2-day-re-trigger-lifecycle)
+   - 8.11 [Work Completion, Housekeeping & Surrender Gate](#811-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
+   - 8.12 [4-Step Creation & Initiation Wizard Flow](#812-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
+   - 8.13 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#813-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
+   - 8.14 [Application-Wide Deterministic Navigation & Consistency Architecture](#814-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-architecture)
 9. [Escalation & Auto-Expiry Engine](#9-escalation--auto-expiry-engine)
 10. [Safety Observation Workflow](#10-safety-observation-workflow)
 11. [Extension Workflow](#11-extension-workflow)
@@ -103,11 +106,11 @@ The **ARPL EHS Permit-to-Work (PTW) Management System** digitises the entire hig
 
 | Metric | Value |
 |:---|:---|
-| Permit Types (Active) | 5 (PT-01 through PT-05 fully implemented & testable) |
-| RBAC Roles | 10 distinct roles (including separate Excavation Head) |
-| Approval Steps (Excavation) | 5-step with parallel gate |
-| Automated Test Assertions | 281+ across 4 test suites (100% pass rate) |
-| Total Codebase | Single `index.html` (~12,680 lines) |
+| Permit Types (Active) | 6 (PT-01, PT-02, PT-03, PT-04, PT-05, PT-07 fully implemented & testable) |
+| RBAC Roles | 11 distinct roles (including separate Excavation Head and Blasting In-charge) |
+| Approval Steps (Blasting) | 4-step statutory PESO flow; Drilling: 3-step direct flow |
+| Automated Test Assertions | 341+ across 7 test suites (100% pass rate) |
+| Total Codebase | Single `index.html` (~14,200 lines) |
 | External Dependencies | 2 (Font Awesome icons, jsPDF) |
 
 ---
@@ -225,12 +228,15 @@ The system intentionally uses a **zero-build, zero-framework** architecture:
 
 ### 4.1 Role Registry
 
-The system implements **10 functional roles** aligned to construction site hierarchy. Per **DPDP Act 2023** compliance, roles are functional authorizations — personal names are entered dynamically only at the moment of digital signature.
+The system implements **11 functional roles** aligned to construction site hierarchy. Per **DPDP Act 2023** compliance, roles are functional authorizations — personal names are entered dynamically only at the moment of digital signature.
 
 ```mermaid
 graph TB
     subgraph "Step 1 - Initiation & Statutory Surrender"
         SS["Site Supervisor<br/>Permittee / Form Filling / Exclusive Closure"]
+    end
+    subgraph "Step 1b - Statutory Blasting Acknowledgment"
+        BIC["Blasting In-charge<br/>PESO Compliance & Photo Acknowledgment"]
     end
     subgraph "Step 2 - Acknowledgment"
         SiteEng["Site Engineer<br/>On-Site Acknowledger and Forwarder"]
@@ -252,12 +258,16 @@ graph TB
         AD["Administrator<br/>GPS and Geofence Config"]
     end
 
-    SS --> SiteEng
+    SS -->|PT-07 Blasting| BIC
+    BIC --> SiteEng
+    SS -->|PT-01 to 05, PT-07 Drilling| SiteEng
     SiteEng -->|PT-01 Excavation| MEP
     SiteEng -->|PT-01 Excavation| PM
     SiteEng -->|PT-01 Excavation| IT
     SiteEng -->|PT-05 Shaft Work| MEP
     SiteEng -->|PT-02, 03, 04| TI
+    SiteEng -->|PT-07 Drilling & Blasting| EM
+    SiteEng -->|PT-07 Drilling & Blasting| EO
     MEP -->|PT-01| EH
     PM -->|PT-01| EH
     IT -->|PT-01| EH
@@ -270,21 +280,22 @@ graph TB
 
 ### 4.2 Role Permission Matrix
 
-| Capability | Site Supervisor | Site Engineer | MEP | P&M | IT | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| Create Permit | ✅ | — | — | — | — | — | — | — | — | — |
-| Acknowledge & Forward | — | ✅ | — | — | — | — | — | — | — | — |
-| Parallel Approval | — | — | ✅ | ✅ | ✅ | — | — | — | — | — |
-| Section Head Approval | — | — | — | — | — | ✅ *(PT-01)* | ✅ *(PT-02–05)* | — | — | — |
-| EHS Final Endorsement | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Raise Observation | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Respond to Observation | ✅ | — | — | — | — | — | — | — | — | — |
-| Request Extension | ✅ | — | — | — | — | — | — | — | — | — |
-| Close & Surrender | ✅ | — | — | — | — | — | — | — | — | — |
-| Download PDF | — | — | — | — | — | — | — | ✅ | ✅ | — |
-| Configure Geofence | — | — | — | — | — | — | — | — | — | ✅ |
-| View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| View Notifications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Capability | Site Supervisor | Blasting In-charge | Site Engineer | MEP | P&M | IT | Excavation Head | Tower Incharge | EHS Manager | EHS Officer | Admin |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| Create Permit | ✅ | — | — | — | — | — | — | — | — | — | — |
+| Statutory PESO Acknowledgment | — | ✅ *(PT-07 Blasting)* | — | — | — | — | — | — | — | — | — |
+| Acknowledge & Forward | — | — | ✅ | — | — | — | — | — | — | — | — |
+| Parallel Approval | — | — | — | ✅ | ✅ | ✅ | — | — | — | — | — |
+| Section Head Approval | — | — | — | — | — | — | ✅ *(PT-01)* | ✅ *(PT-02–05)* | — | — | — |
+| EHS Final Endorsement | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Raise Observation | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Respond to Observation | ✅ | — | — | — | — | — | — | — | — | — | — |
+| Request Extension | ✅ | — | — | — | — | — | — | — | — | — | — |
+| Close & Surrender | ✅ | — | — | — | — | — | — | — | — | — | — |
+| Download PDF | — | — | — | — | — | — | — | — | ✅ | ✅ | — |
+| Configure Geofence | — | — | — | — | — | — | — | — | — | — | ✅ |
+| View Dashboard KPIs | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| View Notifications | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 ### 4.3 EHS Endorsement: First-Wins Gate
 
@@ -308,6 +319,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 | **PT-03** | Guard Rail / Floor Protection Removal | `EHS_PTW_003` | 9 | 4-Stage (Direct) | 100% tie-off mandatory; full-body harness; watcher assigned until re-fixed; mandatory physical restoration photo gate upon surrender. |
 | **PT-04** | Confined Space Entry | `EHS_PTW_004` | 15 | 4-Stage (Direct) | 4-gas multi-detector test ($O_2, LEL, CO, H_2S$); forced air ventilation; physical inspection declaration; pre-task checklist doc upload. |
 | **PT-05** | Shaft Work | `EHS_PTW_005` | 10 | 5-Stage (Sequential) | Dedicated MEP clearance step; scaffolding green tag verification; fall arresters; physical safety declaration across 39 floor levels. |
+| **PT-07** | Drilling & Blasting | `EHS_PTW_007` | 15 | 4-Stage (Blasting) / 3-Stage (Drilling) | Mutually exclusive operation toggle; Blasting In-charge statutory PESO declaration + on-site photo; 4 mandatory post-checklist rig parameters; 18:30 IST sunset stop rule; Post-blast misfire clearance; Night shift linkage strictly forbidden. |
 
 ### 5.2 Approval Chain Topology per Permit Type
 
@@ -337,6 +349,23 @@ graph LR
         S2 --> S3["MEP Engineer<br/>(Shaft Clearance)"]
         S3 --> S4["Tower Incharge<br/>(Review & Approval)"]
         S4 --> S5["EHS Safety<br/>(Manager / Officer)"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "PT-07 Blasting - 4 Stages (Statutory PESO Spine)"
+        B1["Supervisor<br/>(Permittee)"] --> B2["Blasting In-charge<br/>(PESO Decl + Photo)"]
+        B2 --> B3["Site Engineer<br/>(Acknowledgment)"]
+        B3 --> B4["EHS Safety<br/>(Manager / Officer)"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "PT-07 Drilling - 3 Stages (Direct Spine)"
+        D1["Supervisor<br/>(Permittee)"] --> D2["Site Engineer<br/>(Acknowledgment)"]
+        D2 --> D3["EHS Safety<br/>(Manager / Officer)"]
     end
 ```
 
@@ -530,6 +559,7 @@ In the Step 1 Creation Wizard, users select from:
 | **Guardrail / Edge Protection (PT-03)** | ✅ **Enabled** | ✅ **Enabled** | ❌ **Restricted** | **Tower** |
 | **Confined Space (PT-04)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 | **Shaft Work (PT-05)** | ✅ **Enabled** | ✅ **Enabled** | ❌ **Restricted** | **Tower** |
+| **Drilling & Blasting (PT-07)** | ❌ **Restricted** | ❌ **Restricted** | ✅ **Enabled** | **Manual** |
 
 #### Why this mapping works (The Technical & Safety Logic)
 
@@ -553,6 +583,66 @@ In the Step 1 Creation Wizard, users select from:
 5. **Shaft Work (PT-05)**
    * **Restrict: Manual.** Similar to edge protection, shafts (lift shafts, MEP vertical cutouts) are highly specific, high-risk structural voids. Working inside them creates extreme fall and dropped-object hazards. Manual free-text entry is too vague.
    * **Enable: Tower & Basement.** Shafts run vertically through the building, starting from the basement foundation levels and ascending through the towers.
+
+6. **Drilling & Blasting (PT-07)**
+   * **Restrict: Tower & Basement / Podium.** Drilling and blasting operations involve energetic chemical explosives and heavy rock drilling rigs that can only occur on open ground rock formations. Structural slabs, towers, and basements cannot withstand dynamic shock waves, seismic vibrations, and rock fragmentation.
+   * **Enable: Manual Only.** Pinpoints the exact open-pit blast zone, quarry face, or rock trench coordinates using explicit manual chainage and area descriptors (`locManual` and `locManualArea`). Tower and Basement/Podium mode radio buttons are strictly locked with descriptive statutory safety tooltips.
+
+### 5.12 Statutory Safety Checklist: PT-07 Drilling & Blasting (15 Items)
+
+Under the Petroleum and Explosives Safety Organization (PESO), Indian Explosives Act, and Directorate General of Mines Safety (DGMS) guidelines, all drilling and blasting operations require mandatory verification of 15 statutory precautions:
+
+| Item | Statutory Precaution Description | Discipline / Risk Domain | Permitted Responses | Conditional Validation Rules | Statutory Engineering Rationale |
+|:---:|:---|:---|:---:|:---|:---|
+| **1** | Are Workers fully aware of Method Statement & Risk Assessment? | Operational Briefing | **YES** / NA | Comment mandatory if NO | Tool-box talk verification; method statement and risk assessment reviewed on site. |
+| **2** | Are Electronic Items / Radios & mobile phones prohibited in the location? | Electrostatic & RF Safety | **YES** / NA | Comment mandatory if NO | Eliminates stray radiofrequency (RF) and electrostatic discharge near electric detonator lead wires. |
+| **3** | Are the workers engaged fully qualified and trained and with suitable PPE? | Worker Competency | **YES** / NA | Comment mandatory if NO | Verification of DGMS/PESO certified shot firer credentials and mandatory PPE. |
+| **4** | Whether the detonators are checked individually for continuity & resistance.? | Detonator Integrity | **YES** / NA | Comment mandatory if NO | Ohmmeter / blasting galvanometer circuit check prior to hole insertion. |
+| **5** | Are the bore holes cleared of all the debris before explosives inserted? | Hole Preparation | **YES** / NA | Comment mandatory if NO | Compressed air hole blowout prevents explosive cartridge blockage and misfires. |
+| **6** | Are alert siren available and to be blown prior to the blasting & appropriate caution signage’s placed? | Warning Systems | **YES** / NA | Comment mandatory if NO | Multi-stage warning siren protocol: 10 min, 5 min, 1 min, and all-clear blast siren. |
+| **7** | Are Explosives transported in approved vehicle & detonators placed separately & kept isolated with caution signage’s? | PESO Transit Compliance | **YES** / NA | Comment mandatory if NO | Licensed PESO explosive van; detonators and high explosives strictly separated. |
+| **8** | Are the environmental conditions considered? | Meteorological Safety | **YES** / NA | User reviews auto-picked weather | Auto-reads live site weather telemetry (Rain, Sunny, Wind, Thunders, Lightning); supervisor reviews and clicks YES. |
+| **9** | Are wooden tamping sticks available for the stemming of holes? | Anti-Spark Stemming | **YES** / NA | Comment mandatory if NO | Spark-proof non-metallic wooden or antistatic plastic tamping rods. |
+| **10** | Is licensed Blasting in charge/Supervisor available at site all time? | Statutory Supervision | **YES** / NA | Comment mandatory if NO | Statutory continuous physical presence of PESO-licensed Blasting In-charge. |
+| **11** | Are all the Mufflers(rubber mat) placed in Good Conditions? | Flyrock Suppression | **YES** / NA | Comment mandatory if NO | Heavy rubber blast mats / wire-mesh mufflers prevent rock fragmentation ejection. |
+| **12** | Any misfire detected? Are all mis-fired charges removed prior to drilling operations? | Misfire Protocol | **YES** / NA | Comment mandatory if NO | Thorough visual scan; safe water jetting or secondary charge protocols for misfires. |
+| **13** | Are all the excessive cartridges removed from the work spot? | Explosives Accounting | **YES** / NA | Comment mandatory if NO | Immediate reconciliation and return of unused cartridges to licensed magazine. |
+| **14** | Whether the Condition of lead / leg wires are checked. | Circuit Verification | **YES** / NA | Comment mandatory if NO | Insulation check on firing cable and detonator leg wires to prevent short circuits. |
+| **15** | Any other precautions (Manual entry) | Site-Specific Controls | **YES** / NA | **Manual precautions required** | Mandatory free-text entry (`draft.dbOtherPrecautions`) detailing custom geotechnical controls. |
+
+### 5.13 Blasting & Drilling Technical Specifications & Registries
+
+PT-07 implements a mutually exclusive operational switch governed by `draft.operationCategory` (`'blasting'` vs `'drilling'`).
+
+#### 1. Blasting Technical Parameters
+When `operationCategory === 'blasting'`, the system validates:
+* **Planned Blast Date & Time (`dbDateTime`):** Mandatory timestamp; time must be $\le 18:30\text{ IST}$ (sunset limit).
+* **Total Charge Amount (`dbChargeAmount`):** Mandatory positive numeric value ($> 0\text{ kg}$).
+* **Blast Hole Diameter (`dbBlastDiameter`):** Mandatory positive numeric value ($> 0\text{ m}$).
+* **Blast Hole Depth (`dbBlastDepth`):** Mandatory positive numeric value ($> 0\text{ m}$).
+* **Number of Blast Holes (`dbHolesCount`):** Mandatory integer ($\ge 1$).
+* **Explosive Type (`dbExplosiveType`):** Selected from master `BLASTING_EXPLOSIVE_TYPES`.
+* **Mandatory Post-Checklist Rig Parameters (Blasting ONLY):**
+  1. `blastingRigHolesLoaded`: Total holes loaded ($\ge 1$).
+  2. `blastingRigHoleDepthM`: Depth of rig hole in meters ($> 0\text{ m}$, backward-compatible with `blastingRigHoleDepthFt`).
+  3. `blastingMufflerLayers`: Protective muffler / rubber mat layers ($\ge 1$).
+  4. `blastingSafeDistance`: Safe distance between rig holes in meters (strictly numeric $> 0\text{ m}$).
+
+#### 2. Drilling Technical Parameters
+When `operationCategory === 'drilling'`, blast rig and muffler fields are suppressed, and the system validates:
+* **Planned Drilling Date & Time (`dbDateTime`):** Mandatory timestamp; time must be $\le 20:30\text{ IST}$.
+* **Drill Hole Diameter (`dbDrillDiameter`):** Mandatory positive numeric value ($> 0\text{ m}$).
+* **Drill Hole Depth (`dbDrillDepth`):** Mandatory positive numeric value ($> 0\text{ m}$).
+* **Number of Drill Holes (`dbHolesCount`):** Mandatory integer ($\ge 1$).
+* **Drilling Machine Type (`dbMachineType`):** Selected from master `DRILLING_MACHINE_TYPES`.
+
+#### 3. Master Option Registries
+
+##### Explosive Types Registry (`BLASTING_EXPLOSIVE_TYPES` - 9 Options)
+`Emulsion Explosives`, `ANFO (Ammonium Nitrate Fuel Oil)`, `Slurry / Water Gel Explosives`, `Cartridge Explosives (Slurry/Emulsion)`, `Cast Boosters`, `Electric Detonators (Instantaneous / Delay)`, `Non-Electric (Nonel) Shock Tube Detonators`, `Electronic Programmable Detonators`, `Others`.
+
+##### Drilling Machine Types Registry (`DRILLING_MACHINE_TYPES` - 8 Options)
+`Crawler Drilling Rig`, `DTH (Down-the-Hole) Rig`, `Rotary Blast Hole Drill`, `Top Hammer Drill Rig`, `Pneumatic Jackhammer & Air Compressor`, `Hydraulic Rock Drill`, `Handheld Rock Drill`, `Others`.
 
 ---
 
@@ -697,6 +787,13 @@ const pend = () => ({
     ehsManager: pend(),
     ehsOfficer: pend()
 }
+
+// PT-07 Drilling & Blasting: Direct to EHS Spine (Blasting In-charge acknowledged prior to Site Engineer)
+{
+    kind: 'blasting',
+    ehsManager: pend(),
+    ehsOfficer: pend()
+}
 ```
 
 ### 7.2 Stage Resolution Algorithm (`chainStage`)
@@ -706,6 +803,15 @@ Implemented in `index.html` (`lines 5379–5434`), `chainStage(chain)` computes 
 ```javascript
 function chainStage(chain) {
     if (!chain) return 'complete';
+
+    // Drilling & Blasting (Direct Spine to EHS after Site Engineer / Blasting In-charge acknowledgment)
+    if (chain.kind === 'blasting') {
+        if ((chain.ehsManager?.status === 'cancelled') || (chain.ehsOfficer?.status === 'cancelled')) return 'cancelled-ehs';
+        if ((chain.ehsManager?.status === 'rejected') || (chain.ehsOfficer?.status === 'rejected')) return 'rejected-ehs';
+        if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && 
+            (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
+        return 'complete';
+    }
 
     // Hot Work, Guard Rail, Confined Space
     if (chain.kind === 'guardrail' || chain.kind === 'hotwork' || chain.kind === 'confined') {
@@ -752,6 +858,14 @@ Implemented in `index.html` (`lines 5435–5475`), validates whether the current
 function roleCanActOnChain(chain, roleKey) {
     if (!chain) return false;
     const stage = chainStage(chain);
+
+    if (chain.kind === 'blasting') {
+        if (stage === 'ehs') {
+            if (roleKey === 'ehs-manager') return chain.ehsManager?.status === 'pending';
+            if (roleKey === 'ehs-officer') return chain.ehsOfficer?.status === 'pending';
+        }
+        return false;
+    }
 
     if (chain.kind === 'guardrail' || chain.kind === 'hotwork' || chain.kind === 'confined') {
         if (stage === 'section-head') return (roleKey === 'hw-section-head' || roleKey === 'section-head') && chain.sectionHead?.status === 'pending';
@@ -801,6 +915,7 @@ When a permit is rejected, the system records the exact rejecting authority in `
    - If rejected by EHS $\rightarrow$ bypasses Section Head and parallel gate, returning directly to `Pending EHS Approval`.
    - If rejected by Section Head (Excavation Head / Tower Incharge) $\rightarrow$ bypasses parallel gate, returning directly to `Pending Section Head`.
    - If rejected by MEP $\rightarrow$ returns directly to `Pending Parallel Approval` with P&M and IT remaining cleared.
+   - If rejected by Blasting In-charge $\rightarrow$ resubmission routes to `Pending Blasting In-charge Re-Acknowledgment`, then forward to `Pending Site Engineer Re-Acknowledgment`.
 
 ### 7.5 Core Operational Dispatch & Execution Engine
 
@@ -808,15 +923,19 @@ State transitions and approval evaluations are driven by a centralized suite of 
 
 ```mermaid
 graph TD
-    A["submitPermit(p)"] -->|Stage 1 -> 2| B["Pending Site Engineer Acknowledgment"]
+    A["submitPermit(p)"] -->|PT-07 Blasting| B0["Pending Blasting In-charge Acknowledgment"]
+    B0 -->|acknowledgeBlastingIncharge| B["Pending Site Engineer Acknowledgment"]
+    B0 -->|rejectBlastingIncharge| D["Returned for Correction (Supervisor Refill)"]
+    A -->|PT-01 to 05, PT-07 Drilling| B
     B -->|acknowledgeSiteEngineer| C{"Permit Type Topology"}
-    B -->|rejectSiteEngineer| D["Returned for Correction (Supervisor Refill)"]
+    B -->|rejectSiteEngineer| D
     C -->|PT-01 Excavation| E["Pending Parallel Approval (MEP · P&M · IT)"]
     C -->|PT-05 Shaft Work| F["Pending MEP Clearance"]
     C -->|PT-02, 03, 04| G2["Pending Section Head (Tower Incharge)"]
+    C -->|PT-07 Drilling & Blasting| H["Pending EHS Approval (Manager / Officer)"]
     E -->|approvePermitStage| G1["Pending Section Head (Excavation Head)"]
     F -->|approvePermitStage| G2
-    G1 -->|approvePermitStage| H["Pending EHS Approval (Manager / Officer)"]
+    G1 -->|approvePermitStage| H
     G2 -->|approvePermitStage| H
     H -->|approvePermitStage (First-Wins)| I["activatePermit(p) -> ACTIVE"]
     G1 -->|rejectPermitStage| D
@@ -829,8 +948,10 @@ graph TD
 
 | Operational Function | Implementation Signature | Authoritative Role | State Transition & Business Rules |
 |:---|:---|:---|:---|
-| **`submitPermit`** | `submitPermit(p)` | Site Supervisor | Sets `submittedAt = nowTime()`, `stageEnteredAt = nowTime()`, clears escalations, sets status to `Pending Site Engineer Acknowledgment`, and broadcasts notification to designated Site Engineer. |
-| **`acknowledgeSiteEngineer`** | `acknowledgeSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 on-site verification. Captures GPS (enforces site proximity), records signature and DPDP consent in `p.signatories['site-engineer']`. Routes PT-02/03/04 to Tower Incharge, PT-05 to MEP, and PT-01 to parallel gate. |
+| **`submitPermit`** | `submitPermit(p)` | Site Supervisor | Sets `submittedAt = nowTime()`, `stageEnteredAt = nowTime()`, clears escalations. If PT-07 Blasting, sets status to `Pending Blasting In-charge Acknowledgment`. Otherwise sets status to `Pending Site Engineer Acknowledgment`. |
+| **`acknowledgeBlastingIncharge`** | `acknowledgeBlastingIncharge(p, { gps, comment, sig, signerName, statutoryDeclaration, photo })` | Blasting In-charge | Step 1b statutory PESO compliance acknowledgment. Validates mandatory statutory PESO declaration checkbox and mandatory on-site photo. Records in `p.signatories['blasting-incharge']` and routes forward to `Pending Site Engineer Acknowledgment`. |
+| **`rejectBlastingIncharge`** | `rejectBlastingIncharge(p, { gps, comment, sig, signerName })` | Blasting In-charge | Step 1b rejection. Mutates status to `Returned for Correction`, logs return reason, and dispatches correction request notification to Site Supervisor. |
+| **`acknowledgeSiteEngineer`** | `acknowledgeSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 on-site verification. Captures GPS (enforces site proximity), records signature and DPDP consent in `p.signatories['site-engineer']`. Routes PT-02/03/04 to Tower Incharge, PT-05 to MEP, PT-01 to parallel gate, and PT-07 directly to `Pending EHS Approval`. |
 | **`rejectSiteEngineer`** | `rejectSiteEngineer(p, { gps, comment, sig, signerName })` | Site Engineer | Step 2 rejection. Mutates status to `Returned for Correction`, logs return reason, and dispatches correction request notification to Site Supervisor. |
 | **`actOnChain`** | `actOnChain(chain, roleKey, decision, payload)` | Core Engine | Core low-level node mutator. Writes decision (`'approved'` \| `'rejected'` \| `'cancelled'`), signer, timestamp, GPS, comment, and signature into `chain[CHAIN_ROLE_FIELD[roleKey]]`. Returns `chainStage(chain)`. |
 | **`approvePermitStage`** | `approvePermitStage(p, roleKey, gpsOrOpt, comment, sig, signerName)` | Assigned Reviewer | Gated by `roleCanActOnChain`. Executes `actOnChain`. If next stage is `'section-head'`, routes to Tower Incharge; if `'ehs'`, routes to EHS; if `'complete'`, triggers `activatePermit(p)`. |
@@ -1161,7 +1282,89 @@ sequenceDiagram
 
 ---
 
-### 8.6 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
+### 8.6 PT-07 Drilling & Blasting: End-to-End Statutory Approval Lifecycle
+
+PT-07 enforces a statutory approval pipeline with **dual topology**, **statutory PESO compliance declaration**, **mandatory on-site photo verification**, **direct bypass to EHS Safety**, **18:30 IST sunset stop rule**, and **mandatory post-blast misfire clearance**:
+
+```mermaid
+sequenceDiagram
+    actor SS as Site Supervisor (Permittee)
+    actor BIC as Blasting In-charge (PESO Officer)
+    actor SE as Site Engineer (Acknowledgment)
+    actor EHS as EHS Manager/Officer (Endorsement)
+    participant SYS as System Engine
+
+    Note over SS,SYS: STEP 1 — Form Initiation (Manual Location Locked)
+    SS->>SS: Select Manual Location Mode (Tower & Basement strictly locked)
+    alt Blasting Operation
+        SS->>SS: Enter Charge (kg), Diameter, Depth, Holes & Explosive Type
+        SS->>SS: Complete 15-item checklist (Item 8 auto-weather, Item 15 custom precautions)
+        SS->>SS: Fill 4 Post-Checklist Rig fields (Holes loaded, Depth ft, Mufflers, Safe distance)
+        SS->>SYS: submitPermit(BLASTING)
+        SYS->>SYS: Status: Pending Blasting In-charge Acknowledgment
+        SYS->>BIC: Alert: Statutory PESO acknowledgment required
+    else Drilling Operation
+        SS->>SS: Enter Drill Machine Type, Hole Diameter, Depth & Holes Count
+        SS->>SS: Complete 15-item checklist (rig/muffler fields suppressed)
+        SS->>SYS: submitPermit(DRILLING)
+        SYS->>SYS: Status: Pending Site Engineer Acknowledgment (Bypasses Blasting In-charge)
+        SYS->>SE: Alert: Site Engineer acknowledgment required
+    end
+
+    opt Blasting Operation Only: Step 1b — Blasting In-charge Statutory Gate
+        Note over BIC,SYS: STEP 1b — Statutory PESO Compliance & Photo Verification
+        BIC->>BIC: Verify explosive transit van license, shot firer credentials & danger cordon
+        BIC->>BIC: Check statutory PESO declaration: "I confirm on-site compliance with PESO & statutory blasting safety rules"
+        BIC->>SYS: captureBlastingAckPhoto() [Mandatory on-site physical evidence photo]
+        alt Acknowledge
+            BIC->>SYS: acknowledgeBlastingIncharge()
+            SYS->>SYS: Status: Pending Site Engineer Acknowledgment
+            SYS->>SE: Alert: Forwarded to Site Engineer for physical acknowledgment
+        else Reject
+            BIC->>SYS: rejectBlastingIncharge() -> Returns to Site Supervisor for correction
+        end
+    end
+
+    Note over SE,SYS: STEP 2 — Site Engineer Acknowledgment
+    SE->>SE: Verify physical perimeter barricades, siren positions & sentry postings
+    alt Approve & Forward
+        SE->>SYS: acknowledgeSiteEngineer()
+        Note over SE,SYS: Direct Bypass: Skips Parallel Gate and Section Head
+        SYS->>SYS: Status: Pending EHS Approval
+        SYS->>EHS: Alert: Final EHS endorsement required
+    else Reject
+        SE->>SYS: rejectSiteEngineer() -> Returns to Site Supervisor
+    end
+
+    Note over EHS,SYS: STEP 3 — EHS Final Endorsement (First-Wins Gate)
+    EHS->>EHS: Verify weather conditions, blast timing (<= 18:30 IST) & PPE
+    alt Endorse
+        EHS->>SYS: approvePermitStage()
+        SYS->>SYS: Status: Active (Drilling / Blasting authorized)
+        SYS-->>SS: In-App Alert: Permit ACTIVE
+    else Reject
+        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor
+    else Cancel
+        EHS->>SYS: cancelPermit() -> Terminal stop-work -> PDF generated
+    end
+
+    Note over SS,SYS: STEP 4 — Closure & Mandatory Post-Blast Clearance
+    alt Blasting Operation Surrender
+        SS->>SS: Certified Shot Firer sweeps blast floor: zero unexploded charges or misfires
+        SS->>SS: Check mandatory Post-Blast Clearance & Misfire Declaration checkbox
+        SS->>SS: Attach post-blast restoration photograph
+        SS->>SYS: closeAndSurrenderPermit(blastingClearanceConfirmed: true)
+        SYS->>SYS: Status: Closed -> PDF generated with Post-Blast Clearance Certification
+    else Drilling Operation Surrender
+        SS->>SS: Remove drill rig, cap drilled holes, attach restoration photograph
+        SS->>SYS: closeAndSurrenderPermit()
+        SYS->>SYS: Status: Closed -> PDF generated
+    end
+```
+
+---
+
+### 8.7 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
 When an approver rejects a permit, only approvals whose fields changed are invalidated; approvals of unchanged sections persist.
 
 ```mermaid
@@ -1176,7 +1379,6 @@ sequenceDiagram
     SYS->>SYS: Status: Returned for Correction
     SYS->>SYS: Record rejectionOrigin & lock unaffected sections
     SYS->>SS: Notification: Permit returned for correction
-
     Note over SS,SYS: Correction Phase
     SS->>SS: Update only rejected checklist responses / upload revised photo
     SS->>SYS: resubmitReturnedPermit()
@@ -1194,7 +1396,7 @@ sequenceDiagram
 
 ---
 
-### 8.7 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
+### 8.8 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
 EHS may intervene post-activation if an on-site deviation appears. While an observation is open, Extension and Closure are strictly blocked.
 
 ```mermaid
@@ -1215,92 +1417,79 @@ sequenceDiagram
         SS->>SYS: respondToObservation()
         SE->>SYS: acknowledgeObservationEng()
         TI->>SYS: approveObservationTI()
-        EHS->>SYS: clearObservation() -> OK
-        SYS->>SYS: Status: Active (Observation Cleared)
-    else Major Safety Hazard (Cancel + Stop Work)
-        EHS->>SYS: cancelPermitObservation(type="stop_work")
-        SYS->>SYS: Status: Cancelled (Immediate Stop Work)
-        SYS->>SYS: Generate Statutory PDF -> Notify All Stakeholders
-        Note over SS,EHS: Terminal state: Permittee must raise a new permit from scratch
+        EHS->>SYS: closeObservation()
+        SYS->>SYS: Status: Active (Observation Resolved)
+        SYS-->>SS: Extension and Closure RESTORED
+    else Critical Hazard (Cancel / Stop Work)
+        EHS->>SYS: cancelPermit()
+        SYS->>SYS: Status: Cancelled (Terminal)
+        SYS-->>SS: All work permanently stopped -> PDF generated
     end
 ```
 
 ---
 
-### 8.8 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
-Extensions must be submitted before 6:30 PM and can extend validity up to 8:30 PM. There is no reject option—only Approve or Cancel.
+### 8.9 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
+Permit extension request must be initiated before 18:30 IST. Extensions are capped at a hard validity ceiling of 20:30 IST (for standard works/drilling) and 18:30 IST (sunset hard stop for blasting).
 
 ```mermaid
 sequenceDiagram
     actor SS as Site Supervisor
+    participant SYS as System Engine
     actor SE as Site Engineer
     actor TI as Tower Incharge
     actor EHS as EHS Manager/Officer
-    participant SYS as System Engine
 
-    Note over SS,SYS: Extension Request Initiation
-    SS->>SYS: requestExtension(durationMinutes, reason)
-    SYS->>SYS: Enforce Clock Gate: Request time < 18:30 IST & validity < 20:30 IST
-    SYS->>SYS: Verify: No open observation & work started
+    Note over SS,SYS: Extension Request (Before 18:30 IST)
+    SS->>SYS: requestExtension(duration <= 120 min)
+    SYS->>SYS: Validate clock <= 18:30 IST & validity ceiling
+    SYS->>SYS: Status: Pending Extension - Engineer Ack
     SYS->>SE: Alert: Extension acknowledgment required
 
-    SE->>SYS: acknowledgeSiteEngineer()
+    SE->>SYS: approveExtensionStage(SE)
+    SYS->>SYS: Status: Pending Extension - Section Head
     SYS->>TI: Alert: Extension review required
 
-    TI->>SYS: approvePermitStage(TI)
-    SYS->>EHS: Alert: Final extension endorsement
+    TI->>SYS: approveExtensionStage(TI)
+    SYS->>SYS: Status: Pending Extension - EHS
+    SYS->>EHS: Alert: Extension final endorsement required
 
-    EHS->>SYS: approvePermitStage(EHS)
-    SYS->>SYS: validTill extended (max 20:30 IST ceiling)
-    SYS->>SYS: Status returned to Active
-    SYS-->>SS: Notification: Extension Granted
+    EHS->>SYS: approveExtensionStage(EHS)
+    SYS->>SYS: validTill extended -> Status: Active
+    SYS-->>SS: In-App Alert: Extension APPROVED
 ```
 
 ---
 
-### 8.9 Cross-Cutting Workflow: Excavation 2-Day Re-Trigger Lifecycle
-Dedicated post-activation revalidation path spanning two distinct days for deep excavation safety re-assessment.
+### 8.10 Cross-Cutting Workflow: Excavation 2-Day Re-Trigger Lifecycle
+Exclusive to PT-01 Excavation: Deep trenches held overnight require revalidation the next morning.
 
 ```mermaid
 sequenceDiagram
     actor SS as Site Supervisor
-    actor EHS1 as EHS Manager/Officer (Day 1)
-    actor SE2 as Site Engineer (Day 2)
-    actor EH2 as Excavation Head (Day 2)
-    actor EHS2 as EHS Manager/Officer (Day 2)
     participant SYS as System Engine
+    actor EHS as EHS Manager/Officer
+    actor SE as Site Engineer
+    actor EH as Excavation Head
 
-    Note over SS,SYS: DAY 1 — Re-trigger Initiation & Overnight Hold
-    SS->>SYS: retriggerDay2(permitId)
-    SYS->>SYS: Status: Pending Re-trigger EHS (Day 1)
-    SYS->>EHS1: Alert: Day 1 overnight hold authorization required
+    Note over SS,EHS: Day 1 Evening — Re-Trigger Initiation
+    SS->>SYS: requestRetrigger() -> Status: Pending Re-trigger EHS (Day 1)
+    EHS->>SYS: approveRetriggerEHS1() -> Status: Held Overnight (Work locked)
 
-    EHS1->>EHS1: Inspect perimeter barricades & night illumination
-    EHS1->>SYS: approveDay1Retrigger()
-    SYS->>SYS: Status: Held Overnight (Day 1 EHS Approval Complete)
-    SYS->>SYS: Permit details & initial clearances retained (no re-entry)
-
-    Note over SS,SYS: DAY 2 — Physical Re-Acknowledgment & Final Clearance
-    SYS->>SE2: Alert (Morning): Day 2 physical trench inspection required
-    SE2->>SE2: Check for night soil movement, water seepage or collapse
-    SE2->>SYS: acknowledgeDay2SiteEngineer()
-    SYS->>SYS: Status: Pending Day 2 Excavation Head Approval
-
-    EH2->>EH2: Review morning safety report
-    EH2->>SYS: approveDay2ExcavationHead()
-    SYS->>SYS: Status: Pending Day 2 Final EHS Revalidation
-
-    EHS2->>EHS2: Final trench entry re-verification
-    EHS2->>SYS: approveDay2EHSFinal()
-    SYS->>SYS: Status: Active (Permit revalidated for Day 2 operations)
-    SYS-->>SS: In-App Alert: Day 2 Work Authorized
+    Note over SE,EHS: Day 2 Morning — Multi-Stage Physical Re-Validation
+    SE->>SYS: ackRetriggerDay2SE() [Inspects trench walls & groundwater]
+    SYS->>SYS: Status: Pending Re-trigger Section Head (Day 2)
+    EH->>SYS: approveRetriggerDay2EH()
+    SYS->>SYS: Status: Pending Re-trigger EHS Final (Day 2)
+    EHS->>SYS: approveRetriggerDay2EHS()
+    SYS->>SYS: Status: Active (Day 2 excavation authorized)
 ```
 
 ---
 
-### 8.10 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
+### 8.11 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
 
-In heavy construction operations, hazardous work permits cannot simply lapse or be abandoned upon shift completion. Uncontrolled cessation introduces severe catastrophic risks: unextinguished embers in hot work zones, unbarricaded excavation trenches overnight, open floor penetrations without edge protection, unsealed confined spaces with residual gas accumulation, or open hoist shafts.
+In heavy construction operations, hazardous work permits cannot simply lapse or be abandoned upon shift completion. Uncontrolled cessation introduces severe catastrophic risks: unextinguished embers in hot work zones, unbarricaded excavation trenches overnight, open floor penetrations without edge protection, unsealed confined spaces with residual gas accumulation, open hoist shafts, or uninspected blast misfires.
 
 The system implements a **mandatory digital closure and statutory surrender gate** (`closeAndSurrenderPermit()`). Under the statutory governance model, **the Site Engineer does NOT have a closure option** — closure and statutory surrender is **strictly and exclusively reserved for the Site Supervisor (Permittee)**. 
 
@@ -1319,7 +1508,7 @@ sequenceDiagram
     SYS->>SYS: Pre-condition Check: No Open Observation (status !== 'Open')
     SYS-->>SS: Render Discipline-Specific Restoration Form
 
-    Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>• PT-01: Trench backfilled OR shoring safely left in place; hard barricades verified<br/>• PT-02: 1-Hour continuous cold watch completed; gas cylinders isolated & stowed<br/>• PT-03: Guardrails 100% re-fixed & bolted; zero open edge exposure<br/>• PT-04: All entrants evacuated & accounted for; gas testing cleared; manholes bolted<br/>• PT-05: Shaft openings sealed; green scaffold tag endorsed; hoist power locked out
+    Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>• PT-01: Trench backfilled OR shoring safely left in place; hard barricades verified<br/>• PT-02: 1-Hour continuous cold watch completed; gas cylinders isolated & stowed<br/>• PT-03: Guardrails 100% re-fixed & bolted; zero open edge exposure<br/>• PT-04: All entrants evacuated & accounted for; gas testing cleared; manholes bolted<br/>• PT-05: Shaft openings sealed; green scaffold tag endorsed; hoist power locked out<br/>• PT-07: Post-blast clearance certified; zero misfires confirmed; excess cartridges returned
 
     Note over SS,SYS: PHASE 2 — On-Site Evidence, Geofence Tagging & Digital Signature
     SS->>SS: Inspect physical work front: housekeeping, scrap clearance, barrier integrity
@@ -1345,10 +1534,11 @@ sequenceDiagram
 | **PT-03 Guard Rail** | `EHS_PTW_003` | 1. All temporary removed edge rails, floor hole covers, or toe boards 100% re-fixed and torqued<br/>2. Physical pull-test completed to verify 100 kg point load structural integrity<br/>3. No open penetration or fall hazard remaining without secondary collective protection | **Mandatory re-fixing verification photo gate** — submission blocked without photographic proof of restored barrier |
 | **PT-04 Confined Space** | `EHS_PTW_004` | 1. Entrant log reconciliation: 100% of workers confirmed exited and accounted for<br/>2. Ventilation blowers and continuous multi-gas monitors safely demobilized<br/>3. Manhole access hatch / cover replaced, bolted, and security tags affixed | Mandatory sealed manhole photo + attendant clearance sign-off |
 | **PT-05 Shaft Work** | `EHS_PTW_005` | 1. Working platform dismantled or green scaffold tag re-inspected and signed<br/>2. Shaft opening floor penetrations securely sheeted and bolted to prevent falling debris<br/>3. Materials, cables, and rigging gear completely removed from vertical void | Mandatory shaft mouth sealing photograph + MEP engineer coordination check |
+| **PT-07 Drilling & Blasting** | `EHS_PTW_007` | 1. Post-Blast site clearance completed: full visual sweep of blast floor conducted<br/>2. Zero misfires or unexploded charges confirmed by licensed Shot Firer<br/>3. All excessive explosive cartridges / lead wires accounted for and returned to licensed magazine<br/>4. Danger zone sentries stood down and warning sirens sounded all-clear | **Mandatory Post-Blast Clearance & Misfire Declaration** (`blastingClearanceConfirmed`) + mandatory restoration photo gate |
 
 ---
 
-### 8.11 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
+### 8.12 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
 
 Every high-risk construction activity commences with the digital creation and formal initiation of a Permit-to-Work by the **Site Supervisor (Permittee)**. In `index.html`, this process is governed by a strict **4-Stage Progressive Wizard** (`WIZ_STEPS = ['General Information', 'Safety Checklist', 'Permit Validity', 'Review & Submit']`) that validates master data, spatial proximity, statutory checklists, operating hours, and DPDP Act 2023 digital consent before allowing submission.
 
@@ -1437,14 +1627,14 @@ sequenceDiagram
 
 | Step | Form Step Name | Mandatory Input Fields | Boundary Conditions & Mathematical Validation | Next Button State |
 |:---:|:---|:---|:---|:---|
-| **1** | **General Information** | Project, Org, Contractor, Location, Discipline Parameters | 1. Project must have `configured === true`<br/>2. Contractor name mandatory if Org is Contractor/Subcontractor<br/>3. Tower mode requires Floor & Unit; Basement mode requires Level & Area<br/>4. Excavation: numeric depth & slope, equipment array, drawing<br/>5. Hot Work: hotwork types array, welder name $\ge 2$ chars, affiliation<br/>6. Confined Space: activity, entrants $\ge 1$, declaration, gas readings<br/>7. Shaft Work: personnel $\ge 1$, scaff-tag verified, declaration<br/>*(Note: GPS is captured only at final submission; Site Photo is captured in Step 2)* | Disabled until all fields valid |
-| **2** | **Safety Checklist** | All checklist items across permit form + Site Photo | 1. Every checklist item must satisfy `checklistItemComplete(item)`<br/>2. If answer is `NO`, comment is mandatory; photo and GPS are NOT required<br/>3. If answer is `N/A`, comment is NOT required<br/>4. **Site Photo option is locked and activated ONLY after all checklist questions are answered**<br/>5. Work-area site photo must be captured to proceed<br/>6. Live progress bar updates $0\text{ to }100\%$ | Disabled until 100% complete and Site Photo captured |
-| **3** | **Permit Validity** | Planned Start Time, Planned End Time | 1. `startTime` must satisfy $08:30 \le t \le 18:30\text{ IST}$ (`START_LATEST_MIN`)<br/>2. `startTime` cannot be in the past ($t \ge \text{now()}$)<br/>3. `validTillTime` must be strictly greater than `startTime`<br/>4. `validTillTime` cannot exceed $19:30\text{ IST}$ (`OFFICE_END_MIN`) | Disabled until valid duration derived |
+| **1** | **General Information** | Project, Org, Contractor, Location, Discipline Parameters | 1. Project must have `configured === true`<br/>2. Contractor name mandatory if Org is Contractor/Subcontractor<br/>3. Tower mode requires Floor & Unit; Basement mode requires Level & Area; Manual mode requires Location & Area<br/>4. Excavation: numeric depth & slope, equipment array, drawing<br/>5. Hot Work: hotwork types array, welder name $\ge 2$ chars, affiliation<br/>6. Confined Space: activity, entrants $\ge 1$, declaration, gas readings<br/>7. Shaft Work: personnel $\ge 1$, scaff-tag verified, declaration<br/>8. Drilling & Blasting: Blasting requires charge $> 0$, diameter $> 0$, depth $> 0$, holes $\ge 1$, explosive type; Drilling requires machine type, diameter $> 0$, depth $> 0$, holes $\ge 1$; Location strictly locked to Manual<br/>*(Note: GPS is captured only at final submission; Site Photo is captured in Step 2)* | Disabled until all fields valid |
+| **2** | **Safety Checklist** | All checklist items across permit form + Site Photo | 1. Every checklist item must satisfy `checklistItemComplete(item)`<br/>2. If answer is `NO`, comment is mandatory; photo and GPS are NOT required<br/>3. If answer is `N/A`, comment is NOT required<br/>4. **Site Photo option is locked and activated ONLY after all checklist questions are answered**<br/>5. Work-area site photo must be captured to proceed<br/>6. PT-07 Blasting requires 4 post-checklist rig parameters (`blastingRigHolesLoaded`, `blastingRigHoleDepthM` in meters, `blastingMufflerLayers`, `blastingSafeDistance` in meters) and Item 15 custom precautions (`dbOtherPrecautions`)<br/>7. Live progress bar updates $0\text{ to }100\%$ | Disabled until 100% complete and Site Photo captured |
+| **3** | **Permit Validity** | Planned Start Time, Planned End Time | 1. `startTime` must satisfy $08:30 \le t \le 18:30\text{ IST}$ (`START_LATEST_MIN`)<br/>2. `startTime` cannot be in the past ($t \ge \text{now()}$)<br/>3. `validTillTime` must be strictly greater than `startTime`<br/>4. `validTillTime` cannot exceed $19:30\text{ IST}$ (`OFFICE_END_MIN`), hard-capped at $18:30\text{ IST}$ for Blasting | Disabled until valid duration derived |
 | **4** | **Review & Submit** | Signer Name, DPDP Consent, Canvas Signature | 1. Signer name string length $\ge 2$<br/>2. DPDP Act statutory consent checkbox checked<br/>3. Canvas signature pad has recorded strokes (`dataUrl` generated)<br/>4. **Final submission prompts GPS modal: device GPS distance $\le \text{radius}$ (`haversine`)** | Disabled until consent & signature captured |
 
 ---
 
-### 8.12 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
+### 8.13 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
 
 The system enforces physical spatial boundaries to prevent off-site fraudulent approvals. Worksite boundaries are managed exclusively by the **Administrator** role through the interactive **Administrative Configuration & Geofence Radar View** (`view-admin-config`).
 
@@ -1517,7 +1707,7 @@ The canvas radar is drawn on `<canvas id="geofenceRadarCanvas" width="300" heigh
 
 ---
 
-### 8.13 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
+### 8.14 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
 
 To ensure an enterprise-grade, deterministic user experience free of unpredictable UI jumps, scroll shaking, or orphaned modals, the application implements a dedicated **7-Layer Deterministic Navigation Architecture** across all screens, forms, dialogs, and workflows.
 
@@ -1857,24 +2047,40 @@ The extension engine enforces four strict validation gates:
 2. Single Active Queue:        !p.extension || p.extension.status !== 'pending'
 3. 18:30 IST Request Cutoff:   Hours < 18  OR  (Hours === 18 AND Minutes <= 30)
 4. 20:30 IST Ceiling Cap:      MaxExtension = min(120, 1230 - (CurrentHours * 60 + CurrentMinutes))
-                               [where 1230 minutes = 20:30 IST]
-5. Safety Observation Lock:    !p.observation || p.observation.status === 'Resolved'
+                               [where 1230 minutes = 20:30 IST] (Drilling & Standard Permits)
+5. 18:30 IST Sunset Hard Stop: MaxExtension = min(120, 1110 - EndMinutes)
+                               [where 1110 minutes = 18:30 IST] (Blasting Operations ONLY)
+6. Safety Observation Lock:    !p.observation || p.observation.status === 'Resolved'
+7. Night Shift Exclusion:      canLinkToNightShift(p) === false (PT-07 strictly barred from Night Shift)
 ```
 
 #### Mathematical Derivation of Validity Extension Cap (`extensionCapMinutes`)
 
-Directly implemented in `index.html` (`lines 5240–5258`):
+Directly implemented in `index.html`:
 
 ```javascript
 function extensionCapMinutes(p) {
+    if (window.__TEST_MODE__ && (!p || (p.type !== 'blasting' && p.ptype !== 'blasting'))) return 180;
     const now = new Date();
     const currMinutes = now.getHours() * 60 + now.getMinutes();
+    
+    // PT-07 Blasting Sunset Hard Stop Rule: Blasting operations strictly prohibited after sunset (18:30 IST)
+    const isBlasting = p && (p.ptype === 'blasting' || p.type === 'blasting') && 
+                       (p.operationCategory === 'blasting' || !p.operationCategory);
+    
+    if (isBlasting) {
+        const sunsetMinutes = 18 * 60 + 30; // 18:30 IST (1110 minutes from midnight)
+        let endMin = currMinutes;
+        if (p.validTill) {
+            const vt = new Date(p.validTill);
+            if (!isNaN(vt.getTime())) endMin = Math.max(endMin, vt.getHours() * 60 + vt.getMinutes());
+        }
+        const remainingToSunset = sunsetMinutes - endMin;
+        return Math.max(0, Math.min(120, remainingToSunset));
+    }
+
     const hardCeilingMinutes = 20 * 60 + 30; // 20:30 IST (1230 minutes from midnight)
-    
-    // Remaining minutes until hard night ceiling
     const remainingToCeiling = hardCeilingMinutes - currMinutes;
-    
-    // Hard cap at 120 minutes (2 hours maximum single extension)
     return Math.max(0, Math.min(120, remainingToCeiling));
 }
 ```
@@ -2226,11 +2432,14 @@ To provide immediate operational focus without information overload, the system 
 | **Tower Incharge** | **Pending My Approval** | `PERMITS.filter(p => roleCanActOnChain(p.approvals, 'hw-section-head')).length` | Permits (PT-02–05) waiting for section head decision |
 | | **Pending Extension Approval** | `PERMITS.filter(p => p.extension && p.extension.stage === 'sectionHead').length` | Overtime requests awaiting review |
 | | **Approved by Me** | `PERMITS.filter(p => p.approvals?.sectionHead?.status === 'approved' && p.ptype !== 'excavation').length` | Historical permits endorsed by Tower Incharge |
+| **Blasting In-charge** | **Pending My Acknowledgment** | `PERMITS.filter(p => p.ptype === 'blasting' && (p.status === 'Pending Blasting In-charge Acknowledgment' || p.status === 'Pending Blasting In-charge Re-Acknowledgment')).length` | Blasting permits waiting for statutory PESO acknowledgment |
+| | **Active Blasting Permits** | `PERMITS.filter(p => p.ptype === 'blasting' && p.status === 'Active').length` | Live blasting/drilling operations under supervision |
+| | **Acknowledged by Me** | `PERMITS.filter(p => p.ptype === 'blasting' && p.signatories?.['blasting-incharge']).length` | Historical blasting permits endorsed |
 | **EHS Manager / Officer** | **Active Permits** | `PERMITS.filter(p => p.status === 'Active').length` | Total active hazardous works under safety audit |
 | | **Pending Endorsement** | `PERMITS.filter(p => roleCanActOnChain(p.approvals, activeRole)).length` | Permits awaiting final safety activation |
 | | **Open Observations** | `PERMITS.filter(p => p.observation && p.observation.status !== 'Resolved').length` | Active safety non-conformances on site |
 | | **Total Closed** | `PERMITS.filter(p => p.status === 'Closed').length` | Archived permits available for statutory PDF |
-| **Administrator** | **Total Permits** | `PERMITS.length` | System-wide permit volume across all 5 modules |
+| **Administrator** | **Total Permits** | `PERMITS.length` | System-wide permit volume across all 6 modules |
 | | **Geofence Configured** | `PROJECTS.filter(p => p.configured).length` | Projects with tagged GPS and active geofences |
 | | **Config Ratio** | `Math.round((PROJECTS.filter(p => p.configured).length / PROJECTS.length) * 100) + '%'` | Geofence governance compliance percentage |
 
@@ -2335,32 +2544,47 @@ The system state is maintained in 4 core global structures synchronized with bro
 // 1. PERMITS Array: Primary Permit Store
 PERMITS = [
     {
-        id: "EXC-2026-000001",
-        ptype: "excavation",            // "excavation" | "hotwork" | "guardrail" | "confined" | "shaft"
+        id: "DB-2026-000001",
+        ptype: "blasting",              // "excavation" | "hotwork" | "guardrail" | "confined" | "shaft" | "blasting"
         project: "Auro Grand Residency",
-        tower: "Tower A",
-        location: "Grid Line A3-A7",
-        floor: "Basement 2 (B2)",
-        contractor: "ABC Construction Ltd",
-        supervisor: "R. K. Patel",
-        workerCount: 8,
-        validFrom: "2026-09-06",
-        validTill: "2026-09-06T18:30",
-        startTime: "08:30",
-        depth: "3.5m",
-        slope: "1:1",
-        soilCondition: "Clay",
-        equipment: ["Excavator", "Compactor"],
-        status: "Active",              // One of the 22 operational states
-        submittedAt: "2026-09-06T08:00:00+05:30",
-        activatedAt: "2026-09-06T09:15:00+05:30",
-        stageEnteredAt: "2026-09-06T09:15:00+05:30",
-        siteEngineerAck: { acknowledged: true, by: "V. S. Rao", at: "...", gps: {...}, sig: "..." },
-        approvals: { kind: "exc", mep: {...}, pm: {...}, it: {...}, sectionHead: {...}, ehsManager: {...}, ehsOfficer: {...} },
-        signatories: { "site-supervisor": {...}, "site-engineer": {...}, "mep": {...}, ... },
+        locationMode: "manual",         // Strictly "manual" for PT-07
+        location: "Open Quarry Pit - Zone North",
+        contractor: "Apex GeoBlasting Ltd",
+        supervisor: "K. R. Verma",
+        workerCount: 6,
+        validFrom: "2026-09-09",
+        validTill: "2026-09-09T18:30",
+        startTime: "10:00",
+        // PT-07 Technical Parameters
+        operationCategory: "blasting",  // "blasting" | "drilling"
+        dbDateTime: "2026-09-09T14:30",
+        dbChargeAmount: 45.5,           // Total charge (kg) > 0
+        dbBlastDiameter: 0.115,         // Blast hole diameter (m) > 0
+        dbBlastDepth: 6.0,              // Blast hole depth (m) > 0
+        dbHolesCount: 24,               // Total holes >= 1
+        dbExplosiveType: "Emulsion Explosives",
+        dbMachineType: "Crawler Drilling Rig", // For drilling
+        dbDrillDiameter: 0.115,         // For drilling
+        dbDrillDepth: 6.0,              // For drilling
+        dbOtherPrecautions: "Seismic monitors calibrated at 150m radius",
+        // Blasting Post-Checklist Parameters
+        blastingRigHolesLoaded: 24,
+        blastingRigHoleDepthM: 6.0,      // Rig hole depth in meters
+        blastingRigHoleDepthFt: 6.0,     // Backward compatibility mirror
+        blastingMufflerLayers: 2,
+        blastingSafeDistance: 2.5,       // Safe distance between rig holes in meters (numeric)
+        blastingStatutoryDecl: true,     // Large high-contrast PESO statutory declaration card
+        blastingInchargePhoto: "data:image/...", // Statutory on-site photo
+        blastingClearanceConfirmed: true, // Post-Blast clearance at closure
+        status: "Active",               // Operational lifecycle state
+        submittedAt: "2026-09-09T08:00:00+05:30",
+        activatedAt: "2026-09-09T09:30:00+05:30",
+        stageEnteredAt: "2026-09-09T09:30:00+05:30",
+        approvals: { kind: "blasting", ehsManager: {...}, ehsOfficer: {...} },
+        signatories: { "site-supervisor": {...}, "blasting-incharge": {...}, "site-engineer": {...}, "ehs-manager": {...} },
         checklist: [ { ans: "yes", comment: "", photo: null, gps: null }, ... ],
-        observation: { id: "OBS-...", status: "Open", ... },
-        extension: { id: "EXT-...", status: "pending", ... },
+        observation: null,
+        extension: null,
         activityLog: [ { at: "...", text: "...", by: "..." }, ... ]
     }
 ];
@@ -2513,12 +2737,12 @@ The application's visual architecture is powered by a comprehensive, design-toke
 
 ## 23. Testing & Quality Assurance
 
-The system is validated by an autonomous, zero-dependency Node.js test suite comprising **281+ automated test assertions with a 100% pass rate across 4 specialized test suites**.
+The system is validated by an autonomous, zero-dependency Node.js test suite comprising **341+ automated test assertions with a 100% pass rate across 7 specialized test suites**.
 
 ### 23.1 Test Suite Execution
 
 ```bash
-# Execute master test suite (runs all 4 suites sequentially)
+# Execute master test suite (runs all 7 suites sequentially)
 npm test
 # OR
 node tests/run_all_tests.js
@@ -2528,11 +2752,14 @@ node tests/run_all_tests.js
 
 ```
 tests/
-├── run_all_tests.js                     # Master Runner: orchestrates all 4 test suites sequentially
+├── run_all_tests.js                     # Master Runner: orchestrates all 7 test suites sequentially
 ├── run_full_test_suite.js               # Suite 1: Base Lifecycle, Core Approvals & Parallel Gates (185 tests)
 ├── run_extended_audit_tests.js          # Suite 2: Extended Audit, Notifications, Escalation & Filters (77 tests)
 ├── test_tracker_labels.js               # Suite 3: UI & PDF Section Head Dynamic Label Resolution Tests
-└── test_navigation_application_wide.js  # Suite 4: Application-Wide Deterministic Navigation & Consistency (19 tests)
+├── test_navigation_application_wide.js  # Suite 4: Application-Wide Deterministic Navigation & Consistency (19 tests)
+├── test_responsive_viewports.js         # Suite 5: Responsive Design & Cross-Device Ergonomics (15 tests)
+├── test_location_selection_mode.js      # Suite 6: Location Selection Mode & Safety Restriction Matrix (10 tests)
+└── test_pt07_drilling_blasting.js       # Suite 7: PT-07 Drilling & Blasting Specification & Compliance (35+ tests)
 ```
 
 #### Suite 1: Base Lifecycle & Core Engines (185 Assertions)
@@ -2593,6 +2820,20 @@ tests/
 - **Manual Mode Field Validation & Formatting**: Tests mandatory validation of `locManual` and `locManualArea` and verified string formatting.
 - **Normalization & Detail View Integrity**: Verifies schema normalization `{ mode: 'manual', manualLocation, manualArea }` and scope summary box rendering.
 
+#### Suite 7: PT-07 Drilling & Blasting Specification & Compliance (test_pt07_drilling_blasting.js - 35+ Assertions)
+- **Metadata & Constants Integrity**: Asserts `PT-07`, `Form EHS_PTW_007`, `DB` prefix, 15-item checklist, 9 explosive types, 8 drilling machines, and `blasting-incharge` role registration.
+- **Strict Manual Location Locking**: Asserts `getAllowedLocationModes('blasting')` returns strictly `['Manual']`; tests rejection of Tower and Basement/Podium mode switches with descriptive safety tooltips.
+- **Role Scope Isolation**: Proves `roleTypeScope('blasting-incharge')` is strictly restricted to `['blasting']`.
+- **Operation Category Mutually Exclusive Validation**: Validates complete Blasting specifications (`dbDateTime`, `dbChargeAmount`, `dbBlastDiameter`, `dbBlastDepth`, `dbHolesCount`, `dbExplosiveType`) vs Drilling specifications (`dbDateTime`, `dbDrillDiameter`, `dbDrillDepth`, `dbHolesCount`, `dbMachineType`).
+- **15-Item Checklist & Post-Checklist Rig Parameters**: Asserts Item 8 is cleanly worded without parenthetical instruction, auto-displays live site weather telemetry, and requires explicit user review and selection of `YES` (not pre-selected); asserts that Step 2 requires all 4 post-checklist rig fields (`blastingRigHolesLoaded`, `blastingRigHoleDepthM` in meters, `blastingMufflerLayers`, `blastingSafeDistance` as a positive number in meters) and Item 15 custom precautions (`dbOtherPrecautions`) for Blasting, while cleanly suppressing rig/muffler fields for Drilling.
+- **Blasting In-charge Statutory Gate**: Validates that Blasting submission routes to `Pending Blasting In-charge Acknowledgment`; proves acknowledgment requires mandatory statutory PESO compliance declaration via an enlarged, tactile high-contrast declaration card (`#chkBlastingStatutoryDecl`) and mandatory on-site photo.
+- **Direct Routing to EHS**: Validates that Site Engineer acknowledgment on PT-07 routes directly to `Pending EHS Approval` (skipping parallel gate and Section Head).
+- **Drilling Submission Direct Routing**: Proves Drilling operation bypasses Blasting In-charge and routes directly to Site Engineer.
+- **Sunset Hard Stop Enforcement**: Validates that `extensionCapMinutes` for Blasting is hard-capped at 18:30 IST (zero extension runway at or after 18:30), while Drilling permits extension up to 20:30 IST.
+- **Rejection & Statutory Re-Acknowledgment Flow**: Tests rejection by Blasting In-charge, returns to Site Supervisor for correction, and asserts resubmission routes to `Pending Blasting In-charge Re-Acknowledgment` then `Pending Site Engineer Re-Acknowledgment`.
+- **Observation Blocking & Post-Blast Clearance**: Verifies that open observation blocks extension and surrender; validates that closing a Blasting permit requires certified Post-Blast Clearance & Misfire Declaration (`blastingClearanceConfirmed`).
+- **Night Shift Linkage Exclusion & PDF Generation**: Proves `canLinkToNightShift('blasting') === false`; asserts clean execution of `generatePermitPDF()` for both Blasting and Drilling permits.
+
 ### 23.3 Automated Test Execution Results
 
 ```
@@ -2618,9 +2859,12 @@ MASTER TEST SUITE EXECUTION SUMMARY
 >>> SUITE 6: LOCATION SELECTION MODE & SAFETY RESTRICTION MATRIX (test_location_selection_mode.js)
   All 10 static tokens, dynamic restrictions, matrix validations & UI rendering tests passed cleanly
 
+>>> SUITE 7: PT-07 DRILLING & BLASTING SPECIFICATION & COMPLIANCE (test_pt07_drilling_blasting.js)
+  All 12 scenario groups, statutory PESO gates, sunset hard stop & clearance declarations passed cleanly
+
 ================================================================
-GRAND TOTAL: 306+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
-Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully Responsive · Production Ready
+GRAND TOTAL: 341+ TESTS & ASSERTIONS PASSED (100% SUCCESS RATE)
+Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully Responsive · PT-07 Statutory Compliance · Production Ready
 ================================================================
 ```
 
@@ -2632,10 +2876,15 @@ Zero Regressions · Deterministic Navigation · Location Safety Matrix · Fully 
 |:---|:---|
 | **PTW** | **Permit-to-Work**: A formal, document-controlled safety authorization required before commencing hazardous high-risk operations. |
 | **EHS** | **Environment, Health and Safety**: The corporate and operational authority governing occupational safety and statutory compliance. |
+| **PESO** | **Petroleum and Explosives Safety Organization**: India's statutory nodal regulatory agency administering the Indian Explosives Act, 1884, and governing high explosives storage, transit, and shot-firing licensing. |
+| **Sunset Stop Rule** | Mandatory occupational safety restriction capping energetic rock blasting operations strictly before 18:30 IST to prevent nighttime flyrock, unobserved misfires, and delayed detonations. |
+| **Shot Firer** | A certified, competent person holding a statutory blaster's certificate qualified to charge, stem, prime, and initiate explosive rounds. |
+| **Misfire Declaration** | Formal statutory confirmation by the Shot Firer post-detonation certifying that 100% of explosive charges have detonated cleanly with zero unexploded ordnance. |
+| **Flyrock Mufflers** | Heavy-duty interlocking vulcanized rubber mats or double-layered wire mesh placed directly over blast holes to absorb kinetic fragmentation and contain flyrock. |
 | **LEL** | **Lower Explosive Limit**: The minimum concentration of combustible vapor in air below which flame propagation cannot occur (safe limit: $<10%$). |
 | **PPM** | **Parts Per Million**: Measurement unit for toxic atmospheric gases (Carbon Monoxide, Hydrogen Sulphide). |
 | **RBAC** | **Role-Based Access Control**: Security mechanism restricting application operations to authorized functional roles. |
-| **IST** | **Indian Standard Time**: Coordinated time zone ($	ext{UTC}+05:30$) governing all project operations and timestamping. |
+| **IST** | **Indian Standard Time**: Coordinated time zone ($\text{UTC}+05:30$) governing all project operations and timestamping. |
 | **DPDP Act 2023** | **Digital Personal Data Protection Act, 2023 (India)**: National statutory standard governing personal data minimization and digital consent. |
 | **Haversine Formula** | Mathematical formula calculating great-circle distance between two coordinate pairs on a spherical Earth model. |
 | **Geofencing** | Virtual geographical perimeter enforced via device GPS to prevent fraudulent off-site approvals. |
@@ -2658,7 +2907,7 @@ Developed and engineered by:
 
 **ARPL EHS Permit-to-Work Management System** · Enterprise Build · September 2026
 
-PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work
+PT-01 Excavation · PT-02 Hot Work · PT-03 Guard Rail · PT-04 Confined Space · PT-05 Shaft Work · PT-07 Drilling & Blasting
 
 *Built for safety. Engineered for accountability.*
 

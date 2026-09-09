@@ -69,6 +69,16 @@ try {
     process.exit(1);
 }
 
+const script7 = path.join(__dirname, 'test_pt07_drilling_blasting.js');
+
+try {
+    console.log('\n>>> RUNNING TEST SUITE 7: PT-07 DRILLING & BLASTING SPECIFICATION & COMPLIANCE');
+    const out7 = execSync(`node "${script7}"`, { encoding: 'utf8', stdio: 'inherit' });
+} catch (e) {
+    console.error('FAILED IN SUITE 7');
+    process.exit(1);
+}
+
 console.log('\n================================================================');
-console.log('MASTER TEST SUITE SUMMARY: ALL 6 SUITES PASSED CLEANLY (100% PASS RATE)');
+console.log('MASTER TEST SUITE SUMMARY: ALL 7 SUITES PASSED CLEANLY (100% PASS RATE)');
 console.log('================================================================');

@@ -150,12 +150,13 @@ function runSuite(suiteName, fn) {
 // SUITE 1: Roles, RBAC & Signatory Isolation
 // ------------------------------------------------------------------
 runSuite('Roles, RBAC & Signatory Isolation', () => {
-    assert(app.ROLES.length === 10, 'ROLES list contains exactly 10 active functional roles', `Found ${app.ROLES.length}`);
+    assert(app.ROLES.length === 11, 'ROLES list contains exactly 11 active functional roles', `Found ${app.ROLES.length}`);
     
     const roleKeys = app.ROLES.map(r => r.key);
     assert(!roleKeys.includes('section-head'), 'Legacy "section-head" key is not exposed in ROLES list');
     assert(roleKeys.includes('hw-section-head'), 'Tower Incharge key "hw-section-head" is present in ROLES');
     assert(roleKeys.includes('excavation-head'), 'Excavation Head key "excavation-head" is present in ROLES');
+    assert(roleKeys.includes('blasting-incharge'), 'Blasting In-charge key "blasting-incharge" is present in ROLES');
 
     const tiRole = app.roleInfo('hw-section-head');
     assert(tiRole && tiRole.label === 'Tower Incharge', 'hw-section-head label is strictly "Tower Incharge"');
