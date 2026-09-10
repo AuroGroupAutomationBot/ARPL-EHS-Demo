@@ -1,94 +1,48 @@
 /**
  * Master Test Runner for ARPL EHS Permit-to-Work System
- * Runs Base Lifecycle Test Suite + Extended Audit Test Suite
+ * Runs all System Architecture suites + all 7 Dedicated Permit Work Type suites (PT-01 to PT-07)
  */
 
 const { execSync } = require('child_process');
 const path = require('path');
 
-const script1 = path.join(__dirname, 'run_full_test_suite.js');
-const script2 = path.join(__dirname, 'run_extended_audit_tests.js');
+const suites = [
+    { num: 1, name: 'BASE LIFECYCLE & ENGINE TESTS', file: 'run_full_test_suite.js' },
+    { num: 2, name: 'EXTENDED AUDIT TESTS (NOTIFS, ESCALATION, PDF, KPIS, FILTERS)', file: 'run_extended_audit_tests.js' },
+    { num: 3, name: 'UI & PDF SECTION HEAD LABEL RESOLUTION TESTS', file: 'test_tracker_labels.js' },
+    { num: 4, name: 'APPLICATION-WIDE NAVIGATION & CONSISTENCY TESTS', file: 'test_navigation_application_wide.js' },
+    { num: 5, name: 'RESPONSIVE DESIGN & CROSS-DEVICE ERGONOMICS', file: 'test_responsive_viewports.js' },
+    { num: 6, name: 'LOCATION SELECTION MODE & SAFETY RESTRICTION MATRIX', file: 'test_location_selection_mode.js' },
+    { num: 7, name: 'UNIVERSAL INITIATOR ARCHITECTURE & FORM ACTIVATION COMPLIANCE', file: 'test_initiator_pages_and_form_activation.js' },
+    { num: 8, name: 'PERMIT REGISTER COMMON HEADING, ACTORS & APPROVAL-FLOW VISIBILITY', file: 'test_register_actors_and_visibility.js' },
+    { num: 9, name: 'PT-01 EXCAVATION WORK (FORM EHS_PTW_001) SPECIFICATION & COMPLIANCE', file: 'test_pt01_excavation.js' },
+    { num: 10, name: 'PT-02 HOT WORK (FORM EHS_PTW_002) SPECIFICATION & COMPLIANCE', file: 'test_pt02_hot_work.js' },
+    { num: 11, name: 'PT-03 GUARD RAIL (FORM EHS_PTW_003) SPECIFICATION & COMPLIANCE', file: 'test_pt03_guard_rail.js' },
+    { num: 12, name: 'PT-04 CONFINED SPACE ENTRY (FORM EHS_PTW_004) SPECIFICATION & COMPLIANCE', file: 'test_pt04_confined_space.js' },
+    { num: 13, name: 'PT-05 SHAFT WORK (FORM EHS_PTW_005) SPECIFICATION & COMPLIANCE', file: 'test_pt05_shaft_work.js' },
+    { num: 14, name: 'PT-06 ELECTRICAL WORK (FORM EHS_PTW_006) SPECIFICATION & COMPLIANCE', file: 'test_pt06_electrical_work.js' },
+    { num: 15, name: 'PT-07 DRILLING & BLASTING (FORM EHS_PTW_007) SPECIFICATION & COMPLIANCE', file: 'test_pt07_drilling_blasting.js' }
+];
 
 console.log('================================================================');
-console.log('STARTING MASTER TEST SUITE EXECUTION');
+console.log('STARTING MASTER TEST SUITE EXECUTION (ALL 15 SUITES)');
 console.log('================================================================');
 
-try {
-    console.log('\n>>> RUNNING TEST SUITE 1: BASE LIFECYCLE & ENGINE TESTS');
-    const out1 = execSync(`node "${script1}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 1');
-    process.exit(1);
-}
+let passedCount = 0;
 
-try {
-    console.log('\n>>> RUNNING TEST SUITE 2: EXTENDED AUDIT TESTS (NOTIFS, ESCALATION, PDF, KPIS, FILTERS)');
-    const out2 = execSync(`node "${script2}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 2');
-    process.exit(1);
-}
-
-const script3 = path.join(__dirname, 'test_tracker_labels.js');
-
-try {
-    console.log('\n>>> RUNNING TEST SUITE 3: UI & PDF SECTION HEAD LABEL RESOLUTION TESTS');
-    const out3 = execSync(`node "${script3}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 3');
-    process.exit(1);
-}
-
-const script4 = path.join(__dirname, 'test_navigation_application_wide.js');
-
-try {
-    console.log('\n>>> RUNNING TEST SUITE 4: APPLICATION-WIDE NAVIGATION & CONSISTENCY TESTS');
-    const out4 = execSync(`node "${script4}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 4');
-    process.exit(1);
-}
-
-const script5 = path.join(__dirname, 'test_responsive_viewports.js');
-
-try {
-    console.log('\n>>> RUNNING TEST SUITE 5: RESPONSIVE DESIGN & CROSS-DEVICE ERGONOMICS');
-    const out5 = execSync(`node "${script5}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 5');
-    process.exit(1);
-}
-
-const script6 = path.join(__dirname, 'test_location_selection_mode.js');
-
-try {
-    console.log('\n>>> RUNNING TEST SUITE 6: LOCATION SELECTION MODE & SAFETY RESTRICTION MATRIX');
-    const out6 = execSync(`node "${script6}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 6');
-    process.exit(1);
-}
-
-const script7 = path.join(__dirname, 'test_pt07_drilling_blasting.js');
-
-try {
-    console.log('\n>>> RUNNING TEST SUITE 7: PT-07 DRILLING & BLASTING SPECIFICATION & COMPLIANCE');
-    const out7 = execSync(`node "${script7}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 7');
-    process.exit(1);
-}
-
-const script8 = path.join(__dirname, 'test_pt06_electrical_work.js');
-
-try {
-    console.log('\n>>> RUNNING TEST SUITE 8: PT-06 ELECTRICAL WORK (HT / LT) SPECIFICATION & COMPLIANCE');
-    const out8 = execSync(`node "${script8}"`, { encoding: 'utf8', stdio: 'inherit' });
-} catch (e) {
-    console.error('FAILED IN SUITE 8');
-    process.exit(1);
+for (const suite of suites) {
+    const scriptPath = path.join(__dirname, suite.file);
+    try {
+        console.log(`\n>>> RUNNING TEST SUITE ${suite.num}: ${suite.name}`);
+        execSync(`node "${scriptPath}"`, { encoding: 'utf8', stdio: 'inherit' });
+        passedCount++;
+    } catch (e) {
+        console.error(`\n❌ FAILED IN SUITE ${suite.num}: ${suite.name}`);
+        process.exit(1);
+    }
 }
 
 console.log('\n================================================================');
-console.log('MASTER TEST SUITE SUMMARY: ALL 8 SUITES PASSED CLEANLY (100% PASS RATE)');
+console.log(`MASTER TEST SUITE SUMMARY: ALL ${passedCount} / ${suites.length} SUITES PASSED CLEANLY (100% PASS RATE)`);
+console.log('ALL 7 PERMIT WORK TYPES (PT-01 TO PT-07) FULLY VALIDATED');
 console.log('================================================================');

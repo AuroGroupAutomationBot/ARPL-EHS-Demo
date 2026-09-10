@@ -36,6 +36,11 @@ assert(src.includes('id="chkMepPmStatutoryDecl"'), "MEP / P&M domain statutory d
 assert(src.includes('id="surrElectricalClosureChk"'), "Surrender Electrical de-isolation declaration checkbox must exist");
 console.log('  ✓ PASS: All statutory declaration cards and checkboxes verified in source');
 
+// Check Scope-Dependent Project Selection tokens
+assert(src.includes('isProjectSelectionAvailable'), "isProjectSelectionAvailable helper must exist in index.html");
+assert(src.includes('Only Available for Site Scope'), "UI lock badge for Batching Plant scope must exist");
+console.log('  ✓ PASS: Scope-dependent project selection static tokens verified');
+
 // --- 2. Runtime Evaluation in VM Sandbox ---
 console.log('\n--- 2. Runtime Setup & VM Sandbox Initialization ---');
 
@@ -222,6 +227,40 @@ evalInVM("onUniversalLocationStructureChange('Basement/Podium');");
 assert.strictEqual(evalInVM("draft.locationStructure"), 'Basement/Podium', "Switching to Basement/Podium must succeed for site scope");
 console.log('  ✓ PASS: Legal location mode switch succeeds for site scope');
 
+// --- 3.1 Scope-Dependent Project Selection Rules ---
+console.log('\n--- 3.1 Scope-Dependent Project Selection Rules ---');
+
+// isProjectSelectionAvailable unit checks
+assert.strictEqual(evalInVM("isProjectSelectionAvailable({ ptype: 'electrical', facilityScope: 'site' })"), true, "Project selection must be available for Site scope");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable({ ptype: 'electrical', electricalSiteType: 'site' })"), true, "Project selection must be available for Site scope (electricalSiteType)");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable({ ptype: 'electrical', facilityScope: 'batching_plant' })"), false, "Project selection must NOT be available for Batching Plant scope");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable({ ptype: 'electrical', electricalSiteType: 'batching_plant' })"), false, "Project selection must NOT be available for Batching Plant scope (electricalSiteType)");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable({ ptype: 'excavation' })"), true, "Project selection must be available for excavation");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable({ ptype: 'blasting' })"), true, "Project selection must be available for blasting");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable('site')"), true, "String 'site' returns true");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable('batching_plant')"), false, "String 'batching_plant' returns false");
+console.log('  ✓ PASS: isProjectSelectionAvailable strictly isolates project selection to Site scope');
+
+// Dynamic scope switching & draft state
+evalInVM("startNewPermit('electrical');");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable(draft)"), true, "Default electrical draft has site scope and available project selection");
+
+// Switching to batching_plant clears project and makes project selection unavailable
+evalInVM("draft.project = PROJECTS[0].name;");
+evalInVM("onElectricalSiteTypeChange('batching_plant');");
+assert.strictEqual(evalInVM("draft.electricalSiteType"), 'batching_plant', "electricalSiteType updated to batching_plant");
+assert.strictEqual(evalInVM("draft.facilityScope"), 'batching_plant', "facilityScope updated to batching_plant");
+assert.strictEqual(evalInVM("draft.project"), '', "draft.project cleared when switching to batching_plant");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable(draft)"), false, "Project selection unavailable for batching_plant draft");
+console.log('  ✓ PASS: onElectricalSiteTypeChange to batching_plant clears project and disables project selection');
+
+// Switching back to site restores project selection availability
+evalInVM("onElectricalSiteTypeChange('site');");
+assert.strictEqual(evalInVM("draft.electricalSiteType"), 'site', "electricalSiteType updated to site");
+assert.strictEqual(evalInVM("draft.facilityScope"), 'site', "facilityScope updated to site");
+assert.strictEqual(evalInVM("isProjectSelectionAvailable(draft)"), true, "Project selection available again for site draft");
+console.log('  ✓ PASS: onElectricalSiteTypeChange to site restores project selection availability');
+
 // --- 4. Permittee Electrician & Step 1 Parameter Validation ---
 console.log('\n--- 4. Permittee Electrician & Step 1 Validation ---');
 
@@ -268,6 +307,22 @@ evalInVM("draft.electricalStatutoryDecl = true; draft.elecStatutoryDecl = true;"
 assert.strictEqual(evalInVM("validateWizStep(1)"), true, "Step 1 must pass when all electrical fields are valid");
 console.log('  ✓ PASS: Step 1 strictly validates shutdownWhy, apparatus, shutdown hours, LOTO register/time, safe to work, and statutory declaration');
 
+// 10. Scope-dependent project validation:
+// For batching plant, empty project still passes
+evalInVM("draft.facilityScope = 'batching_plant'; draft.electricalSiteType = 'batching_plant'; draft.locationStructure = 'Manual'; draft.project = '';");
+assert.strictEqual(evalInVM("validateWizStep(1)"), true, "Step 1 must pass for batching_plant even when draft.project is empty");
+console.log('  ✓ PASS: Step 1 passes for Batching Plant without project selection');
+
+// For site scope, empty project must fail and configured project must pass
+evalInVM("draft.facilityScope = 'site'; draft.electricalSiteType = 'site'; draft.locationStructure = 'Tower'; draft.tower = 'Block 1'; draft.locFloor = 'Floor 1'; draft.locUnit = 'Unit 101'; draft.project = '';");
+assert.strictEqual(evalInVM("validateWizStep(1)"), false, "Step 1 must fail for Site electrical permit when project is empty");
+evalInVM("draft.project = PROJECTS[0].name;");
+assert.strictEqual(evalInVM("validateWizStep(1)"), true, "Step 1 must pass for Site electrical permit when configured project is selected");
+console.log('  ✓ PASS: Step 1 requires configured project when electrical scope is Site');
+
+// Restore batching plant scope on draft for Section 5 submission
+evalInVM("draft.facilityScope = 'batching_plant'; draft.electricalSiteType = 'batching_plant'; draft.locationStructure = 'Manual'; draft.locManual = 'Main Batching Plant Yard'; draft.locManualArea = 'MCC Feeder Panel 01';");
+
 // Step 2 checklist validation (all 14 items)
 const chkItems = evalInVM("ELECTRICAL_CHECKLIST_ITEMS");
 assert.strictEqual(chkItems.length, 14, "Electrical checklist must have exactly 14 items");
@@ -298,7 +353,9 @@ const bpPermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert.strictEqual(bpPermit.ptype, 'electrical', "Permit ptype must be electrical");
 assert.strictEqual(bpPermit.facilityScope, 'batching_plant', "Permit facilityScope must be batching_plant");
 assert.strictEqual(bpPermit.status, 'Pending P&M Acknowledgment', "Batching Plant permit must route to Pending P&M Acknowledgment");
+assert.strictEqual(bpPermit.shutdownRequester, 'Duty Electrician K. Sharma', "Person taking shutdown must be automatically picked from the digital signatory name");
 console.log('  ✓ PASS: Batching Plant permit submitted directly to Pending P&M Acknowledgment');
+console.log('  ✓ PASS: Person taking shutdown is automatically picked from digital signature');
 
 // Stage 2: P&M Acknowledgment with statutory declaration
 // Non-PM role cannot act
@@ -514,6 +571,7 @@ console.log('\n--- 11. Detail View Rendering Verification ---');
 evalInVM("viewDetail(PERMITS.find(p => p.id === '" + bpPermitActive.id + "').id);");
 const detailElem = getOrCreateElem('view-detail');
 assert(detailElem.innerHTML.includes('Batching Plant'), "Detail view must display Batching Plant facility scope");
+assert(detailElem.innerHTML.includes('Person Taking Shutdown'), "Detail view must display Person Taking Shutdown");
 assert(detailElem.innerHTML.includes('Reason for Shutdown'), "Detail view must display Reason for Shutdown");
 assert(detailElem.innerHTML.includes('Apparatus to be Worked On'), "Detail view must display Apparatus to be Worked On");
 assert(detailElem.innerHTML.includes('Lockout / Tagout (LOTO)'), "Detail view must display LOTO register and placed time");
@@ -523,6 +581,109 @@ console.log('  ✓ PASS: viewDetail correctly renders all PT-06 specific fields 
 evalInVM("viewDetail(PERMITS.find(p => p.id === '" + surrenderedP.id + "').id);");
 assert(detailElem.innerHTML.includes('Electrical De-Isolation'), "Detail view of surrendered permit must display Electrical De-Isolation check");
 console.log('  ✓ PASS: viewDetail renders Electrical De-Isolation confirmation in Surrender section');
+
+// --- 12. Quality Engineer Dashboard Verification ---
+console.log('\n--- 12. Quality Engineer Dashboard Verification ---');
+
+evalInVM("currentUser = { key: 'quality-engineer', name: 'Lead Quality Inspector', role: 'Quality Engineer' };");
+evalInVM("buildDashboard();");
+const qeDashElem = getOrCreateElem('view-dashboard');
+assert(qeDashElem.innerHTML.includes('Welcome, Lead'), "Dashboard must display greeting for Quality Engineer");
+assert(qeDashElem.innerHTML.includes('Pending My Approval'), "Dashboard must include Pending My Approval KPI card");
+assert(qeDashElem.innerHTML.includes('Pending Extension Approval'), "Dashboard must include Pending Extension Approval KPI card");
+assert(qeDashElem.innerHTML.includes('Active Permits'), "Dashboard must include Active Permits KPI card");
+assert(qeDashElem.innerHTML.includes('Approved by Me'), "Dashboard must include Approved by Me KPI card");
+assert(qeDashElem.innerHTML.includes('Batching Plant Quality Clearance'), "Dashboard must show Batching Plant Quality Clearance scope label");
+assert(qeDashElem.innerHTML.includes('Awaiting Your Approval'), "Dashboard must include Awaiting Your Approval feed");
+assert(qeDashElem.innerHTML.includes('Recently Active on Site'), "Dashboard must include Recently Active on Site feed");
+console.log('  ✓ PASS: Quality Engineer dashboard renders 4 KPI cards, scope label, and approval feeds identically to approvers');
+
+// --- 13. Batching Plant Electrical Extension Lifecycle & Re-Ack Flow ---
+console.log('\n--- 13. Batching Plant Electrical Extension Lifecycle & Re-Ack Flow ---');
+
+// 13.1 Electrician Requests Extension
+evalInVM("currentUser = { key: 'electrician', name: 'Duty Electrician K. Sharma', role: 'Permittee Electrician' };");
+evalInVM("requestExtension(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 30, 'High-voltage insulation diagnostics need extra time');");
+const bpExt1 = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+assert(bpExt1, "Permit must have an active extension object");
+assert.strictEqual(bpExt1.status, 'Pending P&M Acknowledgment', "Batching Plant extension must route to Pending P&M Acknowledgment");
+assert.strictEqual(bpExt1.approvals.kind, 'ext-batching-elec', "Extension approvals kind must be ext-batching-elec");
+assert(evalInVM("pendingExtensionsForRole('pm')").some(p => p.id === bpPermitActive.id), "P&M pending extensions must include Batching Plant permit");
+assert(!evalInVM("pendingExtensionsForRole('quality-engineer')").some(p => p.id === bpPermitActive.id), "Quality Engineer pending extensions must not include permit at Step 2");
+console.log('  ✓ PASS: Step 1: Electrician extension request routes to Pending P&M Acknowledgment');
+
+// 13.2 Step 2: P&M Engineer Acknowledgment
+evalInVM("currentUser = { key: 'pm', name: 'P&M Plant Incharge', role: 'P&M Engineer' };");
+evalInVM("approveExtensionStage(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 'pm', { lat: 12.971, lng: 77.594 }, 'P&M Step 2 acknowledged for Batching Plant extension', makeSimSignature('P&M Plant Incharge'));");
+const bpExtAfterPm = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+assert.strictEqual(bpExtAfterPm.status, 'Pending Quality Engineer Approval', "P&M Acknowledgment must advance to Pending Quality Engineer Approval");
+assert.strictEqual(bpExtAfterPm.approvals.pm.status, 'approved', "P&M extension approval status must be approved");
+assert(evalInVM("pendingExtensionsForRole('quality-engineer')").some(p => p.id === bpPermitActive.id), "Quality Engineer pending extensions must now include Batching Plant permit");
+console.log('  ✓ PASS: Step 2: P&M Engineer acknowledgment advances extension to Pending Quality Engineer Approval');
+
+// 13.3 Step 3: Quality Engineer (Section Head) Review & Approval
+evalInVM("currentUser = { key: 'quality-engineer', name: 'Lead Quality Inspector', role: 'Quality Engineer' };");
+evalInVM("approveExtensionStage(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 'quality-engineer', { lat: 12.971, lng: 77.594 }, 'Quality Engineer approved extension after checking insulation tests', makeSimSignature('Lead Quality Inspector'));");
+const bpExtAfterQe = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+assert.strictEqual(bpExtAfterQe.status, 'Pending EHS Approval', "Quality Engineer approval must advance extension to Pending EHS Approval");
+assert.strictEqual(bpExtAfterQe.approvals.qualityEngineer.status, 'approved', "Quality Engineer extension approval status must be approved");
+assert(evalInVM("pendingExtensionsForRole('ehs-manager')").some(p => p.id === bpPermitActive.id), "EHS Manager pending extensions must include permit");
+console.log('  ✓ PASS: Step 3: Quality Engineer (Section Head) approval advances extension to Pending EHS Approval');
+
+// 13.4 Step 4: EHS Endorsement & Validity Extension
+const oldExpiryMs = new Date(evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').validTill")).getTime();
+evalInVM("currentUser = { key: 'ehs-manager', name: 'Safety Head', role: 'EHS Manager' };");
+evalInVM("approveExtensionStage(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 'ehs-manager', { lat: 12.971, lng: 77.594 }, 'EHS final endorsement approved', makeSimSignature('Safety Head'));");
+const bpExtAfterEhs = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+const newExpiryMs = new Date(evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').validTill")).getTime();
+assert.strictEqual(bpExtAfterEhs.status, 'Approved', "EHS endorsement must set extension status to Approved");
+assert.strictEqual(bpExtAfterEhs.approvals.ehsManager.status, 'approved', "EHS extension approval status must be approved");
+assert.strictEqual(newExpiryMs - oldExpiryMs, 30 * 60 * 1000, "Permit validTill must be extended by exactly 30 minutes");
+console.log('  ✓ PASS: Step 4: EHS endorsement extends validity by 30 minutes');
+
+// 13.5 Rejection & Re-Acknowledgment Flow
+evalInVM("currentUser = { key: 'electrician', name: 'Duty Electrician K. Sharma', role: 'Permittee Electrician' };");
+evalInVM("requestExtension(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 20, 'Post-calibration thermal imaging review');");
+
+// P&M acknowledges Step 2
+evalInVM("currentUser = { key: 'pm', name: 'P&M Plant Incharge', role: 'P&M Engineer' };");
+evalInVM("approveExtensionStage(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 'pm', { lat: 12.971, lng: 77.594 }, 'P&M Step 2 acknowledged', makeSimSignature('P&M Plant Incharge'));");
+
+// Quality Engineer rejects
+evalInVM("currentUser = { key: 'quality-engineer', name: 'Lead Quality Inspector', role: 'Quality Engineer' };");
+evalInVM("rejectExtensionStage(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 'quality-engineer', { lat: 12.971, lng: 77.594 }, 'Thermal camera calibration certificate missing', makeSimSignature('Lead Quality Inspector'));");
+const bpExtRej = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+assert.strictEqual(bpExtRej.status, 'Returned for Correction', "Rejection must return extension to Returned for Correction");
+assert.strictEqual(bpExtRej.rejectionOrigin.roleKey, 'quality-engineer', "Rejection origin roleKey must be quality-engineer");
+assert.strictEqual(bpExtRej.approvals.qualityEngineer.status, 'rejected', "Quality Engineer approval status must be rejected");
+console.log('  ✓ PASS: Quality Engineer rejection sets status to Returned for Correction with rejection origin');
+
+// Electrician revises extension
+evalInVM("currentUser = { key: 'electrician', name: 'Duty Electrician K. Sharma', role: 'Permittee Electrician' };");
+evalInVM("resubmitExtensionSupervisor(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), { reason: 'Calibration certificate attached and re-verified', minutes: 20, gps: { lat: 12.971, lng: 77.594, within: true }, photo: 'demo', sig: makeSimSignature('Duty Electrician K. Sharma'), signerName: 'Duty Electrician K. Sharma' });");
+const bpExtRevised = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+assert.strictEqual(bpExtRevised.status, 'Pending P&M Acknowledgment', "Revised Batching Plant extension must route back to Pending P&M Acknowledgment");
+assert.strictEqual(bpExtRevised.isReAck, true, "isReAck flag must be true");
+console.log('  ✓ PASS: Permittee Electrician revision routes back to P&M Engineer for Step 2 re-acknowledgment');
+
+// P&M re-acknowledges: returns directly forward to Quality Engineer
+evalInVM("currentUser = { key: 'pm', name: 'P&M Plant Incharge', role: 'P&M Engineer' };");
+evalInVM("approveExtensionStage(PERMITS.find(p => p.id === '" + bpPermitActive.id + "'), 'pm', { lat: 12.971, lng: 77.594 }, 'P&M re-acknowledged after certificate verified', makeSimSignature('P&M Plant Incharge'));");
+const bpExtReAck = evalInVM("PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension");
+assert.strictEqual(bpExtReAck.status, 'Pending Quality Engineer Approval', "P&M re-acknowledgment must return directly forward to Quality Engineer");
+console.log('  ✓ PASS: P&M re-acknowledgment returns directly to Pending Quality Engineer Approval');
+
+// 13.6 Extension Tracker & PDF Generation Verification
+const trackerHtml = evalInVM("extTrackerHtml(PERMITS.find(p => p.id === '" + bpPermitActive.id + "').extension, PERMITS.find(p => p.id === '" + bpPermitActive.id + "'));");
+assert(trackerHtml.includes('Electrician Request'), "Tracker must include Electrician Request node");
+assert(trackerHtml.includes('P&amp;M Engineer') || trackerHtml.includes('P&M Engineer'), "Tracker must include P&M Engineer node");
+assert(trackerHtml.includes('Quality Engineer'), "Tracker must include Quality Engineer node");
+assert(trackerHtml.includes('EHS Safety'), "Tracker must include EHS Safety node");
+assert(trackerHtml.includes('Work Resumed'), "Tracker must include Work Resumed node");
+console.log('  ✓ PASS: extTrackerHtml renders 5-node Batching Plant workflow: Electrician -> P&M -> Quality Engineer -> EHS -> Resumed');
+
+evalInVM("generatePermitPDF(PERMITS.find(p => p.id === '" + bpPermitActive.id + "').id);");
+console.log('  ✓ PASS: PDF generation with Batching Plant extension history executes cleanly');
 
 console.log('\n==================================================');
 console.log('ALL PT-06 ELECTRICAL WORK TESTS PASSED (100% SUCCESS RATE)');

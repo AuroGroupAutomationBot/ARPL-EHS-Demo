@@ -2551,6 +2551,31 @@
             border-color: var(--border-strong);
         }
 
+        .ptype-card.initiator-inactive {
+            opacity: .48;
+            filter: grayscale(70%);
+            cursor: not-allowed !important;
+            background: #fafbfc;
+            border-color: var(--border) !important;
+        }
+
+        .ptype-card.initiator-inactive:hover {
+            transform: none !important;
+            border-color: var(--border) !important;
+            box-shadow: none !important;
+        }
+
+        .ptype-card.initiator-active {
+            border-color: var(--orange);
+            background: #ffffff;
+            box-shadow: 0 2px 8px rgba(232, 96, 10, 0.08);
+        }
+
+        .ptype-card.initiator-active:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--shadow-md);
+        }
+
         .ptype-icon {
             width: 44px;
             height: 44px;
@@ -2612,6 +2637,12 @@
         .ptype-status.future {
             background: var(--grey-bg);
             color: var(--grey);
+        }
+
+        .ptype-status.restricted {
+            background: rgba(140, 140, 140, 0.12);
+            color: #555;
+            border: 1px solid rgba(140, 140, 140, 0.25);
         }
 
         /* ================= FILE / DRAWING CARD ================= */
@@ -4300,7 +4331,7 @@
                 <div class="lw-num">1</div>
                 <div class="lw-content">
                     <div class="lw-title">Initiation &amp; Checklist</div>
-                    <div class="lw-desc">Site Supervisor, Electrician, or Blasting In-charge fills permit form, statutory checklist &amp; uploads photo.</div>
+                    <div class="lw-desc">Site Supervisor (PT-01 to PT-05), Electrician (PT-06), or Blasting In-charge (PT-07) fills their respective permit form, statutory checklist &amp; uploads photo.</div>
                 </div>
             </div>
             <div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>
@@ -4427,6 +4458,7 @@
                         <button class="btn btn-ghost" onclick="goTo('dashboard')"><i class="fa-solid fa-arrow-left"></i>
                             Back to Dashboard</button>
                     </div>
+                    <div id="ptypeRoleBanner" style="margin-bottom:16px;"></div>
                     <div class="ptype-grid" id="ptypeGrid"></div>
                 </div>
 
@@ -4463,9 +4495,9 @@
                     <div class="view-header">
                         <div>
                             <h1 id="registerTitle"><i class="fa-solid fa-table-list"></i> Permit Register</h1>
-                            <p id="registerSub">All excavation permits</p>
+                            <p id="registerSub">Digital safety authorization &amp; permit-to-work tracking register</p>
                         </div>
-                        <button class="btn btn-primary act-btn" data-roles="site-supervisor"
+                        <button class="btn btn-primary act-btn" data-roles="site-supervisor,electrician,blasting-incharge"
                             onclick="openPermitTypeSelection()"><i class="fa-solid fa-plus"></i> Create Permit</button>
                     </div>
                     <div class="filter-bar">
@@ -4479,6 +4511,7 @@
                             <option value="guardrail">Guard Rail / Floor Protection (PT-03)</option>
                             <option value="confined">Confined Space (PT-04)</option>
                             <option value="shaft">Shaft Work (PT-05)</option>
+                            <option value="electrical">Electrical Work (PT-06)</option>
                             <option value="blasting">Drilling &amp; Blasting (PT-07)</option>
                         </select>
                         <select id="regStatusFilter" onchange="buildRegisterTable()">
@@ -4946,7 +4979,7 @@
             confined: { key: 'confined', code: 'PT-04', name: 'Confined Space Entry', short: 'Confined Space', prefix: 'CS', form: 'EHS_PTW_004', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             shaft: { key: 'shaft', code: 'PT-05', name: 'Shaft Work', short: 'Shaft Work', prefix: 'SW', form: 'EHS_PTW_005', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             electrical: { key: 'electrical', code: 'PT-06', name: 'Electrical Work (HT/LT)', short: 'Electrical Work', prefix: 'EW', form: 'EHS_PTW_006', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
-            blasting: { key: 'blasting', code: 'PT-07', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'DB', form: 'EHS_PTW_007', sh: 'excavation-head', shLabel: 'Excavation Head' }
+            blasting: { key: 'blasting', code: 'PT-07', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'DB', form: 'EHS_PTW_007', sh: 'hw-section-head', shLabel: 'Tower Incharge' }
         };
         function ptypeOf(p) {
             if (!p) return 'excavation';
@@ -4955,24 +4988,59 @@
         }
         function pMeta(p) { return PTYPE_META[ptypeOf(p)] || PTYPE_META.excavation; }
         function pLabel(p) { return pMeta(p).short + ' permit ' + p.id; }
-        function shRoleFor(p) { return pMeta(p).sh; }
+        function shRoleFor(p) {
+            const pt = ptypeOf(p);
+            if (pt === 'excavation') return 'excavation-head';
+            if (pt === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' || p.electricalFacilityScope === 'batching_plant')) return 'quality-engineer';
+            return 'hw-section-head';
+        }
+        function shLabelFor(p) {
+            const rk = shRoleFor(p);
+            if (rk === 'quality-engineer') return 'Quality Engineer';
+            if (rk === 'excavation-head') return 'Excavation Head';
+            return 'Tower Incharge';
+        }
+        function requestedByRoleFor(p) {
+            const pt = ptypeOf(p);
+            if (pt === 'electrical') return 'electrician';
+            if (pt === 'blasting') return 'blasting-incharge';
+            return 'site-supervisor';
+        }
+        function requestedByLabelFor(p) {
+            const pt = ptypeOf(p);
+            if (pt === 'electrical') return 'Electrician';
+            if (pt === 'blasting') return 'Blasting In-charge';
+            return 'Site Supervisor';
+        }
+        function requestedByDisplayFor(p) {
+            const reqRole = requestedByLabelFor(p);
+            if (!p.createdBy) return reqRole;
+            if (p.createdBy.toLowerCase().includes(reqRole.toLowerCase())) return p.createdBy;
+            return p.createdBy + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + reqRole + '</span>';
+        }
         function stakeholdersFor(p) {
             if (ptypeOf(p) === 'electrical') {
-                if (p.electricalSiteType === 'batching_plant') {
-                    return ['electrician', 'site-supervisor', 'pm', 'quality-engineer', 'ehs-manager', 'ehs-officer'];
+                const isBatching = p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' || p.electricalFacilityScope === 'batching_plant';
+                if (isBatching) {
+                    return ['electrician', 'pm', 'quality-engineer', 'ehs-manager', 'ehs-officer'];
                 }
-                return ['electrician', 'site-supervisor', 'site-engineer', 'mep', 'pm', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
+                return ['electrician', 'site-engineer', 'mep', 'pm', 'hw-section-head', 'section-head', 'ehs-manager', 'ehs-officer'];
             }
             if (ptypeOf(p) === 'blasting') {
-                return ['site-supervisor', 'blasting-incharge', 'site-engineer', 'excavation-head', 'ehs-manager', 'ehs-officer'];
+                return ['blasting-incharge', 'site-engineer', 'hw-section-head', 'section-head', 'ehs-manager', 'ehs-officer'];
             }
             if (ptypeOf(p) === 'confined' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'hotwork') {
-                return ['site-supervisor', 'site-engineer', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
+                return ['site-supervisor', 'site-engineer', 'hw-section-head', 'section-head', 'ehs-manager', 'ehs-officer'];
             }
             if (ptypeOf(p) === 'shaft') {
-                return ['site-supervisor', 'site-engineer', 'mep', 'hw-section-head', 'ehs-manager', 'ehs-officer'];
+                return ['site-supervisor', 'site-engineer', 'mep', 'hw-section-head', 'section-head', 'ehs-manager', 'ehs-officer'];
             }
             return ['site-supervisor', 'site-engineer', 'mep', 'pm', 'it', 'excavation-head', 'ehs-manager', 'ehs-officer'];
+        }
+        function isPermitVisibleToRole(p, roleKey) {
+            if (!roleKey || roleKey === 'admin') return true;
+            const stakeholders = stakeholdersFor(p);
+            return stakeholders.includes(roleKey) || (roleKey === 'section-head' && stakeholders.includes('hw-section-head'));
         }
         function checklistFor(type) {
             if (type === 'electrical') return ELECTRICAL_CHECKLIST_ITEMS;
@@ -4988,8 +5056,8 @@
             if (roleKey === 'quality-engineer') return ['electrical'];
             if (roleKey === 'blasting-incharge') return ['blasting'];
             if (roleKey === 'excavation-head') return ['excavation'];
-            if (roleKey === 'hw-section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'electrical'];
-            if (roleKey === 'section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'excavation', 'electrical'];
+            if (roleKey === 'hw-section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'electrical', 'blasting'];
+            if (roleKey === 'section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'excavation', 'electrical', 'blasting'];
             return null;
         }
         function permitMatchesScope(p, scope) {
@@ -5230,13 +5298,13 @@
             {
                 key: 'site-supervisor',
                 label: 'Site Supervisor',
-                sub: 'Field Initiator & Permittee (PT-01 to PT-05, PT-07)',
+                sub: 'Field Initiator & Permittee (PT-01 to PT-05)',
                 icon: 'fa-user-pen',
                 tier: 'Tier 1 · Permittee / Initiator',
                 cat: 'initiator',
                 tierBg: 'rgba(232, 96, 10, .18)',
                 tierColor: 'var(--orange)',
-                desc: 'Permittee / form initiator for PT-01 to PT-05 and PT-07. Completes statutory safety checklists, uploads work-area photos, responds to Safety Observations, requests extensions, and executes final permit closure & surrender.'
+                desc: 'Permittee and form initiator for civil and structural works (PT-01 Excavation, PT-02 Hot Work, PT-03 Guard Rail, PT-04 Confined Space, PT-05 Shaft Work). Specialist works (PT-06 Electrical, PT-07 Blasting) are strictly reserved for certified specialist roles.'
             },
             {
                 key: 'electrician',
@@ -5247,7 +5315,7 @@
                 cat: 'initiator',
                 tierBg: 'rgba(232, 96, 10, .18)',
                 tierColor: 'var(--orange)',
-                desc: 'Permittee and specialist for Form EHS_PTW_006 (Electrical Work HT/LT). Completes shutdown / power block parameters, LOTO register entries, uploads work-area photos, executes certified safety declarations, and performs statutory permit closure & surrender with re-energisation verification.'
+                desc: 'Specialist Permittee exclusively authorized for Form EHS_PTW_006 (PT-06 Electrical Work HT/LT). All other permit types are inactive. Completes shutdown parameters, LOTO register, statutory declarations, and certified electrical de-isolation surrender.'
             },
             {
                 key: 'blasting-incharge',
@@ -5258,7 +5326,7 @@
                 cat: 'initiator',
                 tierBg: 'rgba(232, 96, 10, .18)',
                 tierColor: 'var(--orange)',
-                desc: 'Specialist In-charge for Form EHS_PTW_007 (Drilling & Blasting). Can initiate permits directly as Permittee with statutory safety declaration, or provide mandatory on-site statutory concurrence when initiated by a supervisor. Manages pre-operation photos, safe distance perimeter, and blast clearance.'
+                desc: 'Specialist In-charge exclusively authorized for Form EHS_PTW_007 (PT-07 Drilling & Blasting). All other permit types are strictly inactive. Manages statutory PESO / MMR declarations, pre-blast perimeter, zero-extension daylight blasts, and certified post-blast clearance.'
             },
             {
                 key: 'site-engineer',
@@ -5324,7 +5392,7 @@
                 cat: 'approver',
                 tierBg: 'rgba(154, 100, 0, .22)',
                 tierColor: '#FBBF24',
-                desc: 'Section Head approving authority for PT-01 Excavation permits following MEP, P&M, and IT clearances. Also reviews extension requests for PT-07 Drilling & Blasting. Approves or returns for correction.'
+                desc: 'Section Head approving authority for PT-01 Excavation permits following MEP, P&M, and IT clearances. Evaluates site excavation precautions and approves or returns for correction.'
             },
             {
                 key: 'hw-section-head',
@@ -5335,7 +5403,7 @@
                 cat: 'approver',
                 tierBg: 'rgba(154, 100, 0, .22)',
                 tierColor: '#FBBF24',
-                desc: 'Section Head approving authority for PT-02 Hot Work, PT-03 Guard Rail, PT-04 Confined Space, PT-05 Shaft Work, and PT-06 Electrical Work (Site Flow). Evaluates site precautions and grants Stage Approval or Returns for Correction.'
+                desc: 'Section Head approving authority for PT-02 Hot Work, PT-03 Guard Rail, PT-04 Confined Space, PT-05 Shaft Work, PT-06 Electrical Work (Site Flow), and PT-07 Drilling & Blasting. Evaluates site precautions and grants Stage Approval or Returns for Correction.'
             },
             {
                 key: 'ehs-manager',
@@ -5361,16 +5429,53 @@
             },
             {
                 key: 'admin',
-                label: 'System Administrator',
-                sub: 'System & GPS Geofencing Administration',
+                label: 'Site Administrator',
+                sub: 'System Configuration & Geofencing',
                 icon: 'fa-user-gear',
-                tier: 'System Administration',
+                tier: 'Tier 5 · Administration',
                 cat: 'admin',
-                tierBg: 'rgba(105, 65, 198, .22)',
-                tierColor: '#C084FC',
-                desc: 'Manages project site GPS boundaries (Lat/Lng), geofence proximity threshold radius (meters), system configuration, user role mappings, and demonstration reset controls.'
-            },
+                tierBg: 'rgba(100, 116, 139, .22)',
+                tierColor: '#94A3B8',
+                desc: 'Manages worksite GPS coordinate tagging on-site, geofence radius configuration, project master data, system parameters, and full historical permit audit logs.'
+            }
         ];
+
+        /* Centralized Initiator Permit Authorizations Matrix */
+        const INITIATOR_PERMIT_RULES = {
+            'electrician': ['electrical'],
+            'blasting-incharge': ['blasting'],
+            'site-supervisor': ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft']
+        };
+
+        function getPermitAvailabilityForRole(ptypeKey, roleKey) {
+            const t = PERMIT_TYPES.find(x => x.key === ptypeKey);
+            if (!t) return { available: false, statusText: 'Unknown', statusClass: 'future', reason: 'Module not found' };
+
+            // Future roadmap modules
+            if (!t.available) {
+                return { available: false, statusText: 'Future Module', statusClass: 'future', reason: 'Scheduled for future roadmap implementation' };
+            }
+
+            // Non-initiator roles cannot initiate any permits
+            if (!roleKey || !INITIATOR_PERMIT_RULES[roleKey]) {
+                return { available: false, statusText: 'Initiator Only', statusClass: 'restricted', reason: 'Permit initiation restricted to authorized Permittee roles' };
+            }
+
+            const allowed = INITIATOR_PERMIT_RULES[roleKey];
+            if (allowed.includes(ptypeKey)) {
+                return { available: true, statusText: 'Available to Initiate', statusClass: 'live', reason: 'Authorized for your role' };
+            }
+
+            // Inactive for this initiator — determine exact reason
+            if (ptypeKey === 'electrical') {
+                return { available: false, statusText: 'Restricted to Electrician', statusClass: 'restricted', reason: 'Requires certified Electrician (Form EHS_PTW_006)' };
+            }
+            if (ptypeKey === 'blasting') {
+                return { available: false, statusText: 'Restricted to Blasting In-charge', statusClass: 'restricted', reason: 'Requires statutory Blasting / Drilling In-charge (Form EHS_PTW_007)' };
+            }
+            return { available: false, statusText: 'Restricted to Site Supervisor', statusClass: 'restricted', reason: 'Initiation handled by Site Supervisors (Civil / Structural)' };
+        }
+
         function roleInfo(key) {
             if (!key) return { key: '', label: 'Authorized Signatory', sub: '', icon: 'fa-user' };
             if (key === 'section-head') return ROLES.find(r => r.key === 'hw-section-head') || { key: 'hw-section-head', label: 'Tower Incharge', sub: 'Approving Authority', icon: 'fa-user-tie' };
@@ -5494,6 +5599,9 @@
             }
             if (typeof draft !== 'undefined' && draft && id === 'seSigPad' && draft.signerVerified) {
                 draft.signature = { dataUrl: dataUrl, at: nowTime(), by: draft.signerName, consent: true };
+                if (ptypeOf(draft) === 'electrical' && draft.signerName) {
+                    draft.shutdownRequester = draft.signerName;
+                }
                 updateNextButtonState();
             }
             const wrap = document.getElementById(id + '-wrap');
@@ -7323,7 +7431,31 @@
                 return;
             }
             const mins = Math.min(Math.max(EXTENSION_STEP_MIN, minutes || EXTENSION_STEP_MIN), cap);
-            const reqBy = signerName || (currentUser && currentUser.name) || p.createdBy || 'Site Supervisor';
+            const reqBy = signerName || (currentUser && currentUser.name) || p.createdBy || (ptypeOf(p) === 'electrical' ? 'Permittee Electrician' : (ptypeOf(p) === 'blasting' ? 'Blasting In-charge' : 'Site Supervisor'));
+            
+            const isBatchingPlantElec = ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
+            if (isBatchingPlantElec) {
+                p.extension = {
+                    id: uid(), reason, minutes: mins, hours: mins / 60, gps, photo, sig,
+                    requestedAt: nowTime(), requestedBy: reqBy,
+                    approvals: {
+                        kind: 'ext-batching-elec',
+                        pm: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null },
+                        qualityEngineer: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null },
+                        ehsManager: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null },
+                        ehsOfficer: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null }
+                    },
+                    stageEnteredAt: nowTime(), escalation: { stage1: false, stage2: false },
+                    status: 'Pending P&M Acknowledgment'
+                };
+                logActivity(p, 'Extension of ' + fmtDur(mins) + ' requested by ' + reqBy + '. Reason: ' + reason + ' — awaiting P&M Engineer Step 2 acknowledgment.');
+                notify(['pm'], pLabel(p) + ' — extension request (' + fmtDur(mins) + ') requires P&M Engineer Step 2 acknowledgment.', 'info', p.id);
+                notify(stakeholdersFor(p), 'Extension request for ' + pLabel(p) + ' submitted for approval.', 'info', p.id);
+                showToast('Extension request submitted. Awaiting P&M Engineer Step 2 acknowledgment.', 'ok');
+                saveState();
+                return;
+            }
+
             p.extension = {
                 id: uid(), reason, minutes: mins, hours: mins / 60, gps, photo, sig,
                 requestedAt: nowTime(), requestedBy: reqBy,
@@ -7347,7 +7479,7 @@
         function resubmitExtensionSupervisor(p, { reason, minutes, gps, photo, sig, signerName }) {
             const ext = p.extension;
             if (!ext) return;
-            const reqBy = signerName || (currentUser && currentUser.name) || p.createdBy || 'Site Supervisor';
+            const reqBy = signerName || (currentUser && currentUser.name) || p.createdBy || (ptypeOf(p) === 'electrical' ? 'Permittee Electrician' : (ptypeOf(p) === 'blasting' ? 'Blasting In-charge' : 'Site Supervisor'));
             const cap = extensionCapMinutes(p);
             const mins = Math.min(Math.max(EXTENSION_STEP_MIN, minutes || ext.minutes || EXTENSION_STEP_MIN), cap);
 
@@ -7360,26 +7492,39 @@
             ext.requestedBy = reqBy;
             ext.stageEnteredAt = nowTime();
 
+            const isBatchingPlantElec = ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
             const origRole = ext.rejectionOrigin ? ext.rejectionOrigin.roleKey : null;
             const origLabel = ext.rejectionOrigin ? ext.rejectionOrigin.roleLabel : 'Approver';
+
+            if (isBatchingPlantElec) {
+                ext.status = 'Pending P&M Acknowledgment';
+                ext.approvals.pm = { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null };
+                ext.isReAck = (origRole !== 'pm');
+                logActivity(p, 'Extension request revised by Permittee Electrician (' + reqBy + ') after return by ' + origLabel + '. Routed to P&M Engineer for Step 2 ' + (ext.isReAck ? 're-acknowledgment' : 'acknowledgment') + (ext.isReAck ? (' before returning to ' + origLabel) : '') + '.');
+                notify(['pm'], pLabel(p) + ' — extension request revised by Electrician. P&M Engineer acknowledgment required.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' extension request revised and resubmitted by Electrician.', 'info', p.id);
+                showToast('Extension revised & resubmitted. Awaiting P&M Engineer acknowledgment.', 'ok');
+                saveState();
+                return;
+            }
 
             if (origRole === 'site-engineer') {
                 // If Site Engineer rejected, normal re-review
                 ext.status = 'Pending Site Engineer';
                 ext.approvals.siteEngineer = { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null };
                 ext.isReAck = false;
-                logActivity(p, 'Extension request revised by Site Supervisor (' + reqBy + ') and resubmitted to Site Engineer.');
-                notify(['site-engineer'], pLabel(p) + ' — extension request revised by Site Supervisor. Site Engineer acknowledgment required.', 'info', p.id);
+                logActivity(p, 'Extension request revised by Permittee (' + reqBy + ') and resubmitted to Site Engineer.');
+                notify(['site-engineer'], pLabel(p) + ' — extension request revised by Permittee. Site Engineer acknowledgment required.', 'info', p.id);
             } else {
                 // Unified rule: Routes to Site Engineer for re-acknowledgment first, flagged with isReAck
                 ext.status = 'Pending Site Engineer';
                 ext.approvals.siteEngineer = { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null };
                 ext.isReAck = true;
-                logActivity(p, 'Extension request revised by Site Supervisor (' + reqBy + ') after return by ' + origLabel + '. Routed to Site Engineer for re-acknowledgment before returning to ' + origLabel + '.');
+                logActivity(p, 'Extension request revised by Permittee (' + reqBy + ') after return by ' + origLabel + '. Routed to Site Engineer for re-acknowledgment before returning to ' + origLabel + '.');
                 notify(['site-engineer'], pLabel(p) + ' — extension request revised after correction. Site Engineer re-acknowledgment required before returning to ' + origLabel + '.', 'info', p.id);
             }
 
-            notify(stakeholdersFor(p), pLabel(p) + ' extension request revised and resubmitted by Site Supervisor.', 'info', p.id);
+            notify(stakeholdersFor(p), pLabel(p) + ' extension request revised and resubmitted by Permittee.', 'info', p.id);
             showToast('Extension revised & resubmitted.', 'ok');
             saveState();
         }
@@ -7431,6 +7576,38 @@
                     notify([shRoleFor(p)], pLabel(p) + ' extension re-acknowledged by Site Engineer — awaiting ' + approverLabel + ' review.', 'info', p.id);
                 }
                 ext.stageEnteredAt = nowTime();
+            } else if (roleKey === 'pm' && ext.approvals && ext.approvals.kind === 'ext-batching-elec') {
+                ext.approvals.pm = { status: 'approved', by: effectiveSigner, at: nowTime(), gps, comment, sig };
+                if (ext.isReAck && ext.rejectionOrigin) {
+                    const origRole = ext.rejectionOrigin.roleKey;
+                    const origLabel = ext.rejectionOrigin.roleLabel;
+                    if (origRole === 'ehs-manager' || origRole === 'ehs-officer' || origRole === 'ehs') {
+                        ext.status = 'Pending EHS Approval';
+                        ext.approvals.ehsManager = { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null };
+                        ext.approvals.ehsOfficer = { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null };
+                        logActivity(p, 'Extension — P&M Engineer (' + effectiveSigner + ') Step 2 re-acknowledged & returned directly to EHS Safety.');
+                        notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' extension re-acknowledged by P&M Engineer — returned to EHS for verification.', 'info', p.id);
+                    } else {
+                        // Quality Engineer (Section Head)
+                        ext.status = 'Pending Quality Engineer Approval';
+                        ext.approvals.qualityEngineer = { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null };
+                        logActivity(p, 'Extension — P&M Engineer (' + effectiveSigner + ') Step 2 re-acknowledged & returned directly to Quality Engineer (Section Head).');
+                        notify(['quality-engineer'], pLabel(p) + ' extension re-acknowledged by P&M Engineer — returned to Quality Engineer for review.', 'info', p.id);
+                    }
+                    ext.isReAck = false;
+                    ext.rejectionOrigin = null;
+                } else {
+                    ext.status = 'Pending Quality Engineer Approval';
+                    logActivity(p, 'Extension — P&M Engineer (' + effectiveSigner + ') Step 2 acknowledged & forwarded to Quality Engineer (Section Head).');
+                    notify(['quality-engineer'], pLabel(p) + ' extension acknowledged by P&M Engineer — awaiting Quality Engineer review & approval.', 'info', p.id);
+                }
+                ext.stageEnteredAt = nowTime();
+            } else if (roleKey === 'quality-engineer' && ext.approvals && ext.approvals.kind === 'ext-batching-elec') {
+                ext.approvals.qualityEngineer = { status: 'approved', by: effectiveSigner, at: nowTime(), gps, comment, sig };
+                ext.status = 'Pending EHS Approval';
+                ext.stageEnteredAt = nowTime();
+                logActivity(p, 'Extension — Quality Engineer (Section Head) (' + effectiveSigner + ') approved & forwarded to EHS Safety.');
+                notify(['ehs-manager', 'ehs-officer'], pLabel(p) + ' extension approved by Quality Engineer — awaiting EHS verification.', 'info', p.id);
             } else if (roleKey === 'section-head' || roleKey === 'hw-section-head' || roleKey === 'excavation-head') {
                 ext.approvals.sectionHead = { status: 'approved', by: effectiveSigner, at: nowTime(), gps, comment, sig };
                 ext.status = 'Pending EHS Approval';
@@ -7466,7 +7643,11 @@
             const isExc = ptypeOf(p) === 'excavation';
             const isConfined = ptypeOf(p) === 'confined';
             const rInfo = roleInfo(roleKey);
-            const approverLabel = (roleKey === 'excavation-head') ? 'Excavation Head' : ((roleKey === 'section-head' || roleKey === 'hw-section-head') ? (isExc ? 'Excavation Head' : 'Tower Incharge') : ((rInfo && rInfo.label) || 'Approver'));
+            const approverLabel = (roleKey === 'excavation-head') ? 'Excavation Head' :
+                ((roleKey === 'quality-engineer') ? 'Quality Engineer (Section Head)' :
+                ((roleKey === 'pm') ? 'P&M Engineer' :
+                ((roleKey === 'section-head' || roleKey === 'hw-section-head') ? (isExc ? 'Excavation Head' : 'Tower Incharge') :
+                ((rInfo && rInfo.label) || 'Approver'))));
             const effectiveSigner = signerName || (currentUser && currentUser.name) || approverLabel;
             ext.status = 'Returned for Correction';
             ext.rejectionOrigin = {
@@ -7482,6 +7663,10 @@
             if (ext.approvals) {
                 if (roleKey === 'site-engineer') {
                     ext.approvals.siteEngineer = { status: 'rejected', by: effectiveSigner, at: nowTime(), gps, comment, sig };
+                } else if (roleKey === 'pm') {
+                    ext.approvals.pm = { status: 'rejected', by: effectiveSigner, at: nowTime(), gps, comment, sig };
+                } else if (roleKey === 'quality-engineer') {
+                    ext.approvals.qualityEngineer = { status: 'rejected', by: effectiveSigner, at: nowTime(), gps, comment, sig };
                 } else if (roleKey === 'section-head' || roleKey === 'hw-section-head') {
                     ext.approvals.sectionHead = { status: 'rejected', by: effectiveSigner, at: nowTime(), gps, comment, sig };
                 } else if (roleKey === 'ehs-manager' || roleKey === 'ehs-officer' || roleKey === 'ehs') {
@@ -7490,9 +7675,11 @@
                 }
             }
             logActivity(p, 'Extension request returned for correction by ' + approverLabel + ' (' + effectiveSigner + '): ' + comment);
-            notify(['site-supervisor'], pLabel(p) + ' extension request returned for correction by ' + approverLabel + ': "' + comment + '" — revise and resubmit.', 'warn', p.id);
-            notify(stakeholdersFor(p), pLabel(p) + ' extension request returned to Site Supervisor for correction by ' + approverLabel + '.', 'warn', p.id);
-            showToast('Extension returned to Site Supervisor for correction.', 'info');
+            const initiatorRole = (ptypeOf(p) === 'electrical') ? 'electrician' : ((ptypeOf(p) === 'blasting') ? 'blasting-incharge' : 'site-supervisor');
+            const initiatorLabel = (initiatorRole === 'electrician') ? 'Electrician' : ((initiatorRole === 'blasting-incharge') ? 'Blasting In-charge' : 'Site Supervisor');
+            notify([initiatorRole], pLabel(p) + ' extension request returned for correction by ' + approverLabel + ': "' + comment + '" — revise and resubmit.', 'warn', p.id);
+            notify(stakeholdersFor(p), pLabel(p) + ' extension request returned to ' + initiatorLabel + ' for correction by ' + approverLabel + '.', 'warn', p.id);
+            showToast('Extension returned to ' + initiatorLabel + ' for correction.', 'info');
             saveState();
         }
 
@@ -7536,11 +7723,15 @@
             }
 
             const isElectrical = ptypeOf(p) === 'electrical';
+            const isBlasting = ptypeOf(p) === 'blasting';
             if (currentUser) {
                 if (isElectrical && currentUser.key !== 'electrician') {
                     showToast('Access Denied: Closure and surrender of Electrical Work permits is strictly restricted to Electricians.', 'err');
                     return false;
-                } else if (!isElectrical && currentUser.key !== 'site-supervisor') {
+                } else if (isBlasting && currentUser.key !== 'blasting-incharge') {
+                    showToast('Access Denied: Closure and surrender of Drilling & Blasting permits is strictly restricted to Blasting / Drilling In-charge.', 'err');
+                    return false;
+                } else if (!isElectrical && !isBlasting && currentUser.key !== 'site-supervisor') {
                     showToast('Access Denied: Closure and surrender is restricted strictly to Site Supervisors.', 'err');
                     return false;
                 }
@@ -8736,7 +8927,8 @@
             // ---------------- DRILLING & BLASTING SEED PERMITS (PT-07 / EHS_PTW_007) ----------------
             function baseBlasting(over) {
                 const res = Object.assign({
-                    id: genPermitNumber('blasting'), ptype: 'blasting', activity: 'Drilling & Blasting (PT-07)', createdBy: 'Duty Site Supervisor',
+                    id: genPermitNumber('blasting'), ptype: 'blasting', activity: 'Drilling & Blasting (PT-07)', createdBy: 'PESO Blaster Khan',
+                    createdByRole: 'blasting-incharge',
                     weather: 'Sunny', organization: 'ARPL', contractor: null,
                     locationStructure: 'Manual',
                     locManual: 'Open Surface Rock Yard',
@@ -8780,7 +8972,7 @@
                 status: 'Pending Blasting In-charge Acknowledgment', stageEnteredAt: new Date(nowTime() - 35 * 60000), escalation: { stage1: false, stage2: false },
                 approvals: { kind: 'blasting', ehsManager: mkPending(), ehsOfficer: mkPending() },
                 activityLog: [
-                    { ts: new Date(nowTime() - 35 * 60000), actor: 'Duty Site Supervisor', text: 'Drilling & Blasting permit submitted. Statutory Blasting / Drilling In-charge acknowledgment required.' }
+                    { ts: new Date(nowTime() - 35 * 60000), actor: 'Blasting In-charge', text: 'Drilling & Blasting permit submitted by Blasting In-charge. Statutory Blasting / Drilling In-charge acknowledgment required.' }
                 ],
                 extension: null, closure: null, surrender: null
             }));
@@ -8807,7 +8999,7 @@
                 activityLog: [
                     { ts: new Date(nowTime() - 2.2 * 3600 * 1000), actor: 'EHS Safety Manager', text: 'Drilling permit ENDORSED and activated for rock anchoring work.' },
                     { ts: new Date(nowTime() - 2.6 * 3600 * 1000), actor: 'Duty Site Engineer', text: 'Site Engineer verified drilling layout & forwarded to EHS.' },
-                    { ts: new Date(nowTime() - 3.0 * 3600 * 1000), actor: 'Duty Site Supervisor', text: 'Drilling permit submitted by Site Supervisor.' }
+                    { ts: new Date(nowTime() - 3.0 * 3600 * 1000), actor: 'Blasting In-charge', text: 'Drilling permit submitted by Blasting In-charge.' }
                 ],
                 extension: null, closure: null, surrender: null
             }));
@@ -9046,15 +9238,15 @@
            ================================================================ */
         function navItemsFor(roleKey) {
             const items = [{ id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high' }];
-            // Strict RBAC: Site Supervisor or Blasting In-charge (for PT-07) can initiate and create permits
-            if (roleKey === 'site-supervisor' || roleKey === 'blasting-incharge') {
+            // Strict RBAC: Site Supervisor, Electrician, or Blasting In-charge can initiate and create permits
+            if (['site-supervisor', 'electrician', 'blasting-incharge'].includes(roleKey)) {
                 items.push({ id: 'ptype', label: 'Create Permit', icon: 'fa-file-circle-plus' });
             }
             // Strict RBAC: Only Administrator can configure worksite GPS coordinates and proximity circle radius
             if (roleKey === 'admin') {
                 items.push({ id: 'admin-config', label: 'Site GPS & Geofence', icon: 'fa-map-location-dot' });
             }
-            items.push({ id: 'register', label: (roleKey === 'site-supervisor' || roleKey === 'site-engineer' || roleKey === 'blasting-incharge') ? 'My Permits' : 'Permit Register', icon: 'fa-table-list' });
+            items.push({ id: 'register', label: (['site-supervisor', 'electrician', 'blasting-incharge', 'site-engineer'].includes(roleKey)) ? 'My Permits' : 'Permit Register', icon: 'fa-table-list' });
             items.push({ id: 'notifications', label: 'Notifications', icon: 'fa-bell', badge: true });
             return items;
         }
@@ -9171,48 +9363,70 @@
            PERMIT TYPE SELECTION
            ================================================================ */
         function openPermitTypeSelection() {
-            if (!currentUser || (currentUser.key !== 'site-supervisor' && currentUser.key !== 'blasting-incharge' && currentUser.key !== 'electrician')) {
+            if (!currentUser || !INITIATOR_PERMIT_RULES[currentUser.key]) {
                 showToast('Access Denied: Only Site Supervisors, Electricians, or Blasting / Drilling In-charge have authority to create permits.', 'warn');
                 return;
             }
             goTo('ptype');
         }
         function buildPermitTypeCards() {
-            const isBlaster = currentUser && currentUser.key === 'blasting-incharge';
-            const isElec = currentUser && currentUser.key === 'electrician';
+            const rk = currentUser ? currentUser.key : null;
+            const rInfo = roleInfo(rk);
+
+            // Contextual banner
+            const banner = document.getElementById('ptypeRoleBanner');
+            if (banner) {
+                if (rk === 'electrician') {
+                    banner.innerHTML = '<div class="banner-box" style="background:rgba(232,96,10,0.08);border:1px solid rgba(232,96,10,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid fa-bolt" style="color:var(--orange);font-size:22px;"></i>' +
+                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Electrician Initiator Mode:</b> You are authorized exclusively to initiate <b>PT-06 Electrical Work (HT/LT) — Form EHS_PTW_006</b> under CEA / IS 5216 safety standards. All other permit types are inactive for your role.</div>' +
+                        '</div>';
+                } else if (rk === 'blasting-incharge') {
+                    banner.innerHTML = '<div class="banner-box" style="background:rgba(230,81,0,0.08);border:1px solid rgba(230,81,0,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid fa-burst" style="color:#E65100;font-size:22px;"></i>' +
+                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Blasting / Drilling In-charge Initiator Mode:</b> You are authorized exclusively to initiate <b>PT-07 Drilling and Blasting — Form EHS_PTW_007</b> under PESO / MMR 1961 regulations. All other permit types are strictly inactive.</div>' +
+                        '</div>';
+                } else if (rk === 'site-supervisor') {
+                    banner.innerHTML = '<div class="banner-box" style="background:rgba(27,95,174,0.08);border:1px solid rgba(27,95,174,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid fa-user-pen" style="color:#1B5FAE;font-size:22px;"></i>' +
+                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Site Supervisor Initiator Mode:</b> You are authorized to initiate general civil/structural work permits (<b>PT-01 to PT-05</b>). Specialist modules (PT-06 Electrical, PT-07 Blasting) are restricted to certified specialists.</div>' +
+                        '</div>';
+                } else {
+                    banner.innerHTML = '<div class="banner-box" style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid fa-shield" style="color:#64748B;font-size:22px;"></i>' +
+                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Viewer / Approver Mode (' + escapeHtml(rInfo.label) + '):</b> Permit initiation is restricted to Permittees (Site Supervisor, Electrician, or Blasting In-charge). Modules are read-only.</div>' +
+                        '</div>';
+                }
+            }
+
             document.getElementById('ptypeGrid').innerHTML = PERMIT_TYPES.map(t => {
-                let isAvail = t.available;
-                if (isBlaster) isAvail = (t.key === 'blasting');
-                else if (isElec) isAvail = (t.key === 'electrical');
-                return '<div class="ptype-card ' + (isAvail ? 'available' : 'disabled-module') + '" onclick="selectPermitType(\'' + t.key + '\')">' +
+                const avail = getPermitAvailabilityForRole(t.key, rk);
+                const isAct = avail.available;
+                const cardClass = isAct ? 'available initiator-active' : 'disabled-module initiator-inactive';
+                const statusHtml = '<span class="ptype-status ' + avail.statusClass + '"><i class="fa-solid ' + (isAct ? 'fa-circle-check' : (avail.statusClass === 'future' ? 'fa-clock' : 'fa-lock')) + '"></i> ' + escapeHtml(avail.statusText) + '</span>';
+
+                return '<div class="ptype-card ' + cardClass + '" onclick="selectPermitType(\'' + t.key + '\')">' +
                     '<div class="ptype-icon"><i class="fa-solid ' + t.icon + '"></i></div>' +
                     '<div><div class="ptype-code">' + t.code + '</div><div class="ptype-name">' + t.name + '</div></div>' +
                     '<div class="ptype-desc">' + t.desc + '</div>' +
-                    '<span class="ptype-status ' + (isAvail ? 'live' : 'future') + '"><i class="fa-solid ' + (isAvail ? 'fa-circle-check' : 'fa-clock') + '"></i> ' + (isAvail ? 'Available' : (isBlaster ? 'Restricted to Blasting In-charge' : (isElec ? 'Restricted to Electrician' : 'Future Module'))) + '</span>' +
+                    statusHtml +
                     '</div>';
             }).join('');
         }
         function selectPermitType(key) {
-            if (currentUser && currentUser.key === 'electrician' && key !== 'electrical') {
-                showToast('Role Restriction: Electrician can only initiate Form EHS_PTW_006 (PT-06 Electrical Work).', 'warn');
+            const rk = currentUser ? currentUser.key : null;
+            const avail = getPermitAvailabilityForRole(key, rk);
+            if (!avail.available) {
+                const t = PERMIT_TYPES.find(x => x.key === key);
+                const tName = t ? t.name : key;
+                if (avail.statusClass === 'future') {
+                    showToast(tName + ' is scheduled for a future release.', 'info');
+                    return;
+                }
+                showToast('Role Restriction: ' + avail.reason + '. ' + tName + ' is inactive for your role (' + (currentUser ? currentUser.label : '') + ').', 'warn');
                 return;
             }
-            if (currentUser && currentUser.key === 'blasting-incharge' && key !== 'blasting') {
-                showToast('Role Restriction: Blasting / Drilling In-charge can only initiate Form EHS_PTW_007 (PT-07 Drilling & Blasting).', 'warn');
-                return;
-            }
-            const t = PERMIT_TYPES.find(x => x.key === key);
-            if (!t) return;
-            if (t.available) { startNewPermit(t.key); return; }
-            actionModalCtx = null;
-            document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid ' + t.icon + '" style="color:var(--grey);"></i> ' + t.name;
-            document.getElementById('actionModalBody').innerHTML =
-                '<p style="font-size:13px;margin:0 0 10px;">The <b>' + t.name + ' (' + t.code + ')</b> module is part of the ARPL Permit-to-Work platform roadmap and is scheduled for a future implementation phase.</p>' +
-                '<p style="font-size:12.5px;color:var(--text-muted);margin:0;">The <b>PT-01 Excavation</b>, <b>PT-02 Hot Work</b>, <b>PT-03 Guard Rail</b>, <b>PT-04 Confined Space</b>, <b>PT-05 Shaft Work</b>, <b>PT-06 Electrical Work</b>, and <b>PT-07 Drilling &amp; Blasting</b> workflows are enabled in this deployment. The platform architecture supports adding remaining permit types without redesign, per SOP 02 scope.</p>';
-            document.getElementById('actionModalFoot').innerHTML =
-                '<button class="btn btn-ghost" onclick="closeModal(\'actionModal\')">Close</button>' +
-                '<button class="btn btn-primary" onclick="closeModal(\'actionModal\');startNewPermit(\'excavation\');"><i class="fa-solid fa-person-digging"></i> Create Excavation Permit Instead</button>';
-            openModal('actionModal');
+            startNewPermit(key);
         }
         function applyRoleVisibility() {
             document.querySelectorAll('.act-btn').forEach(el => {
@@ -9294,7 +9508,9 @@
         }
         function pendingExtensionsForRole(roleKey) {
             return PERMITS.filter(p => {
-                if (!p.extension || !['Pending Site Engineer', 'Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status)) return false;
+                if (!p.extension || !['Pending Site Engineer', 'Pending P&M Acknowledgment', 'Pending Quality Engineer Approval', 'Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status)) return false;
+                if (roleKey === 'pm') return p.extension.status === 'Pending P&M Acknowledgment';
+                if (roleKey === 'quality-engineer') return p.extension.status === 'Pending Quality Engineer Approval';
                 if (roleKey === 'site-engineer') return p.extension.status === 'Pending Site Engineer' && p.extension.approvals && p.extension.approvals.siteEngineer && p.extension.approvals.siteEngineer.status === 'pending';
                 if (roleKey === 'mep') return (p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals.mep && p.extension.approvals.mep.status === 'pending');
                 if (['pm', 'it'].includes(roleKey)) return p.extension.status === 'Pending Parallel Approval' && p.extension.approvals && p.extension.approvals[roleKey] && p.extension.approvals[roleKey].status === 'pending';
@@ -9321,22 +9537,34 @@
         function buildDashboard() {
             const rk = currentUser.key;
             const welcomeName = currentUser.name ? currentUser.name.split(' ')[0] : currentUser.label;
-            let html = '<div class="view-header"><div><h1><i class="fa-solid fa-gauge-high"></i> Welcome, ' + welcomeName + '</h1><p>' + roleInfo(rk).sub + ' &middot; Permit-to-Work &mdash; PT-01 to PT-05</p></div></div>';
+            const rInfo = roleInfo(rk);
+            let html = '<div class="view-header"><div><h1><i class="fa-solid fa-gauge-high"></i> Welcome, ' + welcomeName + '</h1><p>' + rInfo.sub + ' &middot; ' + (rInfo.tier || 'Permit-to-Work') + '</p></div></div>';
 
-            if (rk === 'site-supervisor') {
-                const mine = PERMITS;
+            if (['site-supervisor', 'electrician', 'blasting-incharge'].includes(rk)) {
+                const scope = roleTypeScope(rk);
+                const mine = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && permitMatchesScope(p, scope));
                 const drafts = mine.filter(p => p.status === 'Draft');
                 const active = mine.filter(p => p.status === 'Active');
                 const pendingAppr = mine.filter(p => [
                     'Pending Site Engineer Acknowledgment',
                     'Pending Site Engineer Re-Acknowledgment',
+                    'Pending P&M Acknowledgment',
+                    'Pending P&M Re-Acknowledgment',
+                    'Pending Quality Engineer Approval',
+                    'Pending MEP or P&M Approval',
+                    'Pending Blasting In-charge Acknowledgment',
+                    'Pending Blasting In-charge Re-Acknowledgment',
                     'Pending MEP Clearance',
                     'Pending Parallel Approval',
                     'Pending Section Head',
+                    'Pending Tower Incharge',
+                    'Pending Excavation Head',
                     'Pending EHS Approval',
                     'Returned for Correction',
                     'Observation Pending Site Engineer Acknowledgment',
                     'Observation Pending Section Head Review',
+                    'Observation Pending Tower Incharge Review',
+                    'Observation Pending Excavation Head Review',
                     'Observation Pending EHS Clearance',
                     'Pending Re-trigger EHS (Day 1)',
                     'Re-trigger Held Overnight (Day 1 Cleared)',
@@ -9353,7 +9581,7 @@
                     kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, 'Currently valid on site', "filterRegisterAndGo('Active')") +
                     kpiCard('k-red', 'fa-triangle-exclamation', 'Open Observations', obs.length, 'Requires corrective response', "filterRegisterAndGo('Active – Observation Open')") +
                     '</div><div class="kpi-strip">' +
-                    kpiCard('k-purple', 'fa-stopwatch', 'Extension Requests', extReq.length, 'Under review by Tower Incharge / EHS', "goTo('register')") +
+                    kpiCard('k-purple', 'fa-stopwatch', 'Extension Requests', extReq.length, 'Under review by Section Head / EHS', "goTo('register')") +
                     kpiCard('k-green', 'fa-box-archive', 'Closed Permits', closed.length, 'Surrendered / archived', "filterRegisterAndGo('Completed (Surrendered)')") +
                     kpiCard('k-orange', 'fa-plus', 'Create Permit', '', 'Permittee: Initiate new permit', "openPermitTypeSelection()") +
                     kpiCard('k-teal', 'fa-bell', 'Notifications', notifsForCurrentUser().length, 'View all alerts', "goTo('notifications')") +
@@ -9362,14 +9590,14 @@
                     (mine.slice(0, 6).map(quickFeedRow).join('') || '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>No permits yet.</div>') + '</ul></div>' +
                     '<div class="card card-pad"><div class="card-title">Permittee Actions</div>' +
                     '<button class="btn btn-primary btn-block" style="margin-bottom:10px;" onclick="openPermitTypeSelection()"><i class="fa-solid fa-plus"></i> Create New Permit (Step 1)</button>' +
-                    '<button class="btn btn-block" style="margin-bottom:10px;" onclick="goTo(\'register\')"><i class="fa-solid fa-table-list"></i> View All My Permits</button>' +
+                    '<button class="btn btn-block" style="margin-bottom:10px;" onclick="goTo(\'register\')"><i class="fa-solid fa-table-list"></i> View My Permits</button>' +
                     '<button class="btn btn-block" onclick="goTo(\'notifications\')"><i class="fa-solid fa-bell"></i> Check Notifications</button>' +
                     '</div></div>';
             } else if (rk === 'site-engineer') {
-                const pendingAck = PERMITS.filter(p => p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment' || p.status === 'Observation Pending Site Engineer Acknowledgment');
-                const pendingDay2 = PERMITS.filter(p => p.status === 'Re-trigger Held Overnight (Day 1 Cleared)');
-                const active = PERMITS.filter(p => p.status === 'Active');
-                const closed = PERMITS.filter(p => ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status));
+                const pendingAck = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment' || p.status === 'Observation Pending Site Engineer Acknowledgment'));
+                const pendingDay2 = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && p.status === 'Re-trigger Held Overnight (Day 1 Cleared)');
+                const active = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && p.status === 'Active');
+                const closed = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status));
                 html += '<div class="kpi-strip">' +
                     kpiCard('k-amber', 'fa-clipboard-check', 'Pending Acknowledgment', pendingAck.length, 'Step 2 & Obs: Acknowledge', "goTo('register')") +
                     kpiCard('k-blue', 'fa-sun', 'Day 2 Re-trigger Acks', pendingDay2.length, 'Morning work resumption', "filterRegisterAndGo('Re-trigger Held Overnight (Day 1 Cleared)')") +
@@ -9386,20 +9614,28 @@
                     '<button class="btn btn-primary btn-block" style="margin-bottom:10px;" onclick="goTo(\'register\')"><i class="fa-solid fa-table-list"></i> Open Permit Register</button>' +
                     '<button class="btn btn-block" onclick="goTo(\'notifications\')"><i class="fa-solid fa-bell"></i> Check Notifications</button>' +
                     '</div></div>';
-            } else if (['mep', 'pm', 'it', 'section-head', 'hw-section-head', 'excavation-head', 'ehs-manager', 'ehs-officer'].includes(rk)) {
+            } else if (['mep', 'pm', 'it', 'quality-engineer', 'section-head', 'hw-section-head', 'excavation-head', 'ehs-manager', 'ehs-officer'].includes(rk)) {
                 const pending = pendingForRole(rk);
                 const extPending = pendingExtensionsForRole(rk);
                 const scope = roleTypeScope(rk);
-                const active = PERMITS.filter(p => p.status === 'Active' && permitMatchesScope(p, scope));
+                const active = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && p.status === 'Active' && permitMatchesScope(p, scope));
                 const approvedByMe = PERMITS.filter(p => {
-                    if (!permitMatchesScope(p, scope)) return false;
+                    if (!isPermitVisibleToRole(p, rk) || !permitMatchesScope(p, scope)) return false;
                     const f = CHAIN_ROLE_FIELD[rk]; return p.approvals && p.approvals[f] && p.approvals[f].status === 'approved';
                 });
-                const scopeLabel = rk === 'excavation-head' ? 'Excavation permits' : ((rk === 'hw-section-head' || rk === 'section-head') ? 'Across building & tower permits' : 'Across all permit types');
+                const scopeLabel = rk === 'excavation-head' ? 'Excavation permits' : (rk === 'quality-engineer' ? 'Batching Plant Quality Clearance' : ((rk === 'hw-section-head' || rk === 'section-head') ? 'Across building & tower permits' : 'Across all permit types'));
+                let activeScopeLabel = 'Currently on site';
+                if (scope) {
+                    if (Array.isArray(scope)) {
+                        activeScopeLabel = (scope.length === 1 && PTYPE_META[scope[0]]) ? (PTYPE_META[scope[0]].short + ' — currently on site') : 'Hot Work & Shaft Work — currently on site';
+                    } else if (PTYPE_META[scope]) {
+                        activeScopeLabel = PTYPE_META[scope].short + ' — currently on site';
+                    }
+                }
                 html += '<div class="kpi-strip">' +
                     kpiCard('k-amber', 'fa-hourglass-half', 'Pending My Approval', pending.length, scopeLabel, "goTo('register')") +
                     kpiCard('k-purple', 'fa-stopwatch', 'Pending Extension Approval', extPending.length, 'Extension requests', "goTo('register')") +
-                    kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, scope ? ((Array.isArray(scope) ? 'Hot Work & Shaft Work' : PTYPE_META[scope].short) + ' — currently on site') : 'Currently on site', "goTo('register')") +
+                    kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, activeScopeLabel, "goTo('register')") +
                     kpiCard('k-green', 'fa-circle-check', 'Approved by Me', approvedByMe.length, 'All-time', "goTo('register')") +
                     '</div>';
                 html += '<div class="grid-2"><div class="card card-pad"><div class="card-title">Awaiting Your Approval</div><ul class="feed">' +
@@ -9467,16 +9703,14 @@
         function buildRegisterFilters() {
             const scope = roleTypeScope(currentUser.key);
             const scopeTitle = Array.isArray(scope) ? 'Hot Work & Shaft Work' : (scope ? PTYPE_META[scope].short : '');
-            document.getElementById('registerTitle').innerHTML = '<i class="fa-solid fa-table-list"></i> ' + (currentUser.key === 'site-supervisor' ? 'My Permits (Supervisor)' : currentUser.key === 'site-engineer' ? 'Site Permits' : (scope ? scopeTitle + ' Permit Register' : 'Permit Register'));
-            document.getElementById('registerSub').textContent = currentUser.key === 'site-supervisor'
-                ? 'All permits you have initiated as Permittee'
-                : (currentUser.key === 'site-engineer'
-                    ? 'All permits across your site — Step 2 acknowledgments and active works'
-                    : (scope ? (scopeTitle + ' permits only — your approval domain')
-                        : 'All permits across the project'));
+            document.getElementById('registerTitle').innerHTML = '<i class="fa-solid fa-table-list"></i> Permit Register';
+            document.getElementById('registerSub').textContent = 'Digital safety authorization & permit-to-work tracking register';
             const tSel = document.getElementById('regTypeFilter');
             if (tSel) {
-                if (Array.isArray(scope)) {
+                if (currentUser.key === 'admin' || currentUser.key === 'ehs-manager' || currentUser.key === 'ehs-officer') {
+                    tSel.disabled = false;
+                    tSel.title = 'Filter by permit type';
+                } else if (Array.isArray(scope)) {
                     tSel.value = '';
                     tSel.disabled = false;
                     tSel.title = 'Filter by permit type within your domain (' + scopeTitle + ')';
@@ -9506,6 +9740,7 @@
             const tf = document.getElementById('regTypeFilter') ? document.getElementById('regTypeFilter').value : '';
             const scope = roleTypeScope(currentUser.key);
             let rows = PERMITS.filter(p => {
+                if (!isPermitVisibleToRole(p, currentUser ? currentUser.key : null)) return false;
                 if (!permitMatchesScope(p, scope)) return false;   // Tower Incharge only sees allowed modules
                 if (tf && ptypeOf(p) !== tf) return false;
                 if (sf && p.status !== sf && !(sf === 'Pending Section Head' && (p.status === 'Pending Tower Incharge' || p.status === 'Pending Excavation Head'))) return false;
@@ -9516,17 +9751,17 @@
             const tbody = document.getElementById('registerTbody');
             if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-regular fa-folder-open"></i>No permits match these filters.</div></td></tr>'; return; }
             tbody.innerHTML = rows.map(p => {
-                const pIcon = ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : (ptypeOf(p) === 'blasting' ? 'fa-explosion' : 'fa-person-digging');
-                const pBadgeStyle = ptypeOf(p) === 'confined' ? 'background:rgba(94,53,177,0.12);color:#5E35B1;border:1px solid rgba(94,53,177,0.25);' : ptypeOf(p) === 'guardrail' ? 'background:rgba(123,31,162,0.12);color:#7B1FA2;border:1px solid rgba(123,31,162,0.25);' : ptypeOf(p) === 'shaft' ? 'background:rgba(21,101,192,0.12);color:#1565C0;border:1px solid rgba(21,101,192,0.25);' : ptypeOf(p) === 'hotwork' ? 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);' : (ptypeOf(p) === 'blasting' ? 'background:rgba(230,81,0,0.15);color:#E65100;border:1px solid rgba(230,81,0,0.3);' : 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);');
-                const pSubText = ptypeOf(p) === 'confined' ? (p.confinedActivity || p.activity || 'Confined Space Entry') : ptypeOf(p) === 'guardrail' ? (p.locationStructure === 'Tower' ? (p.tower + (p.grFloor ? ' &middot; ' + p.grFloor : '')) : (p.grBasementPodium || 'Podium/Basement')) : ptypeOf(p) === 'shaft' ? ((p.shaftLocationType || 'Tower') + ' &middot; ' + (p.shaftFloor || '')) : ptypeOf(p) === 'hotwork' ? ((p.hotworkTypes || []).join(', ')) : (ptypeOf(p) === 'blasting' ? ((p.dbOperationType || 'Drilling') + (p.dbOperationType === 'Blasting' ? (' &middot; ' + (p.dbChargeAmount || '—') + ' kg') : (' &middot; ' + (p.dbMachineType || 'Machine')))) : (p.depth + ' m'));
+                const pIcon = ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : (ptypeOf(p) === 'electrical' ? 'fa-bolt' : (ptypeOf(p) === 'blasting' ? 'fa-explosion' : 'fa-person-digging'));
+                const pBadgeStyle = ptypeOf(p) === 'confined' ? 'background:rgba(94,53,177,0.12);color:#5E35B1;border:1px solid rgba(94,53,177,0.25);' : ptypeOf(p) === 'guardrail' ? 'background:rgba(123,31,162,0.12);color:#7B1FA2;border:1px solid rgba(123,31,162,0.25);' : ptypeOf(p) === 'shaft' ? 'background:rgba(21,101,192,0.12);color:#1565C0;border:1px solid rgba(21,101,192,0.25);' : ptypeOf(p) === 'hotwork' ? 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);' : (ptypeOf(p) === 'electrical' ? 'background:rgba(255,179,0,0.15);color:#B78103;border:1px solid rgba(255,179,0,0.35);' : (ptypeOf(p) === 'blasting' ? 'background:rgba(230,81,0,0.15);color:#E65100;border:1px solid rgba(230,81,0,0.3);' : 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);'));
+                const pSubText = ptypeOf(p) === 'confined' ? (p.confinedActivity || p.activity || 'Confined Space Entry') : ptypeOf(p) === 'guardrail' ? (p.locationStructure === 'Tower' ? (p.tower + (p.grFloor ? ' &middot; ' + p.grFloor : '')) : (p.grBasementPodium || 'Podium/Basement')) : ptypeOf(p) === 'shaft' ? ((p.shaftLocationType || 'Tower') + ' &middot; ' + (p.shaftFloor || '')) : ptypeOf(p) === 'hotwork' ? ((p.hotworkTypes || []).join(', ')) : (ptypeOf(p) === 'electrical' ? ((p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' ? 'Batching Plant' : 'Site') + ' &middot; ' + (Array.isArray(p.electricalApparatus) ? p.electricalApparatus.join(', ') : (p.apparatus || 'HT/LT Work'))) : (ptypeOf(p) === 'blasting' ? ((p.dbOperationType || 'Drilling') + (p.dbOperationType === 'Blasting' ? (' &middot; ' + (p.dbChargeAmount || '—') + ' kg') : (' &middot; ' + (p.dbMachineType || 'Machine')))) : (p.depth + ' m')));
                 return '<tr style="cursor:pointer;" onclick="viewDetail(\'' + p.id + '\')"><td class="mono">' + p.id + (p.extension && ['Pending Site Engineer', 'Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status) ? ' <span class="badge st-sectionhead" style="margin-left:4px;">EXT</span>' : '') + '</td>' +
                     '<td><span class="badge" style="font-size:10px;' + pBadgeStyle + '"><i class="fa-solid ' + pIcon + '"></i> ' + pMeta(p).code + '</span></td>' +
-                    '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + p.tower + '</span></td>' +
+                    '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + (p.tower || (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.tower ? p.locationStructure.tower : 'Site Wide')) + '</span></td>' +
                     '<td><span style="font-size:11.5px;">' + pSubText + '</span></td>' +
                     '<td>' + statusBadge(p.status, p) + '</td>' +
-                    '<td><span style="font-size:11.5px;">' + pMeta(p).shLabel + '</span></td>' +
+                    '<td><span style="font-size:11.5px;font-weight:600;">' + shLabelFor(p) + '</span></td>' +
                     '<td>' + (p.validTill ? fmtDateTime(p.validTill) : '<span style="color:var(--text-faint);">&mdash; Draft</span>') + '</td>' +
-                    '<td>' + p.createdBy + '</td>' +
+                    '<td>' + requestedByDisplayFor(p) + '</td>' +
                     '<td><button class="btn btn-sm btn-ghost" title="View Detail" onclick="event.stopPropagation();viewDetail(\'' + p.id + '\')"><i class="fa-solid fa-arrow-right"></i></button></td></tr>';
             }).join('');
         }
@@ -9535,13 +9770,22 @@
            CREATE PERMIT WIZARD
            ================================================================ */
         function startNewPermit(type) {
-            if (!currentUser || (currentUser.key !== 'site-supervisor' && currentUser.key !== 'blasting-incharge' && currentUser.key !== 'electrician')) {
+            if (!currentUser || !INITIATOR_PERMIT_RULES[currentUser.key]) {
                 showToast('Access Denied: Only Site Supervisors, Electricians, or Blasting / Drilling In-charge have authority to create permits.', 'err');
                 goTo('dashboard');
                 return;
             }
+            const allowed = INITIATOR_PERMIT_RULES[currentUser.key];
+            let t = type;
+            if (!t || !allowed.includes(t)) {
+                if (type && !allowed.includes(type)) {
+                    showToast('Role Restriction: Your role (' + currentUser.label + ') is not authorized to initiate ' + (PTYPE_META[type] ? PTYPE_META[type].name : type) + '.', 'err');
+                    goTo('ptype');
+                    return;
+                }
+                t = allowed[0];
+            }
             correctionMode = false;
-            const t = (currentUser.key === 'electrician') ? 'electrical' : ((currentUser.key === 'blasting-incharge') ? 'blasting' : (type || 'excavation'));
             const meta = PTYPE_META[t] || PTYPE_META.excavation;
             const defLocMode = (t === 'blasting') ? 'Manual' : (t === 'excavation') ? 'Basement/Podium' : 'Tower';
             const defWeather = WEATHER_OPTIONS[Math.floor(Math.random() * WEATHER_OPTIONS.length)];
@@ -9599,6 +9843,7 @@
                 blastingAckPhoto: null,
                 // Electrical specific (PT-06):
                 electricalSiteType: 'site',
+                facilityScope: 'site',
                 shutdownRequester: currentUser.name || 'Permittee Electrician',
                 shutdownWhy: '',
                 apparatusList: [],
@@ -9716,12 +9961,6 @@
                         if (pDrop) pDrop.scrollIntoView({ behavior: 'smooth', block: 'center' });
                         return;
                     }
-                    const isExc = ptypeOf(draft) === 'excavation';
-                    if (isExc && !draft.drawing) {
-                        const dDrop = document.querySelector('#drawingDropzone, .file-card');
-                        if (dDrop) dDrop.scrollIntoView({ behavior: 'smooth', block: 'center' });
-                        return;
-                    }
                 }
             } else if (step === 3) {
                 const sErr = document.getElementById('startTimeError');
@@ -9800,6 +10039,7 @@
             const isExc = ptypeOf(draft) === 'excavation';
             const isBlasting = ptypeOf(draft) === 'blasting';
             const isElectrical = ptypeOf(draft) === 'electrical';
+            const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
 
             if (correctionMode) {
                 return '<div class="locked-banner"><i class="fa-solid fa-lock"></i> Master data is locked during correction. These values were captured at permit creation and cannot be modified. Proceed to the Safety Checklist to make corrections.</div>' +
@@ -9808,7 +10048,7 @@
                     '<div class="review-item"><div class="rk">Kind of Activity</div><div class="rv">' + (draft.confinedActivity || draft.activity) + '</div></div>' +
                     '<div class="review-item"><div class="rk">Date / Time</div><div class="rv">' + fmtDateTime(draft.createdAt) + '</div></div>' +
                     '<div class="review-item"><div class="rk">Weather</div><div class="rv">' + draft.weather + '</div></div>' +
-                    '<div class="review-item"><div class="rk">Project</div><div class="rv">' + draft.project + '</div></div>' +
+                    '<div class="review-item"><div class="rk">Project</div><div class="rv">' + (isElecBatching ? 'Not Applicable (Batching Plant Dedicated Facility)' : (draft.project || '&mdash;')) + '</div></div>' +
                     '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + (draft.organization || 'ARPL') + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>' +
                     '<div class="review-item"><div class="rk">Location Mode</div><div class="rv">' + (draft.locationStructure || 'Tower') + '</div></div>' +
                     (draft.locationStructure === 'Basement/Podium'
@@ -9866,9 +10106,9 @@
                     '</div>';
             }
 
-            const prj = projectByName(draft.project);
-            const isConfigured = !!(prj && prj.configured);
-            const isUnconfigured = !!(draft.project && !isConfigured);
+            const prj = isElecBatching ? null : projectByName(draft.project);
+            const isConfigured = isElecBatching ? true : !!(prj && prj.configured);
+            const isUnconfigured = !isElecBatching && !!(draft.project && !isConfigured);
             const isAdmin = currentUser && currentUser.key === 'admin';
 
             let unconfiguredBanner = '';
@@ -9897,11 +10137,34 @@
                 '<div class="form-field"><label>Kind of Activity</label><input type="text" value="' + (draft.confinedActivity || draft.activity) + '" readonly></div>' +
                 '<div class="form-field"><label>Date</label><input type="text" value="' + fmtDate(draft.createdAt) + '" readonly></div>' +
                 '<div class="form-field"><label>Time</label><input type="text" value="' + fmtTime(draft.createdAt) + '" readonly></div>' +
-                '<div class="form-field"><label>Weather (auto)</label><input type="text" value="' + draft.weather + '" readonly></div>' +
-                '<div class="form-field" id="ff-project"><label>Project <span class="req">*</span></label><select id="inProject" onchange="onProjectChange()"><option value="">Select project&hellip;</option>' +
-                PROJECTS.map(p => '<option value="' + p.name + '" ' + (draft.project === p.name ? 'selected' : '') + '>' + p.name + ' (' + (p.configured ? '✓ Configured' : '⚠️ Unconfigured — Locked') + ')</option>').join('') +
-                '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Project must be configured by Admin before permits can be filled.</div></div>' +
-                renderUniversalOrgAndLocationHtml(disAttr);
+                '<div class="form-field"><label>Weather (auto)</label><input type="text" value="' + draft.weather + '" readonly></div>';
+
+            if (isElectrical) {
+                const isBpScope = draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant';
+                html += '<div class="form-field full" id="ff-elec-site-type"><label>Facility / Workplace Scope <span class="req">*</span></label><div class="radio-row">' +
+                    '<label class="radio-pill ' + (isBpScope ? 'sel' : '') + '"><input type="radio" name="elecSiteType" value="batching_plant" ' + (isBpScope ? 'checked' : '') + ' onchange="onElectricalSiteTypeChange(\'batching_plant\')"' + disAttr + '> 🏭 Batching Plant</label>' +
+                    '<label class="radio-pill ' + (!isBpScope ? 'sel' : '') + '"><input type="radio" name="elecSiteType" value="site" ' + (!isBpScope ? 'checked' : '') + ' onchange="onElectricalSiteTypeChange(\'site\')"' + disAttr + '> 🏗️ Site (Tower / Basement / Manual)</label>' +
+                    '</div>' +
+                    (isBpScope
+                        ? '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--orange);"></i> <b>Scope Rule:</b> Batching Plant is a dedicated standalone facility. Project selection is disabled / unavailable, and location is restricted strictly to <b>Manual</b> entry.</div>'
+                        : '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--blue);"></i> <b>Scope Rule:</b> For Site scope, project selection below is mandatory. Choose between Tower, Basement/Podium, or Manual location options.</div>') +
+                    '</div>';
+            }
+
+            if (isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant')) {
+                html += '<div class="form-field" id="ff-project"><label>Project <span class="badge badge-info" style="font-size:10.5px;padding:2px 7px;margin-left:6px;background:#EDE7F6;color:#5E35B1;border:1px solid #D1C4E9;"><i class="fa-solid fa-lock"></i> Only Available for Site Scope</span></label>' +
+                    '<select id="inProject" disabled style="background:#F1F5F9;cursor:not-allowed;color:#64748B;font-weight:500;">' +
+                    '<option value="" selected>Not Applicable &mdash; Batching Plant (Dedicated Facility)</option>' +
+                    '</select>' +
+                    '<div class="form-hint" style="font-size:11.5px;color:var(--text-muted);margin-top:4px;"><i class="fa-solid fa-circle-info" style="color:var(--orange);"></i> Project selection is only available when scope of work is <b>Site</b>. Batching Plant operates as an independent dedicated workplace.</div>' +
+                    '</div>';
+            } else {
+                html += '<div class="form-field" id="ff-project"><label>Project <span class="req">*</span></label><select id="inProject" onchange="onProjectChange()"><option value="">Select project&hellip;</option>' +
+                    PROJECTS.map(p => '<option value="' + p.name + '" ' + (draft.project === p.name ? 'selected' : '') + '>' + p.name + ' (' + (p.configured ? '✓ Configured' : '⚠️ Unconfigured — Locked') + ')</option>').join('') +
+                    '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Project must be configured by Admin before permits can be filled.</div></div>';
+            }
+
+            html += renderUniversalOrgAndLocationHtml(disAttr);
 
             if (isConfined) {
                 // Confined Space Entry PT-04 specific fields per EHS_PTW_004
@@ -10029,18 +10292,9 @@
                 }
             } else if (isElectrical) {
                 // Electrical Work (HT / LT) specific fields per EHS_PTW_006
-                html += '<div class="form-field full" id="ff-elec-site-type"><label>Facility / Workplace Scope <span class="req">*</span></label><div class="radio-row">' +
-                    '<label class="radio-pill ' + (draft.electricalSiteType === 'batching_plant' ? 'sel' : '') + '"><input type="radio" name="elecSiteType" value="batching_plant" ' + (draft.electricalSiteType === 'batching_plant' ? 'checked' : '') + ' onchange="onElectricalSiteTypeChange(\'batching_plant\')"' + disAttr + '> 🏭 Batching Plant</label>' +
-                    '<label class="radio-pill ' + (draft.electricalSiteType !== 'batching_plant' ? 'sel' : '') + '"><input type="radio" name="elecSiteType" value="site" ' + (draft.electricalSiteType !== 'batching_plant' ? 'checked' : '') + ' onchange="onElectricalSiteTypeChange(\'site\')"' + disAttr + '> 🏗️ Site (Tower / Basement / Manual)</label>' +
-                    '</div>' +
-                    (draft.electricalSiteType === 'batching_plant'
-                        ? '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--orange);"></i> <b>Location Rule:</b> Batching Plant work location is restricted strictly to <b>Manual</b> entry.</div>'
-                        : '<div class="form-hint" style="margin-top:6px;font-size:11.5px;color:var(--text-muted);"><i class="fa-solid fa-circle-info" style="color:var(--blue);"></i> <b>Location Rule:</b> For Site work, choose between Tower, Basement/Podium, or Manual location options above.</div>') +
-                    '</div>';
-
                 html += '<div class="form-field" id="ff-shutdown-requester"><label>Name of the person taking Shutdown / Power Block <span class="req">*</span></label>' +
-                    '<input type="text" id="inShutdownRequester" value="' + escapeHtml(draft.shutdownRequester || currentUser.name || 'Permittee Electrician') + '" readonly style="background:#F8FAFC;cursor:not-allowed;font-weight:600;">' +
-                    '<div class="form-hint" style="font-size:11px;color:var(--text-muted);margin-top:4px;"><i class="fa-solid fa-user-lock"></i> Auto-assigned to Permittee Electrician filling this permit.</div></div>';
+                    '<input type="text" id="inShutdownRequester" value="' + escapeHtml(draft.shutdownRequester || currentUser.name || 'Permittee Electrician') + '" placeholder="Enter electrician name or auto-picked from signature..." oninput="draft.shutdownRequester=this.value; if(!draft.signerVerified){draft.signerName=this.value; currentUser.name=this.value;}" style="font-weight:600;">' +
+                    '<div class="form-hint" style="font-size:11px;color:var(--text-muted);margin-top:4px;"><i class="fa-solid fa-signature" style="color:var(--blue);"></i> Auto-picked from Permittee Electrician\'s digital signature in Step 4 (or enter name directly).</div></div>';
 
                 const halfHours = [];
                 for (let h = 0; h < 24; h++) {
@@ -10118,8 +10372,12 @@
 
         function onElectricalSiteTypeChange(type) {
             draft.electricalSiteType = type;
+            draft.facilityScope = type;
             if (type === 'batching_plant') {
                 draft.locationStructure = 'Manual';
+                draft.project = '';
+                draft.tower = '';
+                draft.gps = null;
             } else {
                 if (!draft.locationStructure || draft.locationStructure === 'Manual') {
                     draft.locationStructure = 'Tower';
@@ -10251,6 +10509,21 @@
             electrical: ['Tower', 'Basement/Podium', 'Manual'],
             blasting: ['Manual']
         };
+
+        function isProjectSelectionAvailable(subTypeOrDraft) {
+            if (!subTypeOrDraft) return true;
+            if (typeof subTypeOrDraft === 'string') {
+                if (subTypeOrDraft === 'batching_plant') return false;
+                if (subTypeOrDraft === 'site') return true;
+                return true;
+            }
+            const pt = ptypeOf(subTypeOrDraft);
+            if (pt === 'electrical') {
+                const scope = subTypeOrDraft.electricalSiteType || subTypeOrDraft.facilityScope;
+                return scope === 'site';
+            }
+            return true;
+        }
 
         function getAllowedLocationModes(ptype, subTypeOrDraft) {
             if (ptype === 'electrical') {
@@ -10643,9 +10916,12 @@
             const isGuardrail = ptypeOf(draft) === 'guardrail';
             const isConfined = ptypeOf(draft) === 'confined';
             const isBlasting = ptypeOf(draft) === 'blasting';
+            const isElectrical = ptypeOf(draft) === 'electrical';
             const answered = draft.checklist.filter(checklistItemComplete).length;
             const total = draft.checklist.length;
-            let html = isBlasting
+            let html = isElectrical
+                ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Electrical Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 14 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo was captured in Step 1.</div>'
+                : isBlasting
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Drilling &amp; Blasting Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 15 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Item 8 auto-picks site weather. Item 15 requires mandatory safety precautions. Work-area site photo is mandatory.</div>'
                 : isConfined
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Confined Space Entry Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 15 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Item 14 requires multi-gas detector test readings within safe limits. Item 15 requires the physical checklist attachment. Work-area site photo was captured in Step 1.</div>'
@@ -10655,7 +10931,7 @@
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Shaft Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 10 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo was captured in Step 1.</div>'
                 : isHw
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Hot Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 20 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo is mandatory before you can proceed.</div>'
-                : '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Excavation Safety Checklist — ' + pMeta(draft).form + ' &sect;II. Every item requires a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo and the drawing indicating the proposed excavation are both mandatory before you can proceed.</div>';
+                : '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Excavation Safety Checklist — ' + pMeta(draft).form + ' &sect;II. Every item requires a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo is mandatory before you can proceed (drawing plan is optional).</div>';
             html += '<div class="checklist-progress"><span style="font-size:12px;font-weight:700;color:var(--navy);" id="ck2ProgressTxt">' + answered + ' / ' + total + ' complete</span><div class="bar"><div class="fill" id="ck2ProgressFill" style="width:' + Math.round((answered / total) * 100) + '%;"></div></div></div>';
             html += '<div class="ck2-summary pending" id="ck2Summary"></div>';
             draft.checklist.forEach((c, i) => {
@@ -10810,9 +11086,9 @@
                     '</div></div>';
             }
 
-            if (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting) {
-                html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Drawing Indicating Proposed Excavation <span class="req">*</span></div>';
-                html += '<div class="form-hint" style="margin-bottom:8px;">Mandatory per EHS_PTW_001 Note &mdash; submission is blocked without the excavation drawing. Accepted formats: PDF, DWG, DXF, JPG, PNG.</div>';
+            if (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting && !isElectrical) {
+                html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Drawing Indicating Proposed Excavation <span class="badge badge-info" style="font-size:11px;margin-left:6px;">Optional</span></div>';
+                html += '<div class="form-hint" style="margin-bottom:8px;">Optional attachment &mdash; attach excavation drawing plan if available (not mandatory for submission). Accepted formats: PDF, DWG, DXF, JPG, PNG.</div>';
                 if (draft.drawing) {
                     const dr = draft.drawing;
                     html += '<div style="max-width:440px;"><div class="file-card">' +
@@ -10952,8 +11228,10 @@
             const isConfined = ptypeOf(draft) === 'confined';
             const isBlasting = ptypeOf(draft) === 'blasting';
             const isBlastingOp = isBlasting && (draft.drillingBlastingType === 'blasting' || draft.dbOperationType === 'Blasting');
-            const prj = projectByName(draft.project);
-            const prjConfigured = !!(prj && prj.configured);
+            const isElectrical = ptypeOf(draft) === 'electrical';
+            const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
+            const prj = isElecBatching ? null : projectByName(draft.project);
+            const prjConfigured = isElecBatching ? true : !!(prj && prj.configured);
             const isManual = (draft.locationStructure === 'Manual');
             const isTower = (draft.locationStructure || 'Tower') === 'Tower';
             const locValid = isManual
@@ -10972,8 +11250,10 @@
                 distVal && !isNaN(parseFloat(distVal)) && parseFloat(distVal) > 0
             );
 
-            const masterOk = prjConfigured && !!(draft.project && locValid && orgValid && rigOk && (
-                isBlasting
+            const masterOk = prjConfigured && !!((isElecBatching || draft.project) && locValid && orgValid && rigOk && (
+                isElectrical
+                    ? (draft.shutdownWhy && draft.shutdownWhy.trim() && draft.apparatusList && draft.apparatusList.length > 0 && draft.approxShutdownFrom && draft.approxShutdownTo && draft.approxShutdownFrom < draft.approxShutdownTo && draft.elecSafeToWork && draft.elecLotoDone && draft.elecLotoRegisterNo && draft.elecLotoRegisterNo.trim() && draft.elecLotoTime && draft.elecLotoDate && draft.elecStatutoryDecl)
+                    : isBlasting
                     ? (draft.drillingBlastingType && draft.dbDateTime && draft.dbHolesCount && parseInt(draft.dbHolesCount, 10) >= 1 && (
                         isBlastingOp
                             ? (draft.dbChargeAmount && parseFloat(draft.dbChargeAmount) > 0 && draft.dbBlastDiameter && parseFloat(draft.dbBlastDiameter) > 0 && draft.dbBlastDepth && parseFloat(draft.dbBlastDepth) > 0 && draft.dbExplosiveType && BLASTING_EXPLOSIVE_TYPES.includes(draft.dbExplosiveType))
@@ -10991,17 +11271,17 @@
             ));
             const radius = (prj && prj.radius) || 150;
             const dist = (draft.gps && prj && prj.site) ? haversine(draft.gps.lat, draft.gps.lng, prj.site.lat, prj.site.lng) : Infinity;
-            const gpsOk = !!(draft.gps && draft.gps.within && dist <= radius);
+            const gpsOk = isElecBatching ? !!draft.gps : !!(draft.gps && draft.gps.within && dist <= radius);
             const checklistOk = draft.checklist.every(checklistItemComplete);
-            const attachOk = (isShaft || isGuardrail || isConfined || isBlasting) ? !!draft.sitePhoto : (!!draft.sitePhoto && (isHw || !!draft.drawing));
+            const attachOk = !!draft.sitePhoto;
             const durOk = !!(draft.startTime && draft.validTillTime && draft.validTillTime > draft.startTime && (!isBlastingOp || draft.validTillTime <= '18:30'));
             function row(ok, label) { return '<div class="vcheck ' + (ok ? 'ok' : 'bad') + '"><i class="fa-solid ' + (ok ? 'fa-circle-check' : 'fa-circle-xmark') + '"></i> ' + label + '</div>'; }
             return '<div class="card card-pad" style="margin-top:18px;"><div class="card-title">Pre-Submission Validation</div><div class="vcheck-list">' +
-                row(prjConfigured, 'Project Worksites &amp; GPS Geofencing configured by Admin') +
-                row(masterOk, isBlasting ? 'Master Data completed (Manual Work Area, Operation Specs &amp; Rig Parameters)' : isConfined ? 'Master Data completed (Location, Activity, Personnel &amp; Pre-Entry Inspection Declaration)' : isGuardrail ? 'Master Data completed (Location, Unit/Area, Activities &amp; Organization)' : isShaft ? 'Master Data completed (Structure, Floor, Personnel, Tag Verification &amp; Declaration)' : 'Master Data completed') +
-                row(gpsOk, 'GPS location verified') +
+                row(prjConfigured, isElecBatching ? 'Dedicated Workplace Scope &mdash; Batching Plant Facility (Project bypass active)' : 'Project Worksites &amp; GPS Geofencing configured by Admin') +
+                row(masterOk, isElectrical ? 'Master Data completed (Apparatus, Shutdown Hours, LOTO &amp; Pre-Work Statutory Declaration)' : isBlasting ? 'Master Data completed (Manual Work Area, Operation Specs &amp; Rig Parameters)' : isConfined ? 'Master Data completed (Location, Activity, Personnel &amp; Pre-Entry Inspection Declaration)' : isGuardrail ? 'Master Data completed (Location, Unit/Area, Activities &amp; Organization)' : isShaft ? 'Master Data completed (Structure, Floor, Personnel, Tag Verification &amp; Declaration)' : 'Master Data completed') +
+                row(gpsOk, isElecBatching ? 'GPS location captured (Batching Plant)' : 'GPS location verified') +
                 row(checklistOk, 'Safety Checklist completed (' + draft.checklist.filter(checklistItemComplete).length + ' of ' + draft.checklist.length + (isConfined ? ' &bull; Gas Limits &amp; Attachment verified' : (isBlasting ? ' &bull; Item 15 Precautions verified' : '')) + ')') +
-                row(attachOk, (isShaft || isGuardrail || isConfined || isBlasting) ? 'Mandatory work-area site photo uploaded (Step 1)' : isHw ? 'Mandatory work-area site photo uploaded' : 'Mandatory attachments uploaded (site photo + excavation drawing)') +
+                row(attachOk, 'Mandatory work-area site photo uploaded (Step 2)') +
                 row(durOk, isBlastingOp ? 'Start / End times valid (within 18:30 IST sunset hard stop, start &lt; end)' : 'Start / End times valid within office hours (start &lt; end)') +
                 '</div></div>';
         }
@@ -11022,6 +11302,7 @@
             const isConfined = ptypeOf(draft) === 'confined';
             const isBlasting = ptypeOf(draft) === 'blasting';
             const isElectrical = ptypeOf(draft) === 'electrical';
+            const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
             const noItems = draft.checklist.filter(c => c.ans === 'no');
             const naItems = draft.checklist.filter(c => c.ans === 'na');
             let durTxt = '&mdash;';
@@ -11049,11 +11330,11 @@
                 : isHw
                 ? 'the Site Engineer for acknowledgment, then Tower Incharge for review, then EHS Safety Manager / Officer for verification'
                 : 'the Site Engineer for acknowledgment, then parallel disciplines (MEP, P&amp;M, IT), then Excavation Head, then EHS';
-            return '<div class="section-banner"><i class="fa-solid fa-eye"></i> ' + (correctionMode ? ('Review your corrections carefully. Re-submitting will restart the full approval workflow (' + routeTxt + ').') : ('Review every section carefully. Submitting will route this permit to ' + routeTxt + '.')) + '</div>' +
+            let html = '<div class="section-banner"><i class="fa-solid fa-eye"></i> ' + (correctionMode ? ('Review your corrections carefully. Re-submitting will restart the full approval workflow (' + routeTxt + ').') : ('Review every section carefully. Submitting will route this permit to ' + routeTxt + '.')) + '</div>' +
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-clipboard-list"></i> General Information</div>' +
                 '<div class="review-item"><div class="rk">Permit No.</div><div class="rv mono">' + draft.id + '</div></div>' +
                 '<div class="review-item"><div class="rk">Permit Type</div><div class="rv">' + pMeta(draft).code + ' &mdash; ' + pMeta(draft).name + '</div></div>' +
-                '<div class="review-item"><div class="rk">Project / Tower</div><div class="rv">' + draft.project + ' &mdash; ' + draft.tower + '</div></div>' +
+                '<div class="review-item"><div class="rk">Project / Tower</div><div class="rv">' + (isElecBatching ? ('Not Applicable (Batching Plant Facility) &mdash; ' + (draft.locManual || 'Dedicated Yard Area')) : (draft.project + ' &mdash; ' + draft.tower)) + '</div></div>' +
                 '<div class="review-item"><div class="rk">Location</div><div class="rv">' + draft.location + '</div></div>' +
                 '<div class="review-item"><div class="rk">' + (correctionMode ? 'GPS (Worksite)' : 'GPS') + '</div><div class="rv">' + (draft.gps ? (draft.gps.lat.toFixed(5) + ', ' + draft.gps.lng.toFixed(5) + (correctionMode ? ' <button type="button" class="btn btn-xs btn-ghost" onclick="captureLocationForStep1()" style="margin-left:8px;"><i class="fa-solid fa-location-crosshairs"></i> Re-capture GPS</button>' : '')) : (correctionMode ? '<button type="button" class="btn btn-xs btn-primary" onclick="captureLocationForStep1()"><i class="fa-solid fa-location-crosshairs"></i> Capture Current GPS</button>' : '&mdash;')) + '</div></div>' +
                 '<div class="review-item"><div class="rk">Weather</div><div class="rv">' + draft.weather + '</div></div>' +
@@ -11232,11 +11513,15 @@
                     )
                 ) +
                 '</div>';
+            return html;
         }
         function wireStep4() {
             if (draft && draft.signerVerified && !(draft.signature && draft.signature.dataUrl)) {
                 initSigPad('seSigPad', function (dataUrl) {
                     draft.signature = dataUrl ? { dataUrl: dataUrl, at: nowTime(), by: draft.signerName, consent: true } : null;
+                    if (ptypeOf(draft) === 'electrical' && draft.signerName) {
+                        draft.shutdownRequester = draft.signerName;
+                    }
                     updateNextButtonState();
                 });
             }
@@ -11281,6 +11566,9 @@
             draft.signerVerified = true;
             currentUser.name = val;
             draft.createdBy = val;
+            if (ptypeOf(draft) === 'electrical') {
+                draft.shutdownRequester = val;
+            }
             renderWizStep();
             showToast('Signatory verified. Please provide your digital signature below.', 'ok');
             setTimeout(function () {
@@ -11334,13 +11622,20 @@
                 const isConfined = ptypeOf(draft) === 'confined';
                 const isBlasting = ptypeOf(draft) === 'blasting';
                 const isElectrical = ptypeOf(draft) === 'electrical';
-                const prj = projectByName(draft.project);
-                const prjConfigured = !!(prj && prj.configured);
-                const projOk = !!(draft.project && prjConfigured);
-                markField('ff-project', projOk);
-                if (!projOk) {
-                    updateNextButtonState(false, 1);
-                    return false;
+                const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
+                const projectRequired = !isElecBatching;
+
+                if (projectRequired) {
+                    const prj = projectByName(draft.project);
+                    const prjConfigured = !!(prj && prj.configured);
+                    const projOk = !!(draft.project && prjConfigured);
+                    markField('ff-project', projOk);
+                    if (!projOk) {
+                        updateNextButtonState(false, 1);
+                        return false;
+                    }
+                } else {
+                    markField('ff-project', true);
                 }
                 // Universal Organization check
                 let orgOk = true;
@@ -11603,7 +11898,7 @@
                 const isBlasting = ptypeOf(draft) === 'blasting';
                 const isElectrical = ptypeOf(draft) === 'electrical';
                 const itemsOk = draft.checklist.every(checklistItemComplete);
-                ok = itemsOk && !!draft.sitePhoto && (isHw || isShaft || isGuardrail || isConfined || isBlasting || isElectrical || !!draft.drawing);
+                ok = itemsOk && !!draft.sitePhoto;
 
                 let dbPrecOk = true;
                 if (isBlasting) {
@@ -11636,7 +11931,6 @@
                     const pend = [];
                     draft.checklist.forEach((c, i) => { const m = checklistItemMissing(c, i); if (m) pend.push(m); });
                     if (!draft.sitePhoto) pend.push('Work-area site photo pending');
-                    if (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting && !isElectrical && !draft.drawing) pend.push('Excavation drawing pending');
                     if (isBlasting && !dbPrecOk) pend.push('Item 15 specific precautions pending');
                     if (isBlasting && draft.drillingBlastingType === 'blasting' && !blastParamsOk) pend.push('Blasting rig & muffler parameters pending');
                     if (!pend.length) {
@@ -11821,6 +12115,9 @@
                     const sSig = (p.signature && p.signature.dataUrl) || p.signature || makeSimSignature(sName);
                     p.signatories[creatorRole] = { name: sName, sig: sSig, consent: true, at: (p.signature && p.signature.at) || nowTime() };
                     p.signature = { dataUrl: sSig, by: sName, at: (p.signature && p.signature.at) || nowTime(), consent: true };
+                    if (ptypeOf(p) === 'electrical') {
+                        p.shutdownRequester = sName;
+                    }
 
                     if (wasCorrection) {
                         resubmitReturnedPermit(p);
@@ -12135,6 +12432,7 @@
             const isExc = p && ptypeOf(p) === 'excavation';
             const isConfined = p && ptypeOf(p) === 'confined';
             const shLabel = (p && pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
+            const isBatchingPlantElec = p && ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
             function node(label, sub, state) {
                 return '<div class="tr-node ' + state + '"><div class="tr-circ">' +
                     (state === 'done' ? '<i class="fa-solid fa-check"></i>' :
@@ -12142,6 +12440,42 @@
                             state === 'current' ? '<i class="fa-solid fa-spinner fa-spin"></i>' :
                                 '<i class="fa-solid fa-clock"></i>') +
                     '</div><div class="tr-label">' + label + '</div><div class="tr-sub">' + sub + '</div></div>';
+            }
+
+            if (isBatchingPlantElec || a.kind === 'ext-batching-elec') {
+                const pmApproved = a.pm && a.pm.status === 'approved';
+                const pmCancelled = a.pm && (a.pm.status === 'rejected' || a.pm.status === 'cancelled');
+                const pmState = pmApproved ? 'done' : (pmCancelled ? 'rejected' : (ext.status === 'Pending P&M Acknowledgment' ? 'current' : ''));
+
+                const qeApproved = a.qualityEngineer && a.qualityEngineer.status === 'approved';
+                const qeCancelled = a.qualityEngineer && (a.qualityEngineer.status === 'rejected' || a.qualityEngineer.status === 'cancelled');
+                const qeState = qeApproved ? 'done' : (qeCancelled ? 'rejected' : (ext.status === 'Pending Quality Engineer Approval' ? 'current' : ''));
+
+                const ehsApproved = (a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved');
+                const ehsCancelled = (a.ehsManager && (a.ehsManager.status === 'rejected' || a.ehsManager.status === 'cancelled')) ||
+                    (a.ehsOfficer && (a.ehsOfficer.status === 'rejected' || a.ehsOfficer.status === 'cancelled'));
+                const ehsState = ehsApproved ? 'done' : (ehsCancelled ? 'rejected' : (ext.status === 'Pending EHS Approval' ? 'current' : ''));
+
+                const isDone = ext.status === 'Approved';
+                const isCancelled = ext.status === 'Cancelled' || ext.status === 'Rejected';
+                const isReturned = ext.status === 'Returned for Correction';
+
+                let html = '<div class="tracker" style="margin-top:10px;">';
+                html += node('Electrician Request', '+' + fmtExtDur(ext), 'done');
+                html += '<div class="tr-line ' + (pmApproved ? 'done' : '') + '"></div>';
+                html += node('P&M Engineer', pmApproved ? (a.pm.by || 'Step 2 Ack') : (pmCancelled ? 'Returned' : (ext.status === 'Pending P&M Acknowledgment' ? 'Step 2 Ack Req.' : 'Awaiting Ack')), pmState);
+                html += '<div class="tr-line ' + (qeApproved ? 'done' : '') + '"></div>';
+                html += node('Quality Engineer', qeApproved ? (a.qualityEngineer.by || 'Approved') : (qeCancelled ? 'Returned' : (ext.status === 'Pending Quality Engineer Approval' ? 'Section Head Review' : 'Awaiting Review')), qeState);
+                html += '<div class="tr-line ' + (ehsApproved ? 'done' : '') + '"></div>';
+                const ehsActor = (a.ehsManager && a.ehsManager.by) || (a.ehsOfficer && a.ehsOfficer.by) || 'Safety Review';
+                html += node('EHS Safety', ehsApproved ? (ehsActor + ' Endorsed') : (ehsCancelled ? 'Cancelled' : (ext.status === 'Pending EHS Approval' ? 'Endorsement Req.' : 'Awaiting Endorsement')), ehsState);
+                html += '<div class="tr-line ' + (isDone ? 'done' : '') + '"></div>';
+                html += node('Work Resumed', isDone ? 'Validity Extended' : (isCancelled ? 'Extension Cancelled' : (isReturned ? 'Returned for Correction' : 'Pending Approvals')), isDone ? 'done' : (isCancelled || isReturned ? 'rejected' : ''));
+                html += '</div>';
+                if (ext.rejectionOrigin) {
+                    html += '<div style="font-size:12px;color:#C62828;margin-top:6px;"><i class="fa-solid fa-rotate-left"></i> <b>Extension Returned for Correction by ' + escapeHtml(ext.rejectionOrigin.roleLabel) + ':</b> "' + escapeHtml(ext.rejectionOrigin.comment || '') + '" &mdash; revise duration/reason and resubmit.</div>';
+                }
+                return html;
             }
 
             const engApproved = a.siteEngineer && a.siteEngineer.status === 'approved';
@@ -12696,11 +13030,23 @@
             }
 
             // ---- EXTENSION FLOW ----
-            // Request Extension (Permittee only: Site Supervisor, or Blasting In-charge for PT-07)
+            // Work-specific extension policy:
+            // Blasting operations: strictly NO extension available under statutory safety rules.
+            // Drilling, Electrical, Civil operations: extensions enabled.
+            const isBlastingOp = isBlasting && (p.dbOperationType === 'Blasting' || p.drillingBlastingType === 'blasting');
             if (isPermitteeForP && ['Active', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status))) {
                 const started = workStarted(p);
-                const extChainDesc = 'Chain: Site Engineer Re-Ack &rarr; ' + shTitle + ' &rarr; EHS Safety.';
-                if (obsOpen) {
+                const isBatchingElec = ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
+                const extChainDesc = isBatchingElec
+                    ? 'Chain: P&M Engineer Step 2 &rarr; Quality Engineer (Section Head) &rarr; EHS Safety.'
+                    : ('Chain: Site Engineer Re-Ack &rarr; ' + shTitle + ' &rarr; EHS Safety.');
+                if (isBlastingOp) {
+                    html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);">' +
+                        '<div class="aa-title"><i class="fa-solid fa-ban" style="color:#C62828;"></i> Extension Not Permitted for Blasting Operations</div>' +
+                        '<div class="aa-desc">Under statutory safety regulations (PESO / MMR / DGMS), blasting permits cannot be granted extensions beyond their scheduled daylight blast window. If blasting work cannot be completed, close and surrender this permit and initiate a fresh PT-07 permit.</div>' +
+                        '<button class="btn btn-ghost" disabled style="cursor:not-allowed;"><i class="fa-solid fa-ban"></i> No Extension Available (Blasting)</button>' +
+                        '</div>';
+                } else if (obsOpen) {
                     html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);opacity:0.75;">' +
                         '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--purple);"></i> Extension Request Blocked</div>' +
                         '<div class="aa-desc" style="color:#C62828;"><i class="fa-solid fa-ban"></i> Extensions are BLOCKED while an Observation is open. Resolve the observation first.</div>' +
@@ -12732,11 +13078,14 @@
             if (p.extension && !['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status)) {
                 const ext = p.extension;
                 const extDurTxt = fmtExtDur(ext);
+                const isBatchingElec = ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
                 // Stage: Returned for Correction
                 if (ext.status === 'Returned for Correction') {
                     const origLabel = ext.rejectionOrigin ? ext.rejectionOrigin.roleLabel : 'Approver';
                     const origComment = ext.rejectionOrigin ? ext.rejectionOrigin.comment : '';
-                    const extResubmitDesc = 'Revise the requested duration or remarks. Upon resubmission, it will route to the Site Engineer for on-site re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.';
+                    const extResubmitDesc = isBatchingElec
+                        ? ('Revise the requested duration or remarks. Upon resubmission, it will route to the P&M Engineer for Step 2 re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.')
+                        : ('Revise the requested duration or remarks. Upon resubmission, it will route to the Site Engineer for on-site re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.');
                     if (isPermitteeForP) {
                         html += '<div class="approval-action-card" style="border-color:var(--red);background:var(--red-bg);">' +
                             '<div class="aa-title"><i class="fa-solid fa-rotate-left" style="color:var(--red);"></i> Extension Returned for Correction</div>' +
@@ -12744,9 +13093,48 @@
                             '<button class="btn btn-primary" onclick="openReviseExtensionModal(\'' + p.id + '\')"><i class="fa-solid fa-pen-to-square"></i> Revise Extension &amp; Resubmit</button>' +
                             '</div>';
                     } else {
+                        const permLabel = (ptypeOf(p) === 'electrical') ? 'Electrician' : ((ptypeOf(p) === 'blasting') ? 'Blasting In-charge' : 'Site Supervisor');
                         html += '<div class="approval-action-card" style="border-color:var(--red);background:rgba(198,40,40,0.04);">' +
                             '<div class="aa-title" style="color:var(--red);"><i class="fa-solid fa-clock"></i> Extension Returned for Correction</div>' +
-                            '<div class="aa-desc">Extension request was returned by <b>' + escapeHtml(origLabel) + '</b>. Currently awaiting Site Supervisor revision.</div>' +
+                            '<div class="aa-desc">Extension request was returned by <b>' + escapeHtml(origLabel) + '</b>. Currently awaiting ' + permLabel + ' revision.</div>' +
+                            '</div>';
+                    }
+                }
+                // Stage: Pending P&M Engineer Step 2 Acknowledgment
+                else if (ext.status === 'Pending P&M Acknowledgment') {
+                    const isReAck = !!ext.isReAck;
+                    const origLabel = ext.rejectionOrigin ? ext.rejectionOrigin.roleLabel : 'Quality Engineer (Section Head)';
+                    if (rk === 'pm') {
+                        html += '<div class="approval-action-card" style="border-color:var(--blue);background:rgba(21,101,192,0.06);">' +
+                            '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--blue);"></i> ' + (isReAck ? 'Extension Request: P&M Engineer Step 2 Re-Acknowledgment' : 'Extension Request: P&M Engineer Step 2 Acknowledgment') + '</div>' +
+                            '<div class="aa-desc"><b>Permittee Electrician ' + (isReAck ? 'revised extension request' : 'requested extension') + ':</b> "' + escapeHtml(ext.reason) + '" &middot; Requested: +' + extDurTxt + '. Inspect batching plant electrical installations and re-acknowledge to ' + (isReAck ? ('return directly to ' + escapeHtml(origLabel)) : 'forward to Quality Engineer (Section Head)') + '. Gated by GPS and digital signature.</div>' +
+                            '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+                            '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'approve-ext\')"><i class="fa-solid fa-check"></i> ' + (isReAck ? ('Re-Acknowledge &amp; Return to ' + escapeHtml(origLabel)) : 'Step 2 Acknowledge Extension') + '</button>' +
+                            '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-ext\')"><i class="fa-solid fa-ban"></i> Reject Extension</button>' +
+                            '</div></div>';
+                    } else if (rk !== 'admin') {
+                        html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);">' +
+                            '<div class="aa-title"><i class="fa-solid fa-clock"></i> Extension Request: Awaiting P&M Engineer Step 2 ' + (isReAck ? 'Re-Acknowledgment' : 'Acknowledgment') + '</div>' +
+                            '<div class="aa-desc">Extension requested: "' + escapeHtml(ext.reason) + '" (+' + extDurTxt + '). Awaiting Step 2 ' + (isReAck ? 're-acknowledgment' : 'acknowledgment') + ' by the <b>P&M Engineer</b>' + (isReAck ? (' before returning to ' + escapeHtml(origLabel)) : ' before routing to Quality Engineer') + '.</div>' +
+                            '</div>';
+                    }
+                }
+                // Stage: Pending Quality Engineer Approval (Section Head for Batching Plant)
+                else if (ext.status === 'Pending Quality Engineer Approval') {
+                    const extQeAckDesc = '<b>Permittee Electrician requested extension:</b> "' + escapeHtml(ext.reason) + '" &middot; Requested: +' + extDurTxt + '. Step 2 acknowledged by P&M Engineer (' + escapeHtml((ext.approvals && ext.approvals.pm && ext.approvals.pm.by) || 'P&M Engineer') + '). Approve to route to EHS Safety for final endorsement, or Reject to return for correction.';
+                    const extQeAwaitingDesc = 'Extension requested: "' + escapeHtml(ext.reason) + '" (+' + extDurTxt + '). Step 2 acknowledged by P&M Engineer. Awaiting review and approval by <b>Quality Engineer (Section Head)</b>.';
+                    if (rk === 'quality-engineer') {
+                        html += '<div class="approval-action-card" style="border-color:var(--purple);background:var(--purple-bg);">' +
+                            '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--purple);"></i> Extension Request: Quality Engineer (Section Head) Review</div>' +
+                            '<div class="aa-desc">' + extQeAckDesc + '</div>' +
+                            '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
+                            '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'approve-ext\')"><i class="fa-solid fa-check"></i> Approve Extension</button>' +
+                            '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-ext\')"><i class="fa-solid fa-ban"></i> Reject Extension</button>' +
+                            '</div></div>';
+                    } else if (rk !== 'admin') {
+                        html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);">' +
+                            '<div class="aa-title"><i class="fa-solid fa-clock"></i> Extension Request: Awaiting Quality Engineer Review</div>' +
+                            '<div class="aa-desc">' + extQeAwaitingDesc + '</div>' +
                             '</div>';
                     }
                 }
@@ -12793,7 +13181,12 @@
                 // Stage 3: Pending EHS Approval
                 else if (ext.status === 'Pending EHS Approval') {
                     const isEhs = ['ehs-manager', 'ehs-officer'].includes(rk);
-                    const extEhsDesc = '<b>Supervisor requested extension:</b> "' + escapeHtml(ext.reason) + '" &middot; Requested: +' + extDurTxt + '. Re-acknowledged by Site Engineer &amp; endorsed by ' + shTitle + '. Grant final approval to extend validity, or Reject to cancel extension.';
+                    const extEhsDesc = isBatchingElec
+                        ? ('<b>Permittee Electrician requested extension:</b> "' + escapeHtml(ext.reason) + '" &middot; Requested: +' + extDurTxt + '. Acknowledged by P&M Engineer &amp; approved by Quality Engineer (Section Head). Grant final approval to extend validity, or Reject to cancel extension.')
+                        : ('<b>Supervisor requested extension:</b> "' + escapeHtml(ext.reason) + '" &middot; Requested: +' + extDurTxt + '. Re-acknowledged by Site Engineer &amp; endorsed by ' + shTitle + '. Grant final approval to extend validity, or Reject to cancel extension.');
+                    const extAwaitingDesc = isBatchingElec
+                        ? ('Extension requested: "' + escapeHtml(ext.reason) + '" (+' + extDurTxt + '). Approved by Quality Engineer (Section Head). Awaiting final endorsement by an <b>EHS Safety Manager or Officer</b>.')
+                        : ('Extension requested: "' + escapeHtml(ext.reason) + '" (+' + extDurTxt + '). Endorsed by ' + shTitle + '. Awaiting final endorsement by an <b>EHS Safety Manager or Officer</b>.');
                     if (isEhs) {
                         html += '<div class="approval-action-card" style="border-color:var(--green);background:rgba(46,125,50,0.06);">' +
                             '<div class="aa-title"><i class="fa-solid fa-stopwatch" style="color:var(--green);"></i> Extension Request: EHS Safety Final Endorsement</div>' +
@@ -12805,7 +13198,7 @@
                     } else if (rk !== 'admin') {
                         html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);">' +
                             '<div class="aa-title"><i class="fa-solid fa-clock"></i> Extension Request: Awaiting EHS Safety Verification</div>' +
-                            '<div class="aa-desc">Extension requested: "' + escapeHtml(ext.reason) + '" (+' + extDurTxt + '). Endorsed by ' + shTitle + '. Awaiting final endorsement by an <b>EHS Safety Manager or Officer</b>.</div>' +
+                            '<div class="aa-desc">' + extAwaitingDesc + '</div>' +
                             '</div>';
                     }
                 }
@@ -12930,6 +13323,14 @@
             if (action === 'approve-ext' || action === 'reject-ext') {
                 if (!p.extension) {
                     showToast('No active extension request found.', 'err');
+                    return;
+                }
+                if (p.extension.status === 'Pending P&M Acknowledgment' && rk !== 'pm') {
+                    showToast('Access Denied: Only P&M Engineer can acknowledge this extension.', 'err');
+                    return;
+                }
+                if (p.extension.status === 'Pending Quality Engineer Approval' && rk !== 'quality-engineer') {
+                    showToast('Access Denied: Only Quality Engineer can approve this extension stage.', 'err');
                     return;
                 }
                 if (p.extension.status === 'Pending Site Engineer' && rk !== 'site-engineer') {
@@ -13976,17 +14377,28 @@
 
         /* ---------- EXTENSION REQUEST MODAL ---------- */
         function openExtensionRequestModal(id) {
-            if (!currentUser || currentUser.key !== 'site-supervisor') {
-                showToast('Access Denied: Only Site Supervisors (Permittees) can request extensions.', 'err');
-                return;
-            }
             const p = PERMITS.find(x => x.id === id);
             if (!p) return;
+            const pt = ptypeOf(p);
+            const isElec = pt === 'electrical';
+            const isBlast = pt === 'blasting';
+            const isPermittee = isElec ? (currentUser && currentUser.key === 'electrician') : (isBlast ? (currentUser && currentUser.key === 'blasting-incharge') : (currentUser && currentUser.key === 'site-supervisor'));
+
+            if (!isPermittee) {
+                showToast('Access Denied: Only the designated Permittee / Initiator for this permit type can request extensions.', 'err');
+                return;
+            }
+
+            if (isBlast && (p.dbOperationType === 'Blasting' || p.drillingBlastingType === 'blasting')) {
+                showToast('Statutory Rule: Extensions are strictly prohibited for Blasting operations. Close and surrender this permit and initiate a fresh PT-07 permit.', 'err');
+                return;
+            }
+
             if (!workStarted(p)) {
                 showToast('An extension cannot be requested before the scheduled work start time (' + (p.startTime || 'validity start') + ' IST).', 'warn');
                 return;
             }
-            if (ptypeOf(p) === 'excavation' && !isExtensionRequestAllowed()) {
+            if (pt === 'excavation' && !isExtensionRequestAllowed()) {
                 showToast('Extension requests are turned off after 06:30 PM IST.', 'warn');
                 return;
             }
@@ -14114,12 +14526,17 @@
 
         /* ---------- REVISE EXTENSION MODAL (POST-REJECTION CORRECTION) ---------- */
         function openReviseExtensionModal(id) {
-            if (!currentUser || currentUser.key !== 'site-supervisor') {
-                showToast('Access Denied: Only Site Supervisors (Permittees) can revise and resubmit extensions.', 'err');
-                return;
-            }
             const p = PERMITS.find(x => x.id === id);
             if (!p || !p.extension) return;
+            const pt = ptypeOf(p);
+            const isElec = pt === 'electrical';
+            const isBlast = pt === 'blasting';
+            const isPermittee = isElec ? (currentUser && currentUser.key === 'electrician') : (isBlast ? (currentUser && currentUser.key === 'blasting-incharge') : (currentUser && currentUser.key === 'site-supervisor'));
+            if (!isPermittee) {
+                const reqRole = isElec ? 'Electrician' : (isBlast ? 'Blasting / Drilling In-charge' : 'Site Supervisor');
+                showToast('Access Denied: Only ' + reqRole + ' (Permittee) can revise and resubmit extensions.', 'err');
+                return;
+            }
             const rk = currentUser.key;
             const existingSigner = getPermitSignatory(p, rk);
             const hasStoredSigner = !!(existingSigner && existingSigner.name && existingSigner.sig);
@@ -14145,6 +14562,10 @@
             const cap = extensionCapMinutes(p);
             const origLabel = (ext && ext.rejectionOrigin && ext.rejectionOrigin.roleLabel) || 'Approver';
             const origComment = (ext && ext.rejectionOrigin && ext.rejectionOrigin.comment) || 'Corrections requested';
+            const isBatchingElec = ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
+            const reviseRouteDesc = isBatchingElec
+                ? ('Revise requested duration or reason below. Upon submission, this request will route to the P&M Engineer for Step 2 re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.')
+                : ('Revise requested duration or reason below. Upon submission, this request will route to the Site Engineer for on-site re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.');
 
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-rotate-left" style="color:var(--orange);"></i> Revise Extension Request &mdash; ' + p.id;
 
@@ -14167,7 +14588,7 @@
             const bannerHtml = '<div style="background:var(--red-bg);border:1px solid var(--red);border-radius:6px;padding:10px 12px;margin-bottom:12px;font-size:12.5px;color:var(--text);">' +
                 '<div style="font-weight:700;color:var(--red);margin-bottom:3px;"><i class="fa-solid fa-triangle-exclamation"></i> Returned by ' + escapeHtml(origLabel) + '</div>' +
                 '<div>"' + escapeHtml(origComment) + '"</div>' +
-                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:4px;">Revise requested duration or reason below. Upon submission, this request will route to the Site Engineer for on-site re-acknowledgment before returning directly to ' + escapeHtml(origLabel) + '.</div>' +
+                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:4px;">' + reviseRouteDesc + '</div>' +
                 '</div>';
 
             document.getElementById('actionModalBody').innerHTML =
@@ -14585,7 +15006,7 @@
                 } else if (ptypeOf(p) === 'electrical') {
                     const isBp = p.electricalSiteType === 'batching_plant';
                     kv('Electrical Work Facility', isBp ? 'Batching Plant' : 'Site Electrical Work', 'Permittee Role', 'Licensed Electrician');
-                    kv('Shutdown Reason / Why', p.shutdownWhy || p.elecShutdownWhy || '—');
+                    kv('Person Taking Shutdown', p.shutdownRequester || p.createdBy || 'Licensed Electrician', 'Shutdown Reason / Why', p.shutdownWhy || p.elecShutdownWhy || '—');
                     const appList = (p.electricalApparatus || []).join(', ') || '—';
                     kv('Apparatus to be Worked Upon', appList);
                     const approxTime = (p.elecShutdownFrom || '—') + ' to ' + (p.elecShutdownTo || '—') + ' hrs';
@@ -14725,9 +15146,14 @@
                     const shLabel = ((pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge')) + ' — Review & Approval';
                     if (isExt) {
                         const extRows = [];
-                        extRows.push(['siteEngineer', 'Site Engineer — Verification & Re-acknowledgment']);
-                        if (!isBlast) {
-                            extRows.push(['sectionHead', shLabel]);
+                        if (isElecBatching || (ch && ch.kind === 'ext-batching-elec')) {
+                            extRows.push(['pm', 'P&M Engineer — Verification & Step 2 Acknowledgment']);
+                            extRows.push(['qualityEngineer', 'Quality Engineer (Section Head) — Review & Approval']);
+                        } else {
+                            extRows.push(['siteEngineer', 'Site Engineer — Verification & Re-acknowledgment']);
+                            if (!isBlast) {
+                                extRows.push(['sectionHead', shLabel]);
+                            }
                         }
                         if (ch) {
                             if (ch.ehsManager && ch.ehsManager.status !== 'pending') extRows.push(['ehsManager', 'EHS Safety — Final Endorsement']);
@@ -15130,9 +15556,9 @@
                 const p = PERMITS.find(x => x.id === id);
                 if (!p) return;
                 const scope = currentUser ? roleTypeScope(currentUser.key) : null;
-                if (!permitMatchesScope(p, scope)) {
-                    // Strict domain isolation: a Section Head can never open other module's permits.
-                    showToast('Access restricted — ' + pMeta(p).short + ' permits are outside your approval domain.', 'warn');
+                if (!isPermitVisibleToRole(p, currentUser ? currentUser.key : null) || !permitMatchesScope(p, scope)) {
+                    // Strict domain and workflow isolation: only roles in the approval flow can view permits.
+                    showToast('Access restricted — this permit is outside your approval flow domain.', 'warn');
                     if (!silentRefresh) goTo('register');
                     return;
                 }
@@ -15318,6 +15744,7 @@
                                         ('<div class="review-item"><div class="rk">Area / Landmark</div><div class="rv">' + escapeHtml(p.locManualArea || p.locManual || p.location || '—') + '</div></div>')
                                     )
                                 ) +
+                                '<div class="review-item"><div class="rk">Person Taking Shutdown</div><div class="rv"><b>' + escapeHtml(p.shutdownRequester || p.createdBy || 'Permittee Electrician') + '</b></div></div>' +
                                 '<div class="review-item"><div class="rk">Reason for Shutdown</div><div class="rv">' + escapeHtml(p.shutdownWhy || p.electricalShutdownWhy || p.description || '—') + '</div></div>' +
                                 '<div class="review-item"><div class="rk">Apparatus to be Worked On</div><div class="rv">' + appChips + '</div></div>' +
                                 '<div class="review-item"><div class="rk">Approx. Shutdown Hours</div><div class="rv"><b>' + (p.shutdownTimeFrom || '—') + ' hrs</b> to <b>' + (p.shutdownTimeTo || '—') + ' hrs</b></div></div>' +

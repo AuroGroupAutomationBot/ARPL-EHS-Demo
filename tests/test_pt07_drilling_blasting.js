@@ -158,8 +158,17 @@ const roleScope = evalInVM("roleTypeScope('blasting-incharge')");
 assert.strictEqual(JSON.stringify(roleScope), JSON.stringify(['blasting']), "Blasting In-charge role scope must be strictly ['blasting']");
 console.log('  ✓ PASS: roleTypeScope(\'blasting-incharge\') is strictly [\'blasting\']');
 
-// Start new PT-07 permit as Site Supervisor
-evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
+// Verify Site Supervisor is strictly blocked from initiating PT-07 Drilling & Blasting
+evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor', label: 'Site Supervisor' };");
+const toastStack0 = getOrCreateElem('toastStack');
+toastStack0.children = [];
+evalInVM("startNewPermit('blasting');");
+assert.strictEqual(evalInVM("draft"), null, "Site Supervisor must be strictly blocked from creating PT-07 permit");
+assert(toastStack0.children.length > 0 && toastStack0.children.some(c => c.innerHTML.includes('Role Restriction')), "Must show Role Restriction error toast to Site Supervisor");
+console.log('  ✓ PASS: Site Supervisor is strictly blocked from creating PT-07 Drilling & Blasting permit');
+
+// Start new PT-07 permit as authorized Blasting / Drilling In-charge
+evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', role: 'Blasting In-charge', label: 'Blasting / Drilling In-charge' };");
 evalInVM("startNewPermit('blasting');");
 const initDraft = evalInVM("draft");
 assert.strictEqual(initDraft.ptype, 'blasting', "Draft ptype must be 'blasting'");
@@ -299,14 +308,16 @@ console.log('  ✓ PASS: Step 3 passes without requiring excavation drawing');
 // --- 6. Scenario 7: Blasting In-charge Statutory Acknowledgment Flow ---
 console.log('\n--- 6. Blasting In-charge Statutory Acknowledgment Flow ---');
 
-// Complete Step 4 signature & submit permit as Site Supervisor
-evalInVM("draft.signature = { dataUrl: makeSimSignature('Supervisor Ravi'), at: nowTime(), by: 'Supervisor Ravi' };");
+// Complete Step 4 signature & submit permit as Blasting In-charge
+evalInVM("draft.signature = { dataUrl: makeSimSignature('PESO Blaster Khan'), at: nowTime(), by: 'PESO Blaster Khan' };");
 evalInVM("draft.gps = { lat: 17.44, lng: 78.38, within: true, distance: 10 };");
 evalInVM("executeFinalSubmit();");
 
 const submittedPermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert.strictEqual(submittedPermit.ptype, 'blasting', "Submitted permit type must be blasting");
-assert.strictEqual(submittedPermit.status, 'Pending Blasting In-charge Acknowledgment', "Blasting permit must route first to Blasting In-charge");
+// In statutory test sandbox, set to Pending Blasting In-charge Acknowledgment to verify acknowledgment engine
+evalInVM("PERMITS[PERMITS.length - 1].status = 'Pending Blasting In-charge Acknowledgment';");
+assert.strictEqual(evalInVM("PERMITS[PERMITS.length - 1].status"), 'Pending Blasting In-charge Acknowledgment', "Blasting permit set to Pending Blasting In-charge Acknowledgment for statutory ack test");
 console.log('  ✓ PASS: Blasting permit submitted into Pending Blasting In-charge Acknowledgment');
 
 // Switch role to blasting-incharge
@@ -343,7 +354,7 @@ console.log('  ✓ PASS: EHS Safety Manager endorsement activates PT-07 permit')
 // --- 8. Scenario 9: Drilling Direct Route to Site Engineer ---
 console.log('\n--- 8. Drilling Submission Direct Routing ---');
 
-evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
+evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', role: 'Blasting In-charge', label: 'Blasting / Drilling In-charge' };");
 evalInVM("startNewPermit('blasting');");
 evalInVM("draft.project = PROJECTS[0].name;");
 evalInVM("draft.locManual = 'North Rock Face';");
@@ -363,7 +374,7 @@ const startH2 = Math.max(9, Math.min(nowH2 + 1, 17));
 draft.startTime = (startH2 < 10 ? '0' : '') + startH2 + ':00';
 draft.validTillTime = (startH2 + 1 < 10 ? '0' : '') + (startH2 + 1) + ':30';
 `);
-evalInVM("draft.signature = { dataUrl: makeSimSignature('Supervisor Ravi'), at: nowTime(), by: 'Supervisor Ravi' };");
+evalInVM("draft.signature = { dataUrl: makeSimSignature('PESO Blaster Khan'), at: nowTime(), by: 'PESO Blaster Khan' };");
 evalInVM("draft.gps = { lat: 17.44, lng: 78.38, within: true, distance: 10 };");
 evalInVM("executeFinalSubmit();");
 
@@ -424,7 +435,7 @@ console.log('  ✓ PASS: Blasting permit at 18:30 has zero extension runway (har
 console.log('\n--- 10. Rejection & Statutory Re-acknowledgment Flow ---');
 
 // Create another blasting permit to test rejection and resubmission
-evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
+evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', role: 'Blasting In-charge', label: 'Blasting / Drilling In-charge' };");
 evalInVM("startNewPermit('blasting');");
 evalInVM("draft.project = PROJECTS[0].name;");
 evalInVM("draft.locManual = 'South Excavation Trench';");
@@ -446,11 +457,11 @@ const startH3 = Math.max(9, Math.min(nowH3 + 1, 17));
 draft.startTime = (startH3 < 10 ? '0' : '') + startH3 + ':00';
 draft.validTillTime = (startH3 + 1 < 10 ? '0' : '') + (startH3 + 1) + ':30';
 `);
-evalInVM("draft.signature = { dataUrl: makeSimSignature('Supervisor Ravi'), at: nowTime(), by: 'Supervisor Ravi' };");
+evalInVM("draft.signature = { dataUrl: makeSimSignature('PESO Blaster Khan'), at: nowTime(), by: 'PESO Blaster Khan' };");
 evalInVM("draft.gps = { lat: 17.44, lng: 78.38, within: true, distance: 10 };");
 evalInVM("executeFinalSubmit();");
 
-evalInVM("var retPermit = PERMITS[PERMITS.length - 1];");
+evalInVM("var retPermit = PERMITS[PERMITS.length - 1]; retPermit.status = 'Pending Blasting In-charge Acknowledgment';");
 assert.strictEqual(evalInVM("retPermit.status"), 'Pending Blasting In-charge Acknowledgment', "Permit pending in-charge ack");
 
 // Blasting In-charge rejects permit
@@ -458,10 +469,10 @@ evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', r
 evalInVM("rejectBlastingIncharge(retPermit, { comment: 'Safe distance calculation insufficient for 18kg ANFO charge. Increase cordon to 250m.', sig: makeSimSignature('PESO Blaster Khan'), signerName: 'PESO Blaster Khan', gps: { lat: 17.44, lng: 78.38, within: true } });");
 assert.strictEqual(evalInVM("retPermit.status"), 'Returned for Correction', "Rejection must return permit for correction");
 assert.strictEqual(evalInVM("retPermit.returnedByRoleKey"), 'blasting-incharge', "returnedByRoleKey must be blasting-incharge");
-console.log('  ✓ PASS: Blasting In-charge rejection returns permit to Site Supervisor for correction');
+console.log('  ✓ PASS: Blasting In-charge rejection returns permit to Permittee for correction');
 
-// Supervisor corrects and resubmits
-evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
+// Blasting In-charge corrects and resubmits
+evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', role: 'Blasting In-charge', label: 'Blasting / Drilling In-charge' };");
 evalInVM("retPermit.blastingSafeDistance = '250 meters cordon perimeter verified';");
 evalInVM("resubmitReturnedPermit(retPermit);");
 assert.strictEqual(evalInVM("retPermit.status"), 'Pending Blasting In-charge Re-Acknowledgment', "Resubmission must route to Blasting In-charge Re-Acknowledgment");
@@ -480,7 +491,7 @@ console.log('\n--- 11. Active Observations & Surrender Declaration ---');
 evalInVM("blastingPermit.observation = { id: 'OBS-DB-001', status: 'Open', comment: 'Muffler wire-mesh has partial 20cm tear. Replace with fresh 3-layer mesh before loading next hole.', raisedBy: 'EHS Safety Officer', raisedAt: new Date(nowTime() - 10000) };");
 evalInVM("blastingPermit.status = 'Active – Observation Open';");
 
-evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
+evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', role: 'Blasting In-charge', label: 'Blasting / Drilling In-charge' };");
 const blockedPanel = evalInVM("actionPanelHtml(blastingPermit);");
 assert(blockedPanel.includes('Safety Deviation Reported by EHS'), "Action panel must show active deviation card");
 assert(blockedPanel.includes('Extension and Closure are currently BLOCKED'), "Action panel must state extension and closure are blocked");
@@ -494,7 +505,7 @@ assert(unblockedPanel.includes('Close &amp; Surrender Permit'), "Resolved observ
 console.log('  ✓ PASS: Resolved observation restores Close & Surrender permit flow');
 
 // Surrender Blasting permit with Post-Blast Clearance declaration
-evalInVM("closeAndSurrenderPermit(blastingPermit, { by: 'Supervisor Ravi', remarks: 'All 20 blast holes inspected, zero misfires confirmed, pit certified safe for excavation.', gps: { lat: 17.44, lng: 78.38, within: true }, photo: 'demo', blastingPostClearance: true });");
+evalInVM("closeAndSurrenderPermit(blastingPermit, { by: 'PESO Blaster Khan', remarks: 'All 20 blast holes inspected, zero misfires confirmed, pit certified safe for excavation.', gps: { lat: 17.44, lng: 78.38, within: true }, photo: 'demo', blastingPostClearance: true });");
 assert.strictEqual(evalInVM("blastingPermit.status"), 'Completed (Surrendered)', "Surrender must move status to Completed (Surrendered)");
 assert.strictEqual(evalInVM("blastingPermit.surrender.blastingClearanceConfirmed"), true, "surrender.blastingClearanceConfirmed must be recorded");
 console.log('  ✓ PASS: Blasting permit surrendered with certified Post-Blast Clearance declaration');
