@@ -1,6 +1,6 @@
 /**
  * Master Test Runner for ARPL EHS Permit-to-Work System
- * Runs all System Architecture suites + all 7 Dedicated Permit Work Type suites (PTW-001 to PTW-007)
+ * Runs all System Architecture suites + all 8 Dedicated Permit Work Type suites (PTW-001 to PTW-008)
  */
 
 const { execSync } = require('child_process');
@@ -23,7 +23,8 @@ const suites = [
     { num: 14, name: 'PTW-005 SHAFT WORK (FORM PTW-005) SPECIFICATION & COMPLIANCE', file: 'test_pt05_shaft_work.js' },
     { num: 15, name: 'PTW-006 ELECTRICAL WORK (FORM PTW-006) SPECIFICATION & COMPLIANCE', file: 'test_pt06_electrical_work.js' },
     { num: 16, name: 'PTW-007 DRILLING & BLASTING (FORM PTW-007) SPECIFICATION & COMPLIANCE', file: 'test_pt07_drilling_blasting.js' },
-    { num: 17, name: 'DIGITAL SIGNATURE PAD ENGINE & CROSS-PROCESS COMPLIANCE', file: 'test_digital_signature_pad.js' }
+    { num: 17, name: 'DIGITAL SIGNATURE PAD ENGINE & CROSS-PROCESS COMPLIANCE', file: 'test_digital_signature_pad.js' },
+    { num: 18, name: 'PTW-008 GENERAL WORK (FORM PTW-008) SPECIFICATION & COMPLIANCE', file: 'test_pt08_general_work.js' }
 ];
 
 console.log('================================================================');
@@ -46,5 +47,5 @@ for (const suite of suites) {
 
 console.log('\n================================================================');
 console.log(`MASTER TEST SUITE SUMMARY: ALL ${passedCount} / ${suites.length} SUITES PASSED CLEANLY (100% PASS RATE)`);
-console.log('ALL 7 PERMIT WORK TYPES (PTW-001 TO PTW-007) FULLY VALIDATED');
+console.log('ALL 8 PERMIT WORK TYPES (PTW-001 TO PTW-008) FULLY VALIDATED');
 console.log('================================================================');

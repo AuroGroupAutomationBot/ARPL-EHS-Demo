@@ -4,10 +4,10 @@
 
 ### Enterprise-Grade Digital Safety Governance for Construction Operations
 
-**PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting**
+**PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-17%20Suites%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-18%20Suites%20Passed-success?style=for-the-badge)](/)
 [![Coverage](https://img.shields.io/badge/Coverage-100%25-blue?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -43,6 +43,7 @@
    - 5.14 [PTW-006 Electrical Work Safety Checklist (14 Items)](#514-statutory-safety-checklist-ptw-006-electrical-work-ht--lt-14-items)
    - 5.15 [PTW-006 Electrical Work Master Specifications & Dual Topologies](#515-ptw-006-electrical-work-master-specifications--dual-topologies)
    - 5.16 [Universal Initiator Architecture & Form Activation Matrix](#516-universal-initiator-architecture--role-based-form-activation-matrix)
+   - 5.17 [PTW-008 General Work Safety Specifications & Multi-Tier Checklists](#517-ptw-008-general-work-safety-specifications--multi-tier-checklists)
 6. [Core Workflow: Permit Lifecycle State Machine](#6-core-workflow-permit-lifecycle-state-machine)
 7. [Approval Chain Architecture](#7-approval-chain-architecture)
    - 7.1 [Chain Data Schema per Permit Type](#71-chain-data-schema-per-permit-type-newchain)
@@ -57,13 +58,14 @@
    - 8.4 [PTW-004 Confined Space Entry (Gas Testing & Direct Spine)](#84-ptw-004-confined-space-entry-direct-to-ti-spine--atmospheric-testing)
    - 8.5 [PTW-005 Shaft Work (Dedicated MEP Clearance & Floor Dropdown)](#85-ptw-005-shaft-work-dedicated-mep-clearance--floor-dropdown)
    - 8.6 [PTW-007 Drilling & Blasting (Statutory Approval Lifecycle)](#86-ptw-007-drilling--blasting-end-to-end-statutory-approval-lifecycle)
-   - 8.7 [Rejection & Resubmission (Stale-Approval Rule)](#87-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
-   - 8.8 [Safety Observation & Stop-Work Lifecycle](#88-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
-   - 8.9 [Permit Extension Lifecycle](#89-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
-   - 8.10 [Work Completion, Housekeeping & Surrender Gate](#810-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
-   - 8.11 [4-Step Creation & Initiation Wizard Flow](#811-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
-   - 8.12 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#812-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
-   - 8.13 [Application-Wide Deterministic Navigation & Consistency Architecture](#813-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-engine)
+   - 8.7 [PTW-008 General Work (End-to-End Approval & Multi-Tier Safety Lifecycle)](#87-ptw-008-general-work-end-to-end-approval--multi-tier-safety-lifecycle)
+   - 8.8 [Rejection & Resubmission (Stale-Approval Rule)](#88-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
+   - 8.9 [Safety Observation & Stop-Work Lifecycle](#89-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
+   - 8.10 [Permit Extension Lifecycle](#810-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
+   - 8.11 [Work Completion, Housekeeping & Surrender Gate](#811-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
+   - 8.12 [4-Step Creation & Initiation Wizard Flow](#812-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
+   - 8.13 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#813-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
+   - 8.14 [Application-Wide Deterministic Navigation & Consistency Architecture](#814-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-engine)
 9. [Escalation & Auto-Expiry Engine](#9-escalation--auto-expiry-engine)
 10. [Safety Observation Workflow](#10-safety-observation-workflow)
 11. [Extension Workflow](#11-extension-workflow)
@@ -350,6 +352,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 | **PTW-005** | Shaft Work | `PTW-005` | 10 | 5-Stage (Sequential) | Dedicated MEP clearance step; scaffolding green tag verification; fall arresters; physical safety declaration across 39 floor levels. |
 | **PTW-006** | Electrical Work (HT / LT) | `PTW-006` | 14 | 4-Stage (BP) / 5-Stage (Site) | Initiated exclusively by Permittee Electrician; Facility scope radio toggle (Batching Plant vs Site); Project selection strictly available only for Site scope (locked with badge for Batching Plant); Batching Plant location strictly locked to Manual only; Mandatory reason for shutdown textarea; 10 apparatus multi-select options; Approximate shutdown hours ($from < to$); 3 Step 1 checkboxes (safe to work, LOTO register Sl. No & datetime, pre-work statutory declaration); Dual topology (Batching Plant vs Site); Exclusive Electrician surrender gate with mandatory photo and electrical de-isolation declaration. |
 | **PTW-007** | Drilling & Blasting | `PTW-007` | 15 | 4-Stage (Blasting) / 3-Stage (Drilling) | Dual Permittee model (Site Supervisor or Blasting / Drilling In-charge); Mutually exclusive operation toggle; Mandatory on-form PESA statutory declaration or Step 1b In-charge statutory acknowledgment + on-site photo; 4 mandatory post-checklist rig parameters; Site Engineer verification (cannot cancel); 18:30 IST sunset stop rule (zero extension runway for blasting); Post-blast misfire clearance; Night shift linkage strictly forbidden. |
+| **PTW-008** | General Work | `PTW-008` | Dynamic (21 / 15 / 20 / 11) | 4-Stage (Direct) | Multi-tier safety checklists dynamically tailored to 14 work descriptions across 4 categories: Category A Panel Erection (21 items, Item 21 wind $\le 45\text{ km/h}$), Category B Hoisting & Rigging (15 items + wind warning banner), Category C Formwork (20 items + wind warning banner), Category D Custom (11 items + manual entry field). 4-stage direct spine (Site Sup $\to$ Site Eng $\to$ Tower Incharge $\to$ EHS). Mandatory housekeeping & area clearance surrender gate. |
 
 ### 5.2 Approval Chain Topology per Permit Type
 
@@ -365,7 +368,7 @@ graph LR
 
 ```mermaid
 graph LR
-    subgraph "PTW-002, PTW-003, PTW-004 - 4 Stages (Direct Spine)"
+    subgraph "PTW-002, PTW-003, PTW-004, PTW-008 - 4 Stages (Direct Spine)"
         H1["Supervisor<br/>(Permittee)"] --> H2["Site Engineer<br/>(Acknowledgment)"]
         H2 --> H3["Tower Incharge<br/>(Review & Approval)"]
         H3 --> H4["EHS Safety<br/>(Manager / Officer)"]
@@ -791,7 +794,7 @@ graph TD
 |:---|:---|:---|:---|
 | **Electrician** (`electrician`) | **PTW-006 Electrical Work (HT/LT)** *(Form PTW-006)* | **All other 10 forms**:<br>PTW-001 Excavation, PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, PTW-007 Drilling & Blasting, PTW-008 General Work, PTW-009A Heavy Lifting, PTW-009B Lift Plan, PTW-010 Night Shift | **Active:** Full color, glowing accent, live status badge (`Available to Initiate`), clickable.<br>**Inactive:** Dimmed (48% opacity), desaturated grayscale (70%), `cursor: not-allowed`, lock badge (`Restricted to Site Supervisor`, `Restricted to Blasting In-charge`, `Future Module`). Clicking triggers informative restriction toast. |
 | **Blasting In-charge** (`blasting-incharge`) | **PTW-007 Drilling & Blasting** *(Form PTW-007)* | **All other 10 forms strictly inactive**:<br>PTW-001 through PTW-006, PTW-008 through PTW-010 | Strictly inactive. Desaturated, non-clickable, with lock badge. Attempting to select triggers role restriction toast. Programmatic bypass blocked by hard runtime validation gate. |
-| **Site Supervisor** (`site-supervisor`) | **PTW-001 Excavation**<br>**PTW-002 Hot Work**<br>**PTW-003 Guard Rail**<br>**PTW-004 Confined Space**<br>**PTW-005 Shaft Work** | **PTW-006 Electrical Work** *(Restricted to Electrician)*<br>**PTW-007 Drilling & Blasting** *(Restricted to Blasting In-charge)*<br>**PTW-008 to PTW-010** *(Future Modules)* | Specialist cards (PTW-006 Electrical and PTW-007 Drilling/Blasting) are desaturated with lock badges `Restricted to Electrician` and `Restricted to Blasting In-charge`. Site supervisor initiation access is completely removed. Clicking triggers role restriction toast. Hard gate prevents creation. |
+| **Site Supervisor** (`site-supervisor`) | **PTW-001 Excavation**<br>**PTW-002 Hot Work**<br>**PTW-003 Guard Rail**<br>**PTW-004 Confined Space**<br>**PTW-005 Shaft Work**<br>**PTW-008 General Work** | **PTW-006 Electrical Work** *(Restricted to Electrician)*<br>**PTW-007 Drilling & Blasting** *(Restricted to Blasting In-charge)*<br>**PTW-009A, 009B, 010** *(Future Modules)* | Specialist cards (PTW-006 Electrical and PTW-007 Drilling/Blasting) are desaturated with lock badges `Restricted to Electrician` and `Restricted to Blasting In-charge`. Site supervisor initiation access is completely removed. Clicking triggers role restriction toast. Hard gate prevents creation. |
 | **Non-Initiators** *(Site Eng, MEP, P&M, IT, Quality Eng, Section Head, EHS, Admin)* | *None* | **All 11 forms strictly inactive** for initiation | "Create Permit" button hidden or disabled; direct catalogue visit displays read-only banner with all modules marked `Initiator Only`. |
 
 #### 2. Work-Specific Extension Rules Across Permit Work Types
@@ -806,7 +809,7 @@ Extension rules strictly reflect the physical, environmental, and statutory char
   - **Extension Enabled:** Mechanized rock drilling generates no acoustic or flyrock shockwaves and can be extended in 10-minute increments up to the **20:30 IST** production ceiling.
 * **PTW-006 Electrical Work (HT/LT):**
   - **Extension Enabled:** Work within a formal power block may be extended according to the approved shutdown window before 18:30 IST notice cutoff, up to the 20:30 IST ceiling.
-* **PTW-001 to PTW-005 (Civil & Structural Works):**
+* **PTW-001 to PTW-005 & PTW-008 (Civil, Structural & General Works):**
   - **Extension Enabled:** Standard daylight operational extension up to 18:30 notice cutoff and 20:30 hard ceiling.
 * **Active Observation Lock:** For all permit types without exception, an unresolved Safety Observation strictly blocks both extension and surrender.
 
@@ -815,12 +818,76 @@ Extension rules strictly reflect the physical, environmental, and statutory char
 * **Rejection & Return-for-Correction:**
   - Rejected PTW-006 permits return specifically to the `electrician`.
   - Rejected PTW-007 permits return specifically to the `blasting-incharge`.
-  - Rejected PTW-001 through PTW-005 permits return specifically to the `site-supervisor`.
+  - Rejected PTW-001 through PTW-005, and PTW-008 permits return specifically to the `site-supervisor`.
   - Each initiator sees returned permits highlighted on their dashboard for rectification and seamless resubmission.
 * **Certified Surrender & Closure:**
   - PTW-006 surrender is gated exclusively to `electrician` with mandatory photo and certified Electrical De-isolation declaration.
   - PTW-007 surrender is gated exclusively to `blasting-incharge` with mandatory photo and certified Post-Blast Clearance declaration.
-  - PTW-001 to PTW-005 surrender is gated to `site-supervisor` with site restoration verification.
+  - PTW-001 to PTW-005, and PTW-008 surrender is gated to `site-supervisor` with site restoration and certified Housekeeping & Area Clearance declaration.
+
+### 5.17 PTW-008 General Work Safety Specifications & Multi-Tier Checklists
+
+Permit-to-Work Form PTW-008 (`EHS_PTW_008`) governs all general and multi-discipline construction activities on site, including building envelope installations, mechanical shifting, hoisting equipment operations, and concrete formwork assemblies.
+
+#### 1. Single-Choice Description of Work Hierarchy (14 Standard Options)
+In Step 1 of the creation wizard, the applicant must select exactly one operational description of work from a curated 14-item single-choice dropdown categorized into 4 operational tiers:
+
+| Tier / Category | Work Classification | Form Options (Exact Literals) | Dynamic Safety Checklist Tier |
+|:---|:---|:---|:---|
+| **Category A** | **Panel Erection** | 1. `Erection of Glass Panel`<br/>2. `Erection of Louvers`<br/>3. `Erection of Precast panel`<br/>4. `Erection of GRC panel` | **21 Items** (11 Common + 10 Panel-Specific)<br/>*Item 21 validates wind speed $\le 45\text{ km/h}$* |
+| **Category B** | **Hoists & Rigging / Shifting** | 5. `Electric chain Hoist`<br/>6. `Winch`<br/>7. `Passenger Hoist`<br/>8. `Cradel/RSP`<br/>9. `Erection`<br/>10. `Shifting`<br/>11. `Dismantling` | **15 Items** (11 Common + 4 Hoist/Rigging)<br/>*Includes High-Contrast Wind Safety Warning Banner* |
+| **Category C** | **Formwork Operations** | 12. `Formwork Erection(shuttering)`<br/>13. `Formwork Dismantling & De- shuttering` | **20 Items** (11 Common + 9 Formwork-Specific)<br/>*Includes High-Contrast Wind Safety Warning Banner* |
+| **Category D** | **Custom / Other** | 14. `Other` | **11 Items** (11 Common Items Only)<br/>*Renders conditional mandatory custom text input (`draft.generalWorkOther`)* |
+
+#### 2. Wind Safety Warning Banners ($le 45\text{ km/h}$)
+For high-elevation shifting, mechanized hoists, and external formwork (Categories B & C), strong winds present severe risks of sway, structural shear, and unguided swinging loads. Step 2 of the wizard dynamically displays a prominent amber warning banner at the top of the checklist:
+> **⚠️ Wind Safety Caution**: Work shall be stopped if wind speed is more than 45KM/hr. All hoisting, cradles, and exposed formwork activities must cease immediately under high wind conditions.
+
+#### 3. Complete Statutory Checklist Hierarchy
+
+##### Tier 1: Common Safety Checklist (Always Present Across All General Work Permits — 11 Items)
+1. Are job specific PPEs provided or as specified in Risk Assessment?
+2. Are barricade and caution sign placed in work areas and watcher posted if required?
+3. Are Safety nets provided to avoid falling objects while workers working at below levels.
+4. Are Workers inducted & trained and competent to carry out the job?
+5. Is Safe working condition / working platform available / provided?
+6. Are safety measures in place to prevent falling tools / materials from height?
+7. Are all tools attached with strings and in good conditions?
+8. Is Supervisor / Foreman available to supervise the work.
+9. Are all workers in possession of double lanyard Safety Harness while working at height?
+10. Is Lifeline where required, provided as per standard?
+11. Have the job-specific safety requirements been explained to all crews who will be involved in the activity?.
+
+##### Tier 2: Dynamic Sub-Checklist A: Erection of Glass / Louvers / Precast / GRC Panels (10 Items)
+12. Are all Lifting Equipment’s / Devices / Tackles used TPI certified and in good conditions?
+13. Is Person operating the Crane /Hoist / Winch / Device trained and competent?
+14. Is Proper communication system (two-way radio) available for Crane/Hoist / Winch operator.
+15. Are all electrical tools & extension leads inspected and free from damages.
+16. Are Sufficient crews available for intended job.
+17. Is Permit taken for removal of edge protection, then necessary measures taken to prevent other workers entering the area?
+18. Are Glass/Aluminium/precast/GRC panels inspected and free from any damage before erection?
+19. Is visibility level for Erection in good condition to carry out the task?
+20. Are all attachments in the panels in place and secured properly?
+21. Work shall be stopped if wind speed is more than 45KM/hr.?
+
+##### Tier 3: Dynamic Sub-Checklist B: Electric chain Hoist / Winch / Passenger Hoist / Cradel/RSP / Erection / Shifting / Dismantling (4 Items + Alert)
+12. Are all Lifting equipment / Devices / Tackles used TPI certified and in good condition?
+13. Are all electrical tools & extension leads inspected and free from defects?
+14. Are Sufficient crews available for shifting / handling materials?
+15. Are Permit Taken for removal of edge protection, then necessary measures will be taken to prevent others entering the area?
+> **⚠️ Wind Safety Caution Banner**: Warning: Work shall be stopped if wind speed is more than 45KM/hr.
+
+##### Tier 4: Dynamic Sub-Checklist C: Formwork Erection(shuttering) & Formwork Dismantling & De-shuttering (9 Items + Alert)
+12. Are Formwork panel is assembled as per manufacturer instruction / approved drawing.
+13. Is Lifting point / hook, free from any defects and fixed as per approved drawing by design dept..
+14. Is entire formwork panel inspected and no loose materials / parts on the panel.
+15. Is clear Access & Working platform available / provided?
+16. Are area clean and materials stacked appropriately?
+17. Are Area cordoned below to avoid unauthorize entry and caution signs placed?
+18. Is Edge protection / guardrails as required provided?
+19. Is Permanent slab edge protection provided / available in the floors?
+20. Is approval from quality department taken for Deshuttering?
+> **⚠️ Wind Safety Caution Banner**: Warning: Work shall be stopped if wind speed is more than 45KM/hr.
 
 ---
 
@@ -1526,9 +1593,63 @@ sequenceDiagram
     end
 ```
 
+### 8.7 PTW-008 General Work: End-to-End Approval & Multi-Tier Safety Lifecycle
+
+PTW-008 General Work follows a strict 4-stage statutory governance spine: Permittee initiation by Site Supervisor, physical worksite verification by Site Engineer, Section Head review by Tower Incharge, and final statutory endorsement by EHS (first-wins gate).
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor SS as Site Supervisor (Permittee)
+    actor SE as Site Engineer (Ack)
+    actor TI as Tower Incharge (Section Head)
+    actor EHS as EHS Safety (Mgr / Officer)
+    participant SYS as Core Engine
+
+    Note over SS,SYS: PHASE 1: Form Creation & Statutory Category Checklist
+    SS->>SYS: Select Work Description (1 of 14 options across Cat A, B, C, D)
+    SYS->>SYS: Bind dynamic checklist (21, 15, 20, or 11 items) + wind warning (<45 km/h)
+    SS->>SYS: Complete 100% checklist + Attach overview photo + GPS + DPDP Sig
+    SS->>SYS: submitPermit() -> Status: Pending Site Engineer Acknowledgment
+
+    Note over SE,SYS: PHASE 2: On-Site Engineering Physical Verification
+    SE->>SYS: acknowledgeSiteEngineer() with physical site verification
+    SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
+
+    Note over TI,SYS: PHASE 3: Tower Incharge Review & Endorsement
+    TI->>SYS: approvePermit() as Section Head
+    SYS->>SYS: Status: Pending EHS Approval
+
+    Note over EHS,SYS: PHASE 4: Final Safety Endorsement & Activation
+    EHS->>SYS: approvePermit() as EHS Manager / Officer
+    SYS->>SYS: Status: Active (Work Front Operational)
+
+    Note over SS,EHS: POST-ACTIVATION LIFECYCLES
+    opt Safety Observation Raised
+        EHS->>SYS: raiseObservation() -> Status: Active (Observation Open)
+        SYS-->>SS: Extension & Closure BLOCKED until rectified & endorsed
+        SS->>SYS: respondToObservation() + rectification photo
+        SE->>SYS: acknowledgeObservationEng()
+        TI->>SYS: approveObservationTI()
+        EHS->>SYS: closeObservation() -> Status: Active (Observation Resolved)
+    end
+
+    opt Permit Temporal Extension
+        SS->>SYS: requestExtension() (Before 18:30 IST, Ceiling: 20:30 IST)
+        SE->>SYS: approveExtensionStage(SE)
+        TI->>SYS: approveExtensionStage(TI)
+        EHS->>SYS: approveExtensionStage(EHS) -> Status: Active (Extended)
+    end
+
+    Note over SS,SYS: TERMINAL PHASE: Completion, Housekeeping & Surrender Gate
+    SS->>SYS: Verify area clean, loose materials cleared, tools stacked
+    SS->>SYS: closeAndSurrenderPermit(generalHousekeeping: true, restorationPhoto, GPS, DPDP Sig)
+    SYS->>SYS: Status: Closed (Surrendered - Work Completed) -> Statutory Form PTW-008 PDF Unlocked
+```
+
 ---
 
-### 8.7 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
+### 8.8 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
 When an approver rejects a permit, only approvals whose fields changed are invalidated; approvals of unchanged sections persist.
 
 ```mermaid
@@ -1560,7 +1681,7 @@ sequenceDiagram
 
 ---
 
-### 8.8 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
+### 8.9 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
 EHS may intervene post-activation if an on-site deviation appears. While an observation is open, Extension and Closure are strictly blocked.
 
 ```mermaid
@@ -1593,7 +1714,7 @@ sequenceDiagram
 
 ---
 
-### 8.9 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
+### 8.10 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
 Permit extension request must be initiated before 18:30 IST. Extensions are capped at a hard validity ceiling of 20:30 IST (for standard works/drilling) and 18:30 IST (sunset hard stop for blasting).
 
 ```mermaid
@@ -1625,7 +1746,7 @@ sequenceDiagram
 
 ---
 
-### 8.10 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
+### 8.11 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
 
 In heavy construction operations, hazardous work permits cannot simply lapse or be abandoned upon shift completion. Uncontrolled cessation introduces severe catastrophic risks: unextinguished embers in hot work zones, unbarricaded excavation trenches overnight, open floor penetrations without edge protection, unsealed confined spaces with residual gas accumulation, open hoist shafts, or uninspected blast misfires.
 
@@ -1673,10 +1794,11 @@ sequenceDiagram
 | **PTW-004 Confined Space** | `PTW-004` | 1. Entrant log reconciliation: 100% of workers confirmed exited and accounted for<br/>2. Ventilation blowers and continuous multi-gas monitors safely demobilized<br/>3. Manhole access hatch / cover replaced, bolted, and security tags affixed | Mandatory sealed manhole photo + attendant clearance sign-off |
 | **PTW-005 Shaft Work** | `PTW-005` | 1. Working platform dismantled or green scaffold tag re-inspected and signed<br/>2. Shaft opening floor penetrations securely sheeted and bolted to prevent falling debris<br/>3. Materials, cables, and rigging gear completely removed from vertical void | Mandatory shaft mouth sealing photograph + MEP engineer coordination check |
 | **PTW-007 Drilling & Blasting** | `PTW-007` | 1. Post-Blast site clearance completed: full visual sweep of blast floor conducted<br/>2. Zero misfires or unexploded charges confirmed by licensed Shot Firer<br/>3. All excessive explosive cartridges / lead wires accounted for and returned to licensed magazine<br/>4. Danger zone sentries stood down and warning sirens sounded all-clear | **Mandatory Post-Blast Clearance & Misfire Declaration** (`blastingClearanceConfirmed`) + mandatory restoration photo gate |
+| **PTW-008 General Work** | `PTW-008` | 1. Working platforms, scaffolding, hoists, or formwork inspected and secured<br/>2. All tools, temporary lifting gear, and loose panels accounted for and removed<br/>3. Physical work area completely swept, scrap cleared, and waste disposed in designated bins<br/>4. Mandatory Housekeeping & Area Clearance declaration confirmed | **Mandatory Housekeeping & Area Clearance Certification** (`generalHousekeeping: true`) + mandatory restoration photo gate |
 
 ---
 
-### 8.11 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
+### 8.12 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
 
 Every high-risk construction activity commences with the digital creation and formal initiation of a Permit-to-Work by the **Site Supervisor (Permittee)**. In `index.html`, this process is governed by a strict **4-Stage Progressive Wizard** (`WIZ_STEPS = ['General Information', 'Safety Checklist', 'Permit Validity', 'Review & Submit']`) that validates master data, spatial proximity, statutory checklists, operating hours, and DPDP Act 2023 digital consent before allowing submission.
 
@@ -1772,7 +1894,7 @@ sequenceDiagram
 
 ---
 
-### 8.12 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
+### 8.13 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
 
 The system enforces physical spatial boundaries to prevent off-site fraudulent approvals. Worksite boundaries are managed exclusively by the **Administrator** role through the interactive **Administrative Configuration & Geofence Radar View** (`view-admin-config`).
 
@@ -1845,7 +1967,7 @@ The canvas radar is drawn on `<canvas id="geofenceRadarCanvas" width="300" heigh
 
 ---
 
-### 8.13 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
+### 8.14 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
 
 To ensure an enterprise-grade, deterministic user experience free of unpredictable UI jumps, scroll shaking, or orphaned modals, the application implements a dedicated **7-Layer Deterministic Navigation Architecture** across all screens, forms, dialogs, and workflows.
 
@@ -2579,6 +2701,7 @@ Every permit record strictly reflects its designated statutory applicant and Sec
 | **PTW-006** | Electrical Work (Site) | **Permittee Electrician** | `electrician` | **Tower Incharge** | `hw-section-head` |
 | **PTW-006** | Electrical Work (Batching Plant) | **Permittee Electrician** | `electrician` | **Quality Engineer** | `quality-engineer` |
 | **PTW-007** | Drilling & Blasting | **Blasting In-charge** | `blasting-incharge` | **Tower Incharge** | `hw-section-head` |
+| **PTW-008** | General Work | **Site Supervisor** | `site-supervisor` | **Tower Incharge** | `hw-section-head` |
 
 #### Applicant & Section Head Helper Architecture:
 - `requestedByRoleFor(p)`: Resolves the functional applicant role (`'electrician'`, `'blasting-incharge'`, or `'site-supervisor'`).
@@ -2602,21 +2725,21 @@ function isPermitVisibleToRole(p, roleKey) {
 
 #### Complete 13-Role Visibility Matrix:
 
-| Role | Key | PTW-001 Excavation | PTW-002 Hot Work | PTW-003 Guard Rail | PTW-004 Confined | PTW-005 Shaft | PTW-006 Electrical (Site) | PTW-006 Electrical (BP) | PTW-007 Drilling & Blasting |
-|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
-| **Site Supervisor** | `site-supervisor` | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ |
-| **Permittee Electrician** | `electrician` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ |
-| **Blasting In-charge** | `blasting-incharge` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ |
-| **Site Engineer** | `site-engineer` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **MEP Engineer** | `mep` | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
-| **P&M Engineer** | `pm` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ |
-| **IT Engineer** | `it` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Quality Engineer** | `quality-engineer`| ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
-| **Excavation Head** | `excavation-head` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
-| **Tower Incharge** | `hw-section-head`  | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ |
-| **EHS Manager** | `ehs-manager`      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **EHS Officer** | `ehs-officer`      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
-| **Administrator** | `admin`          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| Role | Key | PTW-001 Excavation | PTW-002 Hot Work | PTW-003 Guard Rail | PTW-004 Confined | PTW-005 Shaft | PTW-006 Electrical (Site) | PTW-006 Electrical (BP) | PTW-007 Drilling & Blasting | PTW-008 General Work |
+|:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+| **Site Supervisor** | `site-supervisor` | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ❌ | ✅ | ✅ |
+| **Permittee Electrician** | `electrician` | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| **Blasting In-charge** | `blasting-incharge` | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ |
+| **Site Engineer** | `site-engineer` | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| **MEP Engineer** | `mep` | ✅ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ | ❌ |
+| **P&M Engineer** | `pm` | ✅ | ❌ | ❌ | ❌ | ❌ | ✅ | ✅ | ❌ | ❌ |
+| **IT Engineer** | `it` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Quality Engineer** | `quality-engineer`| ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ✅ | ❌ | ❌ |
+| **Excavation Head** | `excavation-head` | ✅ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ | ❌ |
+| **Tower Incharge** | `hw-section-head`  | ❌ | ✅ | ✅ | ✅ | ✅ | ✅ | ❌ | ✅ | ✅ |
+| **EHS Manager** | `ehs-manager`      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **EHS Officer** | `ehs-officer`      | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
+| **Administrator** | `admin`          | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ | ✅ |
 
 #### Enforcement Across Views:
 1. **Permit Register**: `filteredPermits = PERMITS.filter(p => isPermitVisibleToRole(p, currentUser.key))` isolates table records before search and filter evaluation.
@@ -2910,7 +3033,7 @@ The system is validated by an autonomous, zero-dependency Node.js test suite com
 ### 22.1 Test Suite Execution
 
 ```bash
-# Execute master test suite (runs all 17 suites sequentially)
+# Execute master test suite (runs all 18 suites sequentially)
 npm test
 # OR
 node tests/run_all_tests.js
@@ -2937,7 +3060,8 @@ tests/
 ├── test_pt05_shaft_work.js              # Suite 14: PTW-005 Shaft Work Specification & Compliance (14 Sections)
 ├── test_pt06_electrical_work.js         # Suite 15: PTW-006 Electrical Work (HT/LT) Specification & Compliance (13 Sections)
 ├── test_pt07_drilling_blasting.js       # Suite 16: PTW-007 Drilling & Blasting Specification & Compliance (13 Scenario Groups)
-└── test_digital_signature_pad.js        # Suite 17: Digital Signature Pad Engine & Cross-Process Compliance (6 Sections)
+├── test_digital_signature_pad.js        # Suite 17: Digital Signature Pad Engine & Cross-Process Compliance (6 Sections)
+└── test_pt08_general_work.js            # Suite 18: PTW-008 General Work Specification & Compliance (14 Sections)
 ```
 
 #### Suite 1: Base Lifecycle & Core Engines (185 Assertions)
@@ -3122,11 +3246,24 @@ tests/
 - **In-Place Modal DOM Mutation & Canvas Preservation**: Validates that modal content updates (live GPS coordinate fixes and photo previews inside `#extGpsWrap`, `#extPhotoWrap`, `#surrGpsWrap`, `#surrPhotoWrap`) preserve `<canvas id="apprSigPad">` without destroying canvas state.
 - **DPDP Act 2023 Identity Binding & Consent**: Confirms legal name input requirement, explicit DPDP checkbox validation, and audit trail linking.
 
+#### Suite 18: PTW-008 General Work Specification & Compliance (test_pt08_general_work.js - 14 Comprehensive Sections)
+- **Static Metadata & Form Alignment**: Form `PTW-008`, `GEN` code, Section Head strictly `hw-section-head` (Tower Incharge).
+- **Location Structure Flexibility**: Proves support across all 3 location structures (`Tower`, `Basement/Podium`, `Manual`).
+- **14 Work Descriptions & Category Mapping**: Validates exact string literals for all 14 single-choice options across Categories A, B, C, and D.
+- **Dynamic Multi-Tier Checklist Hierarchy**: Asserts 21 items for Category A (Panel Erection), 15 items for Category B (Hoists/Rigging), 20 items for Category C (Formwork), and 11 items for Category D (Custom/Other).
+- **Wind Safety Caution Banner**: Enforces presence of wind warning caution banner ($> 45\text{ km/hr}$) in Step 2 for Category B and C.
+- **Sequential Direct Routing**: Direct flow from Site Engineer ack to Tower Incharge (Section Head) to EHS Manager/Officer.
+- **Rejection & Stale-Approval Bypass**: Verifies fast-track re-routing after return for correction without unnecessary re-approvals.
+- **Temporal Extension Window**: Validates 18:30 IST request cutoff and 20:30 IST maximum extension ceiling.
+- **Active Safety Observation Lock**: Proves open safety observation blocks extension and closure until 4-stage remediation is completed.
+- **Exclusive Closure & Mandatory Housekeeping Certification**: Proves Site Engineer closure is rejected and validates Site Supervisor exclusive closure with `generalHousekeeping: true` certification.
+- **PDF Generation & Dynamic Section Head Tracker**: Validates jsPDF generation for Form PTW-008 and dynamic approval tracker displaying Tower Incharge.
+
 ### 22.3 Automated Test Execution Results
 
 ```
 ================================================================
-MASTER TEST SUITE EXECUTION SUMMARY (ALL 17 SUITES)
+MASTER TEST SUITE EXECUTION SUMMARY (ALL 18 SUITES)
 ================================================================
 
 >>> SUITE 1: BASE LIFECYCLE & ENGINE TESTS (run_full_test_suite.js)
@@ -3180,9 +3317,12 @@ MASTER TEST SUITE EXECUTION SUMMARY (ALL 17 SUITES)
 >>> SUITE 17: DIGITAL SIGNATURE PAD ENGINE & CROSS-PROCESS COMPLIANCE (test_digital_signature_pad.js)
   All 6 statutory areas, pointer drawing, auto-signing, and in-place modal canvas preservation passed cleanly
 
+>>> SUITE 18: PTW-008 GENERAL WORK (FORM PTW-008) SPECIFICATION & COMPLIANCE (test_pt08_general_work.js)
+  All 14 statutory sections, multi-tier dynamic checklists (21/15/20/11 items), wind warnings & housekeeping closure passed cleanly
+
 ================================================================
-GRAND TOTAL: ALL 17 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
-ALL 7 PERMIT WORK TYPES (PTW-001 TO PTW-007) FULLY VALIDATED
+GRAND TOTAL: ALL 18 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
+ALL 8 PERMIT WORK TYPES (PTW-001 TO PTW-008) FULLY VALIDATED
 ================================================================
 Zero Regressions · Full Statutory Coverage · Dedicated Suite per Permit Type · 100% Deterministic · Production Ready
 ```
@@ -3226,7 +3366,7 @@ Developed and engineered by:
 
 **ARPL EHS Permit-to-Work Management System** · Enterprise Build · September 2026
 
-PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting
+PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work
 
 *Built for safety. Engineered for accountability.*
 

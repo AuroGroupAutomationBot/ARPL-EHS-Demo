@@ -169,9 +169,10 @@ runSuite('Roles, RBAC & Signatory Isolation', () => {
     assert(aliasRole && aliasRole.label === 'Tower Incharge', 'Legacy roleInfo("section-head") resolves gracefully to Tower Incharge');
 
     const tiScope = app.roleTypeScope('hw-section-head');
-    assert(Array.isArray(tiScope) && tiScope.length === 6, 'Tower Incharge scope covers 6 permit modules', JSON.stringify(tiScope));
+    assert(Array.isArray(tiScope) && tiScope.length === 7, 'Tower Incharge scope covers 7 permit modules', JSON.stringify(tiScope));
     assert(!tiScope.includes('excavation'), 'Tower Incharge scope EXCLUDES excavation');
     assert(tiScope.includes('blasting'), 'Tower Incharge scope INCLUDES blasting (Tower Incharge is Section Head for PTW-007)');
+    assert(tiScope.includes('general'), 'Tower Incharge scope INCLUDES general (Tower Incharge is Section Head for PTW-008)');
 
     const excScope = app.roleTypeScope('excavation-head');
     assert(Array.isArray(excScope) && excScope.length === 1 && excScope[0] === 'excavation', 'Excavation Head scope covers excavation only', JSON.stringify(excScope));

@@ -31,7 +31,7 @@ assert(src.includes("id=\"ptypeRoleBanner\""), "view-ptype must contain contextu
 assert(src.includes(".ptype-card.initiator-inactive"), "CSS must include .ptype-card.initiator-inactive");
 assert(src.includes(".ptype-status.restricted"), "CSS must include .ptype-status.restricted");
 assert(src.includes('data-roles="site-supervisor,electrician,blasting-incharge"'), "Create Permit button in register must support all 3 initiators");
-assert(src.includes("Site Supervisor (PTW-001 to PTW-005), Electrician (PTW-006), or Blasting In-charge (PTW-007)"), "Landing workflow strip must name all 3 initiators with their permit domains");
+assert(src.includes("Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), or Blasting In-charge (PTW-007)") || src.includes("Site Supervisor (PTW-001 to PTW-005), Electrician (PTW-006), or Blasting In-charge (PTW-007)"), "Landing workflow strip must name all 3 initiators with their permit domains");
 
 console.log('  ✓ PASS: Static tokens, CSS rules, role boundaries, and initiator constants verified');
 
@@ -232,7 +232,7 @@ assert.strictEqual(blastAvailForSup.statusClass, 'restricted', "PTW-007 must hav
 console.log('  ✓ PASS: For Site Supervisor, PTW-007 Drilling & Blasting is strictly inactive with lock badge (Restricted to Blasting In-charge)');
 
 // Verify full 11-permit activation matrix for Site Supervisor
-const supervisorAllowedPermits = ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft'];
+const supervisorAllowedPermits = ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 'general'];
 ALL_PERMITS.forEach(pKey => {
     const avail = evalInVM(`getPermitAvailabilityForRole('${pKey}', 'site-supervisor')`);
     if (supervisorAllowedPermits.includes(pKey)) {

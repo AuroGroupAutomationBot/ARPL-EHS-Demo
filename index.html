@@ -2862,14 +2862,25 @@
         .dpdp-consent-pill {
             display: flex;
             align-items: flex-start;
-            gap: 12px;
-            padding: 12px 14px;
+            gap: 14px;
+            padding: 13px 16px;
             cursor: pointer;
             background: #FFFFFF;
             border: 1.5px solid var(--border-strong);
             border-radius: 8px;
             transition: border-color .2s ease, background .2s ease, box-shadow .2s ease;
             user-select: none;
+        }
+
+        .dpdp-consent-pill input[type="checkbox"] {
+            width: 22px;
+            height: 22px;
+            min-width: 22px;
+            min-height: 22px;
+            cursor: pointer;
+            flex-shrink: 0;
+            margin-top: 2px;
+            transform: scale(1.25);
         }
 
         .dpdp-consent-pill:hover {
@@ -4311,6 +4322,7 @@
                 <span class="ptype-pill"><i class="fa-solid fa-arrow-down-up-across-line"></i> PTW-005 Shaft Work</span>
                 <span class="ptype-pill"><i class="fa-solid fa-bolt"></i> PTW-006 Electrical Work</span>
                 <span class="ptype-pill"><i class="fa-solid fa-bomb"></i> PTW-007 Drilling &amp; Blasting</span>
+                <span class="ptype-pill"><i class="fa-solid fa-helmet-safety"></i> PTW-008 General Work</span>
             </div>
 
             <!-- Key System Badges -->
@@ -4327,7 +4339,7 @@
                 <div class="lw-num">1</div>
                 <div class="lw-content">
                     <div class="lw-title">Initiation &amp; Checklist</div>
-                    <div class="lw-desc">Site Supervisor (PTW-001 to PTW-005), Electrician (PTW-006), or Blasting In-charge (PTW-007) fills their respective permit form, statutory checklist &amp; uploads photo.</div>
+                    <div class="lw-desc">Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), or Blasting In-charge (PTW-007) fills their respective permit form, statutory checklist &amp; uploads photo.</div>
                 </div>
             </div>
             <div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>
@@ -4378,7 +4390,7 @@
 
         <div class="landing-footer">
             <div class="lf-title"><i class="fa-solid fa-shield-halved" style="color:var(--orange);"></i> ARPL Digital Permit-to-Work (PTW) Management System</div>
-            <div>PTW-001 Excavation &bull; PTW-002 Hot Work &bull; PTW-003 Guard Rail &bull; PTW-004 Confined Space &bull; PTW-005 Shaft Work &bull; PTW-006 Electrical Work &bull; PTW-007 Drilling &amp; Blasting</div>
+            <div>PTW-001 Excavation &bull; PTW-002 Hot Work &bull; PTW-003 Guard Rail &bull; PTW-004 Confined Space &bull; PTW-005 Shaft Work &bull; PTW-006 Electrical Work &bull; PTW-007 Drilling &amp; Blasting &bull; PTW-008 General Work</div>
             <div>Demo Build &bull; September 2026</div>
             <div style="margin-top:8px;"><a href="#" onclick="resetDemoData();return false;"
                     style="color:var(--orange);font-weight:700;"><i class="fa-solid fa-rotate-left"></i> Reset Demo
@@ -4405,7 +4417,7 @@
                     title="Close Navigation"><i class="fa-solid fa-xmark"></i></button>
             </div>
             <div id="navContainer"></div>
-            <div class="sidebar-footer">PTW-001 to PTW-007 Integrated Permits &middot; v3.0<br>Demo build &middot; September 2026</div>
+            <div class="sidebar-footer">PTW-001 to PTW-008 Integrated Permits &middot; v3.0<br>Demo build &middot; September 2026</div>
         </aside>
 
         <div class="main">
@@ -4509,6 +4521,7 @@
                             <option value="shaft">Shaft Work (PTW-005)</option>
                             <option value="electrical">Electrical Work (PTW-006)</option>
                             <option value="blasting">Drilling &amp; Blasting (PTW-007)</option>
+                            <option value="general">General Work (PTW-008)</option>
                         </select>
                         <select id="regStatusFilter" onchange="buildRegisterTable()">
                             <option value="">All Statuses</option>
@@ -4844,7 +4857,7 @@
             { key: 'shaft', code: 'PTW-005', name: 'Shaft Work', icon: 'fa-elevator', available: true, desc: 'Working in shaft on scaffold or RSP. Scaffold tag verification and worker entry list required. Form PTW-005.' },
             { key: 'electrical', code: 'PTW-006', name: 'Electrical Work (HT/LT)', icon: 'fa-bolt', available: true, desc: 'Maintenance, repair, inspection & shutdown on HT/LT systems (440V and above). LOTO, earthing, site / batching plant clearances, and statutory written shutdown cancellation mandatory. Form PTW-006.' },
             { key: 'blasting', code: 'PTW-007', name: 'Drilling and Blasting', icon: 'fa-explosion', available: true, desc: 'All drilling and blasting operations. Licensed Blasting In-charge must be present at site at all times for blasting. Form PTW-007.' },
-            { key: 'general', code: 'PTW-008', name: 'General Work', icon: 'fa-helmet-safety', available: false, desc: 'Day-to-day activities not covered by other permit types, incl. erection, hoist and formwork sub-checklists. Form PTW-008.' },
+            { key: 'general', code: 'PTW-008', name: 'General Work', icon: 'fa-helmet-safety', available: true, desc: 'Day-to-day activities not covered by other permit types, incl. erection, hoist and formwork sub-checklists. Form PTW-008.' },
             { key: 'lifting', code: 'PTW-009A', name: 'General and Heavy Lifting', icon: 'fa-arrow-up-from-ground-water', available: false, desc: 'All crane and lifting operations. Loads above 5 MT automatically require an approved Lift Plan (PTW-009B). Form PTW-009A.' },
             { key: 'liftplan', code: 'PTW-009B', name: 'Lift Plan (Non-Routine / Critical)', icon: 'fa-weight-hanging', available: false, desc: '14 critical lift criteria; Project Head approval mandatory for all non-routine lifts. Form PTW-009B.' },
             { key: 'nightshift', code: 'PTW-010', name: 'Night Shift / Holiday Work', icon: 'fa-moon', available: false, desc: 'All activities after regular shift hours or on holidays. Alcohol test, emergency vehicle and linked sub-permits required. Form PTW-010.' },
@@ -4975,7 +4988,8 @@
             confined: { key: 'confined', code: 'PTW-004', name: 'Confined Space Entry', short: 'Confined Space', prefix: 'PTW-004', form: 'PTW-004', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             shaft: { key: 'shaft', code: 'PTW-005', name: 'Shaft Work', short: 'Shaft Work', prefix: 'PTW-005', form: 'PTW-005', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             electrical: { key: 'electrical', code: 'PTW-006', name: 'Electrical Work (HT/LT)', short: 'Electrical Work', prefix: 'PTW-006', form: 'PTW-006', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
-            blasting: { key: 'blasting', code: 'PTW-007', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'PTW-007', form: 'PTW-007', sh: 'hw-section-head', shLabel: 'Tower Incharge' }
+            blasting: { key: 'blasting', code: 'PTW-007', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'PTW-007', form: 'PTW-007', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
+            general: { key: 'general', code: 'PTW-008', name: 'General Work', short: 'General Work', prefix: 'PTW-008', form: 'PTW-008', sh: 'hw-section-head', shLabel: 'Tower Incharge' }
         };
         function ptypeOf(p) {
             if (!p) return 'excavation';
@@ -5025,7 +5039,7 @@
             if (ptypeOf(p) === 'blasting') {
                 return ['blasting-incharge', 'site-engineer', 'hw-section-head', 'section-head', 'ehs-manager', 'ehs-officer'];
             }
-            if (ptypeOf(p) === 'confined' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'hotwork') {
+            if (ptypeOf(p) === 'confined' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'general') {
                 return ['site-supervisor', 'site-engineer', 'hw-section-head', 'section-head', 'ehs-manager', 'ehs-officer'];
             }
             if (ptypeOf(p) === 'shaft') {
@@ -5038,13 +5052,34 @@
             const stakeholders = stakeholdersFor(p);
             return stakeholders.includes(roleKey) || (roleKey === 'section-head' && stakeholders.includes('hw-section-head'));
         }
-        function checklistFor(type) {
+        function checklistFor(type, workTypeOrDraft) {
             if (type === 'electrical') return ELECTRICAL_CHECKLIST_ITEMS;
             if (type === 'blasting') return BLASTING_CHECKLIST_ITEMS;
             if (type === 'confined') return CONFINED_CHECKLIST_ITEMS;
             if (type === 'guardrail') return GUARDRAIL_CHECKLIST_ITEMS;
             if (type === 'hotwork') return HOTWORK_CHECKLIST_ITEMS;
             if (type === 'shaft') return SHAFT_CHECKLIST_ITEMS;
+            if (type === 'general') {
+                let wt = '';
+                if (typeof workTypeOrDraft === 'string') {
+                    wt = workTypeOrDraft;
+                } else if (workTypeOrDraft && typeof workTypeOrDraft === 'object') {
+                    wt = workTypeOrDraft.generalWorkType || '';
+                } else if (typeof draft !== 'undefined' && draft && ptypeOf(draft) === 'general') {
+                    wt = draft.generalWorkType || '';
+                }
+                const cat = getGeneralCategory(wt);
+                if (cat === 'panel') {
+                    return GENERAL_COMMON_CHECKLIST.concat(GENERAL_PANEL_ERECTION_CHECKLIST);
+                }
+                if (cat === 'hoist') {
+                    return GENERAL_COMMON_CHECKLIST.concat(GENERAL_HOIST_SHIFTING_CHECKLIST);
+                }
+                if (cat === 'formwork') {
+                    return GENERAL_COMMON_CHECKLIST.concat(GENERAL_FORMWORK_CHECKLIST);
+                }
+                return GENERAL_COMMON_CHECKLIST.slice();
+            }
             return CHECKLIST_ITEMS;
         }
         function roleTypeScope(roleKey) {
@@ -5052,8 +5087,8 @@
             if (roleKey === 'quality-engineer') return ['electrical'];
             if (roleKey === 'blasting-incharge') return ['blasting'];
             if (roleKey === 'excavation-head') return ['excavation'];
-            if (roleKey === 'hw-section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'electrical', 'blasting'];
-            if (roleKey === 'section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'excavation', 'electrical', 'blasting'];
+            if (roleKey === 'hw-section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'electrical', 'blasting', 'general'];
+            if (roleKey === 'section-head') return ['hotwork', 'shaft', 'guardrail', 'confined', 'excavation', 'electrical', 'blasting', 'general'];
             return null;
         }
         function permitMatchesScope(p, scope) {
@@ -5286,6 +5321,86 @@
             "Have emergency rescue procedures, shock-treatment chart, and emergency contact numbers been prominently displayed at the work area?"
         ];
 
+        /* General Work Specifications (Form PTW-008) */
+        const GENERAL_WORK_DESCRIPTIONS = [
+            'Erection of Glass Panel',
+            'Erection of Louvers',
+            'Erection of Precast panel',
+            'Erection of GRC panel',
+            'Electric chain Hoist',
+            'Winch',
+            'Passenger Hoist',
+            'Cradel/RSP',
+            'Erection',
+            'Shifting',
+            'Dismantling',
+            'Formwork Erection(shuttering)',
+            'Formwork Dismantling & De- shuttering',
+            'Other'
+        ];
+
+        const GENERAL_COMMON_CHECKLIST = [
+            "Are job specific PPEs provided or as specified in Risk Assessment?",
+            "Are barricade and caution sign placed in work areas and watcher posted if required?",
+            "Are Safety nets provided to avoid falling objects while workers working at below levels.",
+            "Are Workers inducted & trained and competent to carry out the job?",
+            "Is Safe working condition / working platform available / provided?",
+            "Are safety measures in place to prevent falling tools / materials from height?",
+            "Are all tools attached with strings and in good conditions?",
+            "Is Supervisor / Foreman available to supervise the work.",
+            "Are all workers in possession of double lanyard Safety Harness while working at height?",
+            "Is Lifeline where required, provided as per standard?",
+            "Have the job-specific safety requirements been explained to all crews who will be involved in the activity?."
+        ];
+
+        const GENERAL_PANEL_ERECTION_CHECKLIST = [
+            "Are all Lifting Equipment’s / Devices / Tackles used TPI certified and in good conditions?",
+            "Is Person operating the Crane /Hoist / Winch / Device trained and competent?",
+            "Is Proper communication system (two-way radio) available for Crane/Hoist / Winch operator.",
+            "Are all electrical tools & extension leads inspected and free from damages.",
+            "Are Sufficient crews available for intended job.",
+            "Is Permit taken for removal of edge protection, then necessary measures taken to prevent other workers entering the area?",
+            "Are Glass/Aluminium/precast/GRC panels inspected and free from any damage before erection?",
+            "Is visibility level for Erection in good condition to carry out the task?",
+            "Are all attachments in the panels in place and secured properly?",
+            "Work shall be stopped if wind speed is more than 45KM/hr.?"
+        ];
+
+        const GENERAL_HOIST_SHIFTING_CHECKLIST = [
+            "Are all Lifting equipment / Devices / Tackles used TPI certified and in good condition?",
+            "Are all electrical tools & extension leads inspected and free from defects?",
+            "Are Sufficient crews available for shifting / handling materials?",
+            "Are Permit Taken for removal of edge protection, then necessary measures will be taken to prevent others entering the area?"
+        ];
+
+        const GENERAL_FORMWORK_CHECKLIST = [
+            "Are Formwork panel is assembled as per manufacturer instruction / approved drawing.",
+            "Is Lifting point / hook, free from any defects and fixed as per approved drawing by design dept..",
+            "Is entire formwork panel inspected and no loose materials / parts on the panel.",
+            "Is clear Access & Working platform available / provided?",
+            "Are area clean and materials stacked appropriately?",
+            "Are Area cordoned below to avoid unauthorize entry and caution signs placed?",
+            "Is Edge protection / guardrails as required provided?",
+            "Is Permanent slab edge protection provided / available in the floors?",
+            "Is approval from quality department taken for Deshuttering?"
+        ];
+
+        function getGeneralCategory(workType) {
+            if (!workType) return 'other';
+            const wt = String(workType).toLowerCase();
+            if (wt.includes('glass') || wt.includes('louver') || wt.includes('precast') || wt.includes('grc')) {
+                return 'panel';
+            }
+            if (wt.includes('electric chain hoist') || wt.includes('winch') || wt.includes('passenger hoist') || wt.includes('cradle') || wt.includes('cradel') || wt.includes('rsp') || wt === 'erection' || wt === 'shifting' || wt === 'dismantling') {
+                return 'hoist';
+            }
+            if (wt.includes('formwork') || wt.includes('shuttering')) {
+                return 'formwork';
+            }
+            return 'other';
+        }
+
+
         /* ---------------- ROLES ----------------
            DPDP Act 2023 Compliance: Roles represent functional authorizations
            without pre-assigned personal names. Authorised personnel enter their
@@ -5300,7 +5415,7 @@
                 cat: 'initiator',
                 tierBg: 'rgba(232, 96, 10, .18)',
                 tierColor: 'var(--orange)',
-                desc: 'Permittee and form initiator for civil and structural works (PTW-001 Excavation, PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work). Specialist works (PTW-006 Electrical, PTW-007 Blasting) are strictly reserved for certified specialist roles.'
+                desc: 'Permittee and form initiator for civil and structural works (PTW-001 Excavation, PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, PTW-008 General Work). Specialist works (PTW-006 Electrical, PTW-007 Blasting) are strictly reserved for certified specialist roles.'
             },
             {
                 key: 'electrician',
@@ -5399,7 +5514,7 @@
                 cat: 'approver',
                 tierBg: 'rgba(154, 100, 0, .22)',
                 tierColor: '#FBBF24',
-                desc: 'Section Head approving authority for PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, PTW-006 Electrical Work (Site Flow), and PTW-007 Drilling & Blasting. Evaluates site precautions and grants Stage Approval or Returns for Correction.'
+                desc: 'Section Head approving authority for PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, PTW-006 Electrical Work (Site Flow), PTW-007 Drilling & Blasting, and PTW-008 General Work. Evaluates site precautions and grants Stage Approval or Returns for Correction.'
             },
             {
                 key: 'ehs-manager',
@@ -5440,7 +5555,7 @@
         const INITIATOR_PERMIT_RULES = {
             'electrician': ['electrical'],
             'blasting-incharge': ['blasting'],
-            'site-supervisor': ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft']
+            'site-supervisor': ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 'general']
         };
 
         function getPermitAvailabilityForRole(ptypeKey, roleKey) {
@@ -6201,6 +6316,9 @@
            ================================================================ */
         function newChain(type, draftOrSub) {
             const pend = () => ({ status: 'pending', by: null, at: null, gps: null, comment: null });
+            if (type === 'general') {
+                return { kind: 'general', sectionHead: pend(), ehsManager: pend(), ehsOfficer: pend() };
+            }
             if (type === 'confined') {
                 return { kind: 'confined', sectionHead: pend(), ehsManager: pend(), ehsOfficer: pend() };
             }
@@ -6266,7 +6384,7 @@
                 if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
                 return 'complete';
             }
-            if (chain.kind === 'guardrail' || chain.kind === 'hotwork' || chain.kind === 'confined') {
+            if (chain.kind === 'guardrail' || chain.kind === 'hotwork' || chain.kind === 'confined' || chain.kind === 'general') {
                 if (chain.sectionHead && (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled')) return 'rejected-sectionhead';
                 if ((chain.ehsManager && chain.ehsManager.status === 'cancelled') || (chain.ehsOfficer && chain.ehsOfficer.status === 'cancelled')) return 'cancelled-ehs';
                 if ((chain.ehsManager && chain.ehsManager.status === 'rejected') || (chain.ehsOfficer && chain.ehsOfficer.status === 'rejected')) return 'rejected-ehs';
@@ -6363,7 +6481,7 @@
                 }
                 return false;
             }
-            if (chain.kind === 'guardrail' || chain.kind === 'hotwork' || chain.kind === 'confined') {
+            if (chain.kind === 'guardrail' || chain.kind === 'hotwork' || chain.kind === 'confined' || chain.kind === 'general') {
                 if (stage === 'section-head') return (rk === 'hw-section-head' || rk === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
                 if (stage === 'ehs') {
                     if (rk === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
@@ -6484,6 +6602,13 @@
             }
             if (ptypeOf(p) === 'hotwork') {
                 logActivity(p, 'Hot Work permit submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2).');
+                notify(['site-engineer'], pLabel(p) + ' submitted by Site Supervisor — Site Engineer acknowledgment required.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Site Engineer acknowledgment.', 'info', p.id);
+                saveState();
+                return;
+            }
+            if (ptypeOf(p) === 'general') {
+                logActivity(p, 'General Work permit submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2).');
                 notify(['site-engineer'], pLabel(p) + ' submitted by Site Supervisor — Site Engineer acknowledgment required.', 'info', p.id);
                 notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Site Engineer acknowledgment.', 'info', p.id);
                 saveState();
@@ -6769,6 +6894,17 @@
                 p.status = 'Pending Section Head';
                 p.approvals = p.approvals || newChain('hotwork');
                 logActivity(p, 'Site Engineer (' + effectiveSigner + ') acknowledged & forwarded Hot Work permit to Tower Incharge (Step 3).' + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
+                notify([shRoleFor(p)], pLabel(p) + ' acknowledged by Site Engineer — Tower Incharge review required.', 'info', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Site Engineer and forwarded to Tower Incharge.', 'info', p.id);
+                showToast('Permit acknowledged & forwarded to Tower Incharge.', 'ok');
+                saveState();
+                return;
+            }
+
+            if (ptypeOf(p) === 'general') {
+                p.status = 'Pending Section Head';
+                p.approvals = p.approvals || newChain('general');
+                logActivity(p, 'Site Engineer (' + effectiveSigner + ') acknowledged & forwarded General Work permit to Tower Incharge (Step 3).' + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
                 notify([shRoleFor(p)], pLabel(p) + ' acknowledged by Site Engineer — Tower Incharge review required.', 'info', p.id);
                 notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Site Engineer and forwarded to Tower Incharge.', 'info', p.id);
                 showToast('Permit acknowledged & forwarded to Tower Incharge.', 'ok');
@@ -7627,7 +7763,7 @@
 
             let gps = null, photo = null, remarks = '', sig = null, signerName = null,
                 fireWatch = false, guardrailReFix = false, confinedClosure = false,
-                blastingPostClearance = false, electricalSurrender = false;
+                blastingPostClearance = false, electricalSurrender = false, generalHousekeeping = false;
 
             if (arg2 && typeof arg2 === 'object' && !Array.isArray(arg2) && !(arg2.lat && arg2.lng)) {
                 gps = arg2.gps || null;
@@ -7640,6 +7776,7 @@
                 confinedClosure = !!arg2.confinedClosure;
                 blastingPostClearance = !!(arg2.blastingPostClearance || arg2.blastingClearanceConfirmed);
                 electricalSurrender = !!(arg2.electricalSurrender || arg2.electricalClosureConfirmed);
+                generalHousekeeping = !!(arg2.generalHousekeeping || arg2.generalHousekeepingConfirmed);
             } else {
                 remarks = (typeof arg2 === 'string') ? arg2 : '';
                 gps = (arg3 && typeof arg3 === 'object') ? arg3 : null;
@@ -7650,6 +7787,7 @@
                     guardrailReFix = !!arg5.guardrailReFix;
                     confinedClosure = !!arg5.confinedClosure;
                     blastingPostClearance = !!(arg5.blastingPostClearance || arg5.blastingClearanceConfirmed);
+                    generalHousekeeping = !!(arg5.generalHousekeeping || arg5.generalHousekeepingConfirmed);
                     sig = arg5.sig || null;
                     signerName = arg5.signerName || null;
                 } else if (typeof arg5 === 'string') {
@@ -7703,12 +7841,16 @@
                 showToast('The Guard Rail closure declaration (all rails, shaft gates, edge protections & floor openings safely re-fixed) must be confirmed before surrender.', 'warn');
                 return false;
             }
+            if (ptypeOf(p) === 'general' && !generalHousekeeping && !(p.declaration && p.declaration.confirmed)) {
+                showToast('The General Work housekeeping & area clearance declaration (work completed, tools/rigging removed, debris cleared) must be confirmed before surrender.', 'warn');
+                return false;
+            }
             const t = nowTime();
             const effectiveSigner = signerName || (currentUser && currentUser.name) || p.createdBy || (isElectrical ? 'Licensed Electrician' : roleInfo('site-supervisor').label);
-            p.closure = { gps, photo, remarks, sig, signerName: effectiveSigner, closedAt: t, by: effectiveSigner, fireWatch: !!fireWatch, guardrailReFix: !!guardrailReFix, confinedClosure: !!confinedClosure, blastingPostClearance: !!blastingPostClearance, blastingClearanceConfirmed: !!blastingPostClearance, electricalSurrender: !!electricalSurrender, electricalClosureConfirmed: !!electricalSurrender };
-            p.surrender = { gps, photo, remarks, sig, signerName: effectiveSigner, surrenderedAt: t, by: effectiveSigner, fireWatch: !!fireWatch, guardrailReFix: !!guardrailReFix, confinedClosure: !!confinedClosure, blastingPostClearance: !!blastingPostClearance, blastingClearanceConfirmed: !!blastingPostClearance, electricalSurrender: !!electricalSurrender, electricalClosureConfirmed: !!electricalSurrender };
+            p.closure = { gps, photo, remarks, sig, signerName: effectiveSigner, closedAt: t, by: effectiveSigner, fireWatch: !!fireWatch, guardrailReFix: !!guardrailReFix, confinedClosure: !!confinedClosure, blastingPostClearance: !!blastingPostClearance, blastingClearanceConfirmed: !!blastingPostClearance, electricalSurrender: !!electricalSurrender, electricalClosureConfirmed: !!electricalSurrender, generalHousekeeping: !!generalHousekeeping, generalHousekeepingConfirmed: !!generalHousekeeping };
+            p.surrender = { gps, photo, remarks, sig, signerName: effectiveSigner, surrenderedAt: t, by: effectiveSigner, fireWatch: !!fireWatch, guardrailReFix: !!guardrailReFix, confinedClosure: !!confinedClosure, blastingPostClearance: !!blastingPostClearance, blastingClearanceConfirmed: !!blastingPostClearance, electricalSurrender: !!electricalSurrender, electricalClosureConfirmed: !!electricalSurrender, generalHousekeeping: !!generalHousekeeping, generalHousekeepingConfirmed: !!generalHousekeeping };
             p.status = 'Completed (Surrendered)';
-            logActivity(p, 'Permittee (' + effectiveSigner + ') confirmed area made safe, men & materials removed' + (isElectrical ? ' and verified all electrical personnel withdrawn, apparatus made safe, lockouts surrendered' : '') + (blastingPostClearance ? ' and post-blast clearance verified (exclusion perimeter checked, all personnel accounted for, zero misfires confirmed)' : '') + (confinedClosure ? ' and confined space safely evacuated, equipment removed & openings secured' : '') + (fireWatch ? ' and continuous 1-hr fire watch verified' : '') + (guardrailReFix ? ' and all guard rails, edge protections & floor opening covers safely re-fixed' : '') + '. Digitally signed under DPDP consent. Permit CLOSED and formally SURRENDERED to EHS.');
+            logActivity(p, 'Permittee (' + effectiveSigner + ') confirmed area made safe, men & materials removed' + (isElectrical ? ' and verified all electrical personnel withdrawn, apparatus made safe, lockouts surrendered' : '') + (blastingPostClearance ? ' and post-blast clearance verified (exclusion perimeter checked, all personnel accounted for, zero misfires confirmed)' : '') + (confinedClosure ? ' and confined space safely evacuated, equipment removed & openings secured' : '') + (fireWatch ? ' and continuous 1-hr fire watch verified' : '') + (guardrailReFix ? ' and all guard rails, edge protections & floor opening covers safely re-fixed' : '') + (generalHousekeeping ? ' and housekeeping & area clearance certified (tools/rigging demobilized, debris cleared, safe handover)' : '') + '. Digitally signed under DPDP consent. Permit CLOSED and formally SURRENDERED to EHS.');
             notify(stakeholdersFor(p), pLabel(p) + ' closed & formally SURRENDERED to EHS by ' + effectiveSigner + '. Lifecycle complete. The official Permit Report PDF is now available.', 'success', p.id);
             showToast('Permit closed & surrendered. Lifecycle complete — the official Permit Report PDF is ready to download from the top-right button.', 'ok');
             saveState();
@@ -8067,7 +8209,7 @@
                 '</div>' +
                 '<div style="margin-bottom:12px;">' +
                 '<label class="dpdp-consent-pill" id="modalConsentPill">' +
-                '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:3px;width:17px;height:17px;accent-color:var(--orange);cursor:pointer;">' +
+                '<input type="checkbox" id="modalDpdpConsentChk" onchange="onModalSignerInput()" style="margin-top:2px;width:22px;height:22px;min-width:22px;min-height:22px;transform:scale(1.25);accent-color:var(--orange);cursor:pointer;">' +
                 '<span style="font-size:11.5px;line-height:1.55;color:var(--text);">' +
                 '<strong style="color:var(--navy);">DPDP Statutory Consent Declaration <span class="req">*</span>:</strong> I give explicit consent under DPDP Act 2023 for recording my name, role (Administrator), timestamp, and digital signature for authorizing worksite GPS geofencing configuration.' +
                 '</span>' +
@@ -8931,6 +9073,87 @@
             }));
 
             // ---------------- ELECTRICAL WORK SEED PERMITS (PTW-006 / PTW-006) ----------------
+            
+            // ---------------- GENERAL WORK SEED PERMITS (PTW-008 / PTW-008) ----------------
+            function baseGeneral(over) {
+                const wt = (over && over.generalWorkType) || 'Erection of Glass Panel';
+                const cat = getGeneralCategory(wt);
+                const qList = checklistFor('general', wt);
+                const res = Object.assign({
+                    id: genPermitNumber('general'), ptype: 'general',
+                    activity: 'General Work — ' + wt + ' (PTW-008)',
+                    createdBy: 'Supervisor Sharma',
+                    createdByRole: 'site-supervisor',
+                    generalWorkType: wt,
+                    generalWorkOther: (over && over.generalWorkOther) || null,
+                    weather: 'Sunny / Clear', organization: 'ARPL', contractor: null,
+                    locationStructure: 'Tower',
+                    tower: 'Tower 1',
+                    locFloor: 'Floor 14',
+                    locUnit: 'Facade Zone B',
+                    location: 'Tower 1 - Floor 14 - Facade Zone B',
+                    startTime: '09:00',
+                    checklist: qList.map((q, i) => ({
+                        q, ans: 'yes', comment: null, photo: null, gps: null
+                    })),
+                    sitePhoto: 'demo',
+                    drawing: null,
+                    activityLog: [], surrenderEscalations: 0
+                }, over);
+                if (res.gps) {
+                    res.gps = Object.assign({ within: true, distance: 15, radius: 150 }, res.gps);
+                }
+                return res;
+            }
+
+            // 1. Pending Site Engineer Acknowledgment (Formwork Erection)
+            PERMITS.push(baseGeneral({
+                project: site1.name, tower: 'Tower 2',
+                generalWorkType: 'Formwork Erection(shuttering)',
+                locationStructure: 'Tower',
+                locFloor: 'Floor 8', locUnit: 'Core Wall C',
+                location: 'Tower 2 - Floor 8 - Core Wall C',
+                gps: site1.site,
+                createdAt: new Date(nowTime() - 40 * 60000), submittedAt: new Date(nowTime() - 40 * 60000),
+                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                status: 'Pending Site Engineer Acknowledgment', stageEnteredAt: new Date(nowTime() - 40 * 60000),
+                escalation: { stage1: false, stage2: false },
+                approvals: { kind: 'general', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
+                activityLog: [
+                    { ts: new Date(nowTime() - 40 * 60000), actor: 'Site Supervisor', text: 'General Work permit submitted by Site Supervisor. Awaiting Site Engineer field acknowledgment.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
+
+            // 2. Active Permit (Erection of Glass Panel)
+            PERMITS.push(baseGeneral({
+                project: site2.name, tower: 'Tower 1',
+                generalWorkType: 'Erection of Glass Panel',
+                locationStructure: 'Tower',
+                locFloor: 'Floor 16', locUnit: 'External Glazing Grid 3',
+                location: 'Tower 1 - Floor 16 - External Glazing Grid 3',
+                gps: site2.site,
+                createdAt: new Date(nowTime() - 4 * 3600 * 1000), submittedAt: new Date(nowTime() - 4 * 3600 * 1000),
+                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                status: 'Active', activatedAt: new Date(nowTime() - 2.8 * 3600 * 1000),
+                stageEnteredAt: new Date(nowTime() - 2.8 * 3600 * 1000),
+                escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 3.5 * 3600 * 1000), by: 'Duty Site Engineer' },
+                approvals: {
+                    kind: 'general',
+                    sectionHead: mkApproved('Tower Incharge', 200),
+                    ehsManager: mkApproved('EHS Safety Manager', 168),
+                    ehsOfficer: mkPending()
+                },
+                activityLog: [
+                    { ts: new Date(nowTime() - 2.8 * 3600 * 1000), actor: 'EHS Safety Manager', text: 'General Work permit APPROVED and activated for glass panel erection.' },
+                    { ts: new Date(nowTime() - 3.3 * 3600 * 1000), actor: 'Tower Incharge', text: 'Tower Incharge reviewed and granted stage approval.' },
+                    { ts: new Date(nowTime() - 3.5 * 3600 * 1000), actor: 'Duty Site Engineer', text: 'Site Engineer physically verified working platform and forwarded to Tower Incharge.' },
+                    { ts: new Date(nowTime() - 4.0 * 3600 * 1000), actor: 'Site Supervisor', text: 'General Work permit submitted by Site Supervisor.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
+
             function baseElectrical(over) {
                 const res = Object.assign({
                     id: genPermitNumber('electrical'), ptype: 'electrical', activity: 'Electrical Work (HT / LT) (PTW-006)', createdBy: 'Authorized Electrician',
@@ -9315,7 +9538,7 @@
                 } else if (rk === 'site-supervisor') {
                     banner.innerHTML = '<div class="banner-box" style="background:rgba(27,95,174,0.08);border:1px solid rgba(27,95,174,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
                         '<i class="fa-solid fa-user-pen" style="color:#1B5FAE;font-size:22px;"></i>' +
-                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Site Supervisor Initiator Mode:</b> You are authorized to initiate general civil/structural work permits (<b>PTW-001 to PTW-005</b>). Specialist modules (PTW-006 Electrical, PTW-007 Blasting) are restricted to certified specialists.</div>' +
+                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Site Supervisor Initiator Mode:</b> You are authorized to initiate general civil/structural work permits (<b>PTW-001 to PTW-005, PTW-008</b>). Specialist modules (PTW-006 Electrical, PTW-007 Blasting) are restricted to certified specialists.</div>' +
                         '</div>';
                 } else {
                     banner.innerHTML = '<div class="banner-box" style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
@@ -9757,6 +9980,9 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 dbOtherPrecautions: '',
                 blastingAckDeclaration: false,
                 blastingAckPhoto: null,
+                // General Work specific (PTW-008):
+                generalWorkType: '',
+                generalWorkOther: '',
                 // Electrical specific (PTW-006):
                 electricalSiteType: 'site',
                 facilityScope: 'site',
@@ -9954,6 +10180,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isConfined = ptypeOf(draft) === 'confined';
             const isExc = ptypeOf(draft) === 'excavation';
             const isBlasting = ptypeOf(draft) === 'blasting';
+            const isGeneral = ptypeOf(draft) === 'general';
             const isElectrical = ptypeOf(draft) === 'electrical';
             const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
 
@@ -9979,7 +10206,10 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     ) +
                     '<div class="review-item"><div class="rk">Location Formatted</div><div class="rv">' + (draft.location || '&mdash;') + '</div></div>' +
                     '<div class="review-item"><div class="rk">GPS</div><div class="rv">' + (draft.gps ? draft.gps.lat.toFixed(5) + ', ' + draft.gps.lng.toFixed(5) : '&mdash;') + '</div></div>' +
-                    (isBlasting
+                    (isGeneral
+                        ? ('<div class="review-item"><div class="rk">Description of Work</div><div class="rv" style="font-weight:700;">' + escapeHtml(draft.generalWorkType || '—') + ((draft.generalWorkType === 'Other' || draft.generalWorkType === 'Other[Manual Entry]') && draft.generalWorkOther ? ' (' + escapeHtml(draft.generalWorkOther) + ')' : '') + '</div></div>' +
+                           '<div class="review-item"><div class="rk">Work Category</div><div class="rv">' + (getGeneralCategory(draft.generalWorkType) === 'panel' ? 'Panel Erection (21 checks)' : getGeneralCategory(draft.generalWorkType) === 'hoist' ? 'Hoists & Rigging/Shifting (15 checks)' : getGeneralCategory(draft.generalWorkType) === 'formwork' ? 'Formwork (20 checks)' : 'General Work (11 checks)') + '</div></div>')
+                        : isBlasting
                         ? ('<div class="review-item"><div class="rk">Operation Type</div><div class="rv" style="font-weight:700;">' + (draft.drillingBlastingType === 'blasting' ? '💥 Blasting' : '🔩 Drilling') + '</div></div>' +
                            '<div class="review-item"><div class="rk">Date &amp; Time of Operation</div><div class="rv">' + (draft.dbDateTime || '&mdash;') + '</div></div>' +
                            (draft.drillingBlastingType === 'blasting'
@@ -10274,6 +10504,26 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '<div style="font-size:12px;color:#14532D;margin-top:3px;line-height:1.5;">I hereby declare that all circuit isolation, discharge of stored electrical energy, multi-meter voltage verification, and LOTO procedures will be strictly complied with prior to commencing work.</div></div>' +
                     '</label><div class="form-error" id="elecDeclError" style="' + (draft.elecStatutoryDecl ? 'display:none;' : '') + '"><i class="fa-solid fa-circle-exclamation"></i> Statutory electrician pre-work declaration must be checked.</div>' +
                     '</div></div>';
+            } else if (isGeneral) {
+                // General Work specific fields per PTW-008
+                html += '<div class="form-field full" id="ff-general-work-type"><label>Description of Work (Single Choice) <span class="req">*</span></label>' +
+                    '<select id="inGeneralWorkType" onchange="onGeneralWorkTypeChange(this.value)"' + disAttr + ' style="font-weight:600;">' +
+                    '<option value="">Select general work description&hellip;</option>' +
+                    GENERAL_WORK_DESCRIPTIONS.map(d => '<option value="' + escapeHtml(d) + '" ' + (draft.generalWorkType === d ? 'selected' : '') + '>' + escapeHtml(d) + '</option>').join('') +
+                    '</select>' +
+                    '<div class="form-error" id="generalWorkTypeError"><i class="fa-solid fa-circle-exclamation"></i> Selection of work description is mandatory.</div></div>' +
+                    ((draft.generalWorkType === 'Other' || draft.generalWorkType === 'Other[Manual Entry]')
+                        ? ('<div class="form-field full" id="ff-general-other"><label>Please Specify General Work Description <span class="req">*</span></label>' +
+                           '<input type="text" id="inGeneralWorkOther" placeholder="Enter custom description of general work..." value="' + escapeHtml(draft.generalWorkOther || '') + '" oninput="draft.generalWorkOther=this.value;draft.activity=\'General Work — \' + (this.value || \'Other\') + \' (PTW-008)\';validateWizStep(1);"' + disAttr + '>' +
+                           '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Please specify the general work description.</div></div>')
+                        : '') +
+                    (draft.generalWorkType && (getGeneralCategory(draft.generalWorkType) === 'hoist' || getGeneralCategory(draft.generalWorkType) === 'formwork')
+                        ? ('<div class="form-field full" style="margin-top:4px;">' +
+                           '<div style="background:#FEF2F2;border:1.5px solid #F87171;border-radius:8px;padding:10px 14px;display:flex;align-items:center;gap:10px;">' +
+                           '<i class="fa-solid fa-triangle-exclamation" style="font-size:20px;color:#DC2626;"></i>' +
+                           '<div style="color:#991B1B;font-weight:700;font-size:12.5px;">Warning: Work shall be stopped if wind speed is more than 45KM/hr.</div>' +
+                           '</div></div>')
+                        : '');
             } else {
                 // Excavation specific fields per PTW-001
                 html += '<div class="form-field" id="ff-depth"><label>Depth of Excavation (m) <span class="req">*</span></label><input type="text" id="inDepth" placeholder="e.g. 2.5" value="' + (draft.depth || '') + '" oninput="onNumericField(this,\'depth\')"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Numeric value only, e.g. 2.5.</div></div>' +
@@ -10319,6 +10569,16 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const fDt = document.getElementById('ff-loto-datetime');
             if (fReg) fReg.style.display = checked ? '' : 'none';
             if (fDt) fDt.style.display = checked ? '' : 'none';
+            validateWizStep(1);
+        }
+
+        function onGeneralWorkTypeChange(val) {
+            draft.generalWorkType = val;
+            draft.activity = 'General Work — ' + ((val === 'Other' || val === 'Other[Manual Entry]') ? (draft.generalWorkOther || 'Other') : val) + ' (PTW-008)';
+            draft.checklist = checklistFor('general', val).map((q, idx) => ({
+                q, ans: null, comment: null, photo: null, gps: null
+            }));
+            renderWizStep();
             validateWizStep(1);
         }
 
@@ -10423,7 +10683,8 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             confined: ['Tower', 'Basement/Podium', 'Manual'],
             shaft: ['Tower', 'Basement/Podium'],
             electrical: ['Tower', 'Basement/Podium', 'Manual'],
-            blasting: ['Manual']
+            blasting: ['Manual'],
+            general: ['Tower', 'Basement/Podium', 'Manual']
         };
 
         function isProjectSelectionAvailable(subTypeOrDraft) {
@@ -10833,6 +11094,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isConfined = ptypeOf(draft) === 'confined';
             const isBlasting = ptypeOf(draft) === 'blasting';
             const isElectrical = ptypeOf(draft) === 'electrical';
+            const isGeneral = ptypeOf(draft) === 'general';
             const answered = draft.checklist.filter(checklistItemComplete).length;
             const total = draft.checklist.length;
             let html = isElectrical
@@ -10847,10 +11109,26 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Shaft Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 10 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo was captured in Step 1.</div>'
                 : isHw
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Hot Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 20 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo is mandatory before you can proceed.</div>'
+                : isGeneral
+                ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> General Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All ' + total + ' items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo is mandatory before you can proceed.</div>'
                 : '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Excavation Safety Checklist — ' + pMeta(draft).form + ' &sect;II. Every item requires a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. A work-area site photo is mandatory before you can proceed (drawing plan is optional).</div>';
             html += '<div class="checklist-progress"><span style="font-size:12px;font-weight:700;color:var(--navy);" id="ck2ProgressTxt">' + answered + ' / ' + total + ' complete</span><div class="bar"><div class="fill" id="ck2ProgressFill" style="width:' + Math.round((answered / total) * 100) + '%;"></div></div></div>';
             html += '<div class="ck2-summary pending" id="ck2Summary"></div>';
+            if (isGeneral && (getGeneralCategory(draft.generalWorkType) === 'hoist' || getGeneralCategory(draft.generalWorkType) === 'formwork')) {
+                html += '<div class="general-wind-warning-banner" style="background:#FEF2F2;border:1.5px solid #F87171;border-radius:8px;padding:12px 16px;margin:12px 0 16px;display:flex;align-items:center;gap:12px;">' +
+                    '<i class="fa-solid fa-triangle-exclamation" style="font-size:24px;color:#DC2626;"></i>' +
+                    '<div style="color:#991B1B;font-weight:700;font-size:13.5px;line-height:1.4;">' +
+                    'Warning: Work shall be stopped if wind speed is more than 45KM/hr.' +
+                    '</div></div>';
+            }
             draft.checklist.forEach((c, i) => {
+                if (isGeneral && i === 11) {
+                    const cat = getGeneralCategory(draft.generalWorkType);
+                    const catTitle = cat === 'panel' ? 'Panel Erection Specific Checks (Items 12 to 21)' : cat === 'hoist' ? 'Hoists & Rigging/Shifting Specific Checks (Items 12 to 15)' : 'Formwork Specific Checks (Items 12 to 20)';
+                    html += '<div style="margin:22px 0 12px;padding:10px 14px;background:#F1F5F9;border-left:4px solid var(--blue);border-radius:4px;font-size:13px;font-weight:700;color:var(--navy);display:flex;align-items:center;gap:8px;">' +
+                        '<i class="fa-solid fa-list-check" style="color:var(--blue);"></i> ' + catTitle +
+                        '</div>';
+                }
                 const cls = c.ans === 'no' ? 'answered-no' : c.ans === 'na' ? 'answered-na' : c.ans === 'yes' ? 'answered-yes' : '';
                 let subChecksHtml = '';
                 if (isGuardrail && i === 2) {
@@ -11218,6 +11496,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isConfined = ptypeOf(draft) === 'confined';
             const isBlasting = ptypeOf(draft) === 'blasting';
             const isElectrical = ptypeOf(draft) === 'electrical';
+            const isGeneral = ptypeOf(draft) === 'general';
             const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
             const noItems = draft.checklist.filter(c => c.ans === 'no');
             const naItems = draft.checklist.filter(c => c.ans === 'na');
@@ -11237,6 +11516,8 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         ? 'the Site Engineer for acknowledgment, then EHS Safety Manager / Officer for final statutory endorsement'
                         : 'the Blasting / Drilling In-charge for statutory acknowledgment and on-site photo verification, then Site Engineer for acknowledgment, then EHS Safety Manager / Officer for final statutory endorsement')
                     : 'the Site Engineer for acknowledgment, then EHS Safety Manager / Officer for final statutory endorsement')
+                : isGeneral
+                ? 'the Site Engineer for acknowledgment, then Tower Incharge for review, then EHS Safety Manager / Officer for verification'
                 : isConfined
                 ? 'the Site Engineer for acknowledgment, then Tower Incharge for review, then EHS Safety Manager / Officer for verification (first approval activates permit)'
                 : isGuardrail
@@ -11330,6 +11611,20 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     ? ('<div class="review-item"><div class="rk">Description of Hot Work</div><div class="rv">' + ((draft.hotworkTypes || []).join(', ') || '&mdash;') + '</div></div>' +
                        '<div class="review-item"><div class="rk">Name of Welder</div><div class="rv">' + (draft.welderName || '&mdash;') + '</div></div>' +
                        '<div class="review-item"><div class="rk">Welder Affiliation</div><div class="rv">' + (draft.welderAffiliation || 'ARPL') + (draft.welderContractor ? ' &mdash; ' + draft.welderContractor : '') + '</div></div>')
+                    : isGeneral
+                    ? ('<div class="review-item"><div class="rk">Location Mode</div><div class="rv">' + (draft.locationStructure || 'Tower') + '</div></div>' +
+                       (draft.locationStructure === 'Basement/Podium'
+                        ? ('<div class="review-item"><div class="rk">Basement / Podium</div><div class="rv">' + (draft.locBasementPodium || '&mdash;') + '</div></div>' +
+                           '<div class="review-item"><div class="rk">Area</div><div class="rv">' + (draft.locArea || '&mdash;') + '</div></div>')
+                        : draft.locationStructure === 'Manual'
+                        ? ('<div class="review-item"><div class="rk">Specific Location</div><div class="rv">' + (draft.locManual || '&mdash;') + '</div></div>' +
+                           '<div class="review-item"><div class="rk">Area / Grid Ref</div><div class="rv">' + (draft.locManualArea || '&mdash;') + '</div></div>')
+                        : ('<div class="review-item"><div class="rk">Floor Level</div><div class="rv">' + (draft.locFloor || '&mdash;') + '</div></div>' +
+                           '<div class="review-item"><div class="rk">Unit</div><div class="rv">' + (draft.locUnit || '&mdash;') + '</div></div>')
+                       ) +
+                       '<div class="review-item"><div class="rk">Description of Work</div><div class="rv" style="font-weight:700;color:var(--navy);">' + escapeHtml(draft.generalWorkType || '&mdash;') + ((draft.generalWorkType === 'Other' || draft.generalWorkType === 'Other[Manual Entry]') && draft.generalWorkOther ? ' (' + escapeHtml(draft.generalWorkOther) + ')' : '') + '</div></div>' +
+                       '<div class="review-item"><div class="rk">Work Category</div><div class="rv">' + (getGeneralCategory(draft.generalWorkType) === 'panel' ? 'Panel Erection (21 checks)' : getGeneralCategory(draft.generalWorkType) === 'hoist' ? 'Hoists & Rigging/Shifting (15 checks)' : getGeneralCategory(draft.generalWorkType) === 'formwork' ? 'Formwork (20 checks)' : 'General Work (11 checks)') + '</div></div>' +
+                       '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + (draft.organization || 'ARPL') + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>')
                     : ('<div class="review-item"><div class="rk">Depth / Slope</div><div class="rv">' + draft.depth + ' m &middot; 1:' + draft.slope + '</div></div>' +
                        '<div class="review-item"><div class="rk">Equipment</div><div class="rv">' + equipDisplay(draft) + '</div></div>' +
                        '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + draft.organization + (draft.contractor ? ' &mdash; ' + draft.contractor : '') + '</div></div>')
@@ -11343,7 +11638,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '</div>' +
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                 '<div class="attach-row">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<img src="' + draft.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' Work-area site photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>' +
-                (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting && !isElectrical ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
+                (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting && !isElectrical && !isGeneral ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 (isConfined && draft.confinedChecklistAttachment ? ('<div class="attach-row"><i class="fa-solid fa-file-circle-check" style="color:var(--green);"></i> Confined Space Pre-Task Checklist (' + escapeHtml(draft.confinedChecklistAttachment.name) + ') <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 noItems.filter(c => c.photo).map(() => '<div class="attach-row"><i class="fa-regular fa-image"></i> NO-item evidence photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>').join('') +
                 '</div>' +
@@ -11539,6 +11834,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 const isBlasting = ptypeOf(draft) === 'blasting';
                 const isElectrical = ptypeOf(draft) === 'electrical';
                 const isElecBatching = isElectrical && (draft.electricalSiteType === 'batching_plant' || draft.facilityScope === 'batching_plant');
+                const isGeneral = ptypeOf(draft) === 'general';
                 const projectRequired = !isElecBatching;
 
                 if (projectRequired) {
@@ -11792,6 +12088,15 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     if (declErr) declErr.style.display = declOk ? 'none' : 'flex';
 
                     ok = ok && whyOk && appOk && timeOk && safeOk && lotoDoneOk && lotoFieldsOk && declOk;
+                } else if (isGeneral) {
+                    const wtOk = !!(draft.generalWorkType && draft.generalWorkType.trim());
+                    markField('ff-general-work-type', wtOk);
+                    const isOther = (draft.generalWorkType === 'Other' || draft.generalWorkType === 'Other[Manual Entry]');
+                    const otherOk = !isOther || !!(draft.generalWorkOther && draft.generalWorkOther.trim());
+                    if (isOther) {
+                        markField('ff-general-other', otherOk);
+                    }
+                    ok = ok && wtOk && otherOk;
                 } else {
                     const depthOk = /^\d+(\.\d+)?$/.test(draft.depth || ''); markField('ff-depth', depthOk); ok = ok && depthOk;
                     const slopeOk = /^\d+(\.\d+)?$/.test(draft.slope || ''); markField('ff-slope', slopeOk); ok = ok && slopeOk;
@@ -11929,7 +12234,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by Tower Incharge review (Step 3) and final EHS endorsement (Step 4 &mdash; first approval by EHS Manager or Officer activates the permit)';
             } else if (ptypeOf(draft) === 'guardrail') {
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by Tower Incharge approval (Step 3) and final EHS endorsement (Step 4 &mdash; first approval activates the permit)';
-            } else if (ptypeOf(draft) === 'hotwork') {
+            } else if (ptypeOf(draft) === 'hotwork' || ptypeOf(draft) === 'general') {
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by Tower Incharge approval (Step 3) and final EHS endorsement (Step 4 &mdash; first approval activates the permit)';
             } else if (ptypeOf(draft) === 'shaft') {
                 wfDesc = 'Site Engineer acknowledgment (Step 2), followed by single MEP clearance (Step 3), Tower Incharge review (Step 4), and final EHS endorsement (Step 5)';
@@ -12071,6 +12376,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isShaft = ptypeOf(p) === 'shaft';
             const isGr = ptypeOf(p) === 'guardrail';
             const isConfined = ptypeOf(p) === 'confined';
+            const isGeneral = ptypeOf(p) === 'general';
             const isBlasting = ptypeOf(p) === 'blasting';
             const isElectrical = ptypeOf(p) === 'electrical';
             const isBlastingOp = isBlasting && (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
@@ -12080,7 +12386,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isMepDone = !!(a.mep && a.mep.status === 'approved');
             const isMepRejected = !!(a.mep && (a.mep.status === 'rejected' || a.mep.status === 'cancelled'));
             const isParallelActive = p.status === 'Pending Parallel Approval';
-            const isParallelDone = !isHw && !isShaft && !isGr && !isConfined && !isBlasting && !isElectrical && !!(a.mep && a.pm && a.it && a.mep.status === 'approved' && a.pm.status === 'approved' && a.it.status === 'approved');
+            const isParallelDone = !isHw && !isShaft && !isGr && !isConfined && !isGeneral && !isBlasting && !isElectrical && !!(a.mep && a.pm && a.it && a.mep.status === 'approved' && a.pm.status === 'approved' && a.it.status === 'approved');
             const isSectionHeadActive = p.status === 'Pending Section Head';
             const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
             const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
@@ -12249,7 +12555,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     const mepTip = isMepDone ? 'MEP clearance completed' : (isMepActive ? 'Pending MEP clearance review' : 'Awaiting MEP clearance');
                     html += node('MEP Clearance', mepSub, mepState, '', mepTip);
                     html += '<div class="tr-line ' + (isMepDone ? 'done' : '') + '"></div>';
-                } else if (!isHw && !isGr && !isConfined) {
+                } else if (!isHw && !isGr && !isConfined && !isGeneral) {
                     // Step 3: Parallel Gate (MEP · P&M · IT) — Excavation only
                     html += '<div class="tr-parallel-wrap"><div class="tr-parallel-row">' +
                         node('MEP', a.mep && a.mep.status === 'approved' ? 'Approved' : a.mep && a.mep.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending'), pState('mep'), '', 'MEP utility clearance status') +
@@ -12264,7 +12570,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 // Section Head
                 const isExc = ptypeOf(p) === 'excavation';
                 const shLabel = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
-                const shStepNum = (isHw || isGr || isConfined) ? 'Step 3' : 'Step 4';
+                const shStepNum = (isHw || isGr || isConfined || isGeneral) ? 'Step 3' : 'Step 4';
                 const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
                 const shSub = isSectionHeadDone ? (shStepNum + ' · Approved') : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? (shStepNum + ' · Action Req.') : (shStepNum + ' · Review')));
                 const shTip = isSectionHeadDone ? (shLabel + ' review approved') : (isSectionHeadRejected ? (shLabel + ' cancelled') : ('Pending ' + shLabel + ' review'));
@@ -12272,7 +12578,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
 
                 // EHS Safety
-                const ehsStepNum = (isHw || isGr || isConfined) ? 'Step 4' : 'Step 5';
+                const ehsStepNum = (isHw || isGr || isConfined || isGeneral) ? 'Step 4' : 'Step 5';
                 const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
                 const ehsSub = isEhsDone ? ((a.ehsManager && a.ehsManager.status === 'approved' ? 'Manager' : 'Officer') + ' verified') : (isEhsRejected ? 'EHS Cancelled' : (isEhsActive ? (ehsStepNum + ' · Action Req.') : (ehsStepNum + ' · Verification')));
                 const ehsTip = isEhsDone ? 'EHS safety verification completed' : (isEhsRejected ? 'EHS cancelled' : 'Pending EHS safety verification & activation');
@@ -12546,6 +12852,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isGr = ptypeOf(p) === 'guardrail';
             const isExcavation = ptypeOf(p) === 'excavation';
             const isConfined = ptypeOf(p) === 'confined';
+            const isGeneral = ptypeOf(p) === 'general';
             const isBlasting = ptypeOf(p) === 'blasting';
             const isElectrical = ptypeOf(p) === 'electrical';
             const shTitle = pMeta(p).shLabel || (isExcavation ? 'Excavation Head' : 'Tower Incharge');
@@ -12664,9 +12971,9 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     const pReturnTarget = (p.createdByRole === 'blasting-incharge') ? 'In-charge' : (isElectrical ? 'Electrician' : 'Supervisor');
                     html += '<div class="approval-action-card" style="border-color:var(--blue);background:rgba(21,101,192,0.06);">' +
                         '<div class="aa-title"><i class="fa-solid fa-clipboard-check" style="color:var(--blue);"></i> ' + (isReack ? 'Re-Acknowledgment &amp; Approval Required' : 'Step 2: Site Engineer Approval &amp; Acknowledgment') + '</div>' +
-                        '<div class="aa-desc">' + (isReack ? (pCreatorName + ' resubmitted the permit with corrected checklist/details. Review changes and approve to forward (your signature on file will be reused without re-entry).') : (isElectrical ? 'Permittee Electrician submitted the PTW-006 electrical work permit. Review site conditions, electrical apparatus isolation, and approve to forward to MEP or P&amp;M Engineer for domain review.' : isShaft ? 'Site Supervisor (Permittee) submitted the shaft work permit. Review shaft safety arrangements, floor level, and approve to forward to MEP Engineer for clearance.' : isHw ? 'Site Supervisor (Permittee) submitted the hot work permit. Review safety arrangements, verify worksite conditions, and approve to forward to Tower Incharge.' : isGr ? 'Site Supervisor (Permittee) submitted the guard rail &amp; floor protection removal permit. Review safety arrangements, edge protections/opening covers, and approve to forward to Tower Incharge.' : isConfined ? 'Site Supervisor (Permittee) submitted the confined space entry permit. Review ventilation, watcher presence, multi-gas readings, and approve to forward to Tower Incharge.' : isBlasting ? (pCreatorName + ' submitted the drilling &amp; blasting permit. Review safety arrangements, manual work area boundaries, and approve to forward directly to EHS Safety for verification.') : 'Site Supervisor (Permittee) submitted the excavation permit. Review and approve to forward to parallel discipline clearance (MEP &middot; P&amp;M &middot; IT).')) + '</div>' +
+                        '<div class="aa-desc">' + (isReack ? (pCreatorName + ' resubmitted the permit with corrected checklist/details. Review changes and approve to forward (your signature on file will be reused without re-entry).') : (isElectrical ? 'Permittee Electrician submitted the PTW-006 electrical work permit. Review site conditions, electrical apparatus isolation, and approve to forward to MEP or P&amp;M Engineer for domain review.' : isShaft ? 'Site Supervisor (Permittee) submitted the shaft work permit. Review shaft safety arrangements, floor level, and approve to forward to MEP Engineer for clearance.' : isHw ? 'Site Supervisor (Permittee) submitted the hot work permit. Review safety arrangements, verify worksite conditions, and approve to forward to Tower Incharge.' : isGeneral ? 'Site Supervisor (Permittee) submitted the general work permit. Review site conditions, safety checklist, wind speed restrictions, and approve to forward to Tower Incharge.' : isGr ? 'Site Supervisor (Permittee) submitted the guard rail &amp; floor protection removal permit. Review safety arrangements, edge protections/opening covers, and approve to forward to Tower Incharge.' : isConfined ? 'Site Supervisor (Permittee) submitted the confined space entry permit. Review ventilation, watcher presence, multi-gas readings, and approve to forward to Tower Incharge.' : isBlasting ? (pCreatorName + ' submitted the drilling &amp; blasting permit. Review safety arrangements, manual work area boundaries, and approve to forward directly to EHS Safety for verification.') : 'Site Supervisor (Permittee) submitted the excavation permit. Review and approve to forward to parallel discipline clearance (MEP &middot; P&amp;M &middot; IT).')) + '</div>' +
                         '<div style="display:flex;gap:10px;flex-wrap:wrap;">' +
-                        '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-engineer\')"><i class="fa-solid fa-check"></i> ' + (isReack ? 'Approve &amp; Forward' : (isElectrical ? 'Approve &amp; Forward to MEP or P&amp;M Engineer' : isShaft ? 'Approve &amp; Forward to MEP Engineer' : (isHw || isGr || isConfined) ? 'Approve &amp; Forward to Tower Incharge' : isBlasting ? 'Approve &amp; Forward to EHS Safety' : 'Approve &amp; Forward to Parallel Gate')) + '</button>' +
+                        '<button class="btn btn-green" onclick="openApprovalGPS(\'' + p.id + '\',\'ack-engineer\')"><i class="fa-solid fa-check"></i> ' + (isReack ? 'Approve &amp; Forward' : (isElectrical ? 'Approve &amp; Forward to MEP or P&amp;M Engineer' : isShaft ? 'Approve &amp; Forward to MEP Engineer' : (isHw || isGr || isConfined || isGeneral) ? 'Approve &amp; Forward to Tower Incharge' : isBlasting ? 'Approve &amp; Forward to EHS Safety' : 'Approve &amp; Forward to Parallel Gate')) + '</button>' +
                         '<button class="btn btn-danger" onclick="openApprovalGPS(\'' + p.id + '\',\'reject-engineer\')"><i class="fa-solid fa-xmark"></i> Reject &amp; Return to ' + pReturnTarget + '</button>' +
                         '</div>' +
                         '</div>';
@@ -12750,8 +13057,8 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             // ---- Tower Incharge Review ----
             if (p.status === 'Pending Section Head') {
                 const targetShRole = shRoleFor(p);
-                const isShRole = (rk === targetShRole) || ((isShaft || isGr || isHw || isConfined || isElectrical) && (rk === 'hw-section-head' || rk === 'section-head'));
-                const shStepNum = (isHw || isGr || isConfined) ? 'Step 3' : 'Step 4';
+                const isShRole = (rk === targetShRole) || ((isShaft || isGr || isHw || isConfined || isGeneral || isElectrical) && (rk === 'hw-section-head' || rk === 'section-head'));
+                const shStepNum = (isHw || isGr || isConfined || isGeneral) ? 'Step 3' : 'Step 4';
                 if (isShRole && roleCanActOnChain(p.approvals, rk)) {
                     html += '<div class="approval-action-card">' +
                         '<div class="aa-title"><i class="fa-solid fa-gavel"></i> ' + shStepNum + ': ' + shTitle + ' Review</div>' +
@@ -12772,7 +13079,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             // ---- EHS Verification (Manager or Officer) ----
             if (p.status === 'Pending EHS Approval') {
                 const isElecBatching = isElectrical && (p.electricalSiteType === 'batching_plant' || (p.approvals && p.approvals.kind === 'electrical-batching'));
-                const ehsStepNum = (isHw || isGr || isConfined || isElecBatching) ? 'Step 4' : 'Step 5';
+                const ehsStepNum = (isHw || isGr || isConfined || isGeneral || isElecBatching) ? 'Step 4' : 'Step 5';
                 if (['ehs-manager', 'ehs-officer'].includes(rk) && roleCanActOnChain(p.approvals, rk)) {
                     html += '<div class="approval-action-card">' +
                         '<div class="aa-title"><i class="fa-solid fa-shield-halved"></i> ' + ehsStepNum + ': EHS Verification (Manager / Officer)</div>' +
@@ -12834,7 +13141,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             // 2c. Observation Pending Tower Incharge Review
             if (p.status === 'Observation Pending Section Head Review') {
                 const targetShRole = shRoleFor(p);
-                const isShRole = (rk === targetShRole) || ((isShaft || isGr || isHw || isConfined) && (rk === 'hw-section-head' || rk === 'section-head'));
+                const isShRole = (rk === targetShRole) || ((isShaft || isGr || isHw || isConfined || isGeneral) && (rk === 'hw-section-head' || rk === 'section-head'));
                 html += '<div class="approval-action-card" style="border-color:var(--purple);background:var(--purple-bg);">' +
                     '<div class="aa-title"><i class="fa-solid fa-gavel" style="color:var(--purple);"></i> Observation Rectification: ' + shTitle + ' Review</div>' +
                     '<div class="aa-desc"><b>Supervisor rectification:</b> "' + escapeHtml(p.observation && p.observation.response ? p.observation.response.comment : '') + '"<br><b>Site Engineer:</b> Verified on-site (' + escapeHtml((p.observation && p.observation.engAck && p.observation.engAck.by) || 'Site Engineer') + ').<br>Review the rectified condition and photo evidence. Approve to forward to EHS for final clearance, or Reject to return to Site Supervisor for re-rectification.</div>' +
@@ -12994,7 +13301,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 // Stage 2: Pending Tower Incharge Review
                 else if (ext.status === 'Pending Section Head') {
                     const targetShRole = shRoleFor(p);
-                    const isShRole = (rk === targetShRole) || ((isShaft || isGr || isHw || isConfined) && (rk === 'hw-section-head' || rk === 'section-head'));
+                    const isShRole = (rk === targetShRole) || ((isShaft || isGr || isHw || isConfined || isGeneral) && (rk === 'hw-section-head' || rk === 'section-head'));
                     const extShAckDesc = '<b>Supervisor requested extension:</b> "' + escapeHtml(ext.reason) + '" &middot; Requested: +' + extDurTxt + '. Re-acknowledged by Site Engineer (' + escapeHtml((ext.approvals && ext.approvals.siteEngineer && ext.approvals.siteEngineer.by) || 'Site Engineer') + '). Approve to route to EHS Safety for final endorsement, or Reject to cancel extension.';
                     const extShAwaitingDesc = 'Extension requested: "' + escapeHtml(ext.reason) + '" (+' + extDurTxt + '). Re-acknowledged by Site Engineer. Awaiting review and endorsement by <b>' + shTitle + '</b>.';
                     if (isShRole) {
@@ -14360,6 +14667,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 confinedClosureConfirmed: false,
                 blastingClearanceConfirmed: false,
                 electricalClosureConfirmed: false,
+                generalHousekeepingConfirmed: false,
                 sig: hasStoredSigner ? existingSigner.sig : null,
                 signerName: hasStoredSigner ? existingSigner.name : (currentUser.name || ''),
                 consent: hasStoredSigner ? true : false,
@@ -14390,6 +14698,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isShaft = ptypeOf(ctx.p) === 'shaft';
             const isGr = ptypeOf(ctx.p) === 'guardrail';
             const isConfined = ptypeOf(ctx.p) === 'confined';
+            const isGeneral = ptypeOf(ctx.p) === 'general';
             const isBlasting = ptypeOf(ctx.p) === 'blasting' && (ctx.p.dbOperationType === 'Blasting' || ctx.p.drillingBlastingType === 'blasting');
             const isElec = ptypeOf(ctx.p) === 'electrical';
             document.getElementById('actionModalTitle').innerHTML = '<i class="fa-solid fa-hand-holding" style="color:var(--green);"></i> Close &amp; Surrender — ' + ctx.p.id;
@@ -14399,7 +14708,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '<div class="form-field" style="margin-bottom:12px;"><label>Remarks <span class="req">*</span></label><textarea id="surrRemarks" placeholder="Confirm area made safe, men and materials removed; final handover remarks to EHS&hellip;" oninput="actionModalCtx.remarks=this.value">' + (ctx.remarks || '') + '</textarea></div>' +
                 (isElec ? ('<div class="form-field" style="margin-bottom:12px;">' +
                     '<label class="dpdp-consent-pill ' + (ctx.electricalClosureConfirmed ? 'checked' : '') + '" style="border-color:#F59E0B;background:#FFFBEB;">' +
-                    '<input type="checkbox" id="surrElectricalClosureChk" ' + (ctx.electricalClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.electricalClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:#D97706;cursor:pointer;">' +
+                    '<input type="checkbox" id="surrElectricalClosureChk" ' + (ctx.electricalClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.electricalClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:#D97706;cursor:pointer;transform:scale(1.25);">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:#B45309;"><i class="fa-solid fa-bolt"></i> MANDATORY ELECTRICAL DE-ISOLATION &amp; RESTORATION DECLARATION (Form PTW-006) <span class="req">*</span>:</strong> I certify that electrical work is completed, all personnel withdrawn, all tools and test equipment removed, lockout padlocks and tagout tags physically removed and Sl. No logged in register. Lockouts surrendered and key returned to supervisor, covers re-fixed, and the apparatus is declared safe for de-isolation and re-energization.' +
                     '</span>' +
@@ -14407,7 +14716,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '</div>') : '') +
                 (isHw ? ('<div class="form-field" style="margin-bottom:12px;">' +
                     '<label class="dpdp-consent-pill ' + (ctx.fireWatchConfirmed ? 'checked' : '') + '" style="border-color:#EF5350;background:#FFF5F5;">' +
-                    '<input type="checkbox" id="surrFireWatchChk" ' + (ctx.fireWatchConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.fireWatchConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:#C62828;cursor:pointer;">' +
+                    '<input type="checkbox" id="surrFireWatchChk" ' + (ctx.fireWatchConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.fireWatchConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:#C62828;cursor:pointer;transform:scale(1.25);">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:#C62828;"><i class="fa-solid fa-fire-extinguisher"></i> Mandatory Fire Watch Declaration (PTW-002) <span class="req">*</span>:</strong> I certify that continuous fire watch was vigilantly maintained during hot work activities and for a minimum of one (1) hour post-completion with suitable fire extinguisher immediately available.' +
                     '</span>' +
@@ -14415,7 +14724,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '</div>') : '') +
                 (isShaft ? ('<div class="form-field" style="margin-bottom:12px;">' +
                     '<label class="dpdp-consent-pill ' + (ctx.shaftClosureConfirmed ? 'checked' : '') + '" style="border-color:var(--blue-brd);background:var(--blue-bg);">' +
-                    '<input type="checkbox" id="surrShaftClosureChk" ' + (ctx.shaftClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.shaftClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:var(--blue);cursor:pointer;">' +
+                    '<input type="checkbox" id="surrShaftClosureChk" ' + (ctx.shaftClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.shaftClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:var(--blue);cursor:pointer;transform:scale(1.25);">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:var(--blue);"><i class="fa-solid fa-door-closed"></i> Shaft Closure &amp; Security Declaration (PTW-005) <span class="req">*</span>:</strong> I certify that all personnel, tools, and materials have been safely evacuated from the shaft, working platform/RSP secured, and shaft openings/gates firmly closed and locked.' +
                     '</span>' +
@@ -14423,7 +14732,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '</div>') : '') +
                 (isGr ? ('<div class="form-field" style="margin-bottom:12px;">' +
                     '<label class="dpdp-consent-pill ' + (ctx.guardrailReFixConfirmed ? 'checked' : '') + '" style="border-color:#F57C00;background:#FFF8E1;">' +
-                    '<input type="checkbox" id="surrGuardrailReFixChk" ' + (ctx.guardrailReFixConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.guardrailReFixConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:#E65100;cursor:pointer;">' +
+                    '<input type="checkbox" id="surrGuardrailReFixChk" ' + (ctx.guardrailReFixConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.guardrailReFixConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:#E65100;cursor:pointer;transform:scale(1.25);">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:#E65100;"><i class="fa-solid fa-person-falling-burst"></i> Mandatory Guard Rail &amp; Floor Opening Re-fix Declaration (PTW-003) <span class="req">*</span>:</strong> I certify that all guard rails, edge protections, shaft barrier gates, and floor opening covers have been safely, securely, and completely restored/re-fixed prior to permit surrender.' +
                     '</span>' +
@@ -14431,7 +14740,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '</div>') : '') +
                 (isConfined ? ('<div class="form-field" style="margin-bottom:12px;">' +
                     '<label class="dpdp-consent-pill ' + (ctx.confinedClosureConfirmed ? 'checked' : '') + '" style="border-color:var(--purple-brd, #B39DDB);background:var(--purple-bg, #EDE7F6);">' +
-                    '<input type="checkbox" id="surrConfinedClosureChk" ' + (ctx.confinedClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.confinedClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:var(--purple, #5E35B1);cursor:pointer;">' +
+                    '<input type="checkbox" id="surrConfinedClosureChk" ' + (ctx.confinedClosureConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.confinedClosureConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:var(--purple, #5E35B1);cursor:pointer;transform:scale(1.25);">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:var(--purple, #5E35B1);"><i class="fa-solid fa-person-shelter"></i> Confined Space Evacuation &amp; Handover Declaration (PTW-004) <span class="req">*</span>:</strong> I certify that all entrants have safely evacuated the confined space, all tools and materials have been completely removed, multi-gas atmosphere remains monitored/safe, and entry openings have been securely barricaded or sealed.' +
                     '</span>' +
@@ -14439,9 +14748,17 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '</div>') : '') +
                 (isBlasting ? ('<div class="form-field" style="margin-bottom:12px;">' +
                     '<label class="dpdp-consent-pill ' + (ctx.blastingClearanceConfirmed ? 'checked' : '') + '" style="border-color:#E65100;background:#FFF3E0;">' +
-                    '<input type="checkbox" id="surrBlastingClearanceChk" ' + (ctx.blastingClearanceConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.blastingClearanceConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:3px;width:18px;height:18px;accent-color:#E65100;cursor:pointer;">' +
+                    '<input type="checkbox" id="surrBlastingClearanceChk" ' + (ctx.blastingClearanceConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.blastingClearanceConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:#E65100;cursor:pointer;transform:scale(1.25);">' +
                     '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
                     '<strong style="color:#E65100;"><i class="fa-solid fa-burst"></i> Mandatory Post-Blast Clearance &amp; Misfire Declaration (Form PTW-007) <span class="req">*</span>:</strong> I certify that all blasting rounds have been detonated, post-blast waiting period has elapsed, the entire blast perimeter and rock face have been physically inspected, zero misfires or unexploded ordnance remain, and the area is declared safe for re-entry.' +
+                    '</span>' +
+                    '</label>' +
+                    '</div>') : '') +
+                (isGeneral ? ('<div class="form-field" style="margin-bottom:12px;">' +
+                    '<label class="dpdp-consent-pill ' + (ctx.generalHousekeepingConfirmed ? 'checked' : '') + '" style="border-color:#10B981;background:#ECFDF5;">' +
+                    '<input type="checkbox" id="surrGeneralHousekeepingChk" ' + (ctx.generalHousekeepingConfirmed ? 'checked' : '') + ' onchange="actionModalCtx.generalHousekeepingConfirmed=this.checked;this.closest(\'.dpdp-consent-pill\').classList.toggle(\'checked\', this.checked);" style="margin-top:2px;width:24px;min-width:24px;height:24px;min-height:24px;accent-color:#059669;cursor:pointer;transform:scale(1.25);">' +
+                    '<span style="font-size:12px;line-height:1.55;color:var(--text);">' +
+                    '<strong style="color:#047857;"><i class="fa-solid fa-broom"></i> Mandatory Housekeeping &amp; Area Clearance Certification (Form PTW-008) <span class="req">*</span>:</strong> I certify that general work has been completed, all tools, rigging, chain hoists, and equipment have been demobilized, debris and trash have been completely cleared, and the work area is handed back in a clean, safe condition.' +
                     '</span>' +
                     '</label>' +
                     '</div>') : '') +
@@ -14522,6 +14839,10 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 showToast('Guard Rail Re-Fix Declaration is mandatory: all rails, edge protections & floor openings must be safely restored.', 'warn');
                 return;
             }
+            if (ptypeOf(ctx.p) === 'general' && !ctx.generalHousekeepingConfirmed) {
+                showToast('Housekeeping & Area Clearance Certification is mandatory: work completed, tools/rigging removed, debris cleared, and area safe.', 'warn');
+                return;
+            }
             const nameEl = document.getElementById('modalSignerName');
             const chk = document.getElementById('modalDpdpConsentChk');
             const signerName = (nameEl ? nameEl.value : (ctx.signerName || '')).trim();
@@ -14551,7 +14872,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const p = ctx.p;
             if (!p.signatories) p.signatories = {};
             p.signatories[ctx.rk] = { name: signerName, sig: ctx.sig, consent: true, at: nowTime() };
-            if (!closeAndSurrenderPermit(p, { gps: ctx.gps, photo: ctx.photo, remarks: ctx.remarks, sig: ctx.sig, signerName: signerName, fireWatch: ctx.fireWatchConfirmed, guardrailReFix: ctx.guardrailReFixConfirmed, confinedClosure: ctx.confinedClosureConfirmed, blastingPostClearance: ctx.blastingClearanceConfirmed, electricalSurrender: ctx.electricalClosureConfirmed })) return;
+            if (!closeAndSurrenderPermit(p, { gps: ctx.gps, photo: ctx.photo, remarks: ctx.remarks, sig: ctx.sig, signerName: signerName, fireWatch: ctx.fireWatchConfirmed, guardrailReFix: ctx.guardrailReFixConfirmed, confinedClosure: ctx.confinedClosureConfirmed, blastingPostClearance: ctx.blastingClearanceConfirmed, electricalSurrender: ctx.electricalClosureConfirmed, generalHousekeeping: ctx.generalHousekeepingConfirmed })) return;
             viewDetail(p.id);
         }
 
@@ -14572,7 +14893,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 showToast('Access Denied: Permit Report PDF download is restricted exclusively to EHS Safety personnel (EHS Manager / Officer).', 'err');
                 return;
             }
-            const p = PERMITS.find(x => x.id === id); if (!p) return;
+            const p = (typeof id === 'string') ? PERMITS.find(x => x.id === id) : (id && id.id ? id : null); if (!p) return;
             if (!(window.jspdf && window.jspdf.jsPDF)) { showToast('PDF library could not be loaded. Please check your internet connection and retry.', 'error'); return; }
             try {
                 const doc = new window.jspdf.jsPDF('p', 'mm', 'a4');
@@ -14696,6 +15017,22 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     kv('Safe to Work Certified', p.elecApparatusSafe ? 'Yes (Verified)' : 'Pending', 'Lockout/Tagout Done', p.elecLotoDone ? 'Yes (Verified)' : 'Pending');
                     if (p.elecLotoDateTime) kv('LOTO Placement Date/Time', fmtDateTime(p.elecLotoDateTime) + ' IST');
                     if (p.elecStatutoryDecl) kv('Electrician Statutory Decl.', 'Confirmed & Certified Safe');
+                } else if (ptypeOf(p) === 'general') {
+                    const isBp = (p.locationStructure === 'Basement/Podium') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'basement_podium' || p.locationStructure.mode === 'Basement/Podium')) || !!p.locBasementPodium;
+                    const isManual = (p.locationStructure === 'Manual') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'manual' || p.locationStructure.mode === 'Manual')) || !!p.locManual;
+                    if (isManual) {
+                        kv('Location Structure', 'Manual Work Area', 'Specific Location', p.locManual || (p.locationStructure && p.locationStructure.manual) || '—');
+                        kv('Area / Grid Ref', p.locManualArea || (p.locationStructure && p.locationStructure.manualArea) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
+                    } else if (isBp) {
+                        kv('Location Structure', 'Basement / Podium', 'Basement/Podium', p.locBasementPodium || (p.locationStructure && p.locationStructure.basementPodium) || '—');
+                        kv('Area', p.locArea || (p.locationStructure && p.locationStructure.area) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
+                    } else {
+                        kv('Location Structure', 'Tower (' + (p.tower || '—') + ')', 'Floor Level', p.locFloor || (p.locationStructure && p.locationStructure.floor) || '—');
+                        kv('Unit', p.locUnit || (p.locationStructure && p.locationStructure.unit) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
+                    }
+                    const cat = getGeneralCategory(p.generalWorkType);
+                    const catLabel = cat === 'panel' ? 'Panel Erection (21 checks)' : cat === 'hoist' ? 'Hoists & Rigging/Shifting (15 checks)' : cat === 'formwork' ? 'Formwork (20 checks)' : 'General Work (11 checks)';
+                    kv('Description of Work', (p.generalWorkType || p.activity || 'General Work') + ((p.generalWorkType === 'Other' || p.generalWorkType === 'Other[Manual Entry]') && p.generalWorkOther ? ' (' + p.generalWorkOther + ')' : ''), 'Work Category', catLabel);
                 } else if (ptypeOf(p) === 'blasting') {
                     const isBlastingOp = (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
                     kv('Location Structure', 'Open Surface / Yard (Manual Only)', 'Manual Area / Landmark', p.locManualArea || p.location || '—');
@@ -14779,7 +15116,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                             para('• Blasting / Drilling In-charge statutory on-site inspection photograph on file (verified).', 8.6);
                         }
                     }
-                } else if (ptypeOf(p) !== 'hotwork' && ptypeOf(p) !== 'shaft' && ptypeOf(p) !== 'guardrail' && ptypeOf(p) !== 'electrical') {
+                } else if (ptypeOf(p) !== 'hotwork' && ptypeOf(p) !== 'shaft' && ptypeOf(p) !== 'guardrail' && ptypeOf(p) !== 'electrical' && ptypeOf(p) !== 'general') {
                     if (p.drawing) {
                         if (p.drawing.isImage && p.drawing.dataUrl) tryImg(p.drawing.dataUrl, 74, 52, 'Drawing indicating proposed excavation — ' + p.drawing.name);
                         else para('• Excavation drawing attached: ' + p.drawing.name + ' (uploaded ' + fmtDateTime(p.drawing.at) + ' IST).', 8.6);
@@ -14846,6 +15183,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     const isHw = ptypeOf(p) === 'hotwork';
                     const isShaft = ptypeOf(p) === 'shaft';
                     const isGr = ptypeOf(p) === 'guardrail';
+                    const isGeneral = ptypeOf(p) === 'general';
                     const rows = isElec
                         ? (isElecBatching
                             ? [['qualityEngineer', 'Quality Engineer — Statutory Review & Approval']]
@@ -14856,7 +15194,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         ? [['sectionHead', shLabel]]
                         : isShaft
                         ? [['mep', 'MEP Engineer — Clearance'], ['sectionHead', shLabel]]
-                        : (isHw || isGr)
+                        : (isHw || isGr || isGeneral)
                         ? [['sectionHead', shLabel]]
                         : [['mep', 'MEP Engineer — Parallel Approval'], ['pm', 'P&M Engineer — Parallel Approval'], ['it', 'IT Engineer — Parallel Approval'], ['sectionHead', shLabel]];
                     if (ch) {
@@ -14932,7 +15270,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     sectionTitle('Active Operational Status');
                     kv('Operational Status', 'ACTIVE WORK PERMIT', 'Valid Till', fmtDateTime(p.validTill) + ' IST');
                     kv('Worksite Location', p.location, 'Activated At', fmtDateTime(p.activatedAt || p.submittedAt) + ' IST');
-                    para('This permit is currently ACTIVE and authorized for on-site ' + (ptypeOf(p) === 'electrical' ? 'electrical work (HT / LT)' : ptypeOf(p) === 'blasting' ? ((p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting') ? 'blasting' : 'drilling') : ptypeOf(p) === 'guardrail' ? 'guard rail & floor opening removal' : ptypeOf(p) === 'shaft' ? 'shaft' : ptypeOf(p) === 'hotwork' ? 'hot work' : ptypeOf(p) === 'confined' ? 'confined space entry' : 'excavation') + ' operations. All personnel and subcontractors must strictly adhere to the safety control measures specified herein.', 8.4);
+                    para('This permit is currently ACTIVE and authorized for on-site ' + (ptypeOf(p) === 'electrical' ? 'electrical work (HT / LT)' : ptypeOf(p) === 'blasting' ? ((p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting') ? 'blasting' : 'drilling') : ptypeOf(p) === 'guardrail' ? 'guard rail & floor opening removal' : ptypeOf(p) === 'shaft' ? 'shaft' : ptypeOf(p) === 'hotwork' ? 'hot work' : ptypeOf(p) === 'confined' ? 'confined space entry' : ptypeOf(p) === 'general' ? 'general work' : 'excavation') + ' operations. All personnel and subcontractors must strictly adhere to the safety control measures specified herein.', 8.4);
                     hr();
                 }
                 // ---------- Expired Permit Status Section ----------
@@ -14959,6 +15297,8 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         kv('Confined Space Evacuation Certification', 'VERIFIED: All personnel evacuated, equipment removed, access sealed/secured & handover completed');
                     } else if (ptypeOf(p) === 'blasting') {
                         kv('Post-Blast Clearance Certification', 'VERIFIED: All blast holes inspected, zero misfires confirmed, site certified physically safe');
+                    } else if (ptypeOf(p) === 'general') {
+                        kv('Housekeeping & Area Clearance Certification', 'VERIFIED: Work completed, tools/rigging removed, debris cleared, and area handed back physically safe');
                     }
                     kv('Remarks', p.surrender.remarks);
                     if (p.surrender.gps) kv('Surrender GPS', p.surrender.gps.lat.toFixed(5) + ', ' + p.surrender.gps.lng.toFixed(5));
@@ -15018,6 +15358,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isShaft = ptypeOf(p) === 'shaft';
             const isGr = ptypeOf(p) === 'guardrail';
             const isConf = ptypeOf(p) === 'confined';
+            const isGeneral = ptypeOf(p) === 'general';
             const isBlast = ptypeOf(p) === 'blasting';
             const isDbBlasting = isBlast && (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
             const isElec = ptypeOf(p) === 'electrical';
@@ -15040,7 +15381,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             } else if (isShaft) {
                 delete p.signatories['pm'];
                 delete p.signatories['it'];
-            } else if (isHw || isGr || isConf) {
+            } else if (isHw || isGr || isConf || isGeneral) {
                 delete p.signatories['mep'];
                 delete p.signatories['pm'];
                 delete p.signatories['it'];
@@ -15092,7 +15433,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
                 { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 3: Tower Incharge Review' },
                 { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
-            ] : (isHw || isGr) ? [
+            ] : (isHw || isGr || isGeneral) ? [
                 { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
                 { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
                 { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 3: Tower Incharge Review' },
@@ -15399,9 +15740,29 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                                 '<div class="review-item"><div class="rk">Lockout / Tagout (LOTO)</div><div class="rv"><b>Register Sl. No:</b> ' + escapeHtml(p.lotoRegisterNo || '—') + ' &middot; <b>Placed:</b> ' + (p.lotoDateTime ? fmtDateTime(p.lotoDateTime) : '—') + '</div></div>' +
                                 '<div class="review-item"><div class="rk">Statutory Declaration</div><div class="rv" style="color:var(--blue);font-weight:700;"><i class="fa-solid fa-certificate"></i> ' + (p.electricalStatutoryDecl ? 'Electrician Statutory Undertaking Certified' : 'Pending') + '</div></div>';
                         })() :
+ptypeOf(p) === 'general' ?
+                         (() => {
+                             const isBp = p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.mode === 'basement_podium';
+                             const isManual = p.locationStructure && ((typeof p.locationStructure === 'object' && p.locationStructure.mode === 'manual') || p.locationStructure === 'Manual' || p.locManual);
+                             const cat = getGeneralCategory(p.generalWorkType);
+                             const catLabel = cat === 'panel' ? 'Panel Erection (21 checks)' : cat === 'hoist' ? 'Hoists & Rigging/Shifting (15 checks)' : cat === 'formwork' ? 'Formwork (20 checks)' : 'General Work (11 checks)';
+                             return '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + p.organization + (p.contractor ? ' — ' + p.contractor : '') + '</div></div>' +
+                                 '<div class="review-item"><div class="rk">Location Mode</div><div class="rv">' + (isManual ? 'Manual Location' : isBp ? 'Basement / Podium' : 'Tower') + '</div></div>' +
+                                 (isManual ?
+                                     ('<div class="review-item"><div class="rk">Specific Location</div><div class="rv">' + (p.locManual || '—') + '</div></div>' +
+                                      '<div class="review-item"><div class="rk">Area / Grid Ref</div><div class="rv">' + (p.locManualArea || '—') + '</div></div>') :
+                                  isBp ?
+                                     ('<div class="review-item"><div class="rk">Basement / Podium</div><div class="rv">' + (p.locationStructure.basementPodium || p.locBasementPodium || '—') + '</div></div>' +
+                                      '<div class="review-item"><div class="rk">Area</div><div class="rv">' + (p.locationStructure.area || p.locArea || '—') + '</div></div>') :
+                                     ('<div class="review-item"><div class="rk">Tower</div><div class="rv">' + (p.tower || '—') + '</div></div>' +
+                                      '<div class="review-item"><div class="rk">Floor Level</div><div class="rv">' + (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.floor ? p.locationStructure.floor : (p.locFloor || '—')) + '</div></div>' +
+                                      '<div class="review-item"><div class="rk">Unit</div><div class="rv">' + (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.unit ? p.locationStructure.unit : (p.locUnit || '—')) + '</div></div>')) +
+                                 '<div class="review-item"><div class="rk">Description of Work</div><div class="rv" style="font-weight:700;color:var(--navy);">' + escapeHtml(p.generalWorkType || p.activity || 'General Work') + ((p.generalWorkType === 'Other' || p.generalWorkType === 'Other[Manual Entry]') && p.generalWorkOther ? ' (' + escapeHtml(p.generalWorkOther) + ')' : '') + '</div></div>' +
+                                 '<div class="review-item"><div class="rk">Work Category</div><div class="rv">' + catLabel + '</div></div>';
+                         })() :
                         ('<div class="review-item"><div class="rk">Depth / Slope</div><div class="rv">' + p.depth + ' m &middot; 1:' + p.slope + '</div></div>' +
-                         '<div class="review-item"><div class="rk">Equipment</div><div class="rv">' + equipDisplay(p) + '</div></div>' +
-                         '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + p.organization + (p.contractor ? ' — ' + p.contractor : '') + '</div></div>')
+                          '<div class="review-item"><div class="rk">Equipment</div><div class="rv">' + equipDisplay(p) + '</div></div>' +
+                          '<div class="review-item"><div class="rk">Organization</div><div class="rv">' + p.organization + (p.contractor ? ' — ' + p.contractor : '') + '</div></div>')
                     ) +
                     '<div class="review-item"><div class="rk">Weather</div><div class="rv">' + p.weather + '</div></div>' +
                     '<div class="review-item"><div class="rk">Planned Start</div><div class="rv">' + (p.startTime ? (fmtDate(p.createdAt) + ' &middot; ' + p.startTime + ' IST') : '&mdash;') + '</div></div>' +
@@ -15417,14 +15778,15 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                          ptypeOf(p) === 'shaft' ? '<div class="review-item"><div class="rk">Shaft Closure</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> Workers evacuated, platform secured &amp; openings closed</div></div>' :
                          ptypeOf(p) === 'hotwork' ? '<div class="review-item"><div class="rk">Fire Watch</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> Maintained during work &amp; 1 hr post-completion</div></div>' :
                          ptypeOf(p) === 'confined' ? '<div class="review-item"><div class="rk">Confined Space Evacuation</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> All entrants evacuated, equipment removed &amp; access secured</div></div>' :
-                         ptypeOf(p) === 'blasting' ? '<div class="review-item"><div class="rk">Post-Blast Clearance</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> All blast holes inspected, zero misfires confirmed, site certified safe</div></div>' : '') +
+                         ptypeOf(p) === 'blasting' ? '<div class="review-item"><div class="rk">Post-Blast Clearance</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> All blast holes inspected, zero misfires confirmed, site certified safe</div></div>' :
+                          ptypeOf(p) === 'general' ? '<div class="review-item"><div class="rk">Housekeeping &amp; Area Clearance</div><div class="rv" style="color:var(--green);font-weight:700;"><i class="fa-solid fa-circle-check"></i> Work completed, tools and equipment cleared, debris removed, and area handed back safe</div></div>' : '') +
                         '<div class="review-item"><div class="rk">Remarks</div><div class="rv">' + p.surrender.remarks + '</div></div><div class="review-item"><div class="rk">Surrendered By</div><div class="rv">' + p.surrender.by + ' &middot; ' + fmtDateTime(p.surrender.surrenderedAt) + '</div></div></div>') : '') +
                     '</div>' +
                     '<div>' +
                     '<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-clock-rotate-left"></i> Activity Log</div>' + activityHtml + '</div>' +
                     '<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                     '<div class="attach-row">' + (p.sitePhoto && p.sitePhoto !== 'demo' ? '<img src="' + p.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' work_area_site_photo.jpg</div>' +
-                    (p.drawing && ptypeOf(p) !== 'blasting' && ptypeOf(p) !== 'electrical' ? '<div class="attach-row">' + (p.drawing.isImage && p.drawing.dataUrl ? '<img src="' + p.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + p.drawing.name + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Excavation drawing</span></div>' : '') +
+                    (p.drawing && ptypeOf(p) !== 'blasting' && ptypeOf(p) !== 'electrical' && ptypeOf(p) !== 'general' ? '<div class="attach-row">' + (p.drawing.isImage && p.drawing.dataUrl ? '<img src="' + p.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + p.drawing.name + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Excavation drawing</span></div>' : '') +
                     (p.confinedChecklistAttachment ? '<div class="attach-row">' + (p.confinedChecklistAttachment.dataUrl && p.confinedChecklistAttachment.isImage ? '<img src="' + p.confinedChecklistAttachment.dataUrl + '">' : '<i class="fa-solid fa-file-shield"></i>') + ' ' + escapeHtml(p.confinedChecklistAttachment.name || 'Confined_Space_Physical_Checklist.pdf') + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Pre-Task Checklist Doc</span></div>' : '') +
                     ((p.blastingInchargeAck && p.blastingInchargeAck.photo) ? '<div class="attach-row">' + (p.blastingInchargeAck.photo !== 'demo' ? '<img src="' + p.blastingInchargeAck.photo + '">' : '<i class="fa-solid fa-camera"></i>') + ' Blasting In-charge On-Site Statutory Photo</div>' : '') +
                     (p.checklist.filter(c => c.photo).map((c, i) => '<div class="attach-row">' + (c.photo && c.photo !== 'demo' ? '<img src="' + c.photo + '">' : '<i class="fa-regular fa-image"></i>') + ' NO-item evidence photo</div>').join('')) +
