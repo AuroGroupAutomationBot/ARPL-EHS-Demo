@@ -1,8 +1,8 @@
 /**
- * PT-04 CONFINED SPACE ENTRY (FORM EHS_PTW_004) SPECIFICATION & COMPLIANCE TEST SUITE
+ * PTW-004 CONFINED SPACE ENTRY (FORM PTW-004) SPECIFICATION & COMPLIANCE TEST SUITE
  *
- * Exhaustive, robust, and comprehensive verification of PT-04 Confined Space permits:
- * 1.  Static Metadata & Constants Verification (EHS_PTW_004, CS prefix, Tower Incharge SH)
+ * Exhaustive, robust, and comprehensive verification of PTW-004 Confined Space permits:
+ * 1.  Static Metadata & Constants Verification (PTW-004, PTW-004 prefix, Tower Incharge SH)
  * 2.  VM Sandbox Setup & Mock Environment Initialization
  * 3.  Location Mode Support (Tower, Basement/Podium, Manual)
  * 4.  Step 1 Validation: Mandatory confinedActivity, numPersonnel >= 1, and confinedDeclaration
@@ -27,19 +27,19 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE: PT-04 CONFINED SPACE ENTRY (FORM EHS_PTW_004) SPECIFICATION & COMPLIANCE');
+console.log('SUITE: PTW-004 CONFINED SPACE ENTRY (FORM PTW-004) SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
-// --- 1. Static Verification of PT-04 Metadata & Constants ---
-console.log('\n--- 1. Static Verification of PT-04 Metadata & Constants ---');
+// --- 1. Static Verification of PTW-004 Metadata & Constants ---
+console.log('\n--- 1. Static Verification of PTW-004 Metadata & Constants ---');
 
 assert(src.includes("key: 'confined'"), "PTYPE_META must register confined key");
-assert(src.includes("code: 'PT-04'"), "PTYPE_META must register code PT-04");
-assert(src.includes("form: 'EHS_PTW_004'"), "PTYPE_META must register Form EHS_PTW_004");
-assert(src.includes("prefix: 'CS'"), "PTYPE_META must use CS prefix");
+assert(src.includes("code: 'PTW-004'"), "PTYPE_META must register code PTW-004");
+assert(src.includes("form: 'PTW-004'"), "PTYPE_META must register Form PTW-004");
+assert(src.includes("prefix: 'PTW-004'"), "PTYPE_META must use PTW-004 prefix");
 assert(src.includes('CONFINED_CHECKLIST_ITEMS = ['), "CONFINED_CHECKLIST_ITEMS constant must be defined");
 assert(src.includes('CONFINED_GAS_THRESHOLDS = {'), "CONFINED_GAS_THRESHOLDS constant must be defined");
-console.log('  ✓ PASS: PT-04 Form EHS_PTW_004, CS prefix, and gas threshold definitions verified');
+console.log('  ✓ PASS: PTW-004 Form PTW-004, PTW-004 prefix, and gas threshold definitions verified');
 
 // --- 2. Runtime Setup & VM Sandbox Initialization ---
 console.log('\n--- 2. Runtime Setup & VM Sandbox Initialization ---');
@@ -208,8 +208,8 @@ console.log('\n--- 4. Step 1 Validation: Mandatory Parameters ---');
 
 evalInVM("startNewPermit('confined');");
 assert.strictEqual(evalInVM("ptypeOf(draft)"), 'confined', "Draft permit type must be confined");
-assert.strictEqual(evalInVM("pMeta(draft).code"), 'PT-04', "pMeta must resolve PT-04");
-assert.strictEqual(evalInVM("pMeta(draft).form"), 'EHS_PTW_004', "Form must be EHS_PTW_004");
+assert.strictEqual(evalInVM("pMeta(draft).code"), 'PTW-004', "pMeta must resolve PTW-004");
+assert.strictEqual(evalInVM("pMeta(draft).form"), 'PTW-004', "Form must be PTW-004");
 
 // Base project & location
 evalInVM(`
@@ -330,7 +330,7 @@ PERMITS.push(csPermit);
 submitPermit(csPermit);
 `);
 const csPermitId = evalInVM("csPermit.id");
-assert(csPermitId.startsWith('CS-'), "Permit number must start with CS- prefix");
+assert(csPermitId.startsWith('PTW-004-'), "Permit number must start with PTW-004- prefix");
 
 let permit = evalInVM("PERMITS.find(x => x.id === '" + csPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Site Engineer Acknowledgment', "Submitted permit status must be Pending Site Engineer Acknowledgment");
@@ -338,7 +338,7 @@ assert.strictEqual(evalInVM("requestedByRoleFor(csPermit)"), 'site-supervisor', 
 assert.strictEqual(evalInVM("requestedByLabelFor(csPermit)"), 'Site Supervisor', "Requested By label is Site Supervisor");
 assert.strictEqual(evalInVM("shRoleFor(csPermit)"), 'hw-section-head', "Section Head role is hw-section-head");
 assert.strictEqual(evalInVM("shLabelFor(csPermit)"), 'Tower Incharge', "Section Head label is Tower Incharge");
-console.log('  ✓ PASS: Permit submitted with CS prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
+console.log('  ✓ PASS: Permit submitted with PTW-004 prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
 
 // --- 8. Sequential Direct Routing: Site Engineer -> Tower Incharge ---
 console.log('\n--- 8. Sequential Direct Routing: Site Engineer -> Tower Incharge ---');
@@ -356,7 +356,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + csPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Section Head', "Site Engineer ack advances directly to Pending Section Head");
 assert.strictEqual(evalInVM("chainStage(csPermit.approvals)"), 'section-head', "Chain stage advances to section-head");
 assert.strictEqual(evalInVM("roleCanActOnChain(csPermit.approvals, 'hw-section-head')"), true, "Tower Incharge is authorized to act");
-assert.strictEqual(evalInVM("roleCanActOnChain(csPermit.approvals, 'excavation-head')"), false, "Excavation Head is strictly unauthorized for PT-04");
+assert.strictEqual(evalInVM("roleCanActOnChain(csPermit.approvals, 'excavation-head')"), false, "Excavation Head is strictly unauthorized for PTW-004");
 console.log('  ✓ PASS: Direct sequential routing to Tower Incharge verified');
 
 // --- 9. Section Head Approval: Strictly Tower Incharge ---
@@ -378,7 +378,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + csPermitId + "');");
 assert.strictEqual(permit.status, 'Active', "First EHS approval activates Confined Space permit");
 assert.strictEqual(permit.approvals.ehsOfficer.status, 'approved', "EHS Officer status approved");
 assert.strictEqual(evalInVM("chainStage(csPermit.approvals)"), 'complete', "Chain stage complete");
-console.log('  ✓ PASS: EHS endorsement activates PT-04 Confined Space permit');
+console.log('  ✓ PASS: EHS endorsement activates PTW-004 Confined Space permit');
 
 // --- 11. Rejection & Stale-Approval Invalidation Flow ---
 console.log('\n--- 11. Rejection & Stale-Approval Invalidation Flow ---');
@@ -527,8 +527,8 @@ console.log('  ✓ PASS: Exclusive Site Supervisor closure & mandatory entrant e
 console.log('\n--- 15. jsPDF Audit Report & Dynamic Section Head Tracker ---');
 
 const trackerHtml = evalInVM("trackerHtml(csPermit)");
-assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PT-04");
-assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PT-04");
+assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PTW-004");
+assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PTW-004");
 console.log('  ✓ PASS: Tracker HTML dynamically renders Tower Incharge');
 
 let pdfResult = null;
@@ -541,8 +541,8 @@ try {
     console.error("PDF generation failed:", e);
 }
 assert.strictEqual(pdfResult, true, "generatePermitPDF executes cleanly for Confined Space permit");
-console.log('  ✓ PASS: jsPDF audit report generation succeeds for PT-04 Confined Space permit');
+console.log('  ✓ PASS: jsPDF audit report generation succeeds for PTW-004 Confined Space permit');
 
 console.log('\n==================================================');
-console.log('ALL PT-04 CONFINED SPACE TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-004 CONFINED SPACE TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================');

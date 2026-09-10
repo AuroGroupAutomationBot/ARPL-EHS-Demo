@@ -146,7 +146,6 @@ const exportsFn = new Function(
         generatePermitPDF,
         buildRegisterTable, buildDashboard,
         CONFINED_GAS_THRESHOLDS, isGasReadingSafe,
-        requestRetrigger, actRetriggerDay1Ehs, actRetriggerDay2EngAck, actRetriggerDay2SectionHead, actRetriggerDay2EhsActual,
         switchRole
     };`
 );
@@ -445,7 +444,6 @@ runSuite('KPI Screen & Analytics Calculations', () => {
     app.buildDashboard();
     const engDashboardHtml = mockDoc.getElementById('view-dashboard').innerHTML;
     assert(engDashboardHtml.includes('Pending Acknowledgment'), 'Site Engineer dashboard renders "Pending Acknowledgment" KPI card');
-    assert(engDashboardHtml.includes('Day 2 Re-trigger Acks'), 'Site Engineer dashboard renders "Day 2 Re-trigger Acks" KPI card');
     assert(engDashboardHtml.includes('Active On-Site'), 'Site Engineer dashboard renders "Active On-Site" KPI card');
 
     // Test Tower Incharge KPIs
@@ -463,7 +461,7 @@ runSuite('KPI Screen & Analytics Calculations', () => {
     assert(adminDashboardHtml.includes('Total Permits'), 'Admin dashboard renders "Total Permits" KPI card');
     assert(adminDashboardHtml.includes('Geofence Configured'), 'Admin dashboard renders "Geofence Configured" KPI card');
     assert(adminDashboardHtml.includes('Status Distribution'), 'Admin dashboard renders "Status Distribution" analytics table');
-    assert(adminDashboardHtml.includes('PT-01 to PT-05'), 'Admin Total Permits card displays all 5 permit modules');
+    assert(adminDashboardHtml.includes('PTW-001 to PTW-005'), 'Admin Total Permits card displays all 5 permit modules');
 
     // Resilience test: Empty permits array should not crash dashboard
     const backupPermits = [...app.PERMITS];

@@ -20,14 +20,14 @@ assert(src.includes('<p id="registerSub">Digital safety authorization &amp; perm
     "HTML registerSub must be standardized");
 
 // Check electrical option in regTypeFilter
-assert(src.includes('<option value="electrical">Electrical Work (PT-06)</option>'),
-    "regTypeFilter must include Electrical Work (PT-06)");
+assert(src.includes('<option value="electrical">Electrical Work (PTW-006)</option>'),
+    "regTypeFilter must include Electrical Work (PTW-006)");
 
 // Check PTYPE_META for blasting has Tower Incharge as Section Head
-assert(src.includes("blasting: { key: 'blasting', code: 'PT-07', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'DB', form: 'EHS_PTW_007', sh: 'hw-section-head', shLabel: 'Tower Incharge' }"),
+assert(src.includes("blasting: { key: 'blasting', code: 'PTW-007', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'PTW-007', form: 'PTW-007', sh: 'hw-section-head', shLabel: 'Tower Incharge' }"),
     "PTYPE_META.blasting must have sh: 'hw-section-head' and shLabel: 'Tower Incharge'");
 
-console.log('  ✓ PASS: Static UI headings, filter options, and PT-07 Section Head metadata verified');
+console.log('  ✓ PASS: Static UI headings, filter options, and PTW-007 Section Head metadata verified');
 
 // --- 2. Runtime Evaluation in VM Sandbox ---
 console.log('\n--- 2. Runtime Setup & VM Sandbox Initialization ---');

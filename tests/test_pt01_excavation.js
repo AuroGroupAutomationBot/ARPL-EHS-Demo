@@ -6,19 +6,19 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE: PT-01 EXCAVATION WORK (FORM EHS_PTW_001) SPECIFICATION & COMPLIANCE');
+console.log('SUITE: PTW-001 EXCAVATION WORK (FORM PTW-001) SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
-// --- 1. Static Verification of PT-01 Metadata & Constants ---
-console.log('\n--- 1. Static Verification of PT-01 Metadata & Constants ---');
+// --- 1. Static Verification of PTW-001 Metadata & Constants ---
+console.log('\n--- 1. Static Verification of PTW-001 Metadata & Constants ---');
 
 assert(src.includes("key: 'excavation'"), "PTYPE_META must register excavation key");
-assert(src.includes("code: 'PT-01'"), "PTYPE_META must register code PT-01");
-assert(src.includes("form: 'EHS_PTW_001'"), "PTYPE_META must register Form EHS_PTW_001");
-assert(src.includes("prefix: 'EXC'"), "PTYPE_META must use EXC prefix");
+assert(src.includes("code: 'PTW-001'"), "PTYPE_META must register code PTW-001");
+assert(src.includes("form: 'PTW-001'"), "PTYPE_META must register Form PTW-001");
+assert(src.includes("prefix: 'PTW-001'"), "PTYPE_META must use PTW-001 prefix");
 assert(src.includes("sh: 'excavation-head'"), "PTYPE_META must designate excavation-head as Section Head");
 assert(src.includes("shLabel: 'Excavation Head'"), "PTYPE_META must label Section Head as Excavation Head");
-console.log('  ✓ PASS: PT-01 Form EHS_PTW_001, EXC prefix, and Excavation Head metadata verified');
+console.log('  ✓ PASS: PTW-001 Form PTW-001, PTW-001 prefix, and Excavation Head metadata verified');
 
 assert(src.includes('CHECKLIST_ITEMS = ['), "CHECKLIST_ITEMS constant must be defined");
 assert(src.includes("excavation: ['Basement/Podium', 'Manual']"), "LOCATION_MODES_BY_PERMIT must restrict excavation to Basement/Podium and Manual");
@@ -342,7 +342,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + excPermitId + "');");
 assert.strictEqual(permit.status, 'Active', "First EHS approval activates Excavation permit");
 assert.strictEqual(permit.approvals.ehsOfficer.status, 'approved', "EHS Officer status approved");
 assert.strictEqual(evalInVM("chainStage(p.approvals)"), 'complete', "Chain stage complete");
-console.log('  ✓ PASS: EHS endorsement activates PT-01 Excavation permit');
+console.log('  ✓ PASS: EHS endorsement activates PTW-001 Excavation permit');
 
 // --- 10. Rejection & Stale-Approval Invalidation Flow ---
 console.log('\n--- 10. Rejection & Stale-Approval Invalidation Flow ---');
@@ -391,49 +391,8 @@ rejPermit = evalInVM("PERMITS.find(x => x.id === '" + rejPermitId + "');");
 assert.strictEqual(rejPermit.status, 'Pending Section Head', "Site Engineer re-ack fast-tracks directly to Excavation Head (parallel gates bypassed)");
 console.log('  ✓ PASS: Stale-approval retention preserves parallel clearances and fast-tracks re-ack to Excavation Head');
 
-// --- 11. Excavation 2-Day Re-Trigger Lifecycle ---
-console.log('\n--- 11. Excavation 2-Day Re-Trigger Lifecycle ---');
-
-// Active permit requests 2-Day re-trigger
-evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Dave' };");
-const retriggerSuccess = evalInVM("requestRetrigger(p, { reason: 'Excavation continuing into Day 2', signerName: 'Supervisor Dave' });");
-assert.strictEqual(retriggerSuccess, true, "requestRetrigger returns true for excavation permit");
-permit = evalInVM("PERMITS.find(x => x.id === '" + excPermitId + "');");
-assert.strictEqual(permit.status, 'Pending Re-trigger EHS (Day 1)', "Permit status is Pending Re-trigger EHS (Day 1)");
-
-// Non-excavation permits cannot request 2-Day re-trigger
-const dummyHotwork = { ptype: 'hotwork', id: 'HW-TEMP' };
-assert.strictEqual(evalInVM("requestRetrigger(" + JSON.stringify(dummyHotwork) + ", 'Test')"), false, "Non-excavation permit rejected for 2-day re-trigger");
-
-// EHS grants Day 1 overnight hold
-evalInVM("currentUser = { key: 'ehs-manager', name: 'Safety Manager Smith' };");
-evalInVM("actRetriggerDay1Ehs(p, 'approved', { comment: 'Day 1 completed safely. Trench covered overnight.', signerName: 'Safety Mgr Smith' });");
-permit = evalInVM("PERMITS.find(x => x.id === '" + excPermitId + "');");
-assert.strictEqual(permit.status, 'Re-trigger Held Overnight (Day 1 Cleared)', "Permit enters Re-trigger Held Overnight");
-assert.strictEqual(permit.retrigger.status, 'Held Overnight', "Retrigger status is Held Overnight");
-
-// Day 2 morning: Site Engineer physical inspection & ack
-evalInVM("currentUser = { key: 'site-engineer', name: 'Eng Eric' };");
-evalInVM("actRetriggerDay2EngAck(p, { comment: 'Morning trench inspection verified stable', signerName: 'Eng Eric' });");
-permit = evalInVM("PERMITS.find(x => x.id === '" + excPermitId + "');");
-assert.strictEqual(permit.status, 'Pending Re-trigger Section Head (Day 2)', "Day 2 Eng ack advances to Pending Re-trigger Section Head (Day 2)");
-
-// Day 2 morning: Excavation Head review & approval
-evalInVM("currentUser = { key: 'excavation-head', name: 'Chief Evans' };");
-evalInVM("actRetriggerDay2SectionHead(p, 'approved', { comment: 'Day 2 earth stability approved', signerName: 'Chief Evans' });");
-permit = evalInVM("PERMITS.find(x => x.id === '" + excPermitId + "');");
-assert.strictEqual(permit.status, 'Pending Re-trigger EHS Final (Day 2)', "Excavation Head advances to Pending Re-trigger EHS Final (Day 2)");
-
-// Day 2 morning: Final EHS actual revalidation
-evalInVM("currentUser = { key: 'ehs-officer', name: 'Safety Officer Sam' };");
-evalInVM("actRetriggerDay2EhsActual(p, 'approved', { comment: 'Day 2 work authorized', signerName: 'Safety Officer Sam' });");
-permit = evalInVM("PERMITS.find(x => x.id === '" + excPermitId + "');");
-assert.strictEqual(permit.status, 'Active', "Day 2 EHS revalidation restores permit to Active");
-assert.strictEqual(permit.retrigger.status, 'Revalidated', "Retrigger marked Revalidated");
-console.log('  ✓ PASS: Complete Excavation 2-Day Re-Trigger lifecycle executed cleanly');
-
-// --- 12. Extension Lifecycle ---
-console.log('\n--- 12. Extension Lifecycle ---');
+// --- 11. Extension Lifecycle ---
+console.log('\n--- 11. Extension Lifecycle ---');
 
 evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Dave' };");
 evalInVM("requestExtension(p, { minutes: 60, reason: 'Extra depth trenching required', signerName: 'Supervisor Dave' });");
@@ -499,8 +458,8 @@ assert.strictEqual(permit.status, 'Active', "Clearing observation restores statu
 assert.strictEqual(permit.observation.status, 'Resolved', "Observation status is Resolved");
 console.log('  ✓ PASS: Complete 4-stage observation lifecycle executed cleanly');
 
-// --- 14. Exclusive Closure & Surrender Gate ---
-console.log('\n--- 14. Exclusive Closure & Surrender Gate ---');
+// --- 13. Exclusive Closure & Surrender Gate ---
+console.log('\n--- 13. Exclusive Closure & Surrender Gate ---');
 
 // Non-supervisor role cannot close
 evalInVM("currentUser = { key: 'site-engineer', name: 'Eng Eric' };");
@@ -521,7 +480,7 @@ console.log('\n--- 15. PDF Audit Report & Dynamic Section Head Tracker ---');
 
 const trackerHtml = evalInVM("trackerHtml(p)");
 assert(trackerHtml.includes('Excavation Head'), "Tracker HTML must display Excavation Head");
-assert(!trackerHtml.includes('Tower Incharge'), "Tracker HTML must NOT display Tower Incharge for PT-01");
+assert(!trackerHtml.includes('Tower Incharge'), "Tracker HTML must NOT display Tower Incharge for PTW-001");
 console.log('  ✓ PASS: Approval tracker dynamically resolves Excavation Head');
 
 // PDF export execution
@@ -535,8 +494,8 @@ try {
     console.error("PDF generation failed:", e);
 }
 assert.strictEqual(pdfResult, true, "generatePermitPDF executes cleanly for Excavation permit");
-console.log('  ✓ PASS: jsPDF audit report generation succeeds for PT-01 Excavation permit');
+console.log('  ✓ PASS: jsPDF audit report generation succeeds for PTW-001 Excavation permit');
 
 console.log('\n==================================================');
-console.log('ALL PT-01 EXCAVATION WORK TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-001 EXCAVATION WORK TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================');

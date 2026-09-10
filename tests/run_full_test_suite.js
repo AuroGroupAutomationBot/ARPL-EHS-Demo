@@ -1,6 +1,6 @@
 /**
  * ARPL EHS Permit-to-Work Comprehensive Automated Test Suite
- * Covers PT-01 to PT-05, RBAC, Approval Chains, Rejection Loop,
+ * Covers PTW-001 to PTW-005, RBAC, Approval Chains, Rejection Loop,
  * Observations, Extensions, Closure/Surrender, PDF Security, GPS Geofencing.
  */
 
@@ -108,7 +108,6 @@ const exportsFn = new Function(
         closeAndSurrenderPermit,
         getPermitSignatory, makeSimSignature,
         CONFINED_GAS_THRESHOLDS, isGasReadingSafe,
-        requestRetrigger, actRetriggerDay1Ehs, actRetriggerDay2EngAck, actRetriggerDay2SectionHead, actRetriggerDay2EhsActual,
         isExtensionRequestAllowed, extensionCapMinutes, workStarted
     };`
 );
@@ -172,7 +171,7 @@ runSuite('Roles, RBAC & Signatory Isolation', () => {
     const tiScope = app.roleTypeScope('hw-section-head');
     assert(Array.isArray(tiScope) && tiScope.length === 6, 'Tower Incharge scope covers 6 permit modules', JSON.stringify(tiScope));
     assert(!tiScope.includes('excavation'), 'Tower Incharge scope EXCLUDES excavation');
-    assert(tiScope.includes('blasting'), 'Tower Incharge scope INCLUDES blasting (Tower Incharge is Section Head for PT-07)');
+    assert(tiScope.includes('blasting'), 'Tower Incharge scope INCLUDES blasting (Tower Incharge is Section Head for PTW-007)');
 
     const excScope = app.roleTypeScope('excavation-head');
     assert(Array.isArray(excScope) && excScope.length === 1 && excScope[0] === 'excavation', 'Excavation Head scope covers excavation only', JSON.stringify(excScope));
@@ -204,11 +203,11 @@ runSuite('Roles, RBAC & Signatory Isolation', () => {
 // ------------------------------------------------------------------
 runSuite('Permit Metadata, Checklists & Location', () => {
     const expectedPermits = [
-        { key: 'excavation', code: 'PT-01', prefix: 'EXC', name: 'Excavation Work', count: 12 },
-        { key: 'hotwork', code: 'PT-02', prefix: 'HW', name: 'Hot Work', count: 20 },
-        { key: 'guardrail', code: 'PT-03', prefix: 'GR', name: 'Guard Rail / Floor Protection Removal', count: 9 },
-        { key: 'confined', code: 'PT-04', prefix: 'CS', name: 'Confined Space Entry', count: 15 },
-        { key: 'shaft', code: 'PT-05', prefix: 'SW', name: 'Shaft Work', count: 10 }
+        { key: 'excavation', code: 'PTW-001', prefix: 'PTW-001', name: 'Excavation Work', count: 12 },
+        { key: 'hotwork', code: 'PTW-002', prefix: 'PTW-002', name: 'Hot Work', count: 20 },
+        { key: 'guardrail', code: 'PTW-003', prefix: 'PTW-003', name: 'Guard Rail / Floor Protection Removal', count: 9 },
+        { key: 'confined', code: 'PTW-004', prefix: 'PTW-004', name: 'Confined Space Entry', count: 15 },
+        { key: 'shaft', code: 'PTW-005', prefix: 'PTW-005', name: 'Shaft Work', count: 10 }
     ];
 
     expectedPermits.forEach(ep => {
@@ -249,10 +248,10 @@ runSuite('Permit Metadata, Checklists & Location', () => {
 });
 
 // ------------------------------------------------------------------
-// SUITE 3: Approval Chain Engine & Positive Lifecycle (PT-01 to PT-05)
+// SUITE 3: Approval Chain Engine & Positive Lifecycle (PTW-001 to PTW-005)
 // ------------------------------------------------------------------
 runSuite('Approval Chain Engine & Positive Lifecycle', () => {
-    // 1. PT-01 Excavation: parallel (MEP, PM, IT) -> Excavation Head -> EHS
+    // 1. PTW-001 Excavation: parallel (MEP, PM, IT) -> Excavation Head -> EHS
     const chExc = app.newChain('excavation');
     assert(app.chainStage(chExc) === 'parallel', 'Excavation starts at parallel gate');
     assert(app.roleCanActOnChain(chExc, 'mep'), 'MEP can act on parallel gate');
@@ -279,7 +278,7 @@ runSuite('Approval Chain Engine & Positive Lifecycle', () => {
     const finalStage = app.actOnChain(chExc, 'ehs-manager', 'approved', { signerName: 'Safety Mgr' });
     assert(finalStage === 'complete', 'EHS Manager approval completes the chain');
 
-    // 2. PT-02 Hot Work: Tower Incharge -> EHS
+    // 2. PTW-002 Hot Work: Tower Incharge -> EHS
     const chHw = app.newChain('hotwork');
     assert(app.chainStage(chHw) === 'section-head', 'Hot Work routes directly to Tower Incharge');
     app.actOnChain(chHw, 'hw-section-head', 'approved', { signerName: 'TI Chief' });
@@ -287,21 +286,21 @@ runSuite('Approval Chain Engine & Positive Lifecycle', () => {
     const hwDone = app.actOnChain(chHw, 'ehs-officer', 'approved', { signerName: 'Safety Off' });
     assert(hwDone === 'complete', 'EHS Officer approval activates Hot Work');
 
-    // 3. PT-03 Guard Rail: Tower Incharge -> EHS
+    // 3. PTW-003 Guard Rail: Tower Incharge -> EHS
     const chGr = app.newChain('guardrail');
     assert(app.chainStage(chGr) === 'section-head', 'Guard Rail routes directly to Tower Incharge');
     app.actOnChain(chGr, 'hw-section-head', 'approved', { signerName: 'TI Chief' });
     const grDone = app.actOnChain(chGr, 'ehs-manager', 'approved', { signerName: 'Safety Mgr' });
     assert(grDone === 'complete', 'Guard Rail chain completed');
 
-    // 4. PT-04 Confined Space: Tower Incharge -> EHS
+    // 4. PTW-004 Confined Space: Tower Incharge -> EHS
     const chCs = app.newChain('confined');
     assert(app.chainStage(chCs) === 'section-head', 'Confined Space routes directly to Tower Incharge');
     app.actOnChain(chCs, 'hw-section-head', 'approved', { signerName: 'TI Chief' });
     const csDone = app.actOnChain(chCs, 'ehs-officer', 'approved', { signerName: 'Safety Off' });
     assert(csDone === 'complete', 'Confined Space chain completed');
 
-    // 5. PT-05 Shaft Work: MEP clearance -> Tower Incharge -> EHS
+    // 5. PTW-005 Shaft Work: MEP clearance -> Tower Incharge -> EHS
     const chSw = app.newChain('shaft');
     assert(app.chainStage(chSw) === 'mep', 'Shaft Work starts at single MEP clearance');
     app.actOnChain(chSw, 'mep', 'approved', { signerName: 'MEP Eng' });
@@ -559,7 +558,7 @@ runSuite('GPS Geofencing Calculation', () => {
 });
 
 // ------------------------------------------------------------------
-// SUITE 11: Multi-Gas Atmospheric Safety & Detection (PT-04 Confined Space)
+// SUITE 11: Multi-Gas Atmospheric Safety & Detection (PTW-004 Confined Space)
 // ------------------------------------------------------------------
 runSuite('Confined Space Multi-Gas Atmospheric Testing', () => {
     // 1. Safe readings (Positive test)
@@ -580,10 +579,10 @@ runSuite('Confined Space Multi-Gas Atmospheric Testing', () => {
 });
 
 // ------------------------------------------------------------------
-// SUITE 12: Permit Closure Specialized Safety Declarations (PT-02, PT-03, PT-04)
+// SUITE 12: Permit Closure Specialized Safety Declarations (PTW-002, PTW-003, PTW-004)
 // ------------------------------------------------------------------
 runSuite('Permit Closure Specialized Safety Declarations', () => {
-    // PT-02 Hot Work: requires continuous fire watch declaration
+    // PTW-002 Hot Work: requires continuous fire watch declaration
     const pHw = {
         id: 'HW-CLOSE-TEST',
         ptype: 'hotwork',
@@ -599,7 +598,7 @@ runSuite('Permit Closure Specialized Safety Declarations', () => {
     assert(hwWithWatch === true, 'Hot Work closure SUCCEEDS when 1-hr continuous fire watch confirmed');
     assert(pHw.status === 'Completed (Surrendered)', 'Hot Work transitioned to Completed (Surrendered)');
 
-    // PT-03 Guard Rail: requires re-fixing declaration
+    // PTW-003 Guard Rail: requires re-fixing declaration
     const pGr = {
         id: 'GR-CLOSE-TEST',
         ptype: 'guardrail',
@@ -615,7 +614,7 @@ runSuite('Permit Closure Specialized Safety Declarations', () => {
     assert(grWithRefix === true, 'Guard Rail closure SUCCEEDS when edge protections re-fixed');
     assert(pGr.status === 'Completed (Surrendered)', 'Guard Rail transitioned to Completed (Surrendered)');
 
-    // PT-04 Confined Space: requires evacuation declaration
+    // PTW-004 Confined Space: requires evacuation declaration
     const pCs = {
         id: 'CS-CLOSE-TEST',
         ptype: 'confined',
@@ -633,75 +632,7 @@ runSuite('Permit Closure Specialized Safety Declarations', () => {
 });
 
 // ------------------------------------------------------------------
-// SUITE 13: Excavation 2-Day Re-trigger Full Lifecycle
-// ------------------------------------------------------------------
-runSuite('Excavation 2-Day Re-trigger Lifecycle', () => {
-    // Negative test: non-excavation permits cannot request retrigger
-    const pHw = { id: 'HW-RETRIG-NEG', ptype: 'hotwork', status: 'Active', activityLog: [] };
-    const hwRetrigRes = app.requestRetrigger(pHw, { reason: 'Want 2 day permit' });
-    assert(hwRetrigRes === false, '2-Day Re-trigger request REJECTED for Hot Work');
-    assert(!pHw.retrigger, 'Non-excavation permit does not receive retrigger state');
-
-    // Positive test: excavation permit retrigger cycle
-    const pExc = {
-        id: 'EXC-RETRIG-POS',
-        ptype: 'excavation',
-        status: 'Active',
-        validTill: new Date(Date.now() + 2 * 3600 * 1000),
-        approvals: app.newChain('excavation'),
-        activityLog: []
-    };
-
-    // 1. Supervisor requests re-trigger
-    const reqOk = app.requestRetrigger(pExc, { reason: 'Excavation trench depth requires 2nd day work' });
-    assert(reqOk === true, 'Excavation 2-Day re-trigger successfully requested');
-    assert(pExc.status === 'Pending Re-trigger EHS (Day 1)', 'Status routes to Pending Re-trigger EHS (Day 1)');
-
-    // 2. Day 1 EHS Approval (Hold Overnight)
-    app.actRetriggerDay1Ehs(pExc, 'approved', { comment: 'Day 1 excavation satisfactory; hold overnight', signerName: 'EHS Manager' });
-    assert(pExc.status === 'Re-trigger Held Overnight (Day 1 Cleared)', 'Day 1 EHS approval holds permit overnight');
-    assert(pExc.retrigger.status === 'Held Overnight', 'Retrigger status recorded as Held Overnight');
-
-    // 3. Day 2 Morning: Site Engineer Re-acknowledgment
-    app.actRetriggerDay2EngAck(pExc, { comment: 'Morning site inspection completed, trench stable', signerName: 'Site Eng' });
-    assert(pExc.status === 'Pending Re-trigger Section Head (Day 2)', 'Engineer acknowledgment routes to Excavation Head');
-
-    // 4. Day 2 Excavation Head Approval
-    app.actRetriggerDay2SectionHead(pExc, 'approved', { comment: 'Excavation activities clear', signerName: 'Excavation Head' });
-    assert(pExc.status === 'Pending Re-trigger EHS Final (Day 2)', 'Excavation Head approval routes to EHS Day 2 Final');
-
-    // 5. Day 2 EHS Final Actual Approval (Revalidation)
-    app.actRetriggerDay2EhsActual(pExc, 'approved', { comment: 'Day 2 revalidation granted', signerName: 'EHS Manager' });
-    assert(pExc.status === 'Active', 'Permit status returned to Active upon Day 2 revalidation');
-    assert(pExc.retrigger.status === 'Revalidated', 'Retrigger status marked Revalidated');
-
-    // 6. Day 2 Rejection and Resubmission Loop
-    const pExcRej = {
-        id: 'EXC-RETRIG-REJ',
-        ptype: 'excavation',
-        status: 'Pending Re-trigger Section Head (Day 2)',
-        retrigger: { status: 'Pending Day 2 Excavation Head' },
-        activityLog: []
-    };
-    app.actRetriggerDay2SectionHead(pExcRej, 'rejected', { comment: 'Trench shoring loose', signerName: 'Excavation Head' });
-    assert(pExcRej.status === 'Returned for Correction', 'Day 2 rejection sets status to Returned for Correction');
-    assert(pExcRej.retrigger.rejectionOrigin.roleLabel === 'Excavation Head', 'Rejection origin roleLabel is strictly Excavation Head');
-
-    // 7. Day 2 Terminal Cancellation
-    const pExcCancel = {
-        id: 'EXC-RETRIG-CANCEL',
-        ptype: 'excavation',
-        status: 'Pending Re-trigger Section Head (Day 2)',
-        retrigger: {},
-        activityLog: []
-    };
-    app.actRetriggerDay2SectionHead(pExcCancel, 'cancelled', { comment: 'Slope collapse hazard, work terminated', signerName: 'Excavation Head' });
-    assert(pExcCancel.status === 'Cancelled', 'Day 2 cancellation sets status to Cancelled');
-    assert(pExcCancel.isCancelled === true, 'Permit marked with isCancelled flag');
-});
-
-// ------------------------------------------------------------------
-// SUITE 14: Strict Role Delegation & Permission Boundaries
+// SUITE 13: Strict Role Delegation & Permission Boundaries
 // ------------------------------------------------------------------
 runSuite('Strict Role Boundaries & Delegation Rules', () => {
     const ch = app.newChain('excavation');

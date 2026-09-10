@@ -137,8 +137,8 @@ function evalInVM(code) {
     return vm.runInContext(code, sandbox);
 }
 
-// 3. Test Excavation Submission Flow (PT-01) without Drawing Plan
-console.log('\n--- 3. PT-01 Excavation Submission Flow without Drawing Plan ---');
+// 3. Test Excavation Submission Flow (PTW-001) without Drawing Plan
+console.log('\n--- 3. PTW-001 Excavation Submission Flow without Drawing Plan ---');
 evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
 evalInVM("startNewPermit('excavation');");
 
@@ -213,10 +213,10 @@ const submittedPermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert.strictEqual(submittedPermit.ptype, 'excavation');
 assert.strictEqual(submittedPermit.status, 'Pending Site Engineer Acknowledgment');
 assert.strictEqual(submittedPermit.drawing, null, "Permit successfully submitted with drawing = null");
-console.log('  ✓ PASS: PT-01 Excavation submitted successfully into enterprise workflow with drawing = null');
+console.log('  ✓ PASS: PTW-001 Excavation submitted successfully into enterprise workflow with drawing = null');
 
-// 4. Test Electrical Work Submission Flow (PT-06)
-console.log('\n--- 4. PT-06 Electrical Work Flow Verification ---');
+// 4. Test Electrical Work Submission Flow (PTW-006)
+console.log('\n--- 4. PTW-006 Electrical Work Flow Verification ---');
 evalInVM("currentUser = { key: 'electrician', name: 'Electrician M. Kumar', role: 'Licensed Electrician' };");
 evalInVM("startNewPermit('electrical');");
 draft = evalInVM("draft");
@@ -273,10 +273,10 @@ evalInVM("executeFinalSubmit();");
 const elecPermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert.strictEqual(elecPermit.ptype, 'electrical');
 assert.strictEqual(elecPermit.status, 'Pending P&M Acknowledgment');
-console.log('  ✓ PASS: PT-06 Electrical Work submitted successfully into workflow');
+console.log('  ✓ PASS: PTW-006 Electrical Work submitted successfully into workflow');
 
-// 5. Test Drilling & Blasting Submission Flow (PT-07)
-console.log('\n--- 5. PT-07 Drilling & Blasting Flow Verification ---');
+// 5. Test Drilling & Blasting Submission Flow (PTW-007)
+console.log('\n--- 5. PTW-007 Drilling & Blasting Flow Verification ---');
 evalInVM("currentUser = { key: 'blasting-incharge', name: 'Blaster V. Rao', role: 'Blasting / Drilling In-charge' };");
 evalInVM("startNewPermit('blasting');");
 draft = evalInVM("draft");
@@ -324,7 +324,7 @@ evalInVM("executeFinalSubmit();");
 const drillPermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert.strictEqual(drillPermit.ptype, 'blasting');
 assert.strictEqual(drillPermit.status, 'Pending Site Engineer Acknowledgment');
-console.log('  ✓ PASS: PT-07 Drilling submitted successfully into workflow');
+console.log('  ✓ PASS: PTW-007 Drilling submitted successfully into workflow');
 
 console.log('\n==================================================');
 console.log('ALL VERIFICATION CHECKS PASSED (100% SUCCESS)');

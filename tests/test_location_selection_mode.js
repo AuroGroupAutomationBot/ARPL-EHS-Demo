@@ -248,7 +248,7 @@ console.log('  ✓ PASS: Hot Work and Confined Space permit all 3 location modes
 
 // 2.10 Test Scope Summary / Detail View with Manual Mode
 const mockPermitManual = {
-    id: 'PT-01-2026-0099',
+    id: 'PTW-001-2026-0099',
     ptype: 'excavation',
     project: 'Auro Grand Residency',
     location: 'Temporary fabrication yard, Area: Grid F2-G4',

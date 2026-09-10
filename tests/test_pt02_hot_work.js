@@ -1,8 +1,8 @@
 /**
- * PT-02 HOT WORK (FORM EHS_PTW_002) SPECIFICATION & COMPLIANCE TEST SUITE
+ * PTW-002 HOT WORK (FORM PTW-002) SPECIFICATION & COMPLIANCE TEST SUITE
  *
- * Exhaustive, robust, and comprehensive verification of PT-02 Hot Work permits:
- * 1.  Static Metadata & Constants Verification (EHS_PTW_002, HW prefix, Tower Incharge SH)
+ * Exhaustive, robust, and comprehensive verification of PTW-002 Hot Work permits:
+ * 1.  Static Metadata & Constants Verification (PTW-002, PTW-002 prefix, Tower Incharge SH)
  * 2.  VM Sandbox Setup & Mock Environment Initialization
  * 3.  Location Mode Flexibility (Tower, Basement/Podium, Manual)
  * 4.  Step 1 Validation: Mandatory hotworkTypes, welderName, and subcontractor affiliation
@@ -26,19 +26,19 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE: PT-02 HOT WORK (FORM EHS_PTW_002) SPECIFICATION & COMPLIANCE');
+console.log('SUITE: PTW-002 HOT WORK (FORM PTW-002) SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
-// --- 1. Static Verification of PT-02 Metadata & Constants ---
-console.log('\n--- 1. Static Verification of PT-02 Metadata & Constants ---');
+// --- 1. Static Verification of PTW-002 Metadata & Constants ---
+console.log('\n--- 1. Static Verification of PTW-002 Metadata & Constants ---');
 
 assert(src.includes("key: 'hotwork'"), "PTYPE_META must register hotwork key");
-assert(src.includes("code: 'PT-02'"), "PTYPE_META must register code PT-02");
-assert(src.includes("form: 'EHS_PTW_002'"), "PTYPE_META must register Form EHS_PTW_002");
-assert(src.includes("prefix: 'HW'"), "PTYPE_META must use HW prefix");
+assert(src.includes("code: 'PTW-002'"), "PTYPE_META must register code PTW-002");
+assert(src.includes("form: 'PTW-002'"), "PTYPE_META must register Form PTW-002");
+assert(src.includes("prefix: 'PTW-002'"), "PTYPE_META must use PTW-002 prefix");
 assert(src.includes("sh: 'hw-section-head'"), "PTYPE_META must designate hw-section-head as Section Head");
 assert(src.includes("shLabel: 'Tower Incharge'"), "PTYPE_META must label Section Head as Tower Incharge");
-console.log('  ✓ PASS: PT-02 Form EHS_PTW_002, HW prefix, and Tower Incharge metadata verified');
+console.log('  ✓ PASS: PTW-002 Form PTW-002, PTW-002 prefix, and Tower Incharge metadata verified');
 
 assert(src.includes('HOTWORK_CHECKLIST_ITEMS = ['), "HOTWORK_CHECKLIST_ITEMS constant must be defined");
 assert(src.includes("hotwork: ['Tower', 'Basement/Podium', 'Manual']"), "LOCATION_MODES_BY_PERMIT must support Tower, Basement/Podium, and Manual for Hot Work");
@@ -211,8 +211,8 @@ console.log('\n--- 4. Form Initiation & Step 1 Validation ---');
 
 evalInVM("startNewPermit('hotwork');");
 assert.strictEqual(evalInVM("ptypeOf(draft)"), 'hotwork', "Draft permit type must be hotwork");
-assert.strictEqual(evalInVM("pMeta(draft).code"), 'PT-02', "pMeta must resolve PT-02");
-assert.strictEqual(evalInVM("pMeta(draft).form"), 'EHS_PTW_002', "Form must be EHS_PTW_002");
+assert.strictEqual(evalInVM("pMeta(draft).code"), 'PTW-002', "pMeta must resolve PTW-002");
+assert.strictEqual(evalInVM("pMeta(draft).form"), 'PTW-002', "Form must be PTW-002");
 
 // Populate standard project and tower location
 evalInVM(`
@@ -310,7 +310,7 @@ PERMITS.push(hwPermit);
 submitPermit(hwPermit);
 `);
 const hwPermitId = evalInVM("hwPermit.id");
-assert(hwPermitId.startsWith('HW-'), "Permit number must start with HW- prefix");
+assert(hwPermitId.startsWith('PTW-002-'), "Permit number must start with PTW-002- prefix");
 
 let permit = evalInVM("PERMITS.find(x => x.id === '" + hwPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Site Engineer Acknowledgment', "Submitted hot work permit status must be Pending Site Engineer Acknowledgment");
@@ -318,7 +318,7 @@ assert.strictEqual(evalInVM("requestedByRoleFor(hwPermit)"), 'site-supervisor', 
 assert.strictEqual(evalInVM("requestedByLabelFor(hwPermit)"), 'Site Supervisor', "Requested By label is Site Supervisor");
 assert.strictEqual(evalInVM("shRoleFor(hwPermit)"), 'hw-section-head', "Section Head role is hw-section-head");
 assert.strictEqual(evalInVM("shLabelFor(hwPermit)"), 'Tower Incharge', "Section Head label is Tower Incharge");
-console.log('  ✓ PASS: Permit submitted with HW prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
+console.log('  ✓ PASS: Permit submitted with PTW-002 prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
 
 // --- 7. Direct Sequential Routing: Site Engineer -> Tower Incharge ---
 console.log('\n--- 7. Direct Sequential Routing: Site Engineer -> Tower Incharge ---');
@@ -337,7 +337,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + hwPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Section Head', "Site Engineer ack advances directly to Pending Section Head");
 assert.strictEqual(evalInVM("chainStage(hwPermit.approvals)"), 'section-head', "Chain stage advances to section-head");
 assert.strictEqual(evalInVM("roleCanActOnChain(hwPermit.approvals, 'hw-section-head')"), true, "Tower Incharge is authorized to act");
-assert.strictEqual(evalInVM("roleCanActOnChain(hwPermit.approvals, 'excavation-head')"), false, "Excavation Head is strictly unauthorized for PT-02");
+assert.strictEqual(evalInVM("roleCanActOnChain(hwPermit.approvals, 'excavation-head')"), false, "Excavation Head is strictly unauthorized for PTW-002");
 console.log('  ✓ PASS: Direct sequential routing to Tower Incharge verified (bypassing excavation parallel gate)');
 
 // --- 8. Section Head Approval: Strictly Tower Incharge ---
@@ -360,7 +360,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + hwPermitId + "');");
 assert.strictEqual(permit.status, 'Active', "First EHS approval activates Hot Work permit");
 assert.strictEqual(permit.approvals.ehsOfficer.status, 'approved', "EHS Officer status approved");
 assert.strictEqual(evalInVM("chainStage(hwPermit.approvals)"), 'complete', "Chain stage complete");
-console.log('  ✓ PASS: EHS endorsement activates PT-02 Hot Work permit');
+console.log('  ✓ PASS: EHS endorsement activates PTW-002 Hot Work permit');
 
 // --- 10. Rejection & Stale-Approval Invalidation Flow ---
 console.log('\n--- 10. Rejection & Stale-Approval Invalidation Flow ---');
@@ -509,8 +509,8 @@ console.log('  ✓ PASS: Exclusive Site Supervisor closure & mandatory 1-hour fi
 console.log('\n--- 14. jsPDF Audit Report & Dynamic Section Head Tracker ---');
 
 const trackerHtml = evalInVM("trackerHtml(hwPermit)");
-assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PT-02");
-assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PT-02");
+assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PTW-002");
+assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PTW-002");
 console.log('  ✓ PASS: Tracker HTML dynamically renders Tower Incharge');
 
 let pdfResult = null;
@@ -523,8 +523,8 @@ try {
     console.error("PDF generation failed:", e);
 }
 assert.strictEqual(pdfResult, true, "generatePermitPDF executes cleanly for Hot Work permit");
-console.log('  ✓ PASS: jsPDF audit report generation succeeds for PT-02 Hot Work permit');
+console.log('  ✓ PASS: jsPDF audit report generation succeeds for PTW-002 Hot Work permit');
 
 console.log('\n==================================================');
-console.log('ALL PT-02 HOT WORK TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-002 HOT WORK TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================');

@@ -15,9 +15,6 @@ assert(src.includes("const shLabel = (p && pMeta(p) && pMeta(p).shLabel) || (isE
 assert(src.includes("const shLabelModal = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');"),
     "openApprovalGPS must compute shLabelModal");
 
-assert(src.includes("'<b>Day 2:</b> Site Engineer acknowledges &rarr; Excavation Head reviews &rarr; EHS actual approval revalidates permit.<br>'"),
-    "Re-trigger request modal must specify Excavation Head for Day 2");
-
 assert(src.includes("statusBadge(p.status, p)"),
     "statusBadge must be called with permit object context in detail view and register");
 
@@ -78,14 +75,10 @@ const badgeDirectExc = app.statusBadge('Pending Excavation Head');
 assert(badgeDirectExc.includes('Pending Excavation Head') && badgeDirectExc.includes('st-sectionhead'),
     `statusBadge('Pending Excavation Head') must render correctly with class st-sectionhead`);
 
-// Test Observation and Re-trigger Section Head variations
+// Test Observation Section Head variations
 const badgeObsExc = app.statusBadge('Observation Pending Section Head Review', excPermit);
 assert(badgeObsExc.includes('Observation Pending Excavation Head Review'),
     `Observation Section Head review for Excavation must render "Observation Pending Excavation Head Review", got: ${badgeObsExc}`);
-
-const badgeRetrigExc = app.statusBadge('Pending Re-trigger Section Head (Day 2)', excPermit);
-assert(badgeRetrigExc.includes('Pending Re-trigger Excavation Head (Day 2)'),
-    `Day 2 Retrigger Section Head for Excavation must render "Pending Re-trigger Excavation Head (Day 2)", got: ${badgeRetrigExc}`);
 
 // Test stageLabelFor in escalation engine
 const escExcLabel = app.stageLabelFor('Pending Section Head', excPermit);

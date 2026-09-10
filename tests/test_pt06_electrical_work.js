@@ -6,17 +6,17 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE 8: PT-06 ELECTRICAL WORK (HT / LT) FORM EHS_PTW_006 SPECIFICATION & COMPLIANCE');
+console.log('SUITE 8: PTW-006 ELECTRICAL WORK (HT / LT) FORM PTW-006 SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
-// --- 1. Static Verification of PT-06 Metadata & Constants ---
-console.log('\n--- 1. Static Verification of PT-06 Metadata & Constants ---');
+// --- 1. Static Verification of PTW-006 Metadata & Constants ---
+console.log('\n--- 1. Static Verification of PTW-006 Metadata & Constants ---');
 
 // Check PERMIT_TYPES entry
-assert(src.includes("code: 'PT-06'") || src.includes("key: 'electrical'"), "PERMIT_TYPES must include PT-06 / electrical");
-assert(src.includes("form: 'EHS_PTW_006'"), "PTYPE_META must register Form EHS_PTW_006");
-assert(src.includes("prefix: 'EW'"), "PTYPE_META must use EW permit prefix");
-console.log('  ✓ PASS: PT-06 Form EHS_PTW_006 and EW prefix configured');
+assert(src.includes("code: 'PTW-006'") || src.includes("key: 'electrical'"), "PERMIT_TYPES must include PTW-006 / electrical");
+assert(src.includes("form: 'PTW-006'"), "PTYPE_META must register Form PTW-006");
+assert(src.includes("prefix: 'PTW-006'"), "PTYPE_META must use PTW-006 permit prefix");
+console.log('  ✓ PASS: PTW-006 Form PTW-006 and PTW-006 prefix configured');
 
 // Check Electrical apparatus and checklist constants
 assert(src.includes('ELECTRICAL_CHECKLIST_ITEMS'), "ELECTRICAL_CHECKLIST_ITEMS constant must be defined");
@@ -207,7 +207,7 @@ const scopeQuality = evalInVM("roleTypeScope('quality-engineer')");
 assert.strictEqual(JSON.stringify(scopeQuality), JSON.stringify(['electrical']), "Quality Engineer role scope must be strictly ['electrical']");
 console.log('  ✓ PASS: roleTypeScope(\'electrician\') and roleTypeScope(\'quality-engineer\') are strictly [\'electrical\']');
 
-// Start new PT-06 permit as Electrician with Batching Plant scope
+// Start new PTW-006 permit as Electrician with Batching Plant scope
 evalInVM("currentUser = { key: 'electrician', name: 'Duty Electrician K. Sharma', role: 'Permittee Electrician' };");
 evalInVM("startNewPermit('electrical');");
 evalInVM("draft.facilityScope = 'batching_plant'; draft.locationStructure = 'Manual';");
@@ -529,7 +529,7 @@ console.log('  ✓ PASS: Resolving observation unblocks Close & Surrender button
 // --- 9. Surrender Flow & Electrical De-isolation ---
 console.log('\n--- 9. Surrender Flow & Electrical De-isolation ---');
 
-// RBAC Gate: Non-electrician role CANNOT surrender PT-06
+// RBAC Gate: Non-electrician role CANNOT surrender PTW-006
 evalInVM("currentUser = { key: 'site-supervisor', name: 'Site Supervisor', role: 'Site Supervisor' };");
 const activeP = evalInVM("PERMITS.find(p => p.id === '" + sitePermitActive.id + "')");
 // Testing RBAC restriction logic:
@@ -537,7 +537,7 @@ assert.strictEqual(evalInVM("currentUser.key === 'electrician' || (currentUser.r
 
 // Electrician opens surrender flow
 evalInVM("currentUser = { key: 'electrician', name: 'Duty Electrician K. Sharma', role: 'Permittee Electrician' };");
-assert.strictEqual(evalInVM("currentUser.key === 'electrician' || (currentUser.role && currentUser.role.toLowerCase().includes('electrician'))"), true, "Electrician recognized for PT-06 surrender");
+assert.strictEqual(evalInVM("currentUser.key === 'electrician' || (currentUser.role && currentUser.role.toLowerCase().includes('electrician'))"), true, "Electrician recognized for PTW-006 surrender");
 
 // Surrender modal HTML verification
 evalInVM("openSurrenderFlow(PERMITS.find(p => p.id === '" + sitePermitActive.id + "').id);");
@@ -576,7 +576,7 @@ assert(detailElem.innerHTML.includes('Reason for Shutdown'), "Detail view must d
 assert(detailElem.innerHTML.includes('Apparatus to be Worked On'), "Detail view must display Apparatus to be Worked On");
 assert(detailElem.innerHTML.includes('Lockout / Tagout (LOTO)'), "Detail view must display LOTO register and placed time");
 assert(detailElem.innerHTML.includes('Statutory Declaration'), "Detail view must display Statutory Declaration");
-console.log('  ✓ PASS: viewDetail correctly renders all PT-06 specific fields and badges');
+console.log('  ✓ PASS: viewDetail correctly renders all PTW-006 specific fields and badges');
 
 evalInVM("viewDetail(PERMITS.find(p => p.id === '" + surrenderedP.id + "').id);");
 assert(detailElem.innerHTML.includes('Electrical De-Isolation'), "Detail view of surrendered permit must display Electrical De-Isolation check");
@@ -686,5 +686,5 @@ evalInVM("generatePermitPDF(PERMITS.find(p => p.id === '" + bpPermitActive.id + 
 console.log('  ✓ PASS: PDF generation with Batching Plant extension history executes cleanly');
 
 console.log('\n==================================================');
-console.log('ALL PT-06 ELECTRICAL WORK TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-006 ELECTRICAL WORK TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================\n');

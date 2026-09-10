@@ -1,8 +1,8 @@
 /**
- * PT-03 GUARD RAIL / FLOOR PROTECTION REMOVAL (FORM EHS_PTW_003) SPECIFICATION & COMPLIANCE TEST SUITE
+ * PTW-003 GUARD RAIL / FLOOR PROTECTION REMOVAL (FORM PTW-003) SPECIFICATION & COMPLIANCE TEST SUITE
  *
- * Exhaustive, robust, and comprehensive verification of PT-03 Guard Rail permits:
- * 1.  Static Metadata & Constants Verification (EHS_PTW_003, GR prefix, Tower Incharge SH)
+ * Exhaustive, robust, and comprehensive verification of PTW-003 Guard Rail permits:
+ * 1.  Static Metadata & Constants Verification (PTW-003, PTW-003 prefix, Tower Incharge SH)
  * 2.  VM Sandbox Setup & Mock Environment Initialization
  * 3.  Location Mode Restrictions (Tower & Basement/Podium supported; Manual strictly prohibited)
  * 4.  Step 1 Validation: Mandatory guardrailActivities array & 'Others' specification
@@ -26,19 +26,19 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE: PT-03 GUARD RAIL (FORM EHS_PTW_003) SPECIFICATION & COMPLIANCE');
+console.log('SUITE: PTW-003 GUARD RAIL (FORM PTW-003) SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
-// --- 1. Static Verification of PT-03 Metadata & Constants ---
-console.log('\n--- 1. Static Verification of PT-03 Metadata & Constants ---');
+// --- 1. Static Verification of PTW-003 Metadata & Constants ---
+console.log('\n--- 1. Static Verification of PTW-003 Metadata & Constants ---');
 
 assert(src.includes("key: 'guardrail'"), "PTYPE_META must register guardrail key");
-assert(src.includes("code: 'PT-03'"), "PTYPE_META must register code PT-03");
-assert(src.includes("form: 'EHS_PTW_003'"), "PTYPE_META must register Form EHS_PTW_003");
-assert(src.includes("prefix: 'GR'"), "PTYPE_META must use GR prefix");
+assert(src.includes("code: 'PTW-003'"), "PTYPE_META must register code PTW-003");
+assert(src.includes("form: 'PTW-003'"), "PTYPE_META must register Form PTW-003");
+assert(src.includes("prefix: 'PTW-003'"), "PTYPE_META must use PTW-003 prefix");
 assert(src.includes("guardrail: ['Tower', 'Basement/Podium']"), "LOCATION_MODES_BY_PERMIT must restrict Guard Rail to Tower and Basement/Podium (Manual disabled)");
 assert(src.includes('GUARDRAIL_CHECKLIST_ITEMS = ['), "GUARDRAIL_CHECKLIST_ITEMS constant must be defined");
-console.log('  ✓ PASS: PT-03 Form EHS_PTW_003, GR prefix, and location restrictions verified');
+console.log('  ✓ PASS: PTW-003 Form PTW-003, PTW-003 prefix, and location restrictions verified');
 
 // --- 2. Runtime Setup & VM Sandbox Initialization ---
 console.log('\n--- 2. Runtime Setup & VM Sandbox Initialization ---');
@@ -207,8 +207,8 @@ console.log('\n--- 4. Form Initiation & Step 1 Validation ---');
 
 evalInVM("startNewPermit('guardrail');");
 assert.strictEqual(evalInVM("ptypeOf(draft)"), 'guardrail', "Draft permit type must be guardrail");
-assert.strictEqual(evalInVM("pMeta(draft).code"), 'PT-03', "pMeta must resolve PT-03");
-assert.strictEqual(evalInVM("pMeta(draft).form"), 'EHS_PTW_003', "Form must be EHS_PTW_003");
+assert.strictEqual(evalInVM("pMeta(draft).code"), 'PTW-003', "pMeta must resolve PTW-003");
+assert.strictEqual(evalInVM("pMeta(draft).form"), 'PTW-003', "Form must be PTW-003");
 
 // Base project and location
 evalInVM(`
@@ -297,7 +297,7 @@ PERMITS.push(grPermit);
 submitPermit(grPermit);
 `);
 const grPermitId = evalInVM("grPermit.id");
-assert(grPermitId.startsWith('GR-'), "Permit number must start with GR- prefix");
+assert(grPermitId.startsWith('PTW-003-'), "Permit number must start with PTW-003- prefix");
 
 let permit = evalInVM("PERMITS.find(x => x.id === '" + grPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Site Engineer Acknowledgment', "Submitted Guard Rail permit status must be Pending Site Engineer Acknowledgment");
@@ -305,7 +305,7 @@ assert.strictEqual(evalInVM("requestedByRoleFor(grPermit)"), 'site-supervisor', 
 assert.strictEqual(evalInVM("requestedByLabelFor(grPermit)"), 'Site Supervisor', "Requested By label is Site Supervisor");
 assert.strictEqual(evalInVM("shRoleFor(grPermit)"), 'hw-section-head', "Section Head role is hw-section-head");
 assert.strictEqual(evalInVM("shLabelFor(grPermit)"), 'Tower Incharge', "Section Head label is Tower Incharge");
-console.log('  ✓ PASS: Permit submitted with GR prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
+console.log('  ✓ PASS: Permit submitted with PTW-003 prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
 
 // --- 7. Sequential Direct Routing: Site Engineer -> Tower Incharge ---
 console.log('\n--- 7. Sequential Direct Routing: Site Engineer -> Tower Incharge ---');
@@ -323,7 +323,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + grPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Section Head', "Site Engineer ack advances directly to Pending Section Head");
 assert.strictEqual(evalInVM("chainStage(grPermit.approvals)"), 'section-head', "Chain stage advances to section-head");
 assert.strictEqual(evalInVM("roleCanActOnChain(grPermit.approvals, 'hw-section-head')"), true, "Tower Incharge is authorized to act");
-assert.strictEqual(evalInVM("roleCanActOnChain(grPermit.approvals, 'excavation-head')"), false, "Excavation Head is strictly unauthorized for PT-03");
+assert.strictEqual(evalInVM("roleCanActOnChain(grPermit.approvals, 'excavation-head')"), false, "Excavation Head is strictly unauthorized for PTW-003");
 console.log('  ✓ PASS: Direct sequential routing to Tower Incharge verified');
 
 // --- 8. Section Head Approval: Strictly Tower Incharge ---
@@ -345,7 +345,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + grPermitId + "');");
 assert.strictEqual(permit.status, 'Active', "First EHS approval activates Guard Rail permit");
 assert.strictEqual(permit.approvals.ehsManager.status, 'approved', "EHS Manager status approved");
 assert.strictEqual(evalInVM("chainStage(grPermit.approvals)"), 'complete', "Chain stage complete");
-console.log('  ✓ PASS: EHS endorsement activates PT-03 Guard Rail permit');
+console.log('  ✓ PASS: EHS endorsement activates PTW-003 Guard Rail permit');
 
 // --- 10. Rejection & Stale-Approval Invalidation Flow ---
 console.log('\n--- 10. Rejection & Stale-Approval Invalidation Flow ---');
@@ -492,8 +492,8 @@ console.log('  ✓ PASS: Exclusive Site Supervisor closure & mandatory guard rai
 console.log('\n--- 14. jsPDF Audit Report & Dynamic Section Head Tracker ---');
 
 const trackerHtml = evalInVM("trackerHtml(grPermit)");
-assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PT-03");
-assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PT-03");
+assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PTW-003");
+assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PTW-003");
 console.log('  ✓ PASS: Tracker HTML dynamically renders Tower Incharge');
 
 let pdfResult = null;
@@ -506,8 +506,8 @@ try {
     console.error("PDF generation failed:", e);
 }
 assert.strictEqual(pdfResult, true, "generatePermitPDF executes cleanly for Guard Rail permit");
-console.log('  ✓ PASS: jsPDF audit report generation succeeds for PT-03 Guard Rail permit');
+console.log('  ✓ PASS: jsPDF audit report generation succeeds for PTW-003 Guard Rail permit');
 
 console.log('\n==================================================');
-console.log('ALL PT-03 GUARD RAIL TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-003 GUARD RAIL TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================');

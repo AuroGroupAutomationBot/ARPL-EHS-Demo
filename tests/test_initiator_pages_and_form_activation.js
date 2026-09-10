@@ -2,9 +2,9 @@
  * SUITE 9: UNIVERSAL INITIATOR ARCHITECTURE & FORM ACTIVATION COMPLIANCE
  * Verifies that:
  * 1. All initiators (Site Supervisor, Electrician, Blasting In-charge) share identical page layouts.
- * 2. For Electrician: ONLY PT-06 Electrical Work is available; all other 10 forms are strictly inactive.
- * 3. For Blasting In-charge: ONLY PT-07 Drilling & Blasting is available; all other 10 forms are strictly inactive.
- * 4. For Site Supervisor: PT-01 to PT-05 are active; PT-06 Electrical is strictly inactive (restricted to Electrician).
+ * 2. For Electrician: ONLY PTW-006 Electrical Work is available; all other 10 forms are strictly inactive.
+ * 3. For Blasting In-charge: ONLY PTW-007 Drilling & Blasting is available; all other 10 forms are strictly inactive.
+ * 4. For Site Supervisor: PTW-001 to PTW-005 are active; PTW-006 Electrical is strictly inactive (restricted to Electrician).
  * 5. Work-specific extensions: strictly no extension for Blasting operations, extension available for Drilling and Electrical.
  * 6. Non-initiators have all forms locked for creation.
  */
@@ -31,7 +31,7 @@ assert(src.includes("id=\"ptypeRoleBanner\""), "view-ptype must contain contextu
 assert(src.includes(".ptype-card.initiator-inactive"), "CSS must include .ptype-card.initiator-inactive");
 assert(src.includes(".ptype-status.restricted"), "CSS must include .ptype-status.restricted");
 assert(src.includes('data-roles="site-supervisor,electrician,blasting-incharge"'), "Create Permit button in register must support all 3 initiators");
-assert(src.includes("Site Supervisor (PT-01 to PT-05), Electrician (PT-06), or Blasting In-charge (PT-07)"), "Landing workflow strip must name all 3 initiators with their permit domains");
+assert(src.includes("Site Supervisor (PTW-001 to PTW-005), Electrician (PTW-006), or Blasting In-charge (PTW-007)"), "Landing workflow strip must name all 3 initiators with their permit domains");
 
 console.log('  ✓ PASS: Static tokens, CSS rules, role boundaries, and initiator constants verified');
 
@@ -155,14 +155,14 @@ const ALL_PERMITS = ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 
 ALL_PERMITS.forEach(pKey => {
     const avail = evalInVM(`getPermitAvailabilityForRole('${pKey}', 'electrician')`);
     if (pKey === 'electrical') {
-        assert.strictEqual(avail.available, true, "PT-06 Electrical Work must be ACTIVE for Electrician");
-        assert.strictEqual(avail.statusClass, 'live', "PT-06 must have 'live' status class");
+        assert.strictEqual(avail.available, true, "PTW-006 Electrical Work must be ACTIVE for Electrician");
+        assert.strictEqual(avail.statusClass, 'live', "PTW-006 must have 'live' status class");
     } else {
         assert.strictEqual(avail.available, false, `${pKey} must be STRICTLY INACTIVE for Electrician`);
         assert(avail.statusClass === 'restricted' || avail.statusClass === 'future', `${pKey} must have restricted/future status class`);
     }
 });
-console.log('  ✓ PASS: For Electrician, ONLY PT-06 Electrical Work is available; all other 10 forms are strictly inactive');
+console.log('  ✓ PASS: For Electrician, ONLY PTW-006 Electrical Work is available; all other 10 forms are strictly inactive');
 
 // Attempting to select inactive permit as Electrician triggers warning
 evalInVM("currentUser = { key: 'electrician', label: 'Electrician', role: 'Electrician' };");
@@ -179,8 +179,8 @@ console.log('  ✓ PASS: startNewPermit hard gate prevents Electrician from crea
 
 evalInVM("startNewPermit('electrical');");
 const elecDraft = evalInVM("draft");
-assert.strictEqual(elecDraft.ptype, 'electrical', "Electrician must successfully create PT-06 Electrical Work draft");
-console.log('  ✓ PASS: Electrician successfully initiates PT-06 Electrical Work (Form EHS_PTW_006)');
+assert.strictEqual(elecDraft.ptype, 'electrical', "Electrician must successfully create PTW-006 Electrical Work draft");
+console.log('  ✓ PASS: Electrician successfully initiates PTW-006 Electrical Work (Form PTW-006)');
 
 // --- 4. Blasting In-charge Role: Strict Form Activation ---
 console.log('\n--- 4. Blasting In-charge Form Activation Matrix ---');
@@ -189,14 +189,14 @@ console.log('\n--- 4. Blasting In-charge Form Activation Matrix ---');
 ALL_PERMITS.forEach(pKey => {
     const avail = evalInVM(`getPermitAvailabilityForRole('${pKey}', 'blasting-incharge')`);
     if (pKey === 'blasting') {
-        assert.strictEqual(avail.available, true, "PT-07 Drilling & Blasting must be ACTIVE for Blasting In-charge");
-        assert.strictEqual(avail.statusClass, 'live', "PT-07 must have 'live' status class");
+        assert.strictEqual(avail.available, true, "PTW-007 Drilling & Blasting must be ACTIVE for Blasting In-charge");
+        assert.strictEqual(avail.statusClass, 'live', "PTW-007 must have 'live' status class");
     } else {
         assert.strictEqual(avail.available, false, `${pKey} must be STRICTLY INACTIVE for Blasting In-charge`);
         assert(avail.statusClass === 'restricted' || avail.statusClass === 'future', `${pKey} must have restricted/future status class`);
     }
 });
-console.log('  ✓ PASS: For Blasting In-charge, ONLY PT-07 Drilling & Blasting is available; all other 10 forms are strictly inactive');
+console.log('  ✓ PASS: For Blasting In-charge, ONLY PTW-007 Drilling & Blasting is available; all other 10 forms are strictly inactive');
 
 evalInVM("currentUser = { key: 'blasting-incharge', label: 'Blasting / Drilling In-charge', role: 'Blasting In-charge' };");
 toastMessages = [];
@@ -211,25 +211,25 @@ console.log('  ✓ PASS: startNewPermit hard gate prevents Blasting In-charge fr
 
 evalInVM("startNewPermit('blasting');");
 const blastDraft = evalInVM("draft");
-assert.strictEqual(blastDraft.ptype, 'blasting', "Blasting In-charge must successfully create PT-07 draft");
-console.log('  ✓ PASS: Blasting In-charge successfully initiates PT-07 Drilling & Blasting (Form EHS_PTW_007)');
+assert.strictEqual(blastDraft.ptype, 'blasting', "Blasting In-charge must successfully create PTW-007 draft");
+console.log('  ✓ PASS: Blasting In-charge successfully initiates PTW-007 Drilling & Blasting (Form PTW-007)');
 
 // --- 5. Site Supervisor Role: Strict Form Activation ---
 console.log('\n--- 5. Site Supervisor Form Activation Matrix ---');
 
-// PT-06 Electrical Work must be strictly inactive for Site Supervisor
+// PTW-006 Electrical Work must be strictly inactive for Site Supervisor
 const elecAvailForSup = evalInVM("getPermitAvailabilityForRole('electrical', 'site-supervisor')");
-assert.strictEqual(elecAvailForSup.available, false, "PT-06 Electrical Work must be STRICTLY INACTIVE for Site Supervisor");
-assert.strictEqual(elecAvailForSup.statusText, 'Restricted to Electrician', "PT-06 must show 'Restricted to Electrician'");
-assert.strictEqual(elecAvailForSup.statusClass, 'restricted', "PT-06 must have 'restricted' statusClass");
-console.log('  ✓ PASS: For Site Supervisor, PT-06 Electrical Work is strictly inactive with lock badge (Restricted to Electrician)');
+assert.strictEqual(elecAvailForSup.available, false, "PTW-006 Electrical Work must be STRICTLY INACTIVE for Site Supervisor");
+assert.strictEqual(elecAvailForSup.statusText, 'Restricted to Electrician', "PTW-006 must show 'Restricted to Electrician'");
+assert.strictEqual(elecAvailForSup.statusClass, 'restricted', "PTW-006 must have 'restricted' statusClass");
+console.log('  ✓ PASS: For Site Supervisor, PTW-006 Electrical Work is strictly inactive with lock badge (Restricted to Electrician)');
 
-// PT-07 Drilling & Blasting must be strictly inactive for Site Supervisor
+// PTW-007 Drilling & Blasting must be strictly inactive for Site Supervisor
 const blastAvailForSup = evalInVM("getPermitAvailabilityForRole('blasting', 'site-supervisor')");
-assert.strictEqual(blastAvailForSup.available, false, "PT-07 Drilling & Blasting must be STRICTLY INACTIVE for Site Supervisor");
-assert.strictEqual(blastAvailForSup.statusText, 'Restricted to Blasting In-charge', "PT-07 must show 'Restricted to Blasting In-charge'");
-assert.strictEqual(blastAvailForSup.statusClass, 'restricted', "PT-07 must have 'restricted' statusClass");
-console.log('  ✓ PASS: For Site Supervisor, PT-07 Drilling & Blasting is strictly inactive with lock badge (Restricted to Blasting In-charge)');
+assert.strictEqual(blastAvailForSup.available, false, "PTW-007 Drilling & Blasting must be STRICTLY INACTIVE for Site Supervisor");
+assert.strictEqual(blastAvailForSup.statusText, 'Restricted to Blasting In-charge', "PTW-007 must show 'Restricted to Blasting In-charge'");
+assert.strictEqual(blastAvailForSup.statusClass, 'restricted', "PTW-007 must have 'restricted' statusClass");
+console.log('  ✓ PASS: For Site Supervisor, PTW-007 Drilling & Blasting is strictly inactive with lock badge (Restricted to Blasting In-charge)');
 
 // Verify full 11-permit activation matrix for Site Supervisor
 const supervisorAllowedPermits = ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft'];
@@ -249,39 +249,39 @@ ALL_PERMITS.forEach(pKey => {
         }
     }
 });
-console.log('  ✓ PASS: For Site Supervisor, ONLY PT-01 through PT-05 are available; PT-06, PT-07, and future forms are strictly inactive');
+console.log('  ✓ PASS: For Site Supervisor, ONLY PTW-001 through PTW-005 are available; PTW-006, PTW-007, and future forms are strictly inactive');
 
 evalInVM("currentUser = { key: 'site-supervisor', label: 'Site Supervisor', role: 'Site Supervisor' };");
 
-// Attempting to select PT-06 Electrical Work triggers warning
+// Attempting to select PTW-006 Electrical Work triggers warning
 toastMessages = [];
 evalInVM("selectPermitType('electrical');");
 assert(toastMessages.some(t => t.type === 'warn' && t.msg.includes('Role Restriction')), "Must show role restriction warning when supervisor clicks electrical");
-console.log('  ✓ PASS: Site Supervisor clicking PT-06 Electrical Work is rejected with role restriction warning');
+console.log('  ✓ PASS: Site Supervisor clicking PTW-006 Electrical Work is rejected with role restriction warning');
 
-// Attempting to select PT-07 Drilling & Blasting triggers warning
+// Attempting to select PTW-007 Drilling & Blasting triggers warning
 toastMessages = [];
 evalInVM("selectPermitType('blasting');");
 assert(toastMessages.some(t => t.type === 'warn' && t.msg.includes('Role Restriction') && t.msg.includes('Blasting / Drilling In-charge')), "Must show role restriction warning when supervisor clicks blasting");
-console.log('  ✓ PASS: Site Supervisor clicking PT-07 Drilling & Blasting is rejected with role restriction warning');
+console.log('  ✓ PASS: Site Supervisor clicking PTW-007 Drilling & Blasting is rejected with role restriction warning');
 
-// Hard gate in startNewPermit for PT-06
+// Hard gate in startNewPermit for PTW-006
 toastMessages = [];
 evalInVM("startNewPermit('electrical');");
 assert(toastMessages.some(t => t.type === 'err' && t.msg.includes('Role Restriction')), "Must block startNewPermit('electrical') for supervisor");
 console.log('  ✓ PASS: startNewPermit hard gate prevents Site Supervisor from creating Electrical permit');
 
-// Hard gate in startNewPermit for PT-07
+// Hard gate in startNewPermit for PTW-007
 toastMessages = [];
 evalInVM("startNewPermit('blasting');");
 assert(toastMessages.some(t => t.type === 'err' && t.msg.includes('Role Restriction')), "Must block startNewPermit('blasting') for supervisor");
 console.log('  ✓ PASS: startNewPermit hard gate prevents Site Supervisor from creating Drilling & Blasting permit');
 
-// Valid initiation for Site Supervisor (PT-01 Excavation)
+// Valid initiation for Site Supervisor (PTW-001 Excavation)
 evalInVM("startNewPermit('excavation');");
 const supExcDraft = evalInVM("draft");
-assert.strictEqual(supExcDraft.ptype, 'excavation', "Site Supervisor must successfully create PT-01 Excavation draft");
-console.log('  ✓ PASS: Site Supervisor successfully initiates PT-01 Excavation (Form EHS_PTW_001)');
+assert.strictEqual(supExcDraft.ptype, 'excavation', "Site Supervisor must successfully create PTW-001 Excavation draft");
+console.log('  ✓ PASS: Site Supervisor successfully initiates PTW-001 Excavation (Form PTW-001)');
 
 // --- 6. Non-Initiator Roles: All Forms Inactive ---
 console.log('\n--- 6. Non-Initiator Roles Locked ---');
@@ -392,12 +392,12 @@ console.log('\n--- 10. Permit Type Selection Catalog & Contextual Banner ---');
 evalInVM("currentUser = { key: 'electrician', label: 'Electrician', role: 'Electrician' }; buildPermitTypeCards();");
 const bannerHtmlElec = getEl('ptypeRoleBanner').innerHTML;
 assert(bannerHtmlElec.includes('Electrician Initiator Mode'), "Must display Electrician Initiator Mode banner");
-assert(bannerHtmlElec.includes('PT-06 Electrical Work (HT/LT) — Form EHS_PTW_006'), "Banner must name Form EHS_PTW_006");
+assert(bannerHtmlElec.includes('PTW-006 Electrical Work (HT/LT) — Form PTW-006'), "Banner must name Form PTW-006");
 
 evalInVM("currentUser = { key: 'blasting-incharge', label: 'Blasting / Drilling In-charge', role: 'Blasting In-charge' }; buildPermitTypeCards();");
 const bannerHtmlBlast = getEl('ptypeRoleBanner').innerHTML;
 assert(bannerHtmlBlast.includes('Blasting / Drilling In-charge Initiator Mode'), "Must display Blasting In-charge Initiator Mode banner");
-assert(bannerHtmlBlast.includes('PT-07 Drilling and Blasting — Form EHS_PTW_007'), "Banner must name Form EHS_PTW_007");
+assert(bannerHtmlBlast.includes('PTW-007 Drilling and Blasting — Form PTW-007'), "Banner must name Form PTW-007");
 
 console.log('  ✓ PASS: Contextual role banners correctly render on the Select Permit Type catalog');
 

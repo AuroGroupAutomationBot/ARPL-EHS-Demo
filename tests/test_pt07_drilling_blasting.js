@@ -6,17 +6,17 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE 7: PT-07 DRILLING & BLASTING (FORM EHS_PTW_007) SPECIFICATION & COMPLIANCE');
+console.log('SUITE 7: PTW-007 DRILLING & BLASTING (FORM PTW-007) SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
 // --- 1. Static Verification of UI & Metadata ---
-console.log('\n--- 1. Static Verification of PT-07 Metadata & Constants ---');
+console.log('\n--- 1. Static Verification of PTW-007 Metadata & Constants ---');
 
 // Check PERMIT_TYPES entry
-assert(src.includes("code: 'PT-07'") || src.includes("key: 'blasting'"), "PERMIT_TYPES must include PT-07 / blasting");
-assert(src.includes("form: 'EHS_PTW_007'"), "PTYPE_META must register Form EHS_PTW_007");
-assert(src.includes("prefix: 'DB'"), "PTYPE_META must use DB permit prefix");
-console.log('  ✓ PASS: PT-07 Form EHS_PTW_007 and DB prefix configured');
+assert(src.includes("code: 'PTW-007'") || src.includes("key: 'blasting'"), "PERMIT_TYPES must include PTW-007 / blasting");
+assert(src.includes("form: 'PTW-007'"), "PTYPE_META must register Form PTW-007");
+assert(src.includes("prefix: 'PTW-007'"), "PTYPE_META must use PTW-007 permit prefix");
+console.log('  ✓ PASS: PTW-007 Form PTW-007 and PTW-007 prefix configured');
 
 // Check Blasting and Drilling machine / explosive constants
 assert(src.includes('BLASTING_CHECKLIST_ITEMS'), "BLASTING_CHECKLIST_ITEMS constant must be defined");
@@ -30,7 +30,7 @@ console.log('  ✓ PASS: blasting-incharge role registered in system');
 
 // Check Location Mode restriction
 assert(src.includes("blasting: ['Manual']"), "LOCATION_MODES_BY_PERMIT must restrict blasting strictly to Manual");
-console.log('  ✓ PASS: Location mode strictly locked to Manual for PT-07');
+console.log('  ✓ PASS: Location mode strictly locked to Manual for PTW-007');
 
 // Check PESO Statutory Declaration Card & Checkbox
 assert(src.includes('id="chkBlastingStatutoryDecl"'), "Statutory declaration checkbox must exist");
@@ -158,16 +158,16 @@ const roleScope = evalInVM("roleTypeScope('blasting-incharge')");
 assert.strictEqual(JSON.stringify(roleScope), JSON.stringify(['blasting']), "Blasting In-charge role scope must be strictly ['blasting']");
 console.log('  ✓ PASS: roleTypeScope(\'blasting-incharge\') is strictly [\'blasting\']');
 
-// Verify Site Supervisor is strictly blocked from initiating PT-07 Drilling & Blasting
+// Verify Site Supervisor is strictly blocked from initiating PTW-007 Drilling & Blasting
 evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor', label: 'Site Supervisor' };");
 const toastStack0 = getOrCreateElem('toastStack');
 toastStack0.children = [];
 evalInVM("startNewPermit('blasting');");
-assert.strictEqual(evalInVM("draft"), null, "Site Supervisor must be strictly blocked from creating PT-07 permit");
+assert.strictEqual(evalInVM("draft"), null, "Site Supervisor must be strictly blocked from creating PTW-007 permit");
 assert(toastStack0.children.length > 0 && toastStack0.children.some(c => c.innerHTML.includes('Role Restriction')), "Must show Role Restriction error toast to Site Supervisor");
-console.log('  ✓ PASS: Site Supervisor is strictly blocked from creating PT-07 Drilling & Blasting permit');
+console.log('  ✓ PASS: Site Supervisor is strictly blocked from creating PTW-007 Drilling & Blasting permit');
 
-// Start new PT-07 permit as authorized Blasting / Drilling In-charge
+// Start new PTW-007 permit as authorized Blasting / Drilling In-charge
 evalInVM("currentUser = { key: 'blasting-incharge', name: 'PESO Blaster Khan', role: 'Blasting In-charge', label: 'Blasting / Drilling In-charge' };");
 evalInVM("startNewPermit('blasting');");
 const initDraft = evalInVM("draft");
@@ -178,7 +178,7 @@ const dbHtml = evalInVM("renderUniversalOrgAndLocationHtml('')");
 assert(dbHtml.includes('Tower &amp; Floor is restricted for Drilling and Blasting (operations prohibited on suspended structural slabs)'), "Must include Tower restriction safety tooltip");
 assert(dbHtml.includes('Basement / Podium is restricted for Drilling and Blasting (structural proximity safety rule)'), "Must include Basement/Podium restriction safety tooltip");
 assert(dbHtml.includes('Safety Rule (Drilling and Blasting):</b> Tower and Basement/Podium modes are restricted'), "Must include safety rule banner");
-assert(dbHtml.includes('value="Manual" checked'), "Manual mode must be checked by default for PT-07");
+assert(dbHtml.includes('value="Manual" checked'), "Manual mode must be checked by default for PTW-007");
 console.log('  ✓ PASS: UI displays statutory safety tooltips and locks radio buttons');
 
 // Attempt to illegally switch to Tower or Basement/Podium
@@ -302,7 +302,7 @@ nowTime = () => new Date(2026, 8, 9, 11, 0, 0);
 draft.startTime = '11:30';
 draft.validTillTime = '16:00';
 `);
-assert.strictEqual(evalInVM("validateWizStep(3)"), true, "Step 3 passes without drawing (drawings suppressed for PT-07)");
+assert.strictEqual(evalInVM("validateWizStep(3)"), true, "Step 3 passes without drawing (drawings suppressed for PTW-007)");
 console.log('  ✓ PASS: Step 3 passes without requiring excavation drawing');
 
 // --- 6. Scenario 7: Blasting In-charge Statutory Acknowledgment Flow ---
@@ -339,7 +339,7 @@ evalInVM("currentUser = { key: 'site-engineer', name: 'Engineer Suresh', role: '
 evalInVM("acknowledgeSiteEngineer(PERMITS[PERMITS.length - 1], { gps: { lat: 17.44, lng: 78.38, within: true }, comment: 'Site layout and sentry placement verified on-site.', sig: makeSimSignature('Engineer Suresh') });");
 
 const engAckPermit = evalInVM("PERMITS[PERMITS.length - 1]");
-assert.strictEqual(engAckPermit.status, 'Pending EHS Approval', "Site Engineer acknowledgment must route PT-07 directly to EHS Approval");
+assert.strictEqual(engAckPermit.status, 'Pending EHS Approval', "Site Engineer acknowledgment must route PTW-007 directly to EHS Approval");
 assert(engAckPermit.siteEngineerAck && engAckPermit.siteEngineerAck.acknowledged, "siteEngineerAck must be recorded");
 console.log('  ✓ PASS: Site Engineer acknowledgment routes directly to Pending EHS Approval (skips parallel gate & section head)');
 
@@ -349,7 +349,7 @@ evalInVM("approvePermitStage(PERMITS[PERMITS.length - 1], 'ehs-manager', { gps: 
 
 const activePermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert(activePermit.status.startsWith('Active'), "Permit must now be Active");
-console.log('  ✓ PASS: EHS Safety Manager endorsement activates PT-07 permit');
+console.log('  ✓ PASS: EHS Safety Manager endorsement activates PTW-007 permit');
 
 // --- 8. Scenario 9: Drilling Direct Route to Site Engineer ---
 console.log('\n--- 8. Drilling Submission Direct Routing ---');
@@ -515,7 +515,7 @@ console.log('\n--- 12. Night Shift Exclusion & PDF Generation ---');
 
 assert.strictEqual(evalInVM("canLinkToNightShift('blasting')"), false, "canLinkToNightShift('blasting') must return false");
 assert.strictEqual(evalInVM("canLinkToNightShift(blastingPermit)"), false, "canLinkToNightShift(blastingPermit) must return false");
-console.log('  ✓ PASS: Night shift linkage strictly forbidden for PT-07 Drilling & Blasting');
+console.log('  ✓ PASS: Night shift linkage strictly forbidden for PTW-007 Drilling & Blasting');
 
 // Verify PDF generation for both Blasting and Drilling
 evalInVM("currentUser = { key: 'ehs-manager', name: 'Manager EHS Vikram', role: 'EHS Safety Manager' };");
@@ -571,5 +571,5 @@ assert.strictEqual(blasterPermit.signatories['blasting-incharge'].name, 'License
 console.log('  ✓ PASS: Blasting In-charge can initiate permit as Permittee with PESA statutory declaration routing directly to Site Engineer');
 
 console.log('\n==================================================');
-console.log('ALL PT-07 DRILLING & BLASTING TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-007 DRILLING & BLASTING TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================');

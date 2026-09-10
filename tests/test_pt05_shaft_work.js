@@ -1,8 +1,8 @@
 /**
- * PT-05 SHAFT WORK (FORM EHS_PTW_005) SPECIFICATION & COMPLIANCE TEST SUITE
+ * PTW-005 SHAFT WORK (FORM PTW-005) SPECIFICATION & COMPLIANCE TEST SUITE
  *
- * Exhaustive, robust, and comprehensive verification of PT-05 Shaft Work permits:
- * 1.  Static Metadata & Constants Verification (EHS_PTW_005, SW prefix, Tower Incharge SH)
+ * Exhaustive, robust, and comprehensive verification of PTW-005 Shaft Work permits:
+ * 1.  Static Metadata & Constants Verification (PTW-005, PTW-005 prefix, Tower Incharge SH)
  * 2.  VM Sandbox Setup & Mock Environment Initialization
  * 3.  Location Mode Restrictions (Tower & Basement/Podium supported; Manual strictly prohibited)
  * 4.  Step 1 Validation: Mandatory numPersonnel >= 1, scaffTagVerified: true, and shaftDeclaration: true
@@ -26,19 +26,19 @@ const vm = require('vm');
 const src = fs.readFileSync(path.resolve(__dirname, '..', 'index.html'), 'utf8');
 
 console.log('==================================================');
-console.log('SUITE: PT-05 SHAFT WORK (FORM EHS_PTW_005) SPECIFICATION & COMPLIANCE');
+console.log('SUITE: PTW-005 SHAFT WORK (FORM PTW-005) SPECIFICATION & COMPLIANCE');
 console.log('==================================================');
 
-// --- 1. Static Verification of PT-05 Metadata & Constants ---
-console.log('\n--- 1. Static Verification of PT-05 Metadata & Constants ---');
+// --- 1. Static Verification of PTW-005 Metadata & Constants ---
+console.log('\n--- 1. Static Verification of PTW-005 Metadata & Constants ---');
 
 assert(src.includes("key: 'shaft'"), "PTYPE_META must register shaft key");
-assert(src.includes("code: 'PT-05'"), "PTYPE_META must register code PT-05");
-assert(src.includes("form: 'EHS_PTW_005'"), "PTYPE_META must register Form EHS_PTW_005");
-assert(src.includes("prefix: 'SW'"), "PTYPE_META must use SW prefix");
+assert(src.includes("code: 'PTW-005'"), "PTYPE_META must register code PTW-005");
+assert(src.includes("form: 'PTW-005'"), "PTYPE_META must register Form PTW-005");
+assert(src.includes("prefix: 'PTW-005'"), "PTYPE_META must use PTW-005 prefix");
 assert(src.includes("shaft: ['Tower', 'Basement/Podium']"), "LOCATION_MODES_BY_PERMIT must restrict Shaft Work to Tower and Basement/Podium (Manual disabled)");
 assert(src.includes('SHAFT_CHECKLIST_ITEMS = ['), "SHAFT_CHECKLIST_ITEMS constant must be defined");
-console.log('  ✓ PASS: PT-05 Form EHS_PTW_005, SW prefix, and location restrictions verified');
+console.log('  ✓ PASS: PTW-005 Form PTW-005, PTW-005 prefix, and location restrictions verified');
 
 // --- 2. Runtime Setup & VM Sandbox Initialization ---
 console.log('\n--- 2. Runtime Setup & VM Sandbox Initialization ---');
@@ -207,8 +207,8 @@ console.log('\n--- 4. Step 1 Validation: Mandatory Parameters ---');
 
 evalInVM("startNewPermit('shaft');");
 assert.strictEqual(evalInVM("ptypeOf(draft)"), 'shaft', "Draft permit type must be shaft");
-assert.strictEqual(evalInVM("pMeta(draft).code"), 'PT-05', "pMeta must resolve PT-05");
-assert.strictEqual(evalInVM("pMeta(draft).form"), 'EHS_PTW_005', "Form must be EHS_PTW_005");
+assert.strictEqual(evalInVM("pMeta(draft).code"), 'PTW-005', "pMeta must resolve PTW-005");
+assert.strictEqual(evalInVM("pMeta(draft).form"), 'PTW-005', "Form must be PTW-005");
 
 // Base project & location
 evalInVM(`
@@ -301,7 +301,7 @@ PERMITS.push(swPermit);
 submitPermit(swPermit);
 `);
 const swPermitId = evalInVM("swPermit.id");
-assert(swPermitId.startsWith('SW-'), "Permit number must start with SW- prefix");
+assert(swPermitId.startsWith('PTW-005-'), "Permit number must start with PTW-005- prefix");
 
 let permit = evalInVM("PERMITS.find(x => x.id === '" + swPermitId + "');");
 assert.strictEqual(permit.status, 'Pending Site Engineer Acknowledgment', "Submitted Shaft Work permit status must be Pending Site Engineer Acknowledgment");
@@ -309,7 +309,7 @@ assert.strictEqual(evalInVM("requestedByRoleFor(swPermit)"), 'site-supervisor', 
 assert.strictEqual(evalInVM("requestedByLabelFor(swPermit)"), 'Site Supervisor', "Requested By label is Site Supervisor");
 assert.strictEqual(evalInVM("shRoleFor(swPermit)"), 'hw-section-head', "Section Head role is hw-section-head");
 assert.strictEqual(evalInVM("shLabelFor(swPermit)"), 'Tower Incharge', "Section Head label is Tower Incharge");
-console.log('  ✓ PASS: Permit submitted with SW prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
+console.log('  ✓ PASS: Permit submitted with PTW-005 prefix, Site Supervisor requestedBy, and Tower Incharge Section Head');
 
 // --- 7. Dedicated MEP Domain Clearance Gate ---
 console.log('\n--- 7. Dedicated MEP Domain Clearance Gate ---');
@@ -357,7 +357,7 @@ permit = evalInVM("PERMITS.find(x => x.id === '" + swPermitId + "');");
 assert.strictEqual(permit.status, 'Active', "First EHS approval activates Shaft Work permit");
 assert.strictEqual(permit.approvals.ehsOfficer.status, 'approved', "EHS Officer status approved");
 assert.strictEqual(evalInVM("chainStage(swPermit.approvals)"), 'complete', "Chain stage complete");
-console.log('  ✓ PASS: EHS endorsement activates PT-05 Shaft Work permit');
+console.log('  ✓ PASS: EHS endorsement activates PTW-005 Shaft Work permit');
 
 // --- 10. Rejection & Stale-Approval Retention ---
 console.log('\n--- 10. Rejection & Stale-Approval Retention ---');
@@ -506,8 +506,8 @@ console.log('  ✓ PASS: Exclusive Site Supervisor closure & surrender verified'
 console.log('\n--- 14. jsPDF Audit Report & Dynamic Section Head Tracker ---');
 
 const trackerHtml = evalInVM("trackerHtml(swPermit)");
-assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PT-05");
-assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PT-05");
+assert(trackerHtml.includes('Tower Incharge'), "Tracker HTML must display Tower Incharge for PTW-005");
+assert(!trackerHtml.includes('Excavation Head'), "Tracker HTML must NOT display Excavation Head for PTW-005");
 console.log('  ✓ PASS: Tracker HTML dynamically renders Tower Incharge');
 
 let pdfResult = null;
@@ -520,8 +520,8 @@ try {
     console.error("PDF generation failed:", e);
 }
 assert.strictEqual(pdfResult, true, "generatePermitPDF executes cleanly for Shaft Work permit");
-console.log('  ✓ PASS: jsPDF audit report generation succeeds for PT-05 Shaft Work permit');
+console.log('  ✓ PASS: jsPDF audit report generation succeeds for PTW-005 Shaft Work permit');
 
 console.log('\n==================================================');
-console.log('ALL PT-05 SHAFT WORK TESTS PASSED (100% SUCCESS RATE)');
+console.log('ALL PTW-005 SHAFT WORK TESTS PASSED (100% SUCCESS RATE)');
 console.log('==================================================');
