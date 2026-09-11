@@ -24,7 +24,9 @@ const suites = [
     { num: 15, name: 'PTW-006 ELECTRICAL WORK (FORM PTW-006) SPECIFICATION & COMPLIANCE', file: 'test_pt06_electrical_work.js' },
     { num: 16, name: 'PTW-007 DRILLING & BLASTING (FORM PTW-007) SPECIFICATION & COMPLIANCE', file: 'test_pt07_drilling_blasting.js' },
     { num: 17, name: 'DIGITAL SIGNATURE PAD ENGINE & CROSS-PROCESS COMPLIANCE', file: 'test_digital_signature_pad.js' },
-    { num: 18, name: 'PTW-008 GENERAL WORK (FORM PTW-008) SPECIFICATION & COMPLIANCE', file: 'test_pt08_general_work.js' }
+    { num: 18, name: 'PTW-008 GENERAL WORK (FORM PTW-008) SPECIFICATION & COMPLIANCE', file: 'test_pt08_general_work.js' },
+    { num: 19, name: 'FORENSIC AUDIT REMEDIATION, SECURITY & RUNTIME ROBUSTNESS', file: 'test_audit_remediation_security.js' },
+    { num: 20, name: 'DYNAMIC & CONFIGURATION-DRIVEN ENTERPRISE ARCHITECTURE', file: 'test_dynamic_config_architecture.js' }
 ];
 
 console.log('================================================================');

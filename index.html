@@ -4,9 +4,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=5.0, viewport-fit=cover">
+    <meta name="description" content="ARPL EHS Permit-to-Work (PTW) Enterprise Safety Management System — Digital statutory workflows for high-risk construction operations.">
     <title>ARPL EHS Permit-to-Work</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>🛡️</text></svg>">
+    <!-- Font Awesome 6.5.1: Pinned CDN with Subresource Integrity (SRI) -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" integrity="sha384-t1nt8BQoYMLFN5p42tRAtuAAFQaCQODekUVeKKZrEnEyp4H2R0RHFz0KWpmj7i8g" crossorigin="anonymous" referrerpolicy="no-referrer">
+    <!-- jsPDF 2.5.1: Pinned CDN with Subresource Integrity (SRI) and deferred loading -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js" integrity="sha384-JcnsjUPPylna1s1fvi1u12X5qjY5OL56iySh75FdtrwhO/SWXgMjoVqcKyIIWOLk" crossorigin="anonymous" referrerpolicy="no-referrer" defer></script>
     <style>
         :root {
             --navy: #0A1628;
@@ -4294,6 +4298,11 @@
 </head>
 
 <body>
+    <noscript>
+        <div style="padding: 1.5rem; background: #FFF3CD; color: #856404; border-bottom: 2px solid #FFEEBA; text-align: center; font-family: sans-serif; font-weight: 600; font-size: 1rem;">
+            ⚠️ JavaScript is required to operate the ARPL EHS Permit-to-Work management system. Please enable JavaScript in your browser to continue.
+        </div>
+    </noscript>
 
     <div class="landing" id="landingScreen">
         <i class="fa-solid fa-hard-hat landing-decor d1"></i>
@@ -4314,7 +4323,7 @@
             </p>
 
             <!-- Supported Permit Modules Pills -->
-            <div class="landing-permits-bar">
+            <div class="landing-permits-bar" id="landingPermitsBar">
                 <span class="ptype-pill"><i class="fa-solid fa-person-digging"></i> PTW-001 Excavation</span>
                 <span class="ptype-pill"><i class="fa-solid fa-fire-burner"></i> PTW-002 Hot Work</span>
                 <span class="ptype-pill"><i class="fa-solid fa-shield-halved"></i> PTW-003 Guard Rail</span>
@@ -4334,7 +4343,7 @@
         </div>
 
         <!-- 4-Stage Governance Workflow Ribbon -->
-        <div class="landing-workflow-strip">
+        <div class="landing-workflow-strip" id="landingWorkflowStrip">
             <div class="lw-step">
                 <div class="lw-num">1</div>
                 <div class="lw-content">
@@ -4390,7 +4399,7 @@
 
         <div class="landing-footer">
             <div class="lf-title"><i class="fa-solid fa-shield-halved" style="color:var(--orange);"></i> ARPL Digital Permit-to-Work (PTW) Management System</div>
-            <div>PTW-001 Excavation &bull; PTW-002 Hot Work &bull; PTW-003 Guard Rail &bull; PTW-004 Confined Space &bull; PTW-005 Shaft Work &bull; PTW-006 Electrical Work &bull; PTW-007 Drilling &amp; Blasting &bull; PTW-008 General Work</div>
+            <div id="landingFooterPermits">PTW-001 Excavation &bull; PTW-002 Hot Work &bull; PTW-003 Guard Rail &bull; PTW-004 Confined Space &bull; PTW-005 Shaft Work &bull; PTW-006 Electrical Work &bull; PTW-007 Drilling &amp; Blasting &bull; PTW-008 General Work</div>
             <div>Demo Build &bull; September 2026</div>
             <div style="margin-top:8px;"><a href="#" onclick="resetDemoData();return false;"
                     style="color:var(--orange);font-weight:700;"><i class="fa-solid fa-rotate-left"></i> Reset Demo
@@ -4474,10 +4483,8 @@
                 <div class="view" id="view-create">
                     <div class="view-header">
                         <div>
-                            <h1 id="createViewTitle"><i class="fa-solid fa-file-circle-plus"></i> Create Excavation
-                                Permit</h1>
-                            <p id="createViewSub">PTW-001 &middot; Permit to Work &mdash; Excavation &middot; PTW-001
-                                Rev.01</p>
+                            <h1 id="createViewTitle"><i class="fa-solid fa-file-circle-plus"></i> Create Permit</h1>
+                            <p id="createViewSub">Permit to Work &middot; Statutory Compliance System</p>
                         </div>
                         <button class="btn btn-ghost" onclick="goTo('dashboard')"><i class="fa-solid fa-arrow-left"></i>
                             Back to Dashboard</button>
@@ -4847,6 +4854,477 @@
         const WEATHER_OPTIONS = ['Sunny', 'Partly Cloudy', 'Overcast', 'Windy', 'Light Rain', 'Hazy'];
         const EQUIPMENT_OPTIONS = ['Excavator', 'JCB', 'Hydra', 'Poclain', 'Manual Excavation', 'Crane', 'Others'];
 
+        /* ================================================================
+           ARPL EHS PLATFORM MASTER CONFIGURATION (APP_CONFIG)
+           Declarative, Single Source of Truth governing Permit Types,
+           Workflows, Governance Stages, Statuses, Dashboards, Role Categories,
+           and Register Columns.
+           ================================================================ */
+        const APP_CONFIG = {
+            system: {
+                title: 'ARPL Digital Permit-to-Work Portal',
+                organization: 'Auro Realty Private Limited',
+                division: 'Environmental Health & Safety',
+                version: 'Demo Build · September 2026',
+                timezone: 'Asia/Kolkata',
+                statutoryTags: [
+                    { icon: 'fa-shield-check', text: 'DPDP Act 2023 Compliant' },
+                    { icon: 'fa-clock', text: 'Live Indian Standard Time (IST)' },
+                    { icon: 'fa-location-crosshairs', text: 'GPS Geofence Verification' }
+                ]
+            },
+            governanceStages: [
+                {
+                    step: 1,
+                    title: 'Initiation & Checklist',
+                    desc: 'Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), or Blasting In-charge (PTW-007) fills form, statutory checklist & uploads photo.'
+                },
+                {
+                    step: 2,
+                    title: 'Field Verification',
+                    desc: 'Site Engineer verifies site ground safety & forwards (can Approve or Return; cannot Cancel).'
+                },
+                {
+                    step: 3,
+                    title: 'Clearances & Domain Approval',
+                    desc: 'Discipline clearances (MEP, P&M, IT, Quality Engineer) followed by Section Head / Tower Incharge review.'
+                },
+                {
+                    step: 4,
+                    title: 'EHS Safety Endorsement',
+                    desc: 'EHS Safety Manager / Officer conducts final statutory review to activate permit, audit observations, or stop work.'
+                }
+            ],
+            roleCategories: [
+                { key: 'all', label: 'All Roles', icon: 'fa-border-all' },
+                { key: 'initiator', label: 'Initiators', icon: 'fa-user-pen' },
+                { key: 'verification', label: 'Field & Clearances', icon: 'fa-hard-hat' },
+                { key: 'approver', label: 'Domain Approvers', icon: 'fa-user-tie' },
+                { key: 'ehs', label: 'EHS Safety', icon: 'fa-shield-halved' },
+                { key: 'admin', label: 'Admin', icon: 'fa-user-gear' }
+            ],
+            registerColumns: [
+                { key: 'id', label: 'Permit No.', sortable: true },
+                { key: 'type', label: 'Type', sortable: true },
+                { key: 'project', label: 'Project / Tower', sortable: true },
+                { key: 'details', label: 'Details', sortable: false },
+                { key: 'status', label: 'Status', sortable: true },
+                { key: 'sectionHead', label: 'Section Head', sortable: true },
+                { key: 'validTill', label: 'Valid Till', sortable: true },
+                { key: 'requestedBy', label: 'Requested By', sortable: true },
+                { key: 'action', label: '', sortable: false }
+            ],
+            statuses: {
+                'Draft': { class: 'draft', category: 'draft', label: 'Draft' },
+                'Pending Blasting In-charge Acknowledgment': { class: 'parallel', category: 'pending', label: 'Pending Blasting In-charge Acknowledgment' },
+                'Pending Blasting In-charge Re-Acknowledgment': { class: 'parallel', category: 'pending', label: 'Pending Blasting In-charge Re-Acknowledgment' },
+                'Pending Site Engineer Acknowledgment': { class: 'parallel', category: 'pending', label: 'Pending Site Engineer Acknowledgment' },
+                'Pending Site Engineer Re-Acknowledgment': { class: 'parallel', category: 'pending', label: 'Pending Site Engineer Re-Acknowledgment' },
+                'Pending P&M Acknowledgment': { class: 'parallel', category: 'pending', label: 'Pending P&M Acknowledgment' },
+                'Pending P&M Re-Acknowledgment': { class: 'parallel', category: 'pending', label: 'Pending P&M Re-Acknowledgment' },
+                'Pending Quality Engineer Approval': { class: 'parallel', category: 'pending', label: 'Pending Quality Engineer Approval' },
+                'Pending MEP or P&M Approval': { class: 'parallel', category: 'pending', label: 'Pending MEP or P&M Approval' },
+                'Pending MEP Clearance': { class: 'parallel', category: 'pending', label: 'Pending MEP Clearance' },
+                'Pending Parallel Approval': { class: 'parallel', category: 'pending', label: 'Pending Parallel Approval' },
+                'Returned for Correction': { class: 'returned', category: 'returned', label: 'Returned for Correction' },
+                'Pending Section Head': { class: 'sectionhead', category: 'pending', label: 'Pending Section Head' },
+                'Pending Tower Incharge': { class: 'sectionhead', category: 'pending', label: 'Pending Tower Incharge' },
+                'Pending Excavation Head': { class: 'sectionhead', category: 'pending', label: 'Pending Excavation Head' },
+                'Pending EHS Approval': { class: 'ehs', category: 'pending', label: 'Pending EHS Approval' },
+                'Active': { class: 'active', category: 'active', label: 'Active' },
+                'Active – Observation Open': { class: 'returned', category: 'observation', label: 'Active – Observation Open' },
+                'Observation Pending Site Engineer Acknowledgment': { class: 'parallel', category: 'observation', label: 'Observation Pending Site Engineer Acknowledgment' },
+                'Observation Pending Section Head Review': { class: 'sectionhead', category: 'observation', label: 'Observation Pending Section Head Review' },
+                'Observation Pending Tower Incharge Review': { class: 'sectionhead', category: 'observation', label: 'Observation Pending Tower Incharge Review' },
+                'Observation Pending Excavation Head Review': { class: 'sectionhead', category: 'observation', label: 'Observation Pending Excavation Head Review' },
+                'Observation Pending EHS Clearance': { class: 'ehs', category: 'observation', label: 'Observation Pending EHS Clearance' },
+                'Expired': { class: 'expired', category: 'terminal', label: 'Expired' },
+                'Closed – Pending Surrender': { class: 'closed', category: 'completed', label: 'Closed – Pending Surrender' },
+                'Completed (Surrendered)': { class: 'completed', category: 'completed', label: 'Completed (Surrendered)' },
+                'Cancelled': { class: 'cancelled', category: 'terminal', label: 'Cancelled' }
+            },
+            permitTypes: {
+                excavation: {
+                    key: 'excavation',
+                    code: 'PTW-001',
+                    name: 'Excavation Work',
+                    short: 'Excavation',
+                    prefix: 'PTW-001',
+                    form: 'PTW-001',
+                    sh: 'excavation-head',
+                    shLabel: 'Excavation Head',
+                    icon: 'fa-person-digging',
+                    available: true,
+                    desc: 'Excavation with service lines/utilities, proximity to structures, or greenfield deeper than 1.5 m. Form PTW-001.',
+                    color: '#2E7D32',
+                    badgeStyle: 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Basement/Podium', 'Manual'],
+                    workflow: 'excavation_parallel',
+                    detailsSummary: function(p) { return (p.depth != null ? p.depth + ' m' : (p.activity || 'Excavation Work')); }
+                },
+                hotwork: {
+                    key: 'hotwork',
+                    code: 'PTW-002',
+                    name: 'Hot Work',
+                    short: 'Hot Work',
+                    prefix: 'PTW-002',
+                    form: 'PTW-002',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-fire',
+                    available: true,
+                    desc: 'Welding, gas cutting, soldering or abrasive wheel cutting creating sparks or open flames. Form PTW-002.',
+                    color: '#E65100',
+                    badgeStyle: 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'sequential_tower',
+                    detailsSummary: function(p) { return (p.hotworkTypes || []).join(', ') || 'Hot Work'; }
+                },
+                guardrail: {
+                    key: 'guardrail',
+                    code: 'PTW-003',
+                    name: 'Guard Rail / Floor Protection Removal',
+                    short: 'Guard Rail',
+                    prefix: 'PTW-003',
+                    form: 'PTW-003',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-person-falling-burst',
+                    available: true,
+                    desc: 'Removal of covers, openings, edge protections and shaft gates. Minimum one watcher until re-fixed. Form PTW-003.',
+                    color: '#7B1FA2',
+                    badgeStyle: 'background:rgba(123,31,162,0.12);color:#7B1FA2;border:1px solid rgba(123,31,162,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium'],
+                    workflow: 'sequential_tower',
+                    detailsSummary: function(p) {
+                        return p.locationStructure === 'Tower'
+                            ? (p.tower + (p.grFloor ? ' · ' + p.grFloor : ''))
+                            : (p.grBasementPodium || 'Podium/Basement');
+                    }
+                },
+                confined: {
+                    key: 'confined',
+                    code: 'PTW-004',
+                    name: 'Confined Space Entry',
+                    short: 'Confined Space',
+                    prefix: 'PTW-004',
+                    form: 'PTW-004',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-door-closed',
+                    available: true,
+                    desc: 'Limited/restricted entry, not for continuous occupancy. Multi-gas testing of all 4 parameters mandatory before entry. Form PTW-004.',
+                    color: '#5E35B1',
+                    badgeStyle: 'background:rgba(94,53,177,0.12);color:#5E35B1;border:1px solid rgba(94,53,177,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'sequential_tower',
+                    detailsSummary: function(p) { return p.confinedActivity || p.activity || 'Confined Space Entry'; }
+                },
+                shaft: {
+                    key: 'shaft',
+                    code: 'PTW-005',
+                    name: 'Shaft Work',
+                    short: 'Shaft Work',
+                    prefix: 'PTW-005',
+                    form: 'PTW-005',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-elevator',
+                    available: true,
+                    desc: 'Working in shaft on scaffold or RSP. Scaffold tag verification and worker entry list required. Form PTW-005.',
+                    color: '#1565C0',
+                    badgeStyle: 'background:rgba(21,101,192,0.12);color:#1565C0;border:1px solid rgba(21,101,192,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium'],
+                    workflow: 'shaft_mep_tower',
+                    detailsSummary: function(p) { return (p.shaftLocationType || 'Tower') + ' · ' + (p.shaftFloor || ''); }
+                },
+                electrical: {
+                    key: 'electrical',
+                    code: 'PTW-006',
+                    name: 'Electrical Work (HT/LT)',
+                    short: 'Electrical Work',
+                    prefix: 'PTW-006',
+                    form: 'PTW-006',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-bolt',
+                    available: true,
+                    desc: 'Maintenance, repair, inspection & shutdown on HT/LT systems (440V and above). LOTO, earthing, site / batching plant clearances, and statutory written shutdown cancellation mandatory. Form PTW-006.',
+                    color: '#B78103',
+                    badgeStyle: 'background:rgba(255,179,0,0.15);color:#B78103;border:1px solid rgba(255,179,0,0.35);',
+                    allowedInitiatorRoles: ['electrician'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'electrical_routing',
+                    detailsSummary: function(p) {
+                        return (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' ? 'Batching Plant' : 'Site') + ' · ' + (Array.isArray(p.electricalApparatus) ? p.electricalApparatus.join(', ') : (p.apparatus || 'HT/LT Work'));
+                    }
+                },
+                blasting: {
+                    key: 'blasting',
+                    code: 'PTW-007',
+                    name: 'Drilling and Blasting',
+                    short: 'Drilling & Blasting',
+                    prefix: 'PTW-007',
+                    form: 'PTW-007',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-explosion',
+                    available: true,
+                    desc: 'All drilling and blasting operations. Licensed Blasting In-charge must be present at site at all times for blasting. Form PTW-007.',
+                    color: '#E65100',
+                    badgeStyle: 'background:rgba(230,81,0,0.15);color:#E65100;border:1px solid rgba(230,81,0,0.3);',
+                    allowedInitiatorRoles: ['blasting-incharge', 'site-supervisor'],
+                    allowedLocationModes: ['Manual'],
+                    workflow: 'blasting_routing',
+                    detailsSummary: function(p) {
+                        return (p.dbOperationType || 'Drilling') + (p.dbOperationType === 'Blasting' ? (' · ' + (p.dbChargeAmount || '—') + ' kg') : (' · ' + (p.dbMachineType || 'Machine')));
+                    }
+                },
+                general: {
+                    key: 'general',
+                    code: 'PTW-008',
+                    name: 'General Work',
+                    short: 'General Work',
+                    prefix: 'PTW-008',
+                    form: 'PTW-008',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-helmet-safety',
+                    available: true,
+                    desc: 'Day-to-day activities not covered by other permit types, incl. erection, hoist and formwork sub-checklists. Form PTW-008.',
+                    color: '#2E7D32',
+                    badgeStyle: 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'sequential_tower',
+                    detailsSummary: function(p) { return p.generalWorkType || 'General Work'; }
+                },
+                lifting: {
+                    key: 'lifting',
+                    code: 'PTW-009A',
+                    name: 'General and Heavy Lifting',
+                    short: 'Lifting',
+                    prefix: 'PTW-009A',
+                    form: 'PTW-009A',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-arrow-up-from-ground-water',
+                    available: false,
+                    desc: 'All crane and lifting operations. Loads above 5 MT automatically require an approved Lift Plan (PTW-009B). Form PTW-009A.',
+                    color: '#546E7A',
+                    badgeStyle: 'background:rgba(84,110,122,0.12);color:#546E7A;border:1px solid rgba(84,110,122,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'lifting_heavy'
+                },
+                liftplan: {
+                    key: 'liftplan',
+                    code: 'PTW-009B',
+                    name: 'Lift Plan (Non-Routine / Critical)',
+                    short: 'Lift Plan',
+                    prefix: 'PTW-009B',
+                    form: 'PTW-009B',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-weight-hanging',
+                    available: false,
+                    desc: '14 critical lift criteria; Project Head approval mandatory for all non-routine lifts. Form PTW-009B.',
+                    color: '#455A64',
+                    badgeStyle: 'background:rgba(69,90,100,0.12);color:#455A64;border:1px solid rgba(69,90,100,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'critical_lift_plan'
+                },
+                nightshift: {
+                    key: 'nightshift',
+                    code: 'PTW-010',
+                    name: 'Night Shift / Holiday Work',
+                    short: 'Night Shift',
+                    prefix: 'PTW-010',
+                    form: 'PTW-010',
+                    sh: 'hw-section-head',
+                    shLabel: 'Tower Incharge',
+                    icon: 'fa-moon',
+                    available: false,
+                    desc: 'All activities after regular shift hours or on holidays. Alcohol test, emergency vehicle and linked sub-permits required. Form PTW-010.',
+                    color: '#37474F',
+                    badgeStyle: 'background:rgba(55,71,79,0.12);color:#37474F;border:1px solid rgba(55,71,79,0.25);',
+                    allowedInitiatorRoles: ['site-supervisor'],
+                    allowedLocationModes: ['Tower', 'Basement/Podium', 'Manual'],
+                    workflow: 'night_shift_protocol'
+                }
+            },
+            dashboards: {
+                initiators: [
+                    { cls: 'k-grey', icon: 'fa-file-pen', label: 'My Drafts', count: (m) => m.filter(p => p.status === 'Draft').length, foot: 'Not yet submitted', action: "filterRegisterAndGo('Draft')" },
+                    { cls: 'k-amber', icon: 'fa-hourglass-half', label: 'In Approval Chain', count: (m) => m.filter(p => !['Draft', 'Active', 'Completed (Surrendered)', 'Closed – Pending Surrender', 'Expired', 'Cancelled'].includes(p.status)).length, foot: 'Across workflow stages', action: "goTo('register')" },
+                    { cls: 'k-blue', icon: 'fa-bolt', label: 'Active Permits', count: (m) => m.filter(p => p.status === 'Active').length, foot: 'Currently valid on site', action: "filterRegisterAndGo('Active')" },
+                    { cls: 'k-red', icon: 'fa-triangle-exclamation', label: 'Open Observations', count: (m) => m.filter(p => p.status === 'Active – Observation Open').length, foot: 'Requires corrective response', action: "filterRegisterAndGo('Active – Observation Open')" },
+                    { cls: 'k-purple', icon: 'fa-stopwatch', label: 'Extension Requests', count: (m) => m.filter(p => p.extension && !['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status)).length, foot: 'Under review by Section Head / EHS', action: "goTo('register')" },
+                    { cls: 'k-green', icon: 'fa-box-archive', label: 'Closed Permits', count: (m) => m.filter(p => ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status)).length, foot: 'Surrendered / archived', action: "filterRegisterAndGo('Completed (Surrendered)')" },
+                    { cls: 'k-orange', icon: 'fa-plus', label: 'Create Permit', count: () => '', foot: 'Permittee: Initiate new permit', action: "openPermitTypeSelection()" },
+                    { cls: 'k-teal', icon: 'fa-bell', label: 'Notifications', count: () => notifsForCurrentUser().length, foot: 'View all alerts', action: "goTo('notifications')" }
+                ],
+                siteEngineer: [
+                    { cls: 'k-amber', icon: 'fa-clipboard-check', label: 'Pending Acknowledgment', count: () => PERMITS.filter(p => isPermitVisibleToRole(p, 'site-engineer') && (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment' || p.status === 'Observation Pending Site Engineer Acknowledgment')).length, foot: 'Step 2 & Obs: Acknowledge', action: "goTo('register')" },
+                    { cls: 'k-green', icon: 'fa-bolt', label: 'Active On-Site', count: () => PERMITS.filter(p => isPermitVisibleToRole(p, 'site-engineer') && p.status === 'Active').length, foot: 'Work in progress', action: "filterRegisterAndGo('Active')" },
+                    { cls: 'k-grey', icon: 'fa-box-archive', label: 'Surrendered Permits', count: () => PERMITS.filter(p => isPermitVisibleToRole(p, 'site-engineer') && ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status)).length, foot: 'Closed safely', action: "filterRegisterAndGo('Completed (Surrendered)')" }
+                ],
+                approvers: [
+                    { cls: 'k-amber', icon: 'fa-hourglass-half', label: 'Pending My Approval', count: (rk) => pendingForRole(rk).length, foot: (rk) => (rk === 'excavation-head' ? 'Excavation permits' : (rk === 'quality-engineer' ? 'Batching Plant Quality Clearance' : ((rk === 'hw-section-head' || rk === 'section-head') ? 'Across building & tower permits' : 'Across all permit types'))), action: "goTo('register')" },
+                    { cls: 'k-purple', icon: 'fa-stopwatch', label: 'Pending Extension Approval', count: (rk) => pendingExtensionsForRole(rk).length, foot: () => 'Extension requests', action: "goTo('register')" },
+                    { cls: 'k-blue', icon: 'fa-bolt', label: 'Active Permits', count: (rk, sc) => PERMITS.filter(p => isPermitVisibleToRole(p, rk) && p.status === 'Active' && permitMatchesScope(p, sc)).length, foot: (rk, sc) => (sc ? (Array.isArray(sc) ? ((sc.length === 1 && PTYPE_META[sc[0]]) ? (PTYPE_META[sc[0]].short + ' — currently on site') : 'Hot Work & Shaft Work — currently on site') : (PTYPE_META[sc] ? PTYPE_META[sc].short + ' — currently on site' : 'Currently on site')) : 'Currently on site'), action: "goTo('register')" },
+                    { cls: 'k-green', icon: 'fa-circle-check', label: 'Approved by Me', count: (rk, sc) => PERMITS.filter(p => isPermitVisibleToRole(p, rk) && permitMatchesScope(p, sc) && p.approvals && CHAIN_ROLE_FIELD[rk] && p.approvals[CHAIN_ROLE_FIELD[rk]] && p.approvals[CHAIN_ROLE_FIELD[rk]].status === 'approved').length, foot: () => 'All-time', action: "goTo('register')" }
+                ]
+            },
+            workflows: {
+                excavation_parallel: {
+                    name: 'Excavation 4-Stage Parallel Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Site Supervisor', role: 'site-supervisor', stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'site_engineer', label: 'Site Engineer', role: 'site-engineer', stepNumber: 2, actionName: 'Field Verification' },
+                        { id: 'parallel_gate', label: 'Parallel Gate (MEP · P&M · IT)', roles: ['mep', 'pm', 'it'], stepNumber: 3, actionName: 'Utility Clearances', parallel: true },
+                        { id: 'section_head', label: 'Excavation Head', role: 'excavation-head', stepNumber: 4, actionName: 'Excavation Head Endorsement' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 5, actionName: 'Final Safety Review' },
+                        { id: 'active', label: 'Active', stepNumber: 6, actionName: 'Work In Progress' }
+                    ]
+                },
+                sequential_tower: {
+                    name: 'Sequential Tower Incharge Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Site Supervisor', role: 'site-supervisor', stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'site_engineer', label: 'Site Engineer', role: 'site-engineer', stepNumber: 2, actionName: 'Field Verification' },
+                        { id: 'section_head', label: 'Tower Incharge', role: 'hw-section-head', stepNumber: 3, actionName: 'Tower Incharge Review' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 4, actionName: 'Final Safety Review' },
+                        { id: 'active', label: 'Active', stepNumber: 5, actionName: 'Work In Progress' }
+                    ]
+                },
+                shaft_mep_tower: {
+                    name: 'Shaft Work Sequential Clearance Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Site Supervisor', role: 'site-supervisor', stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'site_engineer', label: 'Site Engineer', role: 'site-engineer', stepNumber: 2, actionName: 'Field Verification' },
+                        { id: 'mep', label: 'MEP Clearance', role: 'mep', stepNumber: 3, actionName: 'MEP Shaft Clearance' },
+                        { id: 'section_head', label: 'Tower Incharge', role: 'hw-section-head', stepNumber: 4, actionName: 'Tower Incharge Review' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 5, actionName: 'Final Safety Review' },
+                        { id: 'active', label: 'Active', stepNumber: 6, actionName: 'Work In Progress' }
+                    ]
+                },
+                electrical_site: {
+                    name: 'Electrical Work (Site) Dual Gate Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Electrician Permittee', role: 'electrician', stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'site_engineer', label: 'Site Engineer', role: 'site-engineer', stepNumber: 2, actionName: 'Field Verification' },
+                        { id: 'mep_pm', label: 'MEP / P&M Clearance', roles: ['mep', 'pm'], stepNumber: 3, actionName: 'MEP or P&M Clearance' },
+                        { id: 'section_head', label: 'Tower Incharge', role: 'hw-section-head', stepNumber: 4, actionName: 'Tower Incharge Review' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 5, actionName: 'Final Safety Review' },
+                        { id: 'active', label: 'Active', stepNumber: 6, actionName: 'Work In Progress' }
+                    ]
+                },
+                electrical_batching: {
+                    name: 'Electrical Work (Batching Plant) Dedicated Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Electrician Permittee', role: 'electrician', stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'pm', label: 'P&M Engineer', role: 'pm', stepNumber: 2, actionName: 'Plant & Machinery Acknowledgment' },
+                        { id: 'quality', label: 'Quality Engineer', role: 'quality-engineer', stepNumber: 3, actionName: 'Quality Clearance' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 4, actionName: 'Final Safety Review' },
+                        { id: 'active', label: 'Active', stepNumber: 5, actionName: 'Work In Progress' }
+                    ]
+                },
+                blasting_operation: {
+                    name: 'Drilling & Blasting (Blasting) Statutory Clearance Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Permittee', roles: ['blasting-incharge', 'site-supervisor'], stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'blasting_incharge', label: 'Blasting / Drilling In-charge', role: 'blasting-incharge', stepNumber: 2, actionName: 'Statutory Acknowledgment' },
+                        { id: 'site_engineer', label: 'Site Engineer', role: 'site-engineer', stepNumber: 3, actionName: 'Field Routing' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 4, actionName: 'Direct Endorsement' },
+                        { id: 'active', label: 'Active', stepNumber: 5, actionName: 'Work In Progress' }
+                    ]
+                },
+                drilling_operation: {
+                    name: 'Drilling & Blasting (Drilling) Fast-Track Workflow',
+                    stages: [
+                        { id: 'submit', label: 'Permittee', roles: ['blasting-incharge', 'site-supervisor'], stepNumber: 1, actionName: 'Permit Initiation' },
+                        { id: 'site_engineer', label: 'Site Engineer', role: 'site-engineer', stepNumber: 2, actionName: 'Field Routing' },
+                        { id: 'ehs', label: 'EHS Safety', roles: ['ehs-manager', 'ehs-officer'], stepNumber: 3, actionName: 'Direct Endorsement' },
+                        { id: 'active', label: 'Active', stepNumber: 4, actionName: 'Work In Progress' }
+                    ]
+                }
+            },
+            emptyStates: {
+                notifications: { icon: 'fa-regular fa-bell-slash', text: 'No notifications yet.' },
+                noPermits: { icon: 'fa-regular fa-folder-open', text: 'No permits yet.' },
+                noPendingAck: { icon: 'fa-regular fa-circle-check', text: 'No pending acknowledgments — all caught up.' },
+                allCaughtUp: { icon: 'fa-regular fa-circle-check', text: "Nothing pending — you're all caught up." },
+                noActivePermits: { icon: 'fa-regular fa-folder-open', text: 'No active permits.' },
+                noFilterMatch: { icon: 'fa-regular fa-folder-open', text: 'No permits match these filters.' },
+                noActivities: { icon: 'fa-regular fa-clock', text: 'No logged activities yet.', style: 'padding:16px 0;' }
+            },
+            wizardSteps: [
+                { step: 1, label: 'General Information', icon: 'fa-info-circle' },
+                { step: 2, label: 'Safety Checklist', icon: 'fa-list-check' },
+                { step: 3, label: 'Permit Validity', icon: 'fa-clock' },
+                { step: 4, label: 'Review & Submit', icon: 'fa-clipboard-check' }
+            ],
+            initiatorBanners: {
+                'electrician': {
+                    bg: 'rgba(232,96,10,0.08)',
+                    border: 'rgba(232,96,10,0.3)',
+                    icon: 'fa-bolt',
+                    iconColor: 'var(--orange)',
+                    html: '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Electrician Initiator Mode:</b> You are authorized exclusively to initiate <b>PTW-006 Electrical Work (HT/LT) — Form PTW-006</b> under CEA / IS 5216 safety standards. All other permit types are inactive for your role.</div>'
+                },
+                'blasting-incharge': {
+                    bg: 'rgba(230,81,0,0.08)',
+                    border: 'rgba(230,81,0,0.3)',
+                    icon: 'fa-burst',
+                    iconColor: '#E65100',
+                    html: '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Blasting / Drilling In-charge Initiator Mode:</b> You are authorized exclusively to initiate <b>PTW-007 Drilling and Blasting — Form PTW-007</b> under PESO / MMR 1961 regulations. All other permit types are strictly inactive.</div>'
+                },
+                'site-supervisor': {
+                    bg: 'rgba(27,95,174,0.08)',
+                    border: 'rgba(27,95,174,0.3)',
+                    icon: 'fa-user-pen',
+                    iconColor: '#1B5FAE',
+                    html: '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Site Supervisor Initiator Mode:</b> You are authorized to initiate general civil/structural work permits (<b>PTW-001 to PTW-005, PTW-008</b>). Specialist modules (PTW-006 Electrical, PTW-007 Blasting) are restricted to certified specialists.</div>'
+                },
+                'default': {
+                    bg: 'rgba(100,116,139,0.08)',
+                    border: 'rgba(100,116,139,0.3)',
+                    icon: 'fa-shield',
+                    iconColor: '#64748B',
+                    renderHtml: function(rInfo) {
+                        return '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Viewer / Approver Mode (' + escapeHtml(rInfo.label) + '):</b> Permit initiation is restricted to Permittees (Site Supervisor, Electrician, or Blasting In-charge). Modules are read-only.</div>';
+                    }
+                }
+            },
+            navigation: [
+                { id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high', roles: '*' },
+                { id: 'ptype', label: 'Create Permit', icon: 'fa-file-circle-plus', roles: ['site-supervisor', 'electrician', 'blasting-incharge'] },
+                { id: 'admin-config', label: 'Site GPS & Geofence', icon: 'fa-map-location-dot', roles: ['admin'] },
+                {
+                    id: 'register',
+                    getLabel: function(rk) { return ['site-supervisor', 'electrician', 'blasting-incharge', 'site-engineer'].includes(rk) ? 'My Permits' : 'Permit Register'; },
+                    icon: 'fa-table-list',
+                    roles: '*'
+                },
+                { id: 'notifications', label: 'Notifications', icon: 'fa-bell', badge: true, roles: '*' }
+            ]
+        };
+
+        function renderEmptyState(key, customMsg, extraStyle) {
+            const cfg = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.emptyStates && APP_CONFIG.emptyStates[key]) || {};
+            const icon = cfg.icon || 'fa-regular fa-folder-open';
+            const text = customMsg || cfg.text || 'No items to display.';
+            const style = (extraStyle || cfg.style) ? (' style="' + (extraStyle || cfg.style) + '"') : '';
+            return '<div class="empty-state"' + style + '><i class="' + icon + '"></i>' + text + '</div>';
+        }
+
         /* Permit-to-Work module catalogue — the 11 permit types defined in ARPL SOP 02 / BRD §4.1.
            PTW-001 Excavation, PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, and PTW-007 Drilling and Blasting modules are fully operational. */
         const PERMIT_TYPES = [
@@ -4991,6 +5469,22 @@
             blasting: { key: 'blasting', code: 'PTW-007', name: 'Drilling and Blasting', short: 'Drilling & Blasting', prefix: 'PTW-007', form: 'PTW-007', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             general: { key: 'general', code: 'PTW-008', name: 'General Work', short: 'General Work', prefix: 'PTW-008', form: 'PTW-008', sh: 'hw-section-head', shLabel: 'Tower Incharge' }
         };
+
+        // Synchronize APP_CONFIG with PTYPE_META and PERMIT_TYPES for seamless interoperability
+        Object.keys(PTYPE_META).forEach(k => {
+            if (APP_CONFIG.permitTypes[k]) {
+                Object.assign(PTYPE_META[k], APP_CONFIG.permitTypes[k]);
+                APP_CONFIG.permitTypes[k] = PTYPE_META[k];
+            }
+        });
+        PERMIT_TYPES.forEach(t => {
+            if (APP_CONFIG.permitTypes[t.key]) {
+                Object.assign(t, APP_CONFIG.permitTypes[t.key]);
+            }
+        });
+        if (typeof window !== 'undefined') {
+            window.APP_CONFIG = APP_CONFIG;
+        }
         function ptypeOf(p) {
             if (!p) return 'excavation';
             if (typeof p === 'string') return p;
@@ -5600,7 +6094,9 @@
         let NOTIFICATIONS = [];
         let permitSeq = 1;
         let wizStep = 1;
-        const WIZ_STEPS = ['General Information', 'Safety Checklist', 'Permit Validity', 'Review & Submit'];
+        const WIZ_STEPS = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.wizardSteps)
+            ? APP_CONFIG.wizardSteps.map(s => s.label)
+            : ['General Information', 'Safety Checklist', 'Permit Validity', 'Review & Submit'];
         let draft = null;            // permit currently being built in the wizard
         let correctionMode = false;  // true while a Returned-for-Correction permit is being edited (master data locked)
         let currentDetailId = null;
@@ -5617,9 +6113,9 @@
         function fmtDate(d) {
             if (typeof d === 'string' && /^\d{4}-\d{2}-\d{2}$/.test(d)) { const p = d.split('-'); d = new Date(+p[0], +p[1] - 1, +p[2]); }
             else d = new Date(d);
-            return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric' });
+            return d.toLocaleDateString('en-IN', { day: '2-digit', month: 'short', year: 'numeric', timeZone: 'Asia/Kolkata' });
         }
-        function fmtTime(d) { d = new Date(d); return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit' }); }
+        function fmtTime(d) { d = new Date(d); return d.toLocaleTimeString('en-IN', { hour: '2-digit', minute: '2-digit', timeZone: 'Asia/Kolkata' }); }
         function fmtDateTime(d) { return fmtDate(d) + ', ' + fmtTime(d); }
         function pad(n) { return n < 10 ? '0' + n : '' + n; }
         function minutesToHHMM(m) { return pad(Math.floor(m / 60)) + ':' + pad(m % 60); }
@@ -6080,7 +6576,7 @@
         function buildNotifList() {
             const list = notifsForCurrentUser();
             const el = document.getElementById('notifList');
-            if (!list.length) { el.innerHTML = '<div class="empty-state"><i class="fa-regular fa-bell-slash"></i>No notifications yet.</div>'; return; }
+            if (!list.length) { el.innerHTML = renderEmptyState('notifications'); return; }
             el.innerHTML = list.map(n => {
                 return '<li style="opacity:' + (n.read ? '.62' : '1') + '"><div class="feed-ic" style="color:' + (n.severity === 'error' ? 'var(--red)' : n.severity === 'warn' ? 'var(--amber)' : n.severity === 'success' ? 'var(--green)' : 'var(--blue)') + '"><i class="fa-solid ' + severityIcon(n.severity) + '"></i></div>' +
                     '<div class="feed-body"><div class="feed-title">' + n.message + '</div><div class="feed-meta">' + (n.permitId ? ('<span class="mono">' + n.permitId + '</span> &middot; ') : '') + fmtDateTime(n.ts) + '</div></div>' +
@@ -6634,22 +7130,17 @@
             }
             if (ptypeOf(p) === 'blasting') {
                 const isBlastingOp = p.dbOperationType === 'Blasting';
-                const isCreatorIncharge = (currentUser && currentUser.key === 'blasting-incharge') || p.createdRoleKey === 'blasting-incharge';
-                if (isCreatorIncharge && isBlastingOp) {
+                // Note: PTW-007 can only be initiated by Blasting / Drilling In-charge per INITIATOR_PERMIT_RULES
+                if (isBlastingOp) {
                     p.blastingStatutoryDecl = true;
                     p.signatories['blasting-incharge'] = { name: creator, sig: p.signature ? (p.signature.dataUrl || p.signature) : 'Signed', consent: true, at: nowTime() };
                     p.status = 'Pending Site Engineer Acknowledgment';
                     logActivity(p, 'Drilling & Blasting permit (Blasting operation) submitted by Blasting / Drilling In-charge (' + creator + ') with PESA statutory safety declaration. Awaiting Site Engineer acknowledgment (Step 3).');
                     notify(['site-engineer'], pLabel(p) + ' submitted by Blasting / Drilling In-charge — Site Engineer acknowledgment required.', 'info', p.id);
                     notify(stakeholdersFor(p), pLabel(p) + ' submitted by Blasting / Drilling In-charge. Awaiting Site Engineer acknowledgment.', 'info', p.id);
-                } else if (isBlastingOp) {
-                    p.status = 'Pending Blasting In-charge Acknowledgment';
-                    logActivity(p, 'Drilling & Blasting permit (Blasting operation) submitted by Site Supervisor (' + creator + '). Awaiting Blasting / Drilling In-charge statutory acknowledgment before Site Engineer.');
-                    notify(['blasting-incharge'], pLabel(p) + ' submitted by Site Supervisor — Blasting / Drilling In-charge statutory acknowledgment required.', 'info', p.id);
-                    notify(stakeholdersFor(p), pLabel(p) + ' submitted by Site Supervisor. Awaiting Blasting / Drilling In-charge statutory acknowledgment.', 'info', p.id);
                 } else {
                     p.status = 'Pending Site Engineer Acknowledgment';
-                    logActivity(p, 'Drilling & Blasting permit (Drilling operation) submitted by ' + (isCreatorIncharge ? 'Blasting / Drilling In-charge' : 'Site Supervisor') + ' (' + creator + '). Awaiting Site Engineer acknowledgment.');
+                    logActivity(p, 'Drilling & Blasting permit (Drilling operation) submitted by Blasting / Drilling In-charge (' + creator + '). Awaiting Site Engineer acknowledgment.');
                     notify(['site-engineer'], pLabel(p) + ' submitted — Site Engineer acknowledgment required.', 'info', p.id);
                     notify(stakeholdersFor(p), pLabel(p) + ' submitted. Awaiting Site Engineer acknowledgment.', 'info', p.id);
                 }
@@ -6912,16 +7403,6 @@
                 return;
             }
 
-            if (ptypeOf(p) === 'electrical') {
-                p.status = 'Pending MEP or P&M Approval';
-                p.approvals = p.approvals || newChain('electrical-site');
-                logActivity(p, 'Site Engineer (' + effectiveSigner + ') acknowledged & forwarded PTW-006 Electrical Work permit to MEP or P&M Engineer for domain review (Step 3).' + (effectiveGps ? (' GPS verified within ' + prjRad + 'm.') : ''));
-                notify(['mep', 'pm'], pLabel(p) + ' acknowledged by Site Engineer — MEP or P&M Engineer approval required.', 'info', p.id);
-                notify(stakeholdersFor(p), pLabel(p) + ' acknowledged by Site Engineer and forwarded to MEP or P&M Engineer.', 'info', p.id);
-                showToast('Permit acknowledged & forwarded to MEP or P&M Engineer.', 'ok');
-                saveState();
-                return;
-            }
 
             // Check if parallel gate is already all-approved (under the stale-approval retention rule)
             const allParallelDone = p.approvals &&
@@ -8298,6 +8779,7 @@
             return status;
         }
         function runEscalationTick() {
+            if (!Array.isArray(PERMITS) || PERMITS.length === 0) return;
             // Real IST time drives all windows now — no simulated clock advancement.
             const t = nowTime();
             PERMITS.forEach(p => {
@@ -8354,7 +8836,18 @@
             if (document.getElementById('view-detail').classList.contains('active') && currentDetailId) viewDetail(currentDetailId, true);
             saveState();
         }
-        setInterval(runEscalationTick, 5000);
+        let escalationIntervalId = null;
+        function startEscalationTimer() {
+            if (!escalationIntervalId) {
+                escalationIntervalId = setInterval(runEscalationTick, 5000);
+            }
+        }
+        function stopEscalationTimer() {
+            if (escalationIntervalId) {
+                clearInterval(escalationIntervalId);
+                escalationIntervalId = null;
+            }
+        }
 
         /* ================================================================
            SEED DATA
@@ -9320,13 +9813,68 @@
         if (!loadState()) { seedPermits(); stampSeedSignatures(); }
 
         /* ================================================================
-           AUTH / LANDING
+           AUTH / LANDING & DYNAMIC CONFIG-DRIVEN SECTIONS
            ================================================================ */
         let currentRoleFilter = 'all';
+
+        function renderLandingDynamicSections() {
+            // 1. Dynamic Supported Permits Bar
+            const permitsBar = document.getElementById('landingPermitsBar') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-permits-bar') : null);
+            if (permitsBar && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
+                const availableTypes = Object.values(APP_CONFIG.permitTypes).filter(t => t.available !== false);
+                permitsBar.innerHTML = availableTypes.map(t => 
+                    '<span class="ptype-pill"><i class="fa-solid ' + t.icon + '"></i> ' + t.code + ' ' + (t.short || t.name) + '</span>'
+                ).join('');
+            }
+
+            // 2. Dynamic Governance Workflow Ribbon
+            const strip = document.getElementById('landingWorkflowStrip') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-workflow-strip') : null);
+            if (strip && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.governanceStages) {
+                strip.innerHTML = APP_CONFIG.governanceStages.map((st, idx) => {
+                    const arrow = (idx < APP_CONFIG.governanceStages.length - 1)
+                        ? '<div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>'
+                        : '';
+                    return '<div class="lw-step">' +
+                        '<div class="lw-num">' + st.step + '</div>' +
+                        '<div class="lw-content">' +
+                            '<div class="lw-title">' + escapeHtml(st.title) + '</div>' +
+                            '<div class="lw-desc">' + escapeHtml(st.desc) + '</div>' +
+                        '</div>' +
+                    '</div>' + arrow;
+                }).join('');
+            }
+
+            // 3. Dynamic Role Filter Tabs with live role counts
+            const tabsContainer = document.getElementById('roleFilterTabs');
+            if (tabsContainer && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.roleCategories && typeof ROLES !== 'undefined') {
+                tabsContainer.innerHTML = APP_CONFIG.roleCategories.map(cat => {
+                    const count = cat.key === 'all'
+                        ? ROLES.length
+                        : ROLES.filter(r => r.cat === cat.key).length;
+                    const isActive = currentRoleFilter === cat.key ? ' active' : '';
+                    return '<button class="rf-tab' + isActive + '" onclick="filterRoles(\'' + cat.key + '\', this)"><i class="fa-solid ' + cat.icon + '"></i> ' + escapeHtml(cat.label) + ' (' + count + ')</button>';
+                }).join('');
+            }
+
+            // 4. Dynamic Footer Permit Types
+            const footerPermits = document.getElementById('landingFooterPermits');
+            if (footerPermits && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
+                const pList = Object.values(APP_CONFIG.permitTypes)
+                    .filter(t => t.available !== false)
+                    .map(t => t.code + ' ' + (t.short || t.name));
+                footerPermits.innerHTML = pList.join(' &bull; ');
+            }
+        }
+
         function filterRoles(cat, btn) {
             currentRoleFilter = cat || 'all';
             document.querySelectorAll('.rf-tab').forEach(b => b.classList.remove('active'));
-            if (btn) btn.classList.add('active');
+            if (btn) {
+                btn.classList.add('active');
+            } else {
+                const tab = document.querySelector(`.rf-tab[onclick*="'${cat}'"]`);
+                if (tab) tab.classList.add('active');
+            }
             buildRoleCards();
         }
         function buildRoleCards() {
@@ -9359,11 +9907,13 @@
                 document.getElementById('loadingOverlay').classList.remove('show');
                 buildNav();
                 document.getElementById('roleBadgeValue').textContent = currentUser.label;
+                startEscalationTimer();
                 goTo('dashboard');
                 refreshNotifBell();
             }, 550);
         }
         function doLogout() {
+            stopEscalationTimer();
             currentUser = null; currentDetailId = null;
             closeModal('actionModal'); closeModal('gpsModal'); closeModal('photoModal');
             const loading = document.getElementById('loadingOverlay');
@@ -9371,6 +9921,8 @@
             document.getElementById('appRoot').style.display = 'none';
             document.getElementById('landingScreen').style.display = 'flex';
             window.scrollTo({ top: 0, behavior: 'instant' });
+            renderLandingDynamicSections();
+            buildRoleCards();
         }
         function switchRole(roleKey) {
             currentUser = Object.assign({ name: '' }, roleInfo(roleKey));
@@ -9386,12 +9938,21 @@
            NAVIGATION
            ================================================================ */
         function navItemsFor(roleKey) {
+            if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.navigation) {
+                return APP_CONFIG.navigation.filter(item => {
+                    if (item.roles === '*') return true;
+                    return Array.isArray(item.roles) && item.roles.includes(roleKey);
+                }).map(item => ({
+                    id: item.id,
+                    label: typeof item.getLabel === 'function' ? item.getLabel(roleKey) : item.label,
+                    icon: item.icon,
+                    badge: !!item.badge
+                }));
+            }
             const items = [{ id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high' }];
-            // Strict RBAC: Site Supervisor, Electrician, or Blasting In-charge can initiate and create permits
             if (['site-supervisor', 'electrician', 'blasting-incharge'].includes(roleKey)) {
                 items.push({ id: 'ptype', label: 'Create Permit', icon: 'fa-file-circle-plus' });
             }
-            // Strict RBAC: Only Administrator can configure worksite GPS coordinates and proximity circle radius
             if (roleKey === 'admin') {
                 items.push({ id: 'admin-config', label: 'Site GPS & Geofence', icon: 'fa-map-location-dot' });
             }
@@ -9411,6 +9972,8 @@
         }
         if (typeof document !== 'undefined' && typeof document.addEventListener === 'function') {
             document.addEventListener('DOMContentLoaded', () => {
+                renderLandingDynamicSections();
+                buildRoleCards();
                 const sbToggle = document.getElementById('sidebarToggle');
                 if (sbToggle) sbToggle.addEventListener('click', () => document.getElementById('sidebar').classList.toggle('collapsed'));
 
@@ -9525,25 +10088,12 @@
             // Contextual banner
             const banner = document.getElementById('ptypeRoleBanner');
             if (banner) {
-                if (rk === 'electrician') {
-                    banner.innerHTML = '<div class="banner-box" style="background:rgba(232,96,10,0.08);border:1px solid rgba(232,96,10,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
-                        '<i class="fa-solid fa-bolt" style="color:var(--orange);font-size:22px;"></i>' +
-                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Electrician Initiator Mode:</b> You are authorized exclusively to initiate <b>PTW-006 Electrical Work (HT/LT) — Form PTW-006</b> under CEA / IS 5216 safety standards. All other permit types are inactive for your role.</div>' +
-                        '</div>';
-                } else if (rk === 'blasting-incharge') {
-                    banner.innerHTML = '<div class="banner-box" style="background:rgba(230,81,0,0.08);border:1px solid rgba(230,81,0,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
-                        '<i class="fa-solid fa-burst" style="color:#E65100;font-size:22px;"></i>' +
-                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Blasting / Drilling In-charge Initiator Mode:</b> You are authorized exclusively to initiate <b>PTW-007 Drilling and Blasting — Form PTW-007</b> under PESO / MMR 1961 regulations. All other permit types are strictly inactive.</div>' +
-                        '</div>';
-                } else if (rk === 'site-supervisor') {
-                    banner.innerHTML = '<div class="banner-box" style="background:rgba(27,95,174,0.08);border:1px solid rgba(27,95,174,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
-                        '<i class="fa-solid fa-user-pen" style="color:#1B5FAE;font-size:22px;"></i>' +
-                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Site Supervisor Initiator Mode:</b> You are authorized to initiate general civil/structural work permits (<b>PTW-001 to PTW-005, PTW-008</b>). Specialist modules (PTW-006 Electrical, PTW-007 Blasting) are restricted to certified specialists.</div>' +
-                        '</div>';
-                } else {
-                    banner.innerHTML = '<div class="banner-box" style="background:rgba(100,116,139,0.08);border:1px solid rgba(100,116,139,0.3);border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
-                        '<i class="fa-solid fa-shield" style="color:#64748B;font-size:22px;"></i>' +
-                        '<div style="font-size:12.5px;color:var(--navy);line-height:1.4;"><b>Viewer / Approver Mode (' + escapeHtml(rInfo.label) + '):</b> Permit initiation is restricted to Permittees (Site Supervisor, Electrician, or Blasting In-charge). Modules are read-only.</div>' +
+                const bCfg = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.initiatorBanners && (APP_CONFIG.initiatorBanners[rk] || APP_CONFIG.initiatorBanners.default));
+                if (bCfg) {
+                    const contentHtml = bCfg.html || (typeof bCfg.renderHtml === 'function' ? bCfg.renderHtml(rInfo) : '');
+                    banner.innerHTML = '<div class="banner-box" style="background:' + bCfg.bg + ';border:1px solid ' + bCfg.border + ';border-radius:8px;padding:12px 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid ' + bCfg.icon + '" style="color:' + bCfg.iconColor + ';font-size:22px;"></i>' +
+                        contentHtml +
                         '</div>';
                 }
             }
@@ -9578,6 +10128,7 @@
             startNewPermit(key);
         }
         function applyRoleVisibility() {
+            if (!currentUser) return;
             document.querySelectorAll('.act-btn').forEach(el => {
                 const allowed = (el.dataset.roles || '').split(',').map(s => s.trim());
                 el.style.display = allowed.includes(currentUser.key) ? '' : 'none';
@@ -9588,6 +10139,9 @@
            STATUS HELPERS
            ================================================================ */
         function statusClass(status) {
+            if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.statuses && APP_CONFIG.statuses[status]) {
+                return APP_CONFIG.statuses[status].class;
+            }
             return ({
                 'Draft': 'draft',
                 'Pending Site Engineer Acknowledgment': 'parallel',
@@ -9668,10 +10222,12 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             return '<div class="kpi-card ' + cls + '" onclick="' + (onclick || '') + '"><i class="fa-solid ' + icon + ' kpi-icon"></i><div class="kpi-label">' + label + '</div><div class="kpi-value">' + value + '</div><div class="kpi-foot">' + foot + '</div></div>';
         }
         function quickFeedRow(p) {
-            const t = roleInfo(currentUser.key);
+            const pt = ptypeOf(p);
+            const cfg = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes && APP_CONFIG.permitTypes[pt]) || pMeta(p);
+            const pIcon = (cfg && cfg.icon) ? cfg.icon : (pt === 'confined' ? 'fa-person-shelter' : pt === 'guardrail' ? 'fa-person-falling-burst' : pt === 'shaft' ? 'fa-elevator' : pt === 'hotwork' ? 'fa-fire' : (pt === 'electrical' ? 'fa-bolt' : (pt === 'blasting' ? 'fa-explosion' : (pt === 'general' ? 'fa-helmet-safety' : 'fa-person-digging'))));
             const locName = p.tower || (p.locationStructure && p.locationStructure.mode === 'basement_podium' ? (p.locationStructure.basementPodium || 'Podium/Basement') : '');
             return '<li onclick="viewDetail(\'' + p.id + '\')" style="cursor:pointer;">' +
-                '<div class="feed-ic"><i class="fa-solid ' + (ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i></div>' +
+                '<div class="feed-ic"><i class="fa-solid ' + pIcon + '"></i></div>' +
                 '<div class="feed-body"><div class="feed-title">' + p.id + ' &middot; ' + p.project + (locName ? ' — ' + locName : '') + '</div><div class="feed-meta">' + pMeta(p).code + ' ' + pMeta(p).short + ' &middot; ' + p.location + '</div></div>' +
                 '<div style="text-align:right;">' + statusBadge(p.status, p) + '<div class="feed-time" style="margin-top:4px;">Valid till ' + fmtTime(p.validTill) + '</div></div>' +
                 '</li>';
@@ -9687,49 +10243,32 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 const mine = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && permitMatchesScope(p, scope));
                 const drafts = mine.filter(p => p.status === 'Draft');
                 const active = mine.filter(p => p.status === 'Active');
-                const pendingAppr = mine.filter(p => [
-                    'Pending Site Engineer Acknowledgment',
-                    'Pending Site Engineer Re-Acknowledgment',
-                    'Pending P&M Acknowledgment',
-                    'Pending P&M Re-Acknowledgment',
-                    'Pending Quality Engineer Approval',
-                    'Pending MEP or P&M Approval',
-                    'Pending Blasting In-charge Acknowledgment',
-                    'Pending Blasting In-charge Re-Acknowledgment',
-                    'Pending MEP Clearance',
-                    'Pending Parallel Approval',
-                    'Pending Section Head',
-                    'Pending Tower Incharge',
-                    'Pending Excavation Head',
-                    'Pending EHS Approval',
-                    'Returned for Correction',
-                    'Observation Pending Site Engineer Acknowledgment',
-                    'Observation Pending Section Head Review',
-                    'Observation Pending Tower Incharge Review',
-                    'Observation Pending Excavation Head Review',
-                    'Observation Pending EHS Clearance',
-
-
-
-
-                ].includes(p.status));
+                const pendingAppr = mine.filter(p => !['Draft', 'Active', 'Completed (Surrendered)', 'Closed – Pending Surrender', 'Expired', 'Cancelled'].includes(p.status));
                 const closed = mine.filter(p => ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status));
                 const expired = mine.filter(p => p.status === 'Expired');
                 const obs = mine.filter(p => p.status === 'Active – Observation Open');
                 const extReq = mine.filter(p => p.extension && !['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status));
-                html += '<div class="kpi-strip">' +
-                    kpiCard('k-grey', 'fa-file-pen', 'My Drafts', drafts.length, 'Not yet submitted', "filterRegisterAndGo('Draft')") +
-                    kpiCard('k-amber', 'fa-hourglass-half', 'In Approval Chain', pendingAppr.length, 'Across workflow stages', "goTo('register')") +
-                    kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, 'Currently valid on site', "filterRegisterAndGo('Active')") +
-                    kpiCard('k-red', 'fa-triangle-exclamation', 'Open Observations', obs.length, 'Requires corrective response', "filterRegisterAndGo('Active – Observation Open')") +
-                    '</div><div class="kpi-strip">' +
-                    kpiCard('k-purple', 'fa-stopwatch', 'Extension Requests', extReq.length, 'Under review by Section Head / EHS', "goTo('register')") +
-                    kpiCard('k-green', 'fa-box-archive', 'Closed Permits', closed.length, 'Surrendered / archived', "filterRegisterAndGo('Completed (Surrendered)')") +
-                    kpiCard('k-orange', 'fa-plus', 'Create Permit', '', 'Permittee: Initiate new permit', "openPermitTypeSelection()") +
-                    kpiCard('k-teal', 'fa-bell', 'Notifications', notifsForCurrentUser().length, 'View all alerts', "goTo('notifications')") +
-                    '</div>';
+
+                if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.dashboards && APP_CONFIG.dashboards.initiators) {
+                    const defs = APP_CONFIG.dashboards.initiators;
+                    const strip1 = defs.slice(0, 4).map(d => kpiCard(d.cls, d.icon, d.label, typeof d.count === 'function' ? d.count(mine) : d.count, typeof d.foot === 'function' ? d.foot(mine) : d.foot, d.action)).join('');
+                    const strip2 = defs.slice(4).map(d => kpiCard(d.cls, d.icon, d.label, typeof d.count === 'function' ? d.count(mine) : d.count, typeof d.foot === 'function' ? d.foot(mine) : d.foot, d.action)).join('');
+                    html += '<div class="kpi-strip">' + strip1 + '</div><div class="kpi-strip">' + strip2 + '</div>';
+                } else {
+                    html += '<div class="kpi-strip">' +
+                        kpiCard('k-grey', 'fa-file-pen', 'My Drafts', drafts.length, 'Not yet submitted', "filterRegisterAndGo('Draft')") +
+                        kpiCard('k-amber', 'fa-hourglass-half', 'In Approval Chain', pendingAppr.length, 'Across workflow stages', "goTo('register')") +
+                        kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, 'Currently valid on site', "filterRegisterAndGo('Active')") +
+                        kpiCard('k-red', 'fa-triangle-exclamation', 'Open Observations', obs.length, 'Requires corrective response', "filterRegisterAndGo('Active – Observation Open')") +
+                        '</div><div class="kpi-strip">' +
+                        kpiCard('k-purple', 'fa-stopwatch', 'Extension Requests', extReq.length, 'Under review by Section Head / EHS', "goTo('register')") +
+                        kpiCard('k-green', 'fa-box-archive', 'Closed Permits', closed.length, 'Surrendered / archived', "filterRegisterAndGo('Completed (Surrendered)')") +
+                        kpiCard('k-orange', 'fa-plus', 'Create Permit', '', 'Permittee: Initiate new permit', "openPermitTypeSelection()") +
+                        kpiCard('k-teal', 'fa-bell', 'Notifications', notifsForCurrentUser().length, 'View all alerts', "goTo('notifications')") +
+                        '</div>';
+                }
                 html += '<div class="grid-2"><div class="card card-pad"><div class="card-title">Recent Activity <span class="sub">Your permits</span></div><ul class="feed">' +
-                    (mine.slice(0, 6).map(quickFeedRow).join('') || '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>No permits yet.</div>') + '</ul></div>' +
+                    (mine.slice(0, 6).map(quickFeedRow).join('') || renderEmptyState('noPermits')) + '</ul></div>' +
                     '<div class="card card-pad"><div class="card-title">Permittee Actions</div>' +
                     '<button class="btn btn-primary btn-block" style="margin-bottom:10px;" onclick="openPermitTypeSelection()"><i class="fa-solid fa-plus"></i> Create New Permit (Step 1)</button>' +
                     '<button class="btn btn-block" style="margin-bottom:10px;" onclick="goTo(\'register\')"><i class="fa-solid fa-table-list"></i> View My Permits</button>' +
@@ -9739,15 +10278,20 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 const pendingAck = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment' || p.status === 'Observation Pending Site Engineer Acknowledgment'));
                 const active = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && p.status === 'Active');
                 const closed = PERMITS.filter(p => isPermitVisibleToRole(p, rk) && ['Completed (Surrendered)', 'Closed – Pending Surrender'].includes(p.status));
-                html += '<div class="kpi-strip">' +
-                    kpiCard('k-amber', 'fa-clipboard-check', 'Pending Acknowledgment', pendingAck.length, 'Step 2 & Obs: Acknowledge', "goTo('register')") +
-                    kpiCard('k-green', 'fa-bolt', 'Active On-Site', active.length, 'Work in progress', "filterRegisterAndGo('Active')") +
-                    kpiCard('k-grey', 'fa-box-archive', 'Surrendered Permits', closed.length, 'Closed safely', "filterRegisterAndGo('Completed (Surrendered)')") +
-                    '</div>';
+                if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.dashboards && APP_CONFIG.dashboards.siteEngineer) {
+                    const defs = APP_CONFIG.dashboards.siteEngineer;
+                    html += '<div class="kpi-strip">' + defs.map(d => kpiCard(d.cls, d.icon, d.label, typeof d.count === 'function' ? d.count() : d.count, typeof d.foot === 'function' ? d.foot() : d.foot, d.action)).join('') + '</div>';
+                } else {
+                    html += '<div class="kpi-strip">' +
+                        kpiCard('k-amber', 'fa-clipboard-check', 'Pending Acknowledgment', pendingAck.length, 'Step 2 & Obs: Acknowledge', "goTo('register')") +
+                        kpiCard('k-green', 'fa-bolt', 'Active On-Site', active.length, 'Work in progress', "filterRegisterAndGo('Active')") +
+                        kpiCard('k-grey', 'fa-box-archive', 'Surrendered Permits', closed.length, 'Closed safely', "filterRegisterAndGo('Completed (Surrendered)')") +
+                        '</div>';
+                }
                 html += '<div class="grid-2"><div class="card card-pad"><div class="card-title">Awaiting Your Step 2 Acknowledgment</div><ul class="feed">' +
                     (pendingAck.length
                         ? pendingAck.map(quickFeedRow).join('')
-                        : '<div class="empty-state"><i class="fa-regular fa-circle-check"></i>No pending acknowledgments — all caught up.</div>') +
+                        : renderEmptyState('noPendingAck')) +
                     '</ul></div>' +
                     '<div class="card card-pad"><div class="card-title">Site Management Actions</div>' +
                     '<p style="font-size:12.5px;color:var(--text-muted);margin:0 0 12px;">Under company SOP, permit form initiation and final closure/surrender are performed by Site Supervisors. As Site Engineer, your authority covers Step 2 Acknowledgment and observation rectification acknowledgments.</p>' +
@@ -9772,18 +10316,23 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         activeScopeLabel = PTYPE_META[scope].short + ' — currently on site';
                     }
                 }
-                html += '<div class="kpi-strip">' +
-                    kpiCard('k-amber', 'fa-hourglass-half', 'Pending My Approval', pending.length, scopeLabel, "goTo('register')") +
-                    kpiCard('k-purple', 'fa-stopwatch', 'Pending Extension Approval', extPending.length, 'Extension requests', "goTo('register')") +
-                    kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, activeScopeLabel, "goTo('register')") +
-                    kpiCard('k-green', 'fa-circle-check', 'Approved by Me', approvedByMe.length, 'All-time', "goTo('register')") +
-                    '</div>';
+                if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.dashboards && APP_CONFIG.dashboards.approvers) {
+                    const defs = APP_CONFIG.dashboards.approvers;
+                    html += '<div class="kpi-strip">' + defs.map(d => kpiCard(d.cls, d.icon, d.label, typeof d.count === 'function' ? d.count(rk, scope) : d.count, typeof d.foot === 'function' ? d.foot(rk, scope) : d.foot, d.action)).join('') + '</div>';
+                } else {
+                    html += '<div class="kpi-strip">' +
+                        kpiCard('k-amber', 'fa-hourglass-half', 'Pending My Approval', pending.length, scopeLabel, "goTo('register')") +
+                        kpiCard('k-purple', 'fa-stopwatch', 'Pending Extension Approval', extPending.length, 'Extension requests', "goTo('register')") +
+                        kpiCard('k-blue', 'fa-bolt', 'Active Permits', active.length, activeScopeLabel, "goTo('register')") +
+                        kpiCard('k-green', 'fa-circle-check', 'Approved by Me', approvedByMe.length, 'All-time', "goTo('register')") +
+                        '</div>';
+                }
                 html += '<div class="grid-2"><div class="card card-pad"><div class="card-title">Awaiting Your Approval</div><ul class="feed">' +
-                    (pending.length ? pending.map(quickFeedRow).join('') : '<div class="empty-state"><i class="fa-regular fa-circle-check"></i>Nothing pending — you\'re all caught up.</div>') +
+                    (pending.length ? pending.map(quickFeedRow).join('') : renderEmptyState('allCaughtUp')) +
                     (extPending.length ? extPending.map(p => '<li onclick="viewDetail(\'' + p.id + '\')" style="cursor:pointer;"><div class="feed-ic"><i class="fa-solid fa-stopwatch"></i></div><div class="feed-body"><div class="feed-title">' + p.id + ' — Extension Request (' + fmtExtDur(p.extension) + ')</div><div class="feed-meta">' + p.extension.reason + '</div></div></li>').join('') : '') +
                     '</ul></div>' +
                     '<div class="card card-pad"><div class="card-title">Recently Active on Site</div><ul class="feed">' +
-                    (active.slice(0, 6).map(quickFeedRow).join('') || '<div class="empty-state"><i class="fa-regular fa-folder-open"></i>No active permits.</div>') + '</ul></div></div>';
+                    (active.slice(0, 6).map(quickFeedRow).join('') || renderEmptyState('noActivePermits')) + '</ul></div></div>';
             } else if (rk === 'admin') {
                 const byStatus = {};
                 PERMITS.forEach(p => byStatus[p.status] = (byStatus[p.status] || 0) + 1);
@@ -9847,6 +10396,15 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             document.getElementById('registerSub').textContent = 'Digital safety authorization & permit-to-work tracking register';
             const tSel = document.getElementById('regTypeFilter');
             if (tSel) {
+                const prevVal = tSel.value;
+                const typesList = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes)
+                    ? Object.values(APP_CONFIG.permitTypes)
+                    : PERMIT_TYPES;
+                tSel.innerHTML = '<option value="">All Permit Types</option>' + typesList.map(t => {
+                    return '<option value="' + t.key + '">' + escapeHtml(t.name) + ' (' + t.code + ')</option>';
+                }).join('');
+                if (prevVal) tSel.value = prevVal;
+
                 if (currentUser.key === 'admin' || currentUser.key === 'ehs-manager' || currentUser.key === 'ehs-officer') {
                     tSel.disabled = false;
                     tSel.title = 'Filter by permit type';
@@ -9888,11 +10446,15 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 return true;
             }).sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt));
             const tbody = document.getElementById('registerTbody');
-            if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9"><div class="empty-state"><i class="fa-regular fa-folder-open"></i>No permits match these filters.</div></td></tr>'; return; }
+            if (!rows.length) { tbody.innerHTML = '<tr><td colspan="9">' + renderEmptyState('noFilterMatch') + '</td></tr>'; return; }
             tbody.innerHTML = rows.map(p => {
-                const pIcon = ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : (ptypeOf(p) === 'electrical' ? 'fa-bolt' : (ptypeOf(p) === 'blasting' ? 'fa-explosion' : 'fa-person-digging'));
-                const pBadgeStyle = ptypeOf(p) === 'confined' ? 'background:rgba(94,53,177,0.12);color:#5E35B1;border:1px solid rgba(94,53,177,0.25);' : ptypeOf(p) === 'guardrail' ? 'background:rgba(123,31,162,0.12);color:#7B1FA2;border:1px solid rgba(123,31,162,0.25);' : ptypeOf(p) === 'shaft' ? 'background:rgba(21,101,192,0.12);color:#1565C0;border:1px solid rgba(21,101,192,0.25);' : ptypeOf(p) === 'hotwork' ? 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);' : (ptypeOf(p) === 'electrical' ? 'background:rgba(255,179,0,0.15);color:#B78103;border:1px solid rgba(255,179,0,0.35);' : (ptypeOf(p) === 'blasting' ? 'background:rgba(230,81,0,0.15);color:#E65100;border:1px solid rgba(230,81,0,0.3);' : 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);'));
-                const pSubText = ptypeOf(p) === 'confined' ? (p.confinedActivity || p.activity || 'Confined Space Entry') : ptypeOf(p) === 'guardrail' ? (p.locationStructure === 'Tower' ? (p.tower + (p.grFloor ? ' &middot; ' + p.grFloor : '')) : (p.grBasementPodium || 'Podium/Basement')) : ptypeOf(p) === 'shaft' ? ((p.shaftLocationType || 'Tower') + ' &middot; ' + (p.shaftFloor || '')) : ptypeOf(p) === 'hotwork' ? ((p.hotworkTypes || []).join(', ')) : (ptypeOf(p) === 'electrical' ? ((p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' ? 'Batching Plant' : 'Site') + ' &middot; ' + (Array.isArray(p.electricalApparatus) ? p.electricalApparatus.join(', ') : (p.apparatus || 'HT/LT Work'))) : (ptypeOf(p) === 'blasting' ? ((p.dbOperationType || 'Drilling') + (p.dbOperationType === 'Blasting' ? (' &middot; ' + (p.dbChargeAmount || '—') + ' kg') : (' &middot; ' + (p.dbMachineType || 'Machine')))) : (p.depth + ' m')));
+                const pt = ptypeOf(p);
+                const cfg = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes && APP_CONFIG.permitTypes[pt]) || pMeta(p);
+                const pIcon = (cfg && cfg.icon) ? cfg.icon : (pt === 'confined' ? 'fa-person-shelter' : pt === 'guardrail' ? 'fa-person-falling-burst' : pt === 'shaft' ? 'fa-elevator' : pt === 'hotwork' ? 'fa-fire' : (pt === 'electrical' ? 'fa-bolt' : (pt === 'blasting' ? 'fa-explosion' : (pt === 'general' ? 'fa-helmet-safety' : 'fa-person-digging'))));
+                const pBadgeStyle = (cfg && cfg.badgeStyle) ? cfg.badgeStyle : (pt === 'confined' ? 'background:rgba(94,53,177,0.12);color:#5E35B1;border:1px solid rgba(94,53,177,0.25);' : pt === 'guardrail' ? 'background:rgba(123,31,162,0.12);color:#7B1FA2;border:1px solid rgba(123,31,162,0.25);' : pt === 'shaft' ? 'background:rgba(21,101,192,0.12);color:#1565C0;border:1px solid rgba(21,101,192,0.25);' : pt === 'hotwork' ? 'background:rgba(239,108,0,0.15);color:#E65100;border:1px solid rgba(239,108,0,0.3);' : (pt === 'electrical' ? 'background:rgba(255,179,0,0.15);color:#B78103;border:1px solid rgba(255,179,0,0.35);' : (pt === 'blasting' ? 'background:rgba(230,81,0,0.15);color:#E65100;border:1px solid rgba(230,81,0,0.3);' : 'background:rgba(46,125,50,0.12);color:#2E7D32;border:1px solid rgba(46,125,50,0.25);')));
+                const pSubText = (cfg && typeof cfg.detailsSummary === 'function')
+                    ? cfg.detailsSummary(p)
+                    : (pt === 'confined' ? (p.confinedActivity || p.activity || 'Confined Space Entry') : pt === 'guardrail' ? (p.locationStructure === 'Tower' ? (p.tower + (p.grFloor ? ' &middot; ' + p.grFloor : '')) : (p.grBasementPodium || 'Podium/Basement')) : pt === 'shaft' ? ((p.shaftLocationType || 'Tower') + ' &middot; ' + (p.shaftFloor || '')) : pt === 'hotwork' ? ((p.hotworkTypes || []).join(', ')) : (pt === 'electrical' ? ((p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' ? 'Batching Plant' : 'Site') + ' &middot; ' + (Array.isArray(p.electricalApparatus) ? p.electricalApparatus.join(', ') : (p.apparatus || 'HT/LT Work'))) : (pt === 'blasting' ? ((p.dbOperationType || 'Drilling') + (p.dbOperationType === 'Blasting' ? (' &middot; ' + (p.dbChargeAmount || '—') + ' kg') : (' &middot; ' + (p.dbMachineType || 'Machine')))) : (p.depth + ' m'))));
                 return '<tr style="cursor:pointer;" onclick="viewDetail(\'' + p.id + '\')"><td class="mono">' + p.id + (p.extension && ['Pending Site Engineer', 'Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status) ? ' <span class="badge st-sectionhead" style="margin-left:4px;">EXT</span>' : '') + '</td>' +
                     '<td><span class="badge" style="font-size:10px;' + pBadgeStyle + '"><i class="fa-solid ' + pIcon + '"></i> ' + pMeta(p).code + '</span></td>' +
                     '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + (p.tower || (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.tower ? p.locationStructure.tower : 'Site Wide')) + '</span></td>' +
@@ -10048,12 +10610,14 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
         }
         function renderStepIndicator() {
             let html = '';
-            WIZ_STEPS.forEach((label, i) => {
-                const n = i + 1;
+            const steps = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.wizardSteps) ? APP_CONFIG.wizardSteps : WIZ_STEPS.map((label, i) => ({ step: i + 1, label: label }));
+            steps.forEach((st, i) => {
+                const n = st.step || (i + 1);
+                const label = st.label;
                 const cls = n < wizStep ? 'done' : n === wizStep ? 'current' : '';
                 const isClickable = n <= wizStep;
                 html += '<div class="step-node ' + cls + (isClickable ? ' clickable' : '') + '" onclick="goToWizStep(' + n + ')" title="Step ' + n + ': ' + label + '"><div class="circ">' + (n < wizStep ? '<i class="fa-solid fa-check"></i>' : n) + '</div><span class="lbl">' + label + '</span></div>';
-                if (i < WIZ_STEPS.length - 1) html += '<div class="step-line ' + (n < wizStep ? 'done' : '') + '"></div>';
+                if (i < steps.length - 1) html += '<div class="step-line ' + (n < wizStep ? 'done' : '') + '"></div>';
             });
             document.getElementById('stepIndicator').innerHTML = html;
         }
@@ -10158,7 +10722,10 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const draftBtn = document.getElementById('wizDraftBtn'); if (draftBtn) draftBtn.style.display = correctionMode ? 'none' : '';
             const cvt = document.getElementById('createViewTitle');
             const cvs = document.getElementById('createViewSub');
-            if (cvt) cvt.innerHTML = correctionMode ? '<i class="fa-solid fa-pen-to-square"></i> Correct &amp; Re-submit Permit' : '<i class="fa-solid ' + (ptypeOf(draft) === 'hotwork' ? 'fa-fire' : 'fa-file-circle-plus') + '"></i> Create ' + pMeta(draft).short + ' Permit';
+            const curPt = ptypeOf(draft);
+            const curCfg = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes && APP_CONFIG.permitTypes[curPt]) || pMeta(draft) || {};
+            const curIcon = curCfg.icon || 'fa-file-circle-plus';
+            if (cvt) cvt.innerHTML = correctionMode ? '<i class="fa-solid fa-pen-to-square"></i> Correct &amp; Re-submit Permit' : '<i class="fa-solid ' + curIcon + '"></i> Create ' + (curCfg.short || pMeta(draft).short) + ' Permit';
             if (cvs) cvs.innerHTML = correctionMode ? (draft.id + ' &middot; Returned for Correction &mdash; master data is locked; checklist, photos and attachments are editable') : (pMeta(draft).code + ' &middot; Permit to Work &mdash; ' + pMeta(draft).name + ' &middot; ' + pMeta(draft).form + ' Rev.01');
             const body = document.getElementById('wizardBody');
             if (wizStep === 1) body.innerHTML = step1Html();
@@ -15599,10 +16166,14 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         '<div class="feed-body"><div class="feed-title">' + escapeHtml(a.text) + '</div>' +
                         '<div class="feed-meta">' + escapeHtml(a.actor || 'System') + ' &middot; ' + fmtDateTime(a.ts) + '</div></div></li>'
                     ).join('') + '</ul>'
-                    : '<div class="empty-state" style="padding:16px 0;"><i class="fa-regular fa-clock"></i>No logged activities yet.</div>';
+                    : renderEmptyState('noActivities');
+
+                const detPt = ptypeOf(p);
+                const detCfg = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes && APP_CONFIG.permitTypes[detPt]) || pMeta(p) || {};
+                const detIcon = detCfg.icon || 'fa-file-lines';
 
                 document.getElementById('view-detail').innerHTML =
-                    '<div class="view-header"><div><div class="mono" style="font-size:22px;font-weight:800;color:var(--navy);">' + p.id + '</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + statusBadge(p.status, p) + '<span class="tag-type"><i class="fa-solid ' + (ptypeOf(p) === 'electrical' ? 'fa-bolt' : ptypeOf(p) === 'blasting' ? 'fa-explosion' : ptypeOf(p) === 'confined' ? 'fa-person-shelter' : ptypeOf(p) === 'guardrail' ? 'fa-person-falling-burst' : ptypeOf(p) === 'shaft' ? 'fa-elevator' : ptypeOf(p) === 'hotwork' ? 'fa-fire' : 'fa-person-digging') + '"></i> ' + pMeta(p).code + ' — ' + pMeta(p).short + '</span><span style="font-size:12px;color:var(--text-muted);">Issued ' + fmtDateTime(p.submittedAt || p.createdAt) + '</span></div></div>' +
+                    '<div class="view-header"><div><div class="mono" style="font-size:22px;font-weight:800;color:var(--navy);">' + p.id + '</div><div style="display:flex;gap:10px;align-items:center;margin-top:6px;flex-wrap:wrap;">' + statusBadge(p.status, p) + '<span class="tag-type"><i class="fa-solid ' + detIcon + '"></i> ' + pMeta(p).code + ' — ' + pMeta(p).short + '</span><span style="font-size:12px;color:var(--text-muted);">Issued ' + fmtDateTime(p.submittedAt || p.createdAt) + '</span></div></div>' +
                     '<div style="display:flex;gap:10px;flex-wrap:wrap;"><button class="btn btn-ghost no-print" onclick="goTo(\'register\')"><i class="fa-solid fa-arrow-left"></i> Back</button>' +
                     downloadBtnHtml +
                     '</div></div>' +
