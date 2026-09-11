@@ -1,11 +1,12 @@
 /**
- * Verification Test: Permit Submission Flow & Drawing Plan De-requirement
+ * Verification Test: Permit Submission Flow & Mandatory Drawing Plan Verification
  *
  * Verifies:
  * 1. Step 4 renders complete review AND Digital Signature section (Permittee signature pad, DPDP consent).
  * 2. Submit Permit button becomes enabled when signed.
- * 3. Drawing plan is completely optional across all permits (no drawing plan requirement).
- * 4. Permits for Excavation, Electrical, Drilling & Blasting submit cleanly into workflow.
+ * 3. Excavation drawing plan is MANDATORY for PTW-001 Excavation permits.
+ * 4. Drawing plan is NOT required for non-excavation permits (Electrical, Drilling & Blasting).
+ * 5. Permits for Excavation, Electrical, Drilling & Blasting submit cleanly into workflow.
  */
 
 const fs = require('fs');
@@ -14,7 +15,7 @@ const assert = require('assert');
 const vm = require('vm');
 
 console.log('==================================================');
-console.log('TEST: PERMIT SUBMISSION FLOW & OPTIONAL DRAWING PLAN VERIFICATION');
+console.log('TEST: PERMIT SUBMISSION FLOW & MANDATORY DRAWING PLAN VERIFICATION');
 console.log('==================================================\n');
 
 const htmlPath = path.join(__dirname, '..', 'index.html');
@@ -22,14 +23,14 @@ const src = fs.readFileSync(htmlPath, 'utf8');
 
 // 1. Static checks
 console.log('--- 1. Static Verification ---');
-assert(src.includes('ok = itemsOk && !!draft.sitePhoto;'), "validateWizStep(2) must not require draft.drawing");
-console.log('  ✓ PASS: validateWizStep(2) does not require drawing plan');
+assert(src.includes('const drawingOk = !isExcavation || !!draft.drawing;'), "validateWizStep(2) must require draft.drawing for excavation");
+console.log('  ✓ PASS: validateWizStep(2) requires drawing plan for excavation permits');
 
-assert(!src.includes("pend.push('Excavation drawing pending')"), "Excavation drawing pending must not block Step 2");
-console.log('  ✓ PASS: Excavation drawing pending message removed from pending list');
+assert(src.includes("pend.push('Excavation drawing pending')"), "Excavation drawing pending must appear in Step 2 pending list");
+console.log('  ✓ PASS: Excavation drawing pending message present in pending requirements');
 
-assert(src.includes('Drawing Indicating Proposed Excavation <span class="badge badge-info" style="font-size:11px;margin-left:6px;">Optional</span>'), "Step 2 drawing upload card marked as Optional");
-console.log('  ✓ PASS: Drawing upload card marked as Optional badge in UI');
+assert(src.includes('Drawing Indicating Proposed Excavation <span class="req">*</span>'), "Step 2 drawing upload card marked as Required");
+console.log('  ✓ PASS: Drawing upload card marked as Required * in UI');
 
 // Step 4 structure check
 const step4Match = src.match(/function step4Html\(\) \{([\s\S]*?)\n        \}/);
@@ -137,8 +138,8 @@ function evalInVM(code) {
     return vm.runInContext(code, sandbox);
 }
 
-// 3. Test Excavation Submission Flow (PTW-001) without Drawing Plan
-console.log('\n--- 3. PTW-001 Excavation Submission Flow without Drawing Plan ---');
+// 3. Test Excavation Submission Flow (PTW-001) — Drawing is MANDATORY
+console.log('\n--- 3. PTW-001 Excavation Submission Flow — Mandatory Drawing Plan ---');
 evalInVM("currentUser = { key: 'site-supervisor', name: 'Supervisor Ravi', role: 'Site Supervisor' };");
 evalInVM("startNewPermit('excavation');");
 
@@ -163,7 +164,7 @@ draft.sitePhoto = 'data:image/jpeg;base64,mocksitephoto';
 assert.strictEqual(evalInVM("validateWizStep(1)"), true, "Step 1 must pass");
 console.log('  ✓ PASS: Step 1 validates successfully');
 
-// Step 2: Answer checklist, NO drawing provided
+// Step 2: Answer checklist, NO drawing provided — must FAIL
 evalInVM("wizStep = 2;");
 draft.checklist.forEach(item => {
     item.ans = 'yes';
@@ -171,8 +172,18 @@ draft.checklist.forEach(item => {
 });
 draft.drawing = null; // Explicitly ensure NO drawing plan attached
 
-assert.strictEqual(evalInVM("validateWizStep(2)"), true, "Step 2 MUST pass without drawing plan");
-console.log('  ✓ PASS: Step 2 validates successfully with NO drawing plan attached');
+assert.strictEqual(evalInVM("validateWizStep(2)"), false, "Step 2 MUST FAIL without drawing plan for excavation");
+console.log('  ✓ PASS: Step 2 correctly BLOCKS progression without excavation drawing attached');
+
+// Now attach drawing — Step 2 must pass
+draft.drawing = {
+    name: 'excavation_plan_trench_north.pdf',
+    isImage: false,
+    dataUrl: null,
+    at: new Date().toISOString()
+};
+assert.strictEqual(evalInVM("validateWizStep(2)"), true, "Step 2 MUST pass with drawing plan attached");
+console.log('  ✓ PASS: Step 2 validates successfully WITH excavation drawing attached');
 
 // Step 3: Timings
 evalInVM("wizStep = 3;");
@@ -188,7 +199,8 @@ const step4HtmlOutput = evalInVM("step4Html()");
 assert(step4HtmlOutput.includes('Permit Validity'), "Step 4 must contain Permit Validity");
 assert(step4HtmlOutput.includes('Digital Signature of Permittee'), "Step 4 MUST render Digital Signature section");
 assert(step4HtmlOutput.includes('Signatory Identification &amp; DPDP Consent'), "Step 4 must render DPDP Identification box");
-console.log('  ✓ PASS: step4Html() renders both Permit Validity AND Permittee Digital Signature section');
+assert(step4HtmlOutput.includes('excavation_plan_trench_north.pdf'), "Step 4 review MUST show excavation drawing attachment filename");
+console.log('  ✓ PASS: step4Html() renders Permit Validity, Permittee Digital Signature, AND Excavation Drawing');
 
 // Before signing, Step 4 is not ok
 assert.strictEqual(evalInVM("validateWizStep(4)"), false, "Step 4 is not ok before signing");
@@ -212,8 +224,9 @@ evalInVM("executeFinalSubmit();");
 const submittedPermit = evalInVM("PERMITS[PERMITS.length - 1]");
 assert.strictEqual(submittedPermit.ptype, 'excavation');
 assert.strictEqual(submittedPermit.status, 'Pending Site Engineer Acknowledgment');
-assert.strictEqual(submittedPermit.drawing, null, "Permit successfully submitted with drawing = null");
-console.log('  ✓ PASS: PTW-001 Excavation submitted successfully into enterprise workflow with drawing = null');
+assert.ok(submittedPermit.drawing, "Permit must have drawing attached on submission");
+assert.strictEqual(submittedPermit.drawing.name, 'excavation_plan_trench_north.pdf', "Drawing filename must persist");
+console.log('  ✓ PASS: PTW-001 Excavation submitted successfully with mandatory drawing attached');
 
 // 4. Test Electrical Work Submission Flow (PTW-006)
 console.log('\n--- 4. PTW-006 Electrical Work Flow Verification ---');

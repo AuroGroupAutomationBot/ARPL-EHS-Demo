@@ -11280,9 +11280,9 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '</div></div>';
             }
 
-            if (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting && !isElectrical) {
-                html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Drawing Indicating Proposed Excavation <span class="badge badge-info" style="font-size:11px;margin-left:6px;">Optional</span></div>';
-                html += '<div class="form-hint" style="margin-bottom:8px;">Optional attachment &mdash; attach excavation drawing plan if available (not mandatory for submission). Accepted formats: PDF, DWG, DXF, JPG, PNG.</div>';
+            if (ptypeOf(draft) === 'excavation') {
+                html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Drawing Indicating Proposed Excavation <span class="req">*</span></div>';
+                html += '<div class="form-hint" style="margin-bottom:8px;">Mandatory attachment &mdash; attach excavation drawing plan before submission. Accepted formats: PDF, DWG, DXF, JPG, PNG.</div>';
                 if (draft.drawing) {
                     const dr = draft.drawing;
                     html += '<div style="max-width:440px;"><div class="file-card">' +
@@ -11638,7 +11638,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '</div>' +
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                 '<div class="attach-row">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<img src="' + draft.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' Work-area site photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>' +
-                (!isHw && !isShaft && !isGuardrail && !isConfined && !isBlasting && !isElectrical && !isGeneral ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
+                (ptypeOf(draft) === 'excavation' ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 (isConfined && draft.confinedChecklistAttachment ? ('<div class="attach-row"><i class="fa-solid fa-file-circle-check" style="color:var(--green);"></i> Confined Space Pre-Task Checklist (' + escapeHtml(draft.confinedChecklistAttachment.name) + ') <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 noItems.filter(c => c.photo).map(() => '<div class="attach-row"><i class="fa-regular fa-image"></i> NO-item evidence photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>').join('') +
                 '</div>' +
@@ -12118,8 +12118,10 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 const isConfined = ptypeOf(draft) === 'confined';
                 const isBlasting = ptypeOf(draft) === 'blasting';
                 const isElectrical = ptypeOf(draft) === 'electrical';
+                const isExcavation = ptypeOf(draft) === 'excavation';
                 const itemsOk = draft.checklist.every(checklistItemComplete);
-                ok = itemsOk && !!draft.sitePhoto;
+                const drawingOk = !isExcavation || !!draft.drawing;
+                ok = itemsOk && !!draft.sitePhoto && drawingOk;
 
                 let dbPrecOk = true;
                 if (isBlasting) {
@@ -12152,6 +12154,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     const pend = [];
                     draft.checklist.forEach((c, i) => { const m = checklistItemMissing(c, i); if (m) pend.push(m); });
                     if (!draft.sitePhoto) pend.push('Work-area site photo pending');
+                    if (isExcavation && !draft.drawing) pend.push('Excavation drawing pending');
                     if (isBlasting && !dbPrecOk) pend.push('Item 15 specific precautions pending');
                     if (isBlasting && draft.drillingBlastingType === 'blasting' && !blastParamsOk) pend.push('Blasting rig & muffler parameters pending');
                     if (!pend.length) {
@@ -15116,7 +15119,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                             para('• Blasting / Drilling In-charge statutory on-site inspection photograph on file (verified).', 8.6);
                         }
                     }
-                } else if (ptypeOf(p) !== 'hotwork' && ptypeOf(p) !== 'shaft' && ptypeOf(p) !== 'guardrail' && ptypeOf(p) !== 'electrical' && ptypeOf(p) !== 'general') {
+                } else if (ptypeOf(p) === 'excavation') {
                     if (p.drawing) {
                         if (p.drawing.isImage && p.drawing.dataUrl) tryImg(p.drawing.dataUrl, 74, 52, 'Drawing indicating proposed excavation — ' + p.drawing.name);
                         else para('• Excavation drawing attached: ' + p.drawing.name + ' (uploaded ' + fmtDateTime(p.drawing.at) + ' IST).', 8.6);
@@ -15786,7 +15789,7 @@ ptypeOf(p) === 'general' ?
                     '<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-clock-rotate-left"></i> Activity Log</div>' + activityHtml + '</div>' +
                     '<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                     '<div class="attach-row">' + (p.sitePhoto && p.sitePhoto !== 'demo' ? '<img src="' + p.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' work_area_site_photo.jpg</div>' +
-                    (p.drawing && ptypeOf(p) !== 'blasting' && ptypeOf(p) !== 'electrical' && ptypeOf(p) !== 'general' ? '<div class="attach-row">' + (p.drawing.isImage && p.drawing.dataUrl ? '<img src="' + p.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + p.drawing.name + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Excavation drawing</span></div>' : '') +
+                    (p.drawing && ptypeOf(p) === 'excavation' ? '<div class="attach-row">' + (p.drawing.isImage && p.drawing.dataUrl ? '<img src="' + p.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + p.drawing.name + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Excavation drawing</span></div>' : '') +
                     (p.confinedChecklistAttachment ? '<div class="attach-row">' + (p.confinedChecklistAttachment.dataUrl && p.confinedChecklistAttachment.isImage ? '<img src="' + p.confinedChecklistAttachment.dataUrl + '">' : '<i class="fa-solid fa-file-shield"></i>') + ' ' + escapeHtml(p.confinedChecklistAttachment.name || 'Confined_Space_Physical_Checklist.pdf') + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Pre-Task Checklist Doc</span></div>' : '') +
                     ((p.blastingInchargeAck && p.blastingInchargeAck.photo) ? '<div class="attach-row">' + (p.blastingInchargeAck.photo !== 'demo' ? '<img src="' + p.blastingInchargeAck.photo + '">' : '<i class="fa-solid fa-camera"></i>') + ' Blasting In-charge On-Site Statutory Photo</div>' : '') +
                     (p.checklist.filter(c => c.photo).map((c, i) => '<div class="attach-row">' + (c.photo && c.photo !== 'demo' ? '<img src="' + c.photo + '">' : '<i class="fa-regular fa-image"></i>') + ' NO-item evidence photo</div>').join('')) +

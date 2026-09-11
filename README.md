@@ -345,7 +345,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 
 | Code | Permit Type | Form ID | Checklist Items | Topology | Gating Criteria & Special Safety Rules |
 |:---|:---|:---|:---:|:---:|:---|
-| **PTW-001** | Excavation Work | `PTW-001` | 12 | 5-Stage (Parallel) | 3-discipline parallel clearance (MEP + P&M + IT); depth & slope ratio validation; optional drawing upload (no drawing requirement). |
+| **PTW-001** | Excavation Work | `PTW-001` | 12 | 5-Stage (Parallel) | 3-discipline parallel clearance (MEP + P&M + IT); depth & slope ratio validation; mandatory excavation drawing attachment. |
 | **PTW-002** | Hot Work | `PTW-002` | 20 | 4-Stage (Direct) | 1-hour continuous post-completion fire watch; qualified welder verification (ARPL/Contractor); flashback arresters; spark containment. |
 | **PTW-003** | Guard Rail / Floor Protection Removal | `PTW-003` | 9 | 4-Stage (Direct) | 100% tie-off mandatory; full-body harness; watcher assigned until re-fixed; mandatory physical restoration photo gate upon surrender. |
 | **PTW-004** | Confined Space Entry | `PTW-004` | 15 | 4-Stage (Direct) | 4-gas multi-detector test ($O_2, LEL, CO, H_2S$); forced air ventilation; physical inspection declaration; pre-task checklist doc upload. |
@@ -1887,8 +1887,8 @@ sequenceDiagram
 
 | Step | Form Step Name | Mandatory Input Fields | Boundary Conditions & Mathematical Validation | Next Button State |
 |:---:|:---|:---|:---|:---|
-| **1** | **General Information** | Project, Org, Contractor, Location, Discipline Parameters | 1. Project must have `configured === true`<br/>2. Contractor name mandatory if Org is Contractor/Subcontractor<br/>3. Tower mode requires Floor & Unit; Basement mode requires Level & Area; Manual mode requires Location & Area<br/>4. Excavation: numeric depth & slope, equipment array (drawing plan optional & not required)<br/>5. Hot Work: hotwork types array, welder name $\ge 2$ chars, affiliation<br/>6. Confined Space: activity, entrants $\ge 1$, declaration, gas readings<br/>7. Shaft Work: personnel $\ge 1$, scaff-tag verified, declaration<br/>8. Drilling & Blasting: Blasting requires charge $> 0$, diameter $> 0$, depth $> 0$, holes $\ge 1$, explosive type; Drilling requires machine type, diameter $> 0$, depth $> 0$, holes $\ge 1$; Location strictly locked to Manual<br/>*(Note: GPS is captured only at final submission; Site Photo is captured in Step 2)* | Disabled until all fields valid |
-| **2** | **Safety Checklist** | All checklist items across permit form + Site Photo | 1. Every checklist item must satisfy `checklistItemComplete(item)`<br/>2. If answer is `NO`, comment is mandatory; photo and GPS are NOT required<br/>3. If answer is `N/A`, comment is NOT required<br/>4. **Site Photo option is locked and activated ONLY after all checklist questions are answered**<br/>5. Work-area site photo must be captured to proceed<br/>6. PTW-007 Blasting requires 4 post-checklist rig parameters (`blastingRigHolesLoaded`, `blastingRigHoleDepthM` in meters, `blastingMufflerLayers`, `blastingSafeDistance` in meters) and Item 15 custom precautions (`dbOtherPrecautions`)<br/>7. Live progress bar updates $0\text{ to }100\%$ | Disabled until 100% complete and Site Photo captured |
+| **1** | **General Information** | Project, Org, Contractor, Location, Discipline Parameters | 1. Project must have `configured === true`<br/>2. Contractor name mandatory if Org is Contractor/Subcontractor<br/>3. Tower mode requires Floor & Unit; Basement mode requires Level & Area; Manual mode requires Location & Area<br/>4. Excavation: numeric depth & slope, equipment array (drawing plan mandatory in Step 2)<br/>5. Hot Work: hotwork types array, welder name $\ge 2$ chars, affiliation<br/>6. Confined Space: activity, entrants $\ge 1$, declaration, gas readings<br/>7. Shaft Work: personnel $\ge 1$, scaff-tag verified, declaration<br/>8. Drilling & Blasting: Blasting requires charge $> 0$, diameter $> 0$, depth $> 0$, holes $\ge 1$, explosive type; Drilling requires machine type, diameter $> 0$, depth $> 0$, holes $\ge 1$; Location strictly locked to Manual<br/>*(Note: GPS is captured only at final submission; Site Photo is captured in Step 2)* | Disabled until all fields valid |
+| **2** | **Safety Checklist** | All checklist items across permit form + Site Photo + Excavation Drawing (PTW-001 only) | 1. Every checklist item must satisfy `checklistItemComplete(item)`<br/>2. If answer is `NO`, comment is mandatory; photo and GPS are NOT required<br/>3. If answer is `N/A`, comment is NOT required<br/>4. **Site Photo option is locked and activated ONLY after all checklist questions are answered**<br/>5. Work-area site photo must be captured to proceed<br/>6. **PTW-001 Excavation: Excavation drawing plan is mandatory (`!!draft.drawing`)**<br/>7. PTW-007 Blasting requires 4 post-checklist rig parameters (`blastingRigHolesLoaded`, `blastingRigHoleDepthM` in meters, `blastingMufflerLayers`, `blastingSafeDistance` in meters) and Item 15 custom precautions (`dbOtherPrecautions`)<br/>8. Live progress bar updates $0\text{ to }100\%$ | Disabled until 100% complete, Site Photo captured, and Excavation Drawing attached (PTW-001) |
 | **3** | **Permit Validity** | Planned Start Time, Planned End Time | 1. `startTime` must satisfy $08:30 \le t \le 18:30\text{ IST}$ (`START_LATEST_MIN`)<br/>2. `startTime` cannot be in the past ($t \ge \text{now()}$)<br/>3. `validTillTime` must be strictly greater than `startTime`<br/>4. `validTillTime` cannot exceed $19:30\text{ IST}$ (`OFFICE_END_MIN`), hard-capped at $18:30\text{ IST}$ for Blasting | Disabled until valid duration derived |
 | **4** | **Review & Submit** | Signer Name, DPDP Consent, Canvas Signature | 1. Signer name string length $\ge 2$<br/>2. DPDP Act statutory consent checkbox checked<br/>3. Canvas signature pad has recorded strokes (`dataUrl` generated)<br/>4. **Final submission prompts GPS modal: device GPS distance $\le \text{radius}$ (`haversine`)** | Disabled until consent & signature captured |
 
@@ -3052,7 +3052,7 @@ tests/
 ├── test_location_selection_mode.js      # Suite 6: Location Selection Mode & Safety Restriction Matrix (10 tests)
 ├── test_initiator_pages_and_form_activation.js # Suite 7: Universal Initiator Architecture & Form Activation Compliance (10 Sections)
 ├── test_register_actors_and_visibility.js # Suite 8: Permit Register Common Heading, Actors & Approval-Flow Visibility (7 Sections)
-├── test_submission_drawing_flow.js      # Suite 9: Permit Submission Flow & Optional Drawing Plan Verification
+├── test_submission_drawing_flow.js      # Suite 9: Permit Submission Flow & Mandatory Drawing Plan Verification
 ├── test_pt01_excavation.js              # Suite 10: PTW-001 Excavation Work Specification & Compliance (15 Sections)
 ├── test_pt02_hot_work.js                # Suite 11: PTW-002 Hot Work Specification & Compliance (14 Sections)
 ├── test_pt03_guard_rail.js              # Suite 12: PTW-003 Guard Rail Specification & Compliance (14 Sections)
@@ -3138,12 +3138,13 @@ tests/
 - **Statutory Section Head Column**: Dynamically resolves designated authority (`Excavation Head` for PTW-001, `Tower Incharge` for PTW-002–005 & PTW-007, `Quality Engineer` for PTW-006 Batching Plant).
 - **Approval-Flow Visibility Matrix**: Validates the 13-role visibility matrix ensuring actors see only relevant operational queues without data pollution.
 
-#### Suite 9: Permit Submission Flow & Optional Drawing Plan Verification (test_submission_drawing_flow.js)
-- **Drawing Plan De-requirement**: Proves that the proposed excavation drawing plan is completely optional across all permit types.
-- **Step 2 Validation Shield**: Proves `validateWizStep(2)` passes cleanly with only site photo without requiring an attached drawing file; removes blocking "Excavation drawing pending" toast.
-- **UI Label Transparency**: Dropzone upload card explicitly marked with `<span class="badge badge-info">Optional</span>`.
-- **Step 4 Complete Review & Signature**: Proves Step 4 renders full permit review summary alongside digital signature pad and DPDP consent gates.
-- **End-to-End Submission Flow**: Validates successful permit creation and submission into the active workflow for Excavation, Electrical, and Drilling & Blasting.
+#### Suite 9: Permit Submission Flow & Mandatory Drawing Plan Verification (test_submission_drawing_flow.js)
+- **Mandatory Drawing Enforcement**: Proves that the excavation drawing plan is MANDATORY for PTW-001 Excavation permits — `validateWizStep(2)` returns `false` when `draft.drawing` is null for excavation, and `true` once attached.
+- **Step 2 Validation Gate**: Proves `validateWizStep(2)` requires both site photo AND excavation drawing for PTW-001; shows "Excavation drawing pending" in live requirements summary when missing.
+- **UI Label Accuracy**: Drawing upload card explicitly marked with `<span class="req">*</span>` (Required) and hint text states "mandatory before submission".
+- **Non-Excavation Exclusion**: Proves non-excavation permits (Electrical, Drilling & Blasting) do NOT require drawing and submit cleanly without one.
+- **Step 4 Complete Review & Signature**: Proves Step 4 renders full permit review summary alongside digital signature pad and DPDP consent gates, including excavation drawing attachment row.
+- **End-to-End Submission Flow**: Validates successful permit creation and submission into the active workflow for Excavation (with drawing), Electrical, and Drilling & Blasting.
 
 #### Suite 10: PTW-001 Excavation Work Specification & Compliance (test_pt01_excavation.js - 15 Comprehensive Sections)
 - **Static Metadata & Form Alignment**: Form `PTW-001`, `EXC` prefix, Section Head strictly `excavation-head` (Excavation Head).
@@ -3211,7 +3212,7 @@ tests/
 - **Metadata & Master Registries**: Asserts `PTW-006`, `Form PTW-006`, `EW` prefix, 14 statutory checklist items, 10 electrical apparatus options, and registration of `electrician` and `quality-engineer` roles.
 - **Facility Scope & Location Matrix**: Proves `getAllowedLocationModes('electrical', { facilityScope: 'batching_plant' })` returns strictly `['Manual']` and blocks Tower and Basement/Podium mode switches; proves `getAllowedLocationModes('electrical', { facilityScope: 'site' })` enables all 3 modes; proves role scoping restricts Electrician and Quality Engineer exclusively to `['electrical']`.
 - **Permittee Electrician Step 1 & LOTO Gating**: Validates that Step 1 strictly enforces mandatory reason for shutdown (`shutdownWhy`), apparatus selection (`electricalApparatus`), shutdown hours ($from < to$), safe to work confirmation (`electricalSafeToWork`), LOTO register Sl. No and placement timestamp (`lotoRegisterNo`, `lotoDateTime`), and pre-work statutory undertaking (`electricalStatutoryDecl`).
-- **Suppression of Civil Constraints**: Verifies Step 2 and Step 3 execute cleanly without requiring excavation civil drawings.
+- **Non-Excavation Drawing Independence**: Verifies Step 2 and Step 3 execute cleanly without requiring excavation drawing (drawing is mandatory only for PTW-001 Excavation).
 - **Batching Plant Dual Approval Flow**: Proves submission routes directly to `Pending P&M Acknowledgment`; validates P&M Engineer acknowledgment with statutory declaration (`chkPmStatutoryDecl`) advancing to `Pending Quality Engineer Approval`; validates Quality Engineer review with insulation test declaration (`chkQualityStatutoryDecl`) advancing to `Pending EHS Approval`; verifies EHS endorsement activates the permit.
 - **Site Dual Approval Flow & Either/Or Rule**: Proves submission routes to `Pending Site Engineer Acknowledgment`; validates Site Engineer acknowledgment routing to `Pending MEP or P&M Approval`; validates that Stage 3 either/or clearance is satisfied by either MEP or P&M with domain declaration (`chkMepPmStatutoryDecl`) and advances to `Pending Section Head` (Tower Incharge); verifies Tower Incharge approval advances to EHS and EHS activates the permit.
 - **Rejection & Statutory Re-acknowledgment**: Tests rejection by P&M Engineer returning permit for correction (`returnStage === 'pm'`), resubmission routing to `Pending P&M Re-Acknowledgment`, and P&M re-acknowledgment routing forward to Quality Engineer.
@@ -3290,8 +3291,8 @@ MASTER TEST SUITE EXECUTION SUMMARY (ALL 18 SUITES)
 >>> SUITE 8: PERMIT REGISTER COMMON HEADING, ACTORS & APPROVAL-FLOW VISIBILITY (test_register_actors_and_visibility.js)
   All 7 compliance sections, unified register heading, 13-role visibility matrix & gate enforcement passed cleanly
 
->>> SUITE 9: PERMIT SUBMISSION FLOW & OPTIONAL DRAWING PLAN VERIFICATION (test_submission_drawing_flow.js)
-  Drawing plan made completely optional across all permits, Step 4 signature & submit flow verified
+>>> SUITE 9: PERMIT SUBMISSION FLOW & MANDATORY DRAWING PLAN VERIFICATION (test_submission_drawing_flow.js)
+  Mandatory drawing enforced for PTW-001, Step 4 signature & submit flow verified
 
 >>> SUITE 10: PTW-001 EXCAVATION WORK (FORM PTW-001) SPECIFICATION & COMPLIANCE (test_pt01_excavation.js)
   All 15 statutory sections, 3-way parallel domain clearance & backfill surrender passed cleanly

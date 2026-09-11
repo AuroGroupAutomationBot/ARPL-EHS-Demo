@@ -233,8 +233,15 @@ console.log('  ✓ PASS: Checklist NO comment mandate and N/A rules verified');
 // Populate complete checklist and site photo
 evalInVM("draft.checklist = CHECKLIST_ITEMS.map((q, i) => ({ q, ans: 'yes', comment: null, photo: null, gps: null }));");
 evalInVM("draft.sitePhoto = 'data:image/jpeg;base64,trench_photo';");
-assert.strictEqual(evalInVM("validateWizStep(2)"), true, "Step 2 passes with 100% checklist completion and site photo");
-console.log('  ✓ PASS: Step 2 validation passes when all 12 items answered and site photo attached');
+
+// Verify Step 2 fails WITHOUT drawing (mandatory for excavation)
+assert.strictEqual(evalInVM("validateWizStep(2)"), false, "Step 2 must FAIL without excavation drawing");
+console.log('  ✓ PASS: Step 2 correctly blocks without mandatory excavation drawing');
+
+// Attach mandatory excavation drawing
+evalInVM("draft.drawing = { name: 'trench_section_plan.pdf', isImage: false, dataUrl: null, at: new Date().toISOString() };");
+assert.strictEqual(evalInVM("validateWizStep(2)"), true, "Step 2 passes with 100% checklist completion, site photo, and excavation drawing");
+console.log('  ✓ PASS: Step 2 validation passes when all 12 items answered, site photo attached, and excavation drawing attached');
 
 // Step 3 Timing & Step 4 Signature Validation
 evalInVM(`
