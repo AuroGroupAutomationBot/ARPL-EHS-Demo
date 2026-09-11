@@ -61,15 +61,16 @@
    - 8.3 [PTW-003 Guard Rail Removal (Re-Fixing Photo Gate)](#83-ptw-003-guard-rail--floor-protection-removal-re-fixing-verification)
    - 8.4 [PTW-004 Confined Space Entry (Gas Testing & Direct Spine)](#84-ptw-004-confined-space-entry-direct-to-ti-spine--atmospheric-testing)
    - 8.5 [PTW-005 Shaft Work (Dedicated MEP Clearance & Floor Dropdown)](#85-ptw-005-shaft-work-dedicated-mep-clearance--floor-dropdown)
-   - 8.6 [PTW-007 Drilling & Blasting (Statutory Approval Lifecycle)](#86-ptw-007-drilling--blasting-end-to-end-statutory-approval-lifecycle)
-   - 8.7 [PTW-008 General Work (End-to-End Approval & Multi-Tier Safety Lifecycle)](#87-ptw-008-general-work-end-to-end-approval--multi-tier-safety-lifecycle)
-   - 8.8 [Rejection & Resubmission (Stale-Approval Rule)](#88-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
-   - 8.9 [Safety Observation & Stop-Work Lifecycle](#89-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
-   - 8.10 [Permit Extension Lifecycle](#810-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
-   - 8.11 [Work Completion, Housekeeping & Surrender Gate](#811-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
-   - 8.12 [4-Step Creation & Initiation Wizard Flow](#812-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
-   - 8.13 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#813-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
-   - 8.14 [Application-Wide Deterministic Navigation & Consistency Architecture](#814-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-engine)
+   - 8.6 [PTW-006 Electrical Work (Dual-Topology & Statutory LOTO)](#86-ptw-006-electrical-work-htlt-dual-topology-approval--statutory-loto-lifecycle)
+   - 8.7 [PTW-007 Drilling & Blasting (Statutory Approval Lifecycle)](#87-ptw-007-drilling--blasting-end-to-end-statutory-approval-lifecycle)
+   - 8.8 [PTW-008 General Work (End-to-End Approval & Multi-Tier Safety Lifecycle)](#88-ptw-008-general-work-end-to-end-approval--multi-tier-safety-lifecycle)
+   - 8.9 [Rejection & Resubmission (Stale-Approval Rule)](#89-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
+   - 8.10 [Safety Observation & Stop-Work Lifecycle](#810-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
+   - 8.11 [Permit Extension Lifecycle](#811-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
+   - 8.12 [Work Completion, Housekeeping & Surrender Gate](#812-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
+   - 8.13 [4-Step Creation & Initiation Wizard Flow](#813-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
+   - 8.14 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#814-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
+   - 8.15 [Application-Wide Deterministic Navigation & Consistency Architecture](#815-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-engine)
 9. [Escalation & Auto-Expiry Engine](#9-escalation--auto-expiry-engine)
 10. [Safety Observation Workflow](#10-safety-observation-workflow)
 11. [Extension Workflow](#11-extension-workflow)
@@ -334,10 +335,10 @@ graph TB
         AD["Administrator<br/>GPS and Geofence Config"]
     end
 
-    BIC -->|PTW-007 Drilling & Blasting (PESO Decl)| SiteEng
-    SS -->|PTW-001 to 05, PTW-008 General Work| SiteEng
+    BIC -->|PTW-007 Drilling and Blasting - Statutory PESO Declaration| SiteEng
+    SS -->|PTW-001 to 05 and PTW-008 General Work| SiteEng
     EL -->|PTW-006 Batching Plant Flow| PMAck
-    PMAck -->|Step 2 Ack + Statutory Decl| QE
+    PMAck -->|Step 2 Ack plus Statutory Decl| QE
     QE -->|Step 3 Quality Clearance| EM
     QE -->|Step 3 Quality Clearance| EO
     EL -->|PTW-006 Site Flow| SiteEng
@@ -347,15 +348,15 @@ graph TB
     SiteEng -->|PTW-001 Excavation| PM
     SiteEng -->|PTW-001 Excavation| IT
     SiteEng -->|PTW-005 Shaft Work| MEP
-    SiteEng -->|PTW-002, 03, 04, 08| TI
+    SiteEng -->|PTW-002 03 04 08 Direct Spine| TI
     SiteEng -->|PTW-007 Direct Bypass to EHS| EM
     SiteEng -->|PTW-007 Direct Bypass to EHS| EO
-    MEP -->|PTW-001| EH
-    PM -->|PTW-001| EH
-    IT -->|PTW-001| EH
-    MEP -->|PTW-005| TI
-    MEP -->|PTW-006 Site Either/Or| TI
-    PM -->|PTW-006 Site Either/Or| TI
+    MEP -->|PTW-001 Clearance| EH
+    PM -->|PTW-001 Clearance| EH
+    IT -->|PTW-001 Clearance| EH
+    MEP -->|PTW-005 Clearance| TI
+    MEP -->|PTW-006 Site Either-Or| TI
+    PM -->|PTW-006 Site Either-Or| TI
     EH --> EM
     EH --> EO
     TI --> EM
@@ -430,10 +431,19 @@ graph LR
 
 ```mermaid
 graph LR
-    subgraph "PTW-002, PTW-003, PTW-004, PTW-008 - 4 Stages (Direct Spine)"
+    subgraph "PTW-002, PTW-003, PTW-004 - 4 Stages (Direct Spine)"
         H1["Supervisor<br/>(Permittee)"] --> H2["Site Engineer<br/>(Acknowledgment)"]
         H2 --> H3["Tower Incharge<br/>(Review & Approval)"]
         H3 --> H4["EHS Safety<br/>(Manager / Officer)"]
+    end
+```
+
+```mermaid
+graph LR
+    subgraph "PTW-008 General Work - 4 Stages (Multi-Tier Dynamic Spine)"
+        GW1["Site Supervisor<br/>(Permittee - Cat A-D Dynamic Checklist)"] --> GW2["Site Engineer<br/>(Step 2 Physical Verification)"]
+        GW2 --> GW3["Tower Incharge<br/>(Step 3 Section Head Approval)"]
+        GW3 --> GW4["EHS Safety<br/>(Step 4 Final Endorsement)"]
     end
 ```
 
@@ -1198,26 +1208,26 @@ graph TD
     A["submitPermit(p)"] -->|PTW-001 to 05, PTW-007, PTW-008| B["Pending Site Engineer Acknowledgment"]
     A -->|PTW-006 Batching Plant| BP["Pending P&M Acknowledgment"]
     BP -->|approvePermitStage| Q["Pending Quality Engineer Approval"]
-    Q -->|approvePermitStage| H["Pending EHS Approval (Manager / Officer)"]
+    Q -->|approvePermitStage| H["Pending EHS Approval - Manager / Officer"]
     B -->|acknowledgeSiteEngineer| C{"Permit Type Topology"}
-    B -->|rejectSiteEngineer| D["Returned for Correction (Permittee Refill)"]
-    C -->|PTW-001 Excavation| E["Pending Parallel Approval (MEP · P&M · IT)"]
+    B -->|rejectSiteEngineer| D["Returned for Correction - Permittee Refill"]
+    C -->|PTW-001 Excavation| E["Pending Parallel Approval - MEP / P&M / IT"]
     C -->|PTW-005 Shaft Work| F["Pending MEP Clearance"]
-    C -->|PTW-002, 03, 04, 08| G2["Pending Section Head (Tower Incharge)"]
+    C -->|PTW-002 03 04 08| G2["Pending Section Head - Tower Incharge"]
     C -->|PTW-006 Site Flow| M["Pending MEP or P&M Approval"]
     M -->|approvePermitStage| G2
-    C -->|PTW-007 Drilling & Blasting| H
-    E -->|approvePermitStage| G1["Pending Section Head (Excavation Head)"]
+    C -->|PTW-007 Drilling and Blasting| H
+    E -->|approvePermitStage| G1["Pending Section Head - Excavation Head"]
     F -->|approvePermitStage| G2
     G1 -->|approvePermitStage| H
     G2 -->|approvePermitStage| H
-    H -->|approvePermitStage (First-Wins)| I["activatePermit(p) -> ACTIVE"]
+    H -->|approvePermitStage First-Wins| I["activatePermit(p) to ACTIVE"]
     G1 -->|rejectPermitStage| D
     G2 -->|rejectPermitStage| D
     H -->|rejectPermitStage| D
-    G1 -->|rejectPermitStage (cancel)| J["Cancelled (Terminal - Stop Work)"]
-    G2 -->|rejectPermitStage (cancel)| J
-    H -->|rejectPermitStage (cancel)| J
+    G1 -->|rejectPermitStage cancel| J["Cancelled - Terminal Stop Work"]
+    G2 -->|rejectPermitStage cancel| J
+    H -->|rejectPermitStage cancel| J
 ```
 
 | Operational Function | Implementation Signature | Authoritative Role | State Transition & Business Rules |
@@ -1256,9 +1266,9 @@ sequenceDiagram
 
     Note over SS,SYS: STEP 1 — Form Initiation & Checklist
     SS->>SS: Complete 4-step wizard form
-    SS->>SS: Complete 12-item safety checklist (NO requires comment; Site Photo unlocked after checklist)
+    SS->>SS: Complete 12-item safety checklist (NO requires comment, Site Photo unlocked after checklist)
     SS->>SS: Capture Site Photo (activated after checklist complete)
-    SS->>SS: Final review & sign; GPS captured on submission
+    SS->>SS: Final review and sign, GPS captured on submission
     SS->>SYS: submitPermit(EXCAVATION)
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: In-App Alert: Physical site review required
@@ -1279,7 +1289,7 @@ sequenceDiagram
     and
         IT->>SYS: approveParallelStage(IT) [OFC / Data lines safe]
     end
-    Note over MEP,SYS: Any Reject returns to Supervisor; unchanged sections persist
+    Note over MEP,SYS: Any Reject returns to Supervisor, unchanged sections persist
     SYS->>SYS: Status: Pending Section Head Approval (Excavation Head)
     SYS->>EH: Alert: All clearances passed, Excavation Head review required
 
@@ -1291,7 +1301,7 @@ sequenceDiagram
         SYS->>EHS: Alert: Final endorsement required
     else Cancel
         EH->>SYS: cancelPermit() + comment
-        SYS->>SYS: Status: Cancelled (Terminal) -> Generate PDF -> Notify All
+        SYS->>SYS: Status: Cancelled (Terminal) [Generate PDF, Notify All]
     end
 
     Note over SS,SYS: STEP 5 — EHS Final Endorsement (Single Approver Rule)
@@ -1303,9 +1313,9 @@ sequenceDiagram
         SYS-->>SE: In-App Alert: Permit ACTIVE
         SYS-->>EH: In-App Alert: Permit ACTIVE
     else Reject
-        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor for correction
+        EHS->>SYS: rejectPermit() [Returns to Site Supervisor for correction]
     else Cancel
-        EHS->>SYS: cancelPermit() -> Stop work -> PDF generated (Terminal)
+        EHS->>SYS: cancelPermit() [Stop work, PDF generated - Terminal]
     end
 
     Note over SS,SYS: STEP 6 — Site Closure & Surrender (Site Supervisor Exclusive)
@@ -1313,7 +1323,7 @@ sequenceDiagram
     SS->>SS: Complete backfill & barricade removal declarations + photo + GPS
     Note over SS,SE: Closure & surrender strictly executed by Site Supervisor (no SE closure option)
     SS->>SYS: closeAndSurrenderPermit()
-    SYS->>SYS: Status: Closed -> Generate Statutory PDF Archive
+    SYS->>SYS: Status: Closed [Generate Statutory PDF Archive]
 ```
 
 ---
@@ -1349,7 +1359,7 @@ sequenceDiagram
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final safety verification required
     else Cancel
-        TI->>SYS: cancelPermit() + comment -> Terminal -> PDF generated
+        TI->>SYS: cancelPermit() + comment [Terminal, PDF generated]
     end
 
     Note over SS,SYS: STEP 4 — EHS Verification (Either Manager or Officer)
@@ -1359,9 +1369,9 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Hot work authorized)
         SYS-->>SS: In-App Alert: Permit ACTIVE
     else Reject
-        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor to refill & resubmit
+        EHS->>SYS: rejectPermit() [Returns to Site Supervisor to refill and resubmit]
     else Cancel
-        EHS->>SYS: cancelPermit() -> Stop all work immediately + PDF generated
+        EHS->>SYS: cancelPermit() [Stop all work immediately, PDF generated]
     end
 
     Note over SS,SYS: STEP 5 — Mandatory 1-Hour Fire Watch & Closure
@@ -1370,7 +1380,7 @@ sequenceDiagram
     SS->>SS: Check mandatory Fire Watch declaration box (1 hr prior to close)
     SS->>SS: Attach post-work cold-area clearance photo
     SS->>SYS: surrenderPermit()
-    SYS->>SYS: Status: Closed -> PDF generated with fire watch endorsement
+    SYS->>SYS: Status: Closed [PDF generated with fire watch endorsement]
 ```
 
 ---
@@ -1405,9 +1415,9 @@ sequenceDiagram
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final EHS verification required
     else Reject
-        TI->>SYS: rejectPermit() -> Returns to Site Supervisor
+        TI->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        TI->>SYS: cancelPermit() -> Terminal -> PDF generated
+        TI->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
     Note over SS,SYS: STEP 4 — EHS Verification
@@ -1417,9 +1427,9 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Removal authorized)
         SYS-->>SS: In-App Alert: Permit ACTIVE
     else Reject
-        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor
+        EHS->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        EHS->>SYS: cancelPermit() -> Stop work -> PDF generated
+        EHS->>SYS: cancelPermit() [Stop work, PDF generated]
     end
 
     Note over SS,SYS: STEP 5 — Mandatory Re-Fixing Verification & Closure
@@ -1427,7 +1437,7 @@ sequenceDiagram
     SS->>SS: Guard rails, toe boards, and floor coverings re-erected
     SS->>SS: Upload mandatory declaration + photo verifying re-fixed barriers
     SS->>SYS: surrenderPermit()
-    SYS->>SYS: Status: Closed -> PDF generated with re-installation evidence
+    SYS->>SYS: Status: Closed [PDF generated with re-installation evidence]
 ```
 
 ---
@@ -1443,7 +1453,7 @@ sequenceDiagram
     participant SYS as System Engine
 
     Note over SS,SYS: STEP 1 — Form Initiation, Gas Testing & Entry Declaration
-    SS->>SS: Enter multi-gas detector log: O2 (19.5-23.5%), LEL (<10%), CO (<25ppm), H2S (<10ppm)
+    SS->>SS: Enter multi-gas detector log: O2 (19.5-23.5%), LEL (under 10%), CO (under 25ppm), H2S (under 10ppm)
     SS->>SS: Attach work-area photo + complete confined space entry checklist
     SS->>SS: Sign mandatory Entry Supervisor Safety Declaration
     SS->>SYS: submitPermit(CONFINED)
@@ -1458,9 +1468,9 @@ sequenceDiagram
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final EHS verification required
     else Reject
-        TI->>SYS: rejectPermit() -> Returns to Site Supervisor
+        TI->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        TI->>SYS: cancelPermit() -> Terminal -> PDF generated
+        TI->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
     Note over SS,SYS: STEP 3 — EHS Verification
@@ -1470,9 +1480,9 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Entry authorized)
         SYS-->>SS: In-App Alert: Permit ACTIVE
     else Reject
-        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor
+        EHS->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        EHS->>SYS: cancelPermit() -> Stop entry -> PDF generated
+        EHS->>SYS: cancelPermit() [Stop entry, PDF generated]
     end
 
     Note over SS,SYS: STEP 4 — Mandatory All-Clear Worker Surrender
@@ -1480,7 +1490,7 @@ sequenceDiagram
     SS->>SS: Confirm 100% headcount accounted for outside the space
     SS->>SS: Upload mandatory declaration + photo: 'No worker remains inside space'
     SS->>SYS: surrenderPermit()
-    SYS->>SYS: Status: Closed -> PDF generated with full gas log & exit confirmation
+    SYS->>SYS: Status: Closed [PDF generated with full gas log and exit confirmation]
 ```
 
 ---
@@ -1518,9 +1528,9 @@ sequenceDiagram
         SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
         SYS->>TI: Alert: MEP cleared, Tower Incharge review required
     else Reject
-        MEP->>SYS: rejectPermit() -> Returns to Site Supervisor
+        MEP->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        MEP->>SYS: cancelPermit() -> Terminal -> PDF generated
+        MEP->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
     Note over SS,SYS: STEP 4 — Tower Incharge Review
@@ -1530,9 +1540,9 @@ sequenceDiagram
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final EHS endorsement required
     else Reject
-        TI->>SYS: rejectPermit() -> Returns to Site Supervisor
+        TI->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        TI->>SYS: cancelPermit() -> Terminal -> PDF generated
+        TI->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
     Note over SS,SYS: STEP 5 — EHS Final Verification
@@ -1542,21 +1552,108 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Shaft work authorized)
         SYS-->>SS: In-App Alert: Permit ACTIVE
     else Reject
-        EHS->>SYS: rejectPermit() -> Returns to Site Supervisor
+        EHS->>SYS: rejectPermit() [Returns to Site Supervisor]
     else Cancel
-        EHS->>SYS: cancelPermit() -> Stop work -> PDF generated
+        EHS->>SYS: cancelPermit() [Stop work, PDF generated]
     end
 
     Note over SS,SYS: STEP 6 — Mandatory Shaft Closure & Sealing
     SS->>SS: Remove scaffold/tools, reinstall shaft cover & secure locks
     SS->>SS: Upload mandatory declaration + photo confirming shaft closed
     SS->>SYS: surrenderPermit()
-    SYS->>SYS: Status: Closed -> PDF generated with sealed shaft evidence
+    SYS->>SYS: Status: Closed [PDF generated with sealed shaft evidence]
 ```
 
 ---
 
-### 8.6 PTW-007 Drilling & Blasting: End-to-End Statutory Approval Lifecycle
+### 8.6 PTW-006 Electrical Work (HT/LT): Dual-Topology Approval & Statutory LOTO Lifecycle
+
+PTW-006 Electrical Work enforces an exclusive Permittee architecture for the **Authorized Electrician** (civil supervisors are restricted per `INITIATOR_PERMIT_RULES`), mandatory apparatus tagging (10 high/low voltage apparatus classes), **mandatory LOTO register serial number and placement timestamp**, and branches into **two distinct operational topologies**:
+1. **Batching Plant Flow**: Dedicated plant equipment isolation verified by P&M Engineer (`Pending P&M Acknowledgment`), insulation resistance verified by Quality Engineer (`Pending Quality Engineer Approval`), and activated by EHS Safety.
+2. **Site Flow**: General construction electrical work routed through Site Engineer (`Pending Site Engineer Acknowledgment`), discipline clearance by either MEP or P&M (`Pending MEP or P&M Approval`), Section Head review by Tower Incharge, and activated by EHS Safety.
+
+```mermaid
+sequenceDiagram
+    autonumber
+    actor EL as Permittee Electrician (Exclusive Permittee)
+    actor SE as Site Engineer (Site Technical Ack)
+    actor PM as P&M Engineer (Plant & Machinery Ack)
+    actor QE as Quality Engineer (Megohm & Quality Clearance)
+    actor MEP as MEP / P&M Engineer (Domain Clearance)
+    actor TI as Tower Incharge (Section Head)
+    actor EHS as EHS Safety (Manager / Officer)
+    participant SYS as Core Engine
+
+    Note over EL,SYS: PHASE 1: Form Initiation, Apparatus Tagging & LOTO Verification
+    EL->>EL: Select Facility Scope: Batching Plant (Manual Locked) or Site (Flexible Mode)
+    EL->>EL: Input Reason for Shutdown + Select Electrical Apparatus (Transformer/RMU/Panels)
+    EL->>EL: Record Mandatory LOTO Register Sl. No. and Lock Placement Timestamp
+    EL->>EL: Confirm Safe to Work Under IS 5216 & Check Pre-Work Statutory Undertaking
+    EL->>SYS: submitPermit(ELECTRICAL) + Attach overview photo + GPS + DPDP Sig
+
+    alt Topology A: Batching Plant Flow
+        SYS->>SYS: Route to Status: Pending P&M Acknowledgment
+        Note over PM,SYS: PHASE 2A: Plant & Machinery Statutory Acknowledgment
+        PM->>SYS: acknowledgePmEngineer() with LOTO confirmation & Statutory Declaration
+        SYS->>SYS: Status: Pending Quality Engineer Approval
+        
+        Note over QE,SYS: PHASE 3A: Quality Engineer Insulation Clearance
+        QE->>SYS: approvePermitStage(QE) with Megohm Insulation Resistance Declaration
+        SYS->>SYS: Status: Pending EHS Approval
+        
+        Note over EHS,SYS: PHASE 4A: EHS Safety Activation (First-Wins Gate)
+        EHS->>SYS: approvePermitStage(EHS) [Status: Active - Electrical Work Authorized]
+    else Topology B: Site Flow
+        SYS->>SYS: Route to Status: Pending Site Engineer Acknowledgment
+        Note over SE,SYS: PHASE 2B: Site Physical Verification
+        SE->>SYS: acknowledgeSiteEngineer() with physical installation verification
+        SYS->>SYS: Status: Pending MEP or P&M Approval (Either/Or Gate)
+        
+        Note over MEP,SYS: PHASE 3B: Dual Domain Clearance Gate
+        MEP->>SYS: approvePermitStage(MEP or PM) with Domain Clearance Declaration
+        SYS->>SYS: Status: Pending Section Head (Tower Incharge)
+        
+        Note over TI,SYS: PHASE 4B: Tower Incharge Review
+        TI->>SYS: approvePermitStage(TI) [Status: Pending EHS Approval]
+        
+        Note over EHS,SYS: PHASE 5B: EHS Safety Activation (First-Wins Gate)
+        EHS->>SYS: approvePermitStage(EHS) [Status: Active - Electrical Work Authorized]
+    end
+
+    Note over EL,EHS: POST-ACTIVATION LIFECYCLES
+    opt Safety Observation Raised
+        EHS->>SYS: raiseObservation() [Status: Active - Observation Open]
+        SYS-->>EL: Extension and Closure BLOCKED until rectified and cleared
+        EL->>SYS: respondToObservation() + rectification photo
+        SE->>SYS: acknowledgeObservationEng()
+        TI->>SYS: reviewObservationSectionHead()
+        EHS->>SYS: resolveObservation() [Status: Active - Observation Resolved]
+    end
+
+    opt Temporal Permit Extension
+        EL->>SYS: requestExtension() (Before 18:30 IST, Ceiling: 20:30 IST)
+        alt Batching Plant Extension
+            PM->>SYS: approveExtensionStage(PM)
+            QE->>SYS: approveExtensionStage(QE)
+            EHS->>SYS: approveExtensionStage(EHS)
+        else Site Extension
+            SE->>SYS: approveExtensionStage(SE)
+            TI->>SYS: approveExtensionStage(TI)
+            EHS->>SYS: approveExtensionStage(EHS)
+        end
+        SYS->>SYS: Status: Active (Extended)
+    end
+
+    Note over EL,SYS: TERMINAL PHASE: Completion & Statutory De-Isolation Surrender
+    EL->>EL: Remove personal padlocks, remove earths, inspect panels clear
+    EL->>EL: Check Mandatory Electrical De-Isolation & Restoration Declaration
+    EL->>SYS: closeAndSurrenderPermit(electricalClosureConfirmed: true, photo, GPS, DPDP Sig)
+    SYS->>SYS: Status: Closed (Surrendered - De-Isolated) [Statutory Form PTW-006 PDF Unlocked]
+```
+
+---
+
+### 8.7 PTW-007 Drilling & Blasting: End-to-End Statutory Approval Lifecycle
 
 PTW-007 enforces a statutory safety approval pipeline with **exclusive Permittee architecture for the Blasting / Drilling In-charge** (Site Supervisor is strictly restricted per `INITIATOR_PERMIT_RULES`), **mandatory on-form PESO statutory compliance declaration**, **direct bypass to EHS Safety**, **Site Engineer non-cancellation governance**, **18:30 IST sunset hard stop rule**, and **mandatory post-blast misfire clearance**:
 
@@ -1594,19 +1691,19 @@ sequenceDiagram
         SYS->>SYS: Status: Pending EHS Approval
         SYS->>EHS: Alert: Final EHS endorsement required
     else Reject & Return
-        SE->>SYS: rejectSiteEngineer() -> Returns to Blasting In-charge for correction
+        SE->>SYS: rejectSiteEngineer() [Returns to Blasting In-charge for correction]
     end
 
     Note over EHS,SYS: STEP 3 — EHS Final Endorsement (First-Wins Gate)
-    EHS->>EHS: Verify weather conditions, blast timing (<= 18:30 IST) & PPE
+    EHS->>EHS: Verify weather conditions, blast timing (before 18:30 IST) & PPE
     alt Endorse & Activate
         EHS->>SYS: approvePermitStage()
         SYS->>SYS: Status: Active (Drilling / Blasting authorized)
         SYS-->>BIC: In-App Alert: Permit ACTIVE
     else Reject & Return
-        EHS->>SYS: rejectPermit() -> Returns to Blasting In-charge for correction
+        EHS->>SYS: rejectPermit() [Returns to Blasting In-charge for correction]
     else Cancel (Stop-Work)
-        EHS->>SYS: cancelPermit() -> Terminal stop-work directive -> Audit PDF generated
+        EHS->>SYS: cancelPermit() [Terminal stop-work directive, Audit PDF generated]
     end
 
     Note over BIC,SYS: STEP 4 — Closure & Mandatory Post-Blast Clearance
@@ -1615,18 +1712,20 @@ sequenceDiagram
         BIC->>BIC: Check mandatory Post-Blast Clearance & Misfire Declaration checkbox
         BIC->>BIC: Attach post-blast restoration photograph
         BIC->>SYS: closeAndSurrenderPermit(blastingClearanceConfirmed: true)
-        SYS->>SYS: Status: Closed -> PDF generated with Post-Blast Clearance Certification
+        SYS->>SYS: Status: Closed [PDF generated with Post-Blast Clearance Certification]
     else Drilling Operation Surrender
         BIC->>BIC: Remove drill rig, cap drilled holes, attach restoration photograph
         BIC->>SYS: closeAndSurrenderPermit()
-        SYS->>SYS: Status: Closed -> PDF generated
+        SYS->>SYS: Status: Closed [PDF generated]
     end
 ```
 
 > [!NOTE]
 > **Statutory Persona Isolation & DGMS Compliance**: In strict adherence to DGMS and PESO regulations, only certified **Blasting / Drilling In-charge** personnel are permitted to create PTW-007 permits. Site Supervisors are completely restricted from initiating blasting and drilling activities to prevent unauthorized or uncertified handling of explosive operations.
 
-### 8.7 PTW-008 General Work: End-to-End Approval & Multi-Tier Safety Lifecycle
+<a id="ptw-008-flow"></a>
+<a id="88-ptw-008-general-work-end-to-end-approval--multi-tier-safety-lifecycle"></a>
+### 8.8 PTW-008 General Work: End-to-End Approval & Multi-Tier Safety Lifecycle
 
 PTW-008 General Work follows a strict 4-stage statutory governance spine: Permittee initiation by Site Supervisor, physical worksite verification by Site Engineer, Section Head review by Tower Incharge, and final statutory endorsement by EHS (first-wins gate).
 
@@ -1641,9 +1740,9 @@ sequenceDiagram
 
     Note over SS,SYS: PHASE 1: Form Creation & Statutory Category Checklist
     SS->>SYS: Select Work Description (1 of 14 options across Cat A, B, C, D)
-    SYS->>SYS: Bind dynamic checklist (21, 15, 20, or 11 items) + wind warning (<45 km/h)
+    SYS->>SYS: Bind dynamic checklist (21, 15, 20, or 11 items) + wind warning (under 45 km/h)
     SS->>SYS: Complete 100% checklist + Attach overview photo + GPS + DPDP Sig
-    SS->>SYS: submitPermit() -> Status: Pending Site Engineer Acknowledgment
+    SS->>SYS: submitPermit() [Status: Pending Site Engineer Acknowledgment]
 
     Note over SE,SYS: PHASE 2: On-Site Engineering Physical Verification
     SE->>SYS: acknowledgeSiteEngineer() with physical site verification
@@ -1659,30 +1758,30 @@ sequenceDiagram
 
     Note over SS,EHS: POST-ACTIVATION LIFECYCLES
     opt Safety Observation Raised
-        EHS->>SYS: raiseObservation() -> Status: Active (Observation Open)
+        EHS->>SYS: raiseObservation() [Status: Active - Observation Open]
         SYS-->>SS: Extension & Closure BLOCKED until rectified & endorsed
         SS->>SYS: respondToObservation() + rectification photo
         SE->>SYS: acknowledgeObservationEng()
         TI->>SYS: approveObservationTI()
-        EHS->>SYS: closeObservation() -> Status: Active (Observation Resolved)
+        EHS->>SYS: closeObservation() [Status: Active - Observation Resolved]
     end
 
     opt Permit Temporal Extension
         SS->>SYS: requestExtension() (Before 18:30 IST, Ceiling: 20:30 IST)
         SE->>SYS: approveExtensionStage(SE)
         TI->>SYS: approveExtensionStage(TI)
-        EHS->>SYS: approveExtensionStage(EHS) -> Status: Active (Extended)
+        EHS->>SYS: approveExtensionStage(EHS) [Status: Active - Extended]
     end
 
     Note over SS,SYS: TERMINAL PHASE: Completion, Housekeeping & Surrender Gate
     SS->>SYS: Verify area clean, loose materials cleared, tools stacked
     SS->>SYS: closeAndSurrenderPermit(generalHousekeeping: true, restorationPhoto, GPS, DPDP Sig)
-    SYS->>SYS: Status: Closed (Surrendered - Work Completed) -> Statutory Form PTW-008 PDF Unlocked
+    SYS->>SYS: Status: Closed (Surrendered - Work Completed) [Statutory Form PTW-008 PDF Unlocked]
 ```
 
 ---
 
-### 8.8 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
+### 8.9 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
 When an approver rejects a permit, only approvals whose fields changed are invalidated; approvals of unchanged sections persist.
 
 ```mermaid
@@ -1714,7 +1813,7 @@ sequenceDiagram
 
 ---
 
-### 8.9 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
+### 8.10 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
 EHS may intervene post-activation if an on-site deviation appears. While an observation is open, Extension and Closure are strictly blocked.
 
 ```mermaid
@@ -1741,13 +1840,13 @@ sequenceDiagram
     else Critical Hazard (Cancel / Stop Work)
         EHS->>SYS: cancelPermit()
         SYS->>SYS: Status: Cancelled (Terminal)
-        SYS-->>SS: All work permanently stopped -> PDF generated
+        SYS-->>SS: All work permanently stopped [PDF generated]
     end
 ```
 
 ---
 
-### 8.10 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
+### 8.11 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
 Permit extension request must be initiated before 18:30 IST. Extensions are capped at a hard validity ceiling of 20:30 IST (for standard works/drilling) and 18:30 IST (sunset hard stop for blasting).
 
 ```mermaid
@@ -1759,8 +1858,8 @@ sequenceDiagram
     actor EHS as EHS Manager/Officer
 
     Note over SS,SYS: Extension Request (Before 18:30 IST)
-    SS->>SYS: requestExtension(duration <= 120 min)
-    SYS->>SYS: Validate clock <= 18:30 IST & validity ceiling
+    SS->>SYS: requestExtension(duration up to 120 min)
+    SYS->>SYS: Validate clock prior to 18:30 IST & validity ceiling
     SYS->>SYS: Status: Pending Extension - Engineer Ack
     SYS->>SE: Alert: Extension acknowledgment required
 
@@ -1773,13 +1872,13 @@ sequenceDiagram
     SYS->>EHS: Alert: Extension final endorsement required
 
     EHS->>SYS: approveExtensionStage(EHS)
-    SYS->>SYS: validTill extended -> Status: Active
+    SYS->>SYS: validTill extended [Status: Active]
     SYS-->>SS: In-App Alert: Extension APPROVED
 ```
 
 ---
 
-### 8.11 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
+### 8.12 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
 
 In heavy construction operations, hazardous work permits cannot simply lapse or be abandoned upon shift completion. Uncontrolled cessation introduces severe catastrophic risks: unextinguished embers in hot work zones, unbarricaded excavation trenches overnight, open floor penetrations without edge protection, unsealed confined spaces with residual gas accumulation, open hoist shafts, or uninspected blast misfires.
 
@@ -1800,7 +1899,7 @@ sequenceDiagram
     SYS->>SYS: Pre-condition Check: No Open Observation (status !== 'Open')
     SYS-->>SS: Render Discipline-Specific Restoration Form
 
-    Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>• PTW-001: Trench backfilled OR shoring safely left in place; hard barricades verified<br/>• PTW-002: 1-Hour continuous cold watch completed; gas cylinders isolated & stowed<br/>• PTW-003: Guardrails 100% re-fixed & bolted; zero open edge exposure<br/>• PTW-004: All entrants evacuated & accounted for; gas testing cleared; manholes bolted<br/>• PTW-005: Shaft openings sealed; green scaffold tag endorsed; hoist power locked out<br/>• PTW-007: Post-blast clearance certified; zero misfires confirmed; excess cartridges returned
+    Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>- PTW-001: Trench backfilled OR shoring safely left in place, hard barricades verified<br/>- PTW-002: 1-Hour continuous cold watch completed, gas cylinders isolated and stowed<br/>- PTW-003: Guardrails 100% re-fixed and bolted, zero open edge exposure<br/>- PTW-004: All entrants evacuated and accounted for, gas testing cleared, manholes bolted<br/>- PTW-005: Shaft openings sealed, green scaffold tag endorsed, hoist power locked out<br/>- PTW-006: Statutory LOTO removal and lock de-isolation certified by Electrician<br/>- PTW-007: Post-blast clearance certified, zero misfires confirmed, excess cartridges returned<br/>- PTW-008: Housekeeping and site clearance certified, loose panels and tools cleared
 
     Note over SS,SYS: PHASE 2 — On-Site Evidence, Geofence Tagging & Digital Signature
     SS->>SS: Inspect physical work front: housekeeping, scrap clearance, barrier integrity
@@ -1826,12 +1925,13 @@ sequenceDiagram
 | **PTW-003 Guard Rail** | `PTW-003` | 1. All temporary removed edge rails, floor hole covers, or toe boards 100% re-fixed and torqued<br/>2. Physical pull-test completed to verify 100 kg point load structural integrity<br/>3. No open penetration or fall hazard remaining without secondary collective protection | **Mandatory re-fixing verification photo gate** — submission blocked without photographic proof of restored barrier |
 | **PTW-004 Confined Space** | `PTW-004` | 1. Entrant log reconciliation: 100% of workers confirmed exited and accounted for<br/>2. Ventilation blowers and continuous multi-gas monitors safely demobilized<br/>3. Manhole access hatch / cover replaced, bolted, and security tags affixed | Mandatory sealed manhole photo + attendant clearance sign-off |
 | **PTW-005 Shaft Work** | `PTW-005` | 1. Working platform dismantled or green scaffold tag re-inspected and signed<br/>2. Shaft opening floor penetrations securely sheeted and bolted to prevent falling debris<br/>3. Materials, cables, and rigging gear completely removed from vertical void | Mandatory shaft mouth sealing photograph + MEP engineer coordination check |
+| **PTW-006 Electrical Work** | `PTW-006` | 1. All personal padlocks, hasps, tags, and physical LOTO barriers removed<br/>2. Earthing switches opened, portable earth leads removed, and busbars cleared<br/>3. Enclosure covers, terminal boxes, and panel doors safely secured and bolted<br/>4. Mandatory Electrical De-Isolation & Restoration Declaration confirmed | **Mandatory Electrical De-Isolation Declaration** (`electricalClosureConfirmed: true`) + mandatory restoration photo gate |
 | **PTW-007 Drilling & Blasting** | `PTW-007` | 1. Post-Blast site clearance completed: full visual sweep of blast floor conducted<br/>2. Zero misfires or unexploded charges confirmed by licensed Shot Firer<br/>3. All excessive explosive cartridges / lead wires accounted for and returned to licensed magazine<br/>4. Danger zone sentries stood down and warning sirens sounded all-clear | **Mandatory Post-Blast Clearance & Misfire Declaration** (`blastingClearanceConfirmed`) + mandatory restoration photo gate |
 | **PTW-008 General Work** | `PTW-008` | 1. Working platforms, scaffolding, hoists, or formwork inspected and secured<br/>2. All tools, temporary lifting gear, and loose panels accounted for and removed<br/>3. Physical work area completely swept, scrap cleared, and waste disposed in designated bins<br/>4. Mandatory Housekeeping & Area Clearance declaration confirmed | **Mandatory Housekeeping & Area Clearance Certification** (`generalHousekeeping: true`) + mandatory restoration photo gate |
 
 ---
 
-### 8.12 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
+### 8.13 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
 
 Every high-risk construction activity commences with the digital creation and formal initiation of a Permit-to-Work by the **Site Supervisor (Permittee)**. In `index.html`, this process is governed by a strict **4-Stage Progressive Wizard** (`WIZ_STEPS = ['General Information', 'Safety Checklist', 'Permit Validity', 'Review & Submit']`) that validates master data, spatial proximity, statutory checklists, operating hours, and DPDP Act 2023 digital consent before allowing submission.
 
@@ -1880,9 +1980,9 @@ sequenceDiagram
     Note over SS,UI: STEP 3: Working Hours & Validity Bounds Engine
     SS->>UI: Navigate to Step 3 (renderWizStep(3))
     SS->>UI: Select Planned Start Time (HH:MM IST)
-    UI->>VAL: Check 08:30 <= startTime <= 18:30 IST & startTime >= now()
+    UI->>VAL: Check startTime between 08:30 and 18:30 IST & startTime in future
     SS->>UI: Select Planned End Time (HH:MM IST)
-    UI->>VAL: Check validTillTime > startTime & validTillTime <= 19:30 IST
+    UI->>VAL: Check validTillTime after startTime & validTillTime at or before 19:30 IST
     VAL->>UI: Calculate Duration (mins) = validTillTime - startTime
     UI-->>SS: Display Duration Strip & Enable "Next: Review & Submit"
 
@@ -1900,11 +2000,11 @@ sequenceDiagram
     UI->>GEO: Prompt openGPSModal() (GPS captured ONLY on final submit)
     SS->>GEO: Capture Device GPS Location
     GEO->>GEO: haversine(deviceLat, deviceLng, siteLat, siteLng)
-    alt Device Distance > Allowed Project Radius
-        GEO-->>UI: Out-of-Bounds Error (d > r)
+    alt Device Distance exceeds Allowed Project Radius
+        GEO-->>UI: Out-of-Bounds Error (distance exceeds radius)
         UI-->>SS: Warning: Outside site geofence perimeter (Submission Blocked)
-    else Device Distance <= Allowed Project Radius
-        GEO-->>UI: Geofence Verified (d <= r)
+    else Device Distance within Allowed Project Radius
+        GEO-->>UI: Geofence Verified (distance within radius)
         UI->>SYS: finalSubmitPermit(with captured GPS)
         SYS->>SYS: Assign ID (genPermitNumber) e.g. "EXC-2026-000008"
         SYS->>SYS: Initialize Approval Chain (newChain(ptype))
@@ -1927,7 +2027,7 @@ sequenceDiagram
 
 ---
 
-### 8.13 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
+### 8.14 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
 
 The system enforces physical spatial boundaries to prevent off-site fraudulent approvals. Worksite boundaries are managed exclusively by the **Administrator** role through the interactive **Administrative Configuration & Geofence Radar View** (`view-admin-config`).
 
@@ -2000,7 +2100,7 @@ The canvas radar is drawn on `<canvas id="geofenceRadarCanvas" width="300" heigh
 
 ---
 
-### 8.14 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
+### 8.15 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
 
 To ensure an enterprise-grade, deterministic user experience free of unpredictable UI jumps, scroll shaking, or orphaned modals, the application implements a dedicated **7-Layer Deterministic Navigation Architecture** across all screens, forms, dialogs, and workflows.
 
@@ -2012,7 +2112,7 @@ flowchart TD
     end
 
     subgraph L2["Layer 2: Interactive Gated Stepper"]
-        ST1["#stepIndicator Node Click"] --> ST2{"Target Step < Current Step?"}
+        ST1["#stepIndicator Node Click"] --> ST2{"Target Step Earlier than Current?"}
         ST2 -->|Yes: Backward Jump| ST3["Instant Access Granted without Validation"]
         ST2 -->|No: Forward Jump| ST4["Sequential Intermediate Validation Loop"]
         ST4 -->|All Intermediates Valid| ST5["Advance to Target Step"]
@@ -2021,10 +2121,10 @@ flowchart TD
 
     subgraph L3["Layer 3: Smart Form Validation Guidance"]
         ERR["Step Validation Failure"] --> SE1["scrollToStepError(step)"]
-        SE1 -->|Step 1: Master Data| SE2["Smooth Center on Invalid Field & Focus Input"]
-        SE1 -->|Step 2: Checklist/Uploads| SE3["Smooth Center on Incomplete Item + pulseAttention glow / Dropzone"]
+        SE1 -->|Step 1: Master Data| SE2["Smooth Center on Invalid Field and Focus Input"]
+        SE1 -->|Step 2: Checklist and Uploads| SE3["Smooth Center on Incomplete Item + pulseAttention glow / Dropzone"]
         SE1 -->|Step 3: Operating Hours| SE4["Smooth Center on Time Constraint Banner"]
-        SE1 -->|Step 4: Review & Sign| SE5["Smooth Center on Signatory Name / Canvas"]
+        SE1 -->|Step 4: Review and Sign| SE5["Smooth Center on Signatory Name / Canvas"]
     end
 
     subgraph L4["Layer 4: In-Step Checklist Scroll Preservation"]
@@ -2099,25 +2199,25 @@ In hazardous construction environments, an unacted permit in an approval queue o
 graph TD
     subgraph "Pending Stage Escalation Queue"
         A["Permit enters pending approval stage"] --> B["Record p.stageEnteredAt = now()"]
-        B --> C{"Elapsed time >= 45s (demo) / 2h (prod)?"}
+        B --> C{"Elapsed time at least 45s (demo) / 2h (prod)?"}
         C -->|Yes| D["Stage 1 SLA Breach<br/>Notify Tower Incharge & EHS Manager<br/>Set p.escalation.stage1 = true"]
         C -->|No| E["Continue monitoring tick loop"]
-        D --> F{"Elapsed time >= 120s (demo) / 4h (prod)?"}
+        D --> F{"Elapsed time at least 120s (demo) / 4h (prod)?"}
         F -->|Yes| G["Stage 2 SLA Breach<br/>Notify EHS Leadership (Manager & Officer)<br/>Set p.escalation.stage2 = true"]
     end
 
     subgraph "Active Permit Validity Timers"
-        H["Permit Status: Active"] --> I{"Time remaining <= 30 mins (T-30)?"}
+        H["Permit Status: Active"] --> I{"Time remaining 30 mins or less (T-30)?"}
         I -->|Yes| J["30-Min Expiry Warning<br/>Notify Site Supervisor & Site Engineer<br/>Set p.warn30 = true"]
-        J --> K{"Current time >= p.validTill?"}
+        J --> K{"Current time reaches or exceeds p.validTill?"}
         K -->|Yes| L{"Open Observation Exists?<br/>(p.observation.status !== 'Resolved')"}
-        L -->|No| M["Status -> Expired<br/>Broadcast Emergency Alert to All Stakeholders"]
-        L -->|Yes| N["Status -> Cancelled (isCancelled: true)<br/>EMERGENCY STOP-WORK AUTO-CANCEL<br/>Dispatch Incident Alerts"]
+        L -->|No| M["Status: Expired<br/>Broadcast Emergency Alert to All Stakeholders"]
+        L -->|Yes| N["Status: Cancelled (isCancelled: true)<br/>EMERGENCY STOP-WORK AUTO-CANCEL<br/>Dispatch Incident Alerts"]
     end
 
     subgraph "Surrender Reminder Loop"
         O["Permit Status: Expired or Surrender-Pending"] --> P{"tickCount % 6 === 0 (Every 30 seconds)?"}
-        P -->|Yes| Q["Recurring Surrender Reminder<br/>Alert Site Engineer to complete physical handback"]
+        P -->|Yes| Q["Recurring Surrender Reminder<br/>Alert Site Supervisor to complete physical handback"]
     end
 ```
 
@@ -2391,8 +2491,8 @@ sequenceDiagram
     Note over SS,SYS: Extension Request Initiation
     SS->>SYS: openExtensionRequestModal()
     SYS->>SYS: Enforce: workStarted(p) === true
-    SYS->>SYS: Enforce: isExtensionRequestAllowed() [Clock <= 18:30 IST]
-    SYS->>SYS: Compute: extensionCapMinutes(p) [Max Ceiling <= 20:30 IST]
+    SYS->>SYS: Enforce: isExtensionRequestAllowed() [Clock prior to 18:30 IST]
+    SYS->>SYS: Compute: extensionCapMinutes(p) [Max Ceiling at or before 20:30 IST]
     SS->>SYS: Select Duration (30, 60, 90, 120 min) + Justification + GPS + Photo
     SS->>SYS: submitExtensionRequest()
     SYS->>SYS: Status: Pending Extension - Engineer Ack
@@ -2955,7 +3055,7 @@ graph TD
     D --> E{"LocalStorage Quota OK?"}
     E -->|Yes| F["Persist Complete State JSON to STORAGE_KEY"]
     E -->|Quota Exceeded| G["Execute Quota Fallback Algorithm"]
-    G --> H["Strip Base64 Media Blobs (>200 chars) -> 'demo'"]
+    G --> H["Strip Base64 Media Blobs (exceeding 200 chars) to 'demo'"]
     H --> I["Truncate Notifications to 120 items"]
     I --> J["Persist Slim State to STORAGE_KEY"]
     F --> K["Trigger View Re-render (Dashboards, Registers, Badges)"]
