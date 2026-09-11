@@ -4776,7 +4776,7 @@
 
     <script>
         /* ================================================================
-           ARPL PTW — INTEGRATED PERMIT-TO-WORK MODULES (PTW-001 TO PTW-005)
+           ARPL PTW — INTEGRATED PERMIT-TO-WORK MODULES (PTW-001 TO PTW-008)
            Frontend-only demo. All data is in-memory JavaScript state.
            ================================================================ */
 
@@ -5326,7 +5326,7 @@
         }
 
         /* Permit-to-Work module catalogue — the 11 permit types defined in ARPL SOP 02 / BRD §4.1.
-           PTW-001 Excavation, PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, and PTW-007 Drilling and Blasting modules are fully operational. */
+           PTW-001 through PTW-008 modules (8 active modules) are fully operational and verified. */
         const PERMIT_TYPES = [
             { key: 'excavation', code: 'PTW-001', name: 'Excavation Work', icon: 'fa-person-digging', available: true, desc: 'Excavation with service lines/utilities, proximity to structures, or greenfield deeper than 1.5 m. Form PTW-001.' },
             { key: 'hotwork', code: 'PTW-002', name: 'Hot Work', icon: 'fa-fire', available: true, desc: 'Welding, gas cutting, soldering or abrasive wheel cutting creating sparks or open flames. Form PTW-002.' },
@@ -5458,7 +5458,7 @@
         ];
 
         /* ---------------- PERMIT TYPE METADATA ----------------
-           Excavation (PTW-001), Hot Work (PTW-002), Guard Rail (PTW-003), Confined Space (PTW-004) & Shaft Work (PTW-005) */
+           PTW-001 to PTW-008 Active Lifecycle Metadata */
         const PTYPE_META = {
             excavation: { key: 'excavation', code: 'PTW-001', name: 'Excavation Work', short: 'Excavation', prefix: 'PTW-001', form: 'PTW-001', sh: 'excavation-head', shLabel: 'Excavation Head' },
             hotwork: { key: 'hotwork', code: 'PTW-002', name: 'Hot Work', short: 'Hot Work', prefix: 'PTW-002', form: 'PTW-002', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
@@ -5903,7 +5903,7 @@
             {
                 key: 'site-supervisor',
                 label: 'Site Supervisor',
-                sub: 'Field Initiator & Permittee (PTW-001 to PTW-005)',
+                sub: 'Field Initiator & Permittee (PTW-001 to PTW-005, PTW-008)',
                 icon: 'fa-user-pen',
                 tier: 'Tier 1 · Permittee / Initiator',
                 cat: 'initiator',
@@ -10338,7 +10338,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 PERMITS.forEach(p => byStatus[p.status] = (byStatus[p.status] || 0) + 1);
                 const configuredCount = PROJECTS.filter(p => p.configured).length;
                 html += '<div class="kpi-strip">' +
-                    kpiCard('k-blue', 'fa-file-lines', 'Total Permits', PERMITS.length, 'PTW-001 to PTW-005 &middot; Active &amp; Historical', 'goTo(\'register\')') +
+                    kpiCard('k-blue', 'fa-file-lines', 'Total Permits', PERMITS.length, 'PTW-001 to PTW-008 &middot; Active &amp; Historical', 'goTo(\'register\')') +
                     kpiCard('k-orange', 'fa-bolt', 'Active Now', byStatus['Active'] || 0, 'On worksites currently', 'goTo(\'register\')') +
                     kpiCard('k-green', 'fa-map-location-dot', 'Geofence Configured', configuredCount + ' / ' + PROJECTS.length + ' Sites', (PROJECTS.length - configuredCount) + ' site(s) locked', 'goTo(\'admin-config\')') +
                     kpiCard('k-red', 'fa-ban', 'Cancelled', byStatus['Cancelled'] || 0, 'Terminated by EHS', 'goTo(\'register\')') +
