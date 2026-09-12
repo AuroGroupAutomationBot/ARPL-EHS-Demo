@@ -149,7 +149,7 @@ function runSuite(suiteName, fn) {
 // SUITE 1: Roles, RBAC & Signatory Isolation
 // ------------------------------------------------------------------
 runSuite('Roles, RBAC & Signatory Isolation', () => {
-    assert(app.ROLES.length === 13, 'ROLES list contains exactly 13 active functional roles', `Found ${app.ROLES.length}`);
+    assert(app.ROLES.length === 15, 'ROLES list contains exactly 15 active functional roles', `Found ${app.ROLES.length}`);
     
     const roleKeys = app.ROLES.map(r => r.key);
     assert(!roleKeys.includes('section-head'), 'Legacy "section-head" key is not exposed in ROLES list');
@@ -158,6 +158,8 @@ runSuite('Roles, RBAC & Signatory Isolation', () => {
     assert(roleKeys.includes('blasting-incharge'), 'Blasting In-charge key "blasting-incharge" is present in ROLES');
     assert(roleKeys.includes('electrician'), 'Electrician key "electrician" is present in ROLES');
     assert(roleKeys.includes('quality-engineer'), 'Quality Engineer key "quality-engineer" is present in ROLES');
+    assert(roleKeys.includes('lift-supervisor'), 'Lifting Supervisor key "lift-supervisor" is present in ROLES');
+    assert(roleKeys.includes('project-manager'), 'Project Manager key "project-manager" is present in ROLES');
 
     const tiRole = app.roleInfo('hw-section-head');
     assert(tiRole && tiRole.label === 'Tower Incharge', 'hw-section-head label is strictly "Tower Incharge"');
@@ -169,10 +171,12 @@ runSuite('Roles, RBAC & Signatory Isolation', () => {
     assert(aliasRole && aliasRole.label === 'Tower Incharge', 'Legacy roleInfo("section-head") resolves gracefully to Tower Incharge');
 
     const tiScope = app.roleTypeScope('hw-section-head');
-    assert(Array.isArray(tiScope) && tiScope.length === 7, 'Tower Incharge scope covers 7 permit modules', JSON.stringify(tiScope));
+    assert(Array.isArray(tiScope) && tiScope.length === 9, 'Tower Incharge scope covers 9 permit modules', JSON.stringify(tiScope));
     assert(!tiScope.includes('excavation'), 'Tower Incharge scope EXCLUDES excavation');
     assert(tiScope.includes('blasting'), 'Tower Incharge scope INCLUDES blasting (Tower Incharge is Section Head for PTW-007)');
     assert(tiScope.includes('general'), 'Tower Incharge scope INCLUDES general (Tower Incharge is Section Head for PTW-008)');
+    assert(tiScope.includes('lifting'), 'Tower Incharge scope INCLUDES lifting (Tower Incharge is Section Head for PTW-009A)');
+    assert(tiScope.includes('liftplan'), 'Tower Incharge scope INCLUDES liftplan (Tower Incharge is Section Head for PTW-009B)');
 
     const excScope = app.roleTypeScope('excavation-head');
     assert(Array.isArray(excScope) && excScope.length === 1 && excScope[0] === 'excavation', 'Excavation Head scope covers excavation only', JSON.stringify(excScope));

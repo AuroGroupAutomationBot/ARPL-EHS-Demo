@@ -295,7 +295,7 @@ Object.keys(mockPermits).forEach(k => {
     assert.strictEqual(evalInVM("isPermitVisibleToRole(p, 'admin')"), true, `Permit ${k} MUST be visible to admin`);
 });
 
-console.log('  ✓ PASS: Complete 13-role visibility matrix verified');
+console.log('  ✓ PASS: Complete approval-flow role visibility matrix verified');
 
 // --- 6. Table Rendering & Column Verification ---
 console.log('\n--- 6. Table Rendering & Columns Verification ---');

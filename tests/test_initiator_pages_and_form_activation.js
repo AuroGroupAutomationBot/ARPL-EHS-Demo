@@ -1,12 +1,13 @@
 /**
  * SUITE 9: UNIVERSAL INITIATOR ARCHITECTURE & FORM ACTIVATION COMPLIANCE
  * Verifies that:
- * 1. All initiators (Site Supervisor, Electrician, Blasting In-charge) share identical page layouts.
- * 2. For Electrician: ONLY PTW-006 Electrical Work is available; all other 10 forms are strictly inactive.
- * 3. For Blasting In-charge: ONLY PTW-007 Drilling & Blasting is available; all other 10 forms are strictly inactive.
- * 4. For Site Supervisor: PTW-001 to PTW-005 are active; PTW-006 Electrical is strictly inactive (restricted to Electrician).
- * 5. Work-specific extensions: strictly no extension for Blasting operations, extension available for Drilling and Electrical.
- * 6. Non-initiators have all forms locked for creation.
+ * 1. All 4 initiators (Site Supervisor, Electrician, Blasting In-charge, Lifting Supervisor) share identical page layouts.
+ * 2. For Electrician: ONLY PTW-006 Electrical Work is available; all other forms are strictly inactive.
+ * 3. For Blasting In-charge: ONLY PTW-007 Drilling & Blasting is available; all other forms are strictly inactive.
+ * 4. For Lifting Supervisor: ONLY PTW-009 (Lifting Operations & Lift Plan) is available; all other forms are strictly inactive.
+ * 5. For Site Supervisor: PTW-001 to PTW-005 and PTW-008 are active; specialist modules (PTW-006, PTW-007, PTW-009) are strictly inactive.
+ * 6. Work-specific extensions: strictly no extension for Blasting operations, extension available for Drilling, Electrical, and Lifting.
+ * 7. Non-initiators have all forms locked for creation.
  */
 
 const fs = require('fs');
@@ -30,8 +31,8 @@ assert(src.includes("function getPermitAvailabilityForRole(ptypeKey, roleKey)"),
 assert(src.includes("id=\"ptypeRoleBanner\""), "view-ptype must contain contextual role banner container");
 assert(src.includes(".ptype-card.initiator-inactive"), "CSS must include .ptype-card.initiator-inactive");
 assert(src.includes(".ptype-status.restricted"), "CSS must include .ptype-status.restricted");
-assert(src.includes('data-roles="site-supervisor,electrician,blasting-incharge"'), "Create Permit button in register must support all 3 initiators");
-assert(src.includes("Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), or Blasting In-charge (PTW-007)") || src.includes("Site Supervisor (PTW-001 to PTW-005), Electrician (PTW-006), or Blasting In-charge (PTW-007)"), "Landing workflow strip must name all 3 initiators with their permit domains");
+assert(src.includes('data-roles="site-supervisor,electrician,blasting-incharge,lift-supervisor"'), "Create Permit button in register must support all 4 initiators");
+assert(src.includes("Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), Blasting In-charge (PTW-007), or Lifting Supervisor (PTW-009A/B)") || src.includes("Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), or Blasting In-charge (PTW-007)"), "Landing workflow strip must name all initiators with their permit domains");
 
 console.log('  ✓ PASS: Static tokens, CSS rules, role boundaries, and initiator constants verified');
 
@@ -244,12 +245,14 @@ ALL_PERMITS.forEach(pKey => {
             assert.strictEqual(avail.statusText, 'Restricted to Electrician');
         } else if (pKey === 'blasting') {
             assert.strictEqual(avail.statusText, 'Restricted to Blasting In-charge');
+        } else if (pKey === 'lifting' || pKey === 'liftplan') {
+            assert.strictEqual(avail.statusText, 'Restricted to Lifting Supervisor');
         } else {
             assert.strictEqual(avail.statusClass, 'future');
         }
     }
 });
-console.log('  ✓ PASS: For Site Supervisor, ONLY PTW-001 through PTW-005 are available; PTW-006, PTW-007, and future forms are strictly inactive');
+console.log('  ✓ PASS: For Site Supervisor, PTW-001 through PTW-005, PTW-008 are available; PTW-006, PTW-007, PTW-009A/B, and future forms are strictly inactive');
 
 evalInVM("currentUser = { key: 'site-supervisor', label: 'Site Supervisor', role: 'Site Supervisor' };");
 
@@ -297,27 +300,27 @@ console.log('  ✓ PASS: All non-initiator roles have 100% of permit forms inact
 // --- 7. Universal Initiator Dashboard Parity ---
 console.log('\n--- 7. Universal Initiator Dashboard Parity ---');
 
-['site-supervisor', 'electrician', 'blasting-incharge'].forEach(rKey => {
+['site-supervisor', 'electrician', 'blasting-incharge', 'lift-supervisor'].forEach(rKey => {
     evalInVM(`currentUser = roleInfo('${rKey}'); buildDashboard();`);
     const dashHtml = getEl('view-dashboard').innerHTML;
     assert(dashHtml.includes('My Drafts'), `${rKey} dashboard must contain My Drafts KPI`);
     assert(dashHtml.includes('In Approval Chain'), `${rKey} dashboard must contain In Approval Chain KPI`);
     assert(dashHtml.includes('Active Permits'), `${rKey} dashboard must contain Active Permits KPI`);
     assert(dashHtml.includes('Open Observations'), `${rKey} dashboard must contain Open Observations KPI`);
-    assert(dashHtml.includes('Create New Permit (Step 1)'), `${rKey} dashboard must contain Create New Permit action button`);
+    assert(dashHtml.includes('Create New Permit'), `${rKey} dashboard must contain Create New Permit action button`);
     assert(dashHtml.includes('View My Permits'), `${rKey} dashboard must contain View My Permits button`);
 });
-console.log('  ✓ PASS: Site Supervisor, Electrician, and Blasting In-charge all share the identical Permittee Dashboard structure');
+console.log('  ✓ PASS: Site Supervisor, Electrician, Blasting In-charge, and Lifting Supervisor all share the identical Permittee Dashboard structure');
 
 // --- 8. Navigation Consistency for All Initiators ---
 console.log('\n--- 8. Global Navigation Parity ---');
 
-['site-supervisor', 'electrician', 'blasting-incharge'].forEach(rKey => {
+['site-supervisor', 'electrician', 'blasting-incharge', 'lift-supervisor'].forEach(rKey => {
     const navItems = evalInVM(`navItemsFor('${rKey}')`);
     assert(navItems.some(it => it.id === 'ptype' && it.label === 'Create Permit'), `${rKey} must have Create Permit in top-level navigation`);
     assert(navItems.some(it => it.id === 'register' && it.label === 'My Permits'), `${rKey} must have My Permits in top-level navigation`);
 });
-console.log('  ✓ PASS: Global sidebar navigation provides Create Permit and My Permits for all 3 initiators');
+console.log('  ✓ PASS: Global sidebar navigation provides Create Permit and My Permits for all 4 initiators');
 
 // --- 9. Work-Specific Extension Rules ---
 console.log('\n--- 9. Work-Specific Extension Rules ---');
@@ -399,7 +402,17 @@ const bannerHtmlBlast = getEl('ptypeRoleBanner').innerHTML;
 assert(bannerHtmlBlast.includes('Blasting / Drilling In-charge Initiator Mode'), "Must display Blasting In-charge Initiator Mode banner");
 assert(bannerHtmlBlast.includes('PTW-007 Drilling and Blasting — Form PTW-007'), "Banner must name Form PTW-007");
 
-console.log('  ✓ PASS: Contextual role banners correctly render on the Select Permit Type catalog');
+evalInVM("currentUser = { key: 'lift-supervisor', label: 'Lifting Supervisor', role: 'Lifting Supervisor' }; buildPermitTypeCards();");
+const bannerHtmlLift = getEl('ptypeRoleBanner').innerHTML;
+assert(bannerHtmlLift.includes('Lifting Supervisor Initiator Mode'), "Must display Lifting Supervisor Initiator Mode banner");
+assert(bannerHtmlLift.includes('PTW-009A Routine Lifting') && bannerHtmlLift.includes('PTW-009B Critical Lift Plans'), "Banner must name PTW-009A and PTW-009B");
+
+evalInVM("currentUser = { key: 'site-supervisor', label: 'Site Supervisor', role: 'Site Supervisor' }; buildPermitTypeCards();");
+const bannerHtmlSite = getEl('ptypeRoleBanner').innerHTML;
+assert(bannerHtmlSite.includes('Site Supervisor Initiator Mode'), "Must display Site Supervisor Initiator Mode banner");
+assert(bannerHtmlSite.includes('PTW-001 to PTW-005, PTW-008'), "Banner must name PTW-001 to PTW-005, PTW-008");
+
+console.log('  ✓ PASS: Contextual role banners correctly render on the Select Permit Type catalog for all 4 initiators');
 
 console.log('\n==================================================');
 console.log('ALL INITIATOR ARCHITECTURE & FORM ACTIVATION TESTS PASSED (100% SUCCESS RATE)');

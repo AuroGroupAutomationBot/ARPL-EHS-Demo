@@ -123,11 +123,16 @@ assert.strictEqual(appConfig.statuses['Pending EHS Approval'].class, 'ehs');
 // Permit types catalogue
 const ptypes = Object.keys(appConfig.permitTypes);
 assert(ptypes.length >= 11, 'Permit catalogue must declare all 11 permit types (PTW-001 to PTW-010)');
-['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 'electrical', 'blasting', 'general'].forEach(pt => {
+['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 'electrical', 'blasting', 'general', 'lifting', 'liftplan'].forEach(pt => {
     assert(appConfig.permitTypes[pt].available === true, `${pt} must be marked available`);
     assert(appConfig.permitTypes[pt].icon, `${pt} must have an icon defined`);
     assert(appConfig.permitTypes[pt].badgeStyle, `${pt} must have badgeStyle defined`);
 });
+
+// Workflows catalogue
+assert.strictEqual(Object.keys(appConfig.workflows).length, 9, 'Must declare all 9 operational workflows');
+assert(appConfig.workflows.lifting_routine, 'Must declare lifting_routine workflow');
+assert(appConfig.workflows.critical_lift_plan, 'Must declare critical_lift_plan workflow');
 
 // Synchronized views
 const ptypesMeta = evalInVM('PTYPE_META');
@@ -135,7 +140,8 @@ const permitTypesArr = evalInVM('PERMIT_TYPES');
 assert.strictEqual(ptypesMeta.excavation.code, 'PTW-001');
 assert.strictEqual(permitTypesArr.find(p => p.key === 'electrical').code, 'PTW-006');
 assert.strictEqual(permitTypesArr.find(p => p.key === 'general').code, 'PTW-008');
-console.log('  ✓ PASS: Master registries, status mappings, and permit types validated');
+assert.strictEqual(permitTypesArr.find(p => p.key === 'lifting').code, 'PTW-009');
+console.log('  ✓ PASS: Master registries, status mappings, all 9 workflows, and permit types validated');
 
 // --- 5. Dynamic Status Class Resolver ---
 console.log('\n--- 5. Dynamic Status Class Resolver ---');
@@ -191,6 +197,10 @@ assert(adminNav.some(it => it.id === 'admin-config'), 'Admin must have Site GPS 
 
 const ehsNav = evalInVM("navItemsFor('ehs-manager')");
 assert(ehsNav.some(it => it.id === 'register' && it.label === 'Permit Register'), 'EHS must have Permit Register in nav');
+
+const lsNav = evalInVM("navItemsFor('lift-supervisor')");
+assert(lsNav.some(it => it.id === 'ptype' && it.label === 'Create Permit'), 'Lifting Supervisor must have Create Permit in nav');
+assert(lsNav.some(it => it.id === 'register' && it.label === 'My Permits'), 'Lifting Supervisor must have My Permits in nav');
 console.log('  ✓ PASS: navItemsFor dynamically resolves items and role labels from APP_CONFIG.navigation');
 
 // --- 9. Runtime Extensibility Demonstration ---

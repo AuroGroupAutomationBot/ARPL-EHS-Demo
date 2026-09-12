@@ -251,20 +251,38 @@ assert.strictEqual(blastInchargeGeneral.available, false, 'Blasting In-charge mu
 const elecGeneral = evalInVM("getPermitAvailabilityForRole('general', 'electrician')");
 assert.strictEqual(elecGeneral.available, false, 'Electrician must NEVER be allowed to create PTW-008 General Work permit');
 
+// PTW-009: Lifting Operations
+const liftSupLifting = evalInVM("getPermitAvailabilityForRole('lifting', 'lift-supervisor')");
+assert.strictEqual(liftSupLifting.available, true, 'Lifting Supervisor must be authorized to create PTW-009 Lifting Operations permit');
+
+const supLifting = evalInVM("getPermitAvailabilityForRole('lifting', 'site-supervisor')");
+assert.strictEqual(supLifting.available, false, 'Site Supervisor must NEVER be allowed to create PTW-009 Lifting permit');
+
+const elecLifting = evalInVM("getPermitAvailabilityForRole('lifting', 'electrician')");
+assert.strictEqual(elecLifting.available, false, 'Electrician must NEVER be allowed to create PTW-009 Lifting permit');
+
 // INITIATOR_PERMIT_RULES mapping checks
 const supervisorAllowed = evalInVM("INITIATOR_PERMIT_RULES['site-supervisor']");
 assert(supervisorAllowed.includes('general'), 'Supervisor allowed permits must include general (PTW-008)');
 assert(supervisorAllowed.includes('excavation'), 'Supervisor allowed permits must include excavation (PTW-001)');
 assert(!supervisorAllowed.includes('blasting'), 'Supervisor allowed permits must strictly exclude blasting (PTW-007)');
 assert(!supervisorAllowed.includes('electrical'), 'Supervisor allowed permits must strictly exclude electrical (PTW-006)');
+assert(!supervisorAllowed.includes('lifting'), 'Supervisor allowed permits must strictly exclude lifting (PTW-009A)');
+assert(!supervisorAllowed.includes('liftplan'), 'Supervisor allowed permits must strictly exclude liftplan (PTW-009B)');
 
 const blastingAllowed = evalInVM("INITIATOR_PERMIT_RULES['blasting-incharge']");
 assert.strictEqual(JSON.stringify(blastingAllowed), JSON.stringify(['blasting']), 'Blasting In-charge scope must strictly equal [blasting]');
 
+const liftAllowed = evalInVM("INITIATOR_PERMIT_RULES['lift-supervisor']");
+assert.strictEqual(JSON.stringify(liftAllowed), JSON.stringify(['lifting', 'liftplan']), 'Lifting Supervisor scope must strictly equal [lifting, liftplan]');
+
 // Role Type Scopes
 const blastingScope = evalInVM("roleTypeScope('blasting-incharge')");
 assert.strictEqual(JSON.stringify(blastingScope), JSON.stringify(['blasting']), 'Blasting In-charge roleTypeScope must strictly equal [blasting]');
-console.log('  ✓ PASS: Statutory RBAC boundaries between Site Supervisor, Blasting In-charge, and Electrician verified');
+
+const liftScope = evalInVM("roleTypeScope('lift-supervisor')");
+assert.strictEqual(JSON.stringify(liftScope), JSON.stringify(['lifting', 'liftplan']), 'Lifting Supervisor roleTypeScope must strictly equal [lifting, liftplan]');
+console.log('  ✓ PASS: Statutory RBAC boundaries between Site Supervisor, Blasting In-charge, Electrician, and Lifting Supervisor verified');
 
 console.log('\n==================================================');
 console.log('ALL SUITE 19 AUDIT REMEDIATION & SECURITY TESTS PASSED (100% SUCCESS)');

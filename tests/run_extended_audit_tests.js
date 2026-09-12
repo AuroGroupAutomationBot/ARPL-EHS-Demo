@@ -461,7 +461,7 @@ runSuite('KPI Screen & Analytics Calculations', () => {
     assert(adminDashboardHtml.includes('Total Permits'), 'Admin dashboard renders "Total Permits" KPI card');
     assert(adminDashboardHtml.includes('Geofence Configured'), 'Admin dashboard renders "Geofence Configured" KPI card');
     assert(adminDashboardHtml.includes('Status Distribution'), 'Admin dashboard renders "Status Distribution" analytics table');
-    assert(adminDashboardHtml.includes('PTW-001 to PTW-008') || adminDashboardHtml.includes('PTW-001 to PTW-005'), 'Admin Total Permits card displays all active permit modules');
+    assert(adminDashboardHtml.includes('PTW-001 to PTW-009') || adminDashboardHtml.includes('PTW-001 to PTW-008') || adminDashboardHtml.includes('PTW-001 to PTW-005'), 'Admin Total Permits card displays all active permit modules');
 
     // Resilience test: Empty permits array should not crash dashboard
     const backupPermits = [...app.PERMITS];
