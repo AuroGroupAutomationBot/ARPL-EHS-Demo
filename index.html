@@ -5282,7 +5282,7 @@
                     key: 'lifting',
                     code: 'PTW-009',
                     name: 'Lifting Operations & Lift Plan',
-                    short: 'Lifting',
+                    short: 'Lifting Operations',
                     prefix: 'PTW-009A',
                     form: 'PTW-009A',
                     sh: 'hw-section-head',
@@ -10436,7 +10436,7 @@
             // 1. Dynamic Supported Permits Bar
             const permitsBar = document.getElementById('landingPermitsBar') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-permits-bar') : null);
             if (permitsBar && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
-                const availableTypes = Object.values(APP_CONFIG.permitTypes).filter(t => t.available !== false);
+                const availableTypes = Object.values(APP_CONFIG.permitTypes).filter(t => t.available !== false && !t.hiddenFromGrid);
                 permitsBar.innerHTML = availableTypes.map(t => 
                     '<span class="ptype-pill"><i class="fa-solid ' + t.icon + '"></i> ' + t.code + ' ' + (t.short || t.name) + '</span>'
                 ).join('');
@@ -10475,7 +10475,7 @@
             const footerPermits = document.getElementById('landingFooterPermits');
             if (footerPermits && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
                 const pList = Object.values(APP_CONFIG.permitTypes)
-                    .filter(t => t.available !== false)
+                    .filter(t => t.available !== false && !t.hiddenFromGrid)
                     .map(t => t.code + ' ' + (t.short || t.name));
                 footerPermits.innerHTML = pList.join(' &bull; ');
             }
@@ -11055,9 +11055,9 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const tSel = document.getElementById('regTypeFilter');
             if (tSel) {
                 const prevVal = tSel.value;
-                const typesList = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes)
+                const typesList = ((typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes)
                     ? Object.values(APP_CONFIG.permitTypes)
-                    : PERMIT_TYPES;
+                    : PERMIT_TYPES).filter(t => !t.hiddenFromGrid);
                 tSel.innerHTML = '<option value="">All Permit Types</option>' + typesList.map(t => {
                     return '<option value="' + t.key + '">' + escapeHtml(t.name) + ' (' + t.code + ')</option>';
                 }).join('');
@@ -11097,7 +11097,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             let rows = PERMITS.filter(p => {
                 if (!isPermitVisibleToRole(p, currentUser ? currentUser.key : null)) return false;
                 if (!permitMatchesScope(p, scope)) return false;   // Tower Incharge only sees allowed modules
-                if (tf && ptypeOf(p) !== tf) return false;
+                if (tf && (tf === 'lifting' ? (ptypeOf(p) !== 'lifting' && ptypeOf(p) !== 'liftplan') : ptypeOf(p) !== tf)) return false;
                 if (sf && p.status !== sf && !(sf === 'Pending Section Head' && (p.status === 'Pending Tower Incharge' || p.status === 'Pending Excavation Head'))) return false;
                 if (pf && p.project !== pf) return false;
                 if (q && !((p.id || '').toLowerCase().includes(q) || (p.project || '').toLowerCase().includes(q) || (p.location || '').toLowerCase().includes(q) || (p.tower || '').toLowerCase().includes(q) || (pMeta(p).name || '').toLowerCase().includes(q) || (pMeta(p).code || '').toLowerCase().includes(q) || (p.contractor || '').toLowerCase().includes(q))) return false;

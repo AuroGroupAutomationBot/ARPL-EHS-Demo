@@ -211,7 +211,19 @@ assert(liftingCards[0].name.includes('Lifting Operations'), 'The tile name must 
 const hiddenCards = ptypes.filter(m => m.hiddenFromGrid);
 assert(hiddenCards.some(m => m.key === 'liftplan'), 'PTW-009B (liftplan) must be hidden from grid tile list');
 
-console.log('  ✓ PASS: Single unified tile PTW-009 verified in catalog; PTW-009B cleanly hidden from grid');
+// Verify dynamic landing bar and footer only render PTW-009 Lifting Operations (never PTW-009B)
+evalInVM('renderLandingDynamicSections()');
+const landingBar = domElements.get('landingPermitsBar');
+assert(landingBar, 'landingPermitsBar must exist');
+assert(!landingBar.innerHTML.includes('PTW-009B'), 'Landing permits bar must not include PTW-009B');
+assert(landingBar.innerHTML.includes('PTW-009 Lifting Operations'), 'Landing permits bar must include PTW-009 Lifting Operations');
+
+const footerPermits = domElements.get('landingFooterPermits');
+assert(footerPermits, 'landingFooterPermits must exist');
+assert(!footerPermits.innerHTML.includes('PTW-009B'), 'Landing footer permits must not include PTW-009B');
+assert(footerPermits.innerHTML.includes('PTW-009 Lifting Operations'), 'Landing footer permits must include PTW-009 Lifting Operations');
+
+console.log('  ✓ PASS: Single unified tile PTW-009 verified in catalog and landing page; PTW-009B cleanly hidden from grid');
 
 // --- 4. Pre-Location Signatures Gate ---
 console.log('\n--- 4. Pre-Location Signatures Gate ---');
