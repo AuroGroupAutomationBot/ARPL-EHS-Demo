@@ -3436,6 +3436,37 @@
                 margin-bottom: 12px;
             }
 
+            .landing-permits-bar {
+                display: grid;
+                grid-template-columns: repeat(2, 1fr);
+                gap: 7px;
+                width: 100%;
+                max-width: 380px;
+                margin: 14px auto 0;
+            }
+
+            .landing-permits-bar .ptype-pill {
+                width: 100%;
+                justify-content: center;
+                padding: 6px 8px;
+                font-size: 11px;
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                box-sizing: border-box;
+            }
+
+            .landing-permits-bar .ptype-pill i {
+                flex-shrink: 0;
+            }
+
+            .landing-permits-bar .ptype-pill:last-child {
+                grid-column: span 2;
+                justify-content: center;
+                max-width: 250px;
+                margin: 0 auto;
+            }
+
             .landing-role-section {
                 order: 2;
                 margin-top: 4px;
@@ -4002,6 +4033,16 @@
 
             .role-grid {
                 grid-template-columns: 1fr;
+            }
+
+            .landing-permits-bar {
+                grid-template-columns: 1fr;
+                max-width: 260px;
+            }
+
+            .landing-permits-bar .ptype-pill:last-child {
+                grid-column: span 1;
+                max-width: 100%;
             }
 
             .step-node .circ {
