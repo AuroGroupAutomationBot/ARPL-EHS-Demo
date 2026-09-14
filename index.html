@@ -2024,7 +2024,8 @@
             align-items: center;
             padding: 60px 20px 40px;
             position: relative;
-            overflow: hidden;
+            overflow-x: clip;
+            overflow-y: visible;
         }
 
         .landing-decor {
@@ -2165,6 +2166,10 @@
 
         .statutory-tag i {
             color: #60A5FA;
+        }
+
+        .landing-mobile-cta {
+            display: none;
         }
 
         /* 4-Stage Governance Workflow Ribbon */
@@ -3419,7 +3424,39 @@
             }
 
             .landing {
-                padding: 36px 14px 28px;
+                padding: 26px 14px 28px;
+                display: flex;
+                flex-direction: column;
+                overflow-x: clip;
+                overflow-y: visible;
+            }
+
+            .landing-brand {
+                order: 1;
+                margin-bottom: 12px;
+            }
+
+            .landing-role-section {
+                order: 2;
+                margin-top: 4px;
+                margin-bottom: 20px;
+            }
+
+            .landing-workflow-strip {
+                order: 3;
+                flex-direction: column;
+                gap: 12px;
+                padding: 14px 16px;
+                margin: 16px 0 20px;
+            }
+
+            .landing-footer {
+                order: 4;
+            }
+
+            .landing-mobile-cta {
+                display: block;
+                margin: 14px 0 6px;
             }
 
             .landing-mark {
@@ -3438,13 +3475,6 @@
                 font-size: 12px;
             }
 
-            .landing-workflow-strip {
-                flex-direction: column;
-                gap: 12px;
-                padding: 14px 16px;
-                margin: 18px 0 20px;
-            }
-
             .lw-arrow {
                 display: none;
             }
@@ -3457,14 +3487,30 @@
 
             .role-filter-tabs {
                 width: 100%;
-                overflow-x: auto;
+                display: flex;
+                flex-wrap: wrap;
+                gap: 8px;
                 padding-bottom: 4px;
-                -webkit-overflow-scrolling: touch;
+            }
+
+            .rf-tab {
+                min-height: 38px;
+                display: inline-flex;
+                align-items: center;
+                gap: 6px;
+                padding: 7px 12px;
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
             }
 
             .role-grid {
                 grid-template-columns: 1fr;
                 gap: 12px;
+            }
+
+            .role-card {
+                touch-action: manipulation;
+                -webkit-tap-highlight-color: transparent;
             }
 
             .landing-decor {
@@ -3630,7 +3676,35 @@
             }
 
             .role-badge {
-                display: none !important;
+                display: flex !important;
+                align-items: center;
+                gap: 5px;
+                padding: 4px 8px;
+                background: rgba(240, 244, 248, 0.95);
+                border: 1px solid var(--border);
+                border-radius: 6px;
+                max-width: 135px;
+                flex-shrink: 1;
+            }
+
+            .role-badge i {
+                font-size: 11px;
+                color: var(--orange);
+                flex-shrink: 0;
+            }
+
+            .role-badge .role-badge-label {
+                display: none;
+            }
+
+            .role-badge-value {
+                font-size: 11px;
+                font-weight: 700;
+                color: var(--navy);
+                white-space: nowrap;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-width: 95px;
             }
 
             .icon-btn {
@@ -4011,12 +4085,19 @@
             .check-pill,
             .modal-close,
             .filter-bar select,
-            .filter-bar input {
+            .filter-bar input,
+            .rf-tab,
+            .btn-hero-roles {
                 min-height: 44px;
             }
 
+            .role-card {
+                padding: 18px 16px;
+                touch-action: manipulation;
+            }
+
             .nav-link {
-                padding: 11px 12px;
+                padding: 12px 14px;
             }
 
             .tab-btn {
@@ -4394,6 +4475,13 @@
                 <span class="statutory-tag"><i class="fa-solid fa-clock"></i> Live Indian Standard Time (IST)</span>
                 <span class="statutory-tag"><i class="fa-solid fa-location-crosshairs"></i> GPS Geofence Verification</span>
             </div>
+
+            <!-- Mobile Direct Jump Button -->
+            <div class="landing-mobile-cta" style="margin-top:14px;width:100%;text-align:center;">
+                <a href="#landingRoleSection" onclick="document.getElementById('landingRoleSection').scrollIntoView({behavior:'smooth'});return false;" class="btn-hero-roles" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:#fff;font-weight:700;font-size:13px;padding:10px 20px;border-radius:100px;text-decoration:none;box-shadow:0 4px 14px rgba(232,96,10,0.35);transition:all .2s ease;">
+                    <i class="fa-solid fa-users-gear"></i> Choose Persona to Enter <i class="fa-solid fa-arrow-down"></i>
+                </a>
+            </div>
         </div>
 
         <!-- 4-Stage Governance Workflow Ribbon -->
@@ -4432,7 +4520,7 @@
         </div>
 
         <!-- Interactive Role Switcher Header & Filter Tabs -->
-        <div class="landing-role-section">
+        <div class="landing-role-section" id="landingRoleSection">
             <div class="landing-role-header">
                 <div>
                     <h2><i class="fa-solid fa-users-gear" style="color:var(--orange);"></i> Select a Role to Enter the Demonstration</h2>
@@ -4876,9 +4964,13 @@
            DST, so a fixed +05:30 offset from true UTC is exact. All permit timestamps,
            validity windows, office-hour checks and countdowns run in this single IST frame. */
         const IST_OFFSET_MS = 5.5 * 3600000;
-        function nowTime() {
+        function nowTime(offsetMs) {
             const d = new Date();
-            return new Date(d.getTime() + d.getTimezoneOffset() * 60000 + IST_OFFSET_MS);
+            const t = d.getTime() + d.getTimezoneOffset() * 60000 + IST_OFFSET_MS + (typeof offsetMs === 'number' ? offsetMs : 0);
+            return new Date(t);
+        }
+        function nowMs() {
+            return nowTime().getTime();
         }
         function updateTopbarClock() {
             const el = document.getElementById('tcTime'), ed = document.getElementById('tcDate');
@@ -9488,7 +9580,7 @@
                 project: site1.name, tower: 'Tower A', location: 'Basement excavation zone, near shear wall grid C4-C7',
                 gps: site1.site, depth: '3.2', slope: '1:1.5',
                 createdAt: new Date(nowTime() - 3 * 3600 * 1000), submittedAt: new Date(nowTime() - 3 * 3600 * 1000),
-                validTill: new Date(nowTime() + 5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  5 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.5 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.5 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 2.9 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { mep: mkApproved('Duty MEP Engineer', 175), pm: mkApproved('Duty P&M Engineer', 170), it: mkApproved('Duty IT Engineer', 168), sectionHead: mkApproved('Excavation Section Head', 155), ehsManager: mkApproved('EHS Safety Manager', 150), ehsOfficer: mkPending() },
@@ -9507,7 +9599,7 @@
                 project: site1.name, tower: 'Tower B', location: 'Perimeter trench for storm-water drain line',
                 gps: site1.site, depth: '1.8', slope: '1:1',
                 createdAt: new Date(nowTime() - 40 * 60000), submittedAt: new Date(nowTime() - 40 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending Parallel Approval', stageEnteredAt: new Date(nowTime() - 40 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 35 * 60000), by: 'Duty Site Engineer' },
                 approvals: { mep: mkApproved('Duty MEP Engineer', 20), pm: mkPending(), it: mkPending(), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9522,7 +9614,7 @@
                 project: site2.name, tower: 'Block 2', location: 'Lift pit excavation, core zone',
                 gps: site2.site, depth: '2.4', slope: '1:1.25',
                 createdAt: new Date(nowTime() - 90 * 60000), submittedAt: new Date(nowTime() - 90 * 60000),
-                validTill: new Date(nowTime() + 3 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  3 * 3600 * 1000),
                 status: 'Pending Section Head', stageEnteredAt: new Date(nowTime() - 30 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 85 * 60000), by: 'Duty Site Engineer' },
                 approvals: { mep: mkApproved('Duty MEP Engineer', 85), pm: mkApproved('Duty P&M Engineer', 80), it: mkApproved('Duty IT Engineer', 77), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9537,7 +9629,7 @@
                 project: site3.name, tower: 'Tower North', location: 'Utility trench crossing access road',
                 gps: site3.site, depth: '1.5', slope: '1:1',
                 createdAt: new Date(nowTime() - 2 * 3600 * 1000), submittedAt: new Date(nowTime() - 2 * 3600 * 1000),
-                validTill: new Date(nowTime() + 2 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  2 * 3600 * 1000),
                 status: 'Pending EHS Approval', stageEnteredAt: new Date(nowTime() - 12 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 1.9 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { mep: mkApproved('Duty MEP Engineer', 110), pm: mkApproved('Duty P&M Engineer', 108), it: mkApproved('Duty IT Engineer', 104), sectionHead: mkApproved('Excavation Section Head', 95), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9552,7 +9644,7 @@
                 project: site1.name, tower: 'Tower A', location: 'Foundation footing grid D2-D5',
                 gps: site1.site, depth: '2.5', slope: '1:1.5',
                 createdAt: new Date(nowTime() - 15 * 60000), submittedAt: new Date(nowTime() - 15 * 60000),
-                validTill: new Date(nowTime() + 7 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  7 * 3600 * 1000),
                 status: 'Pending Site Engineer Acknowledgment', stageEnteredAt: new Date(nowTime() - 15 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: null,
                 approvals: { mep: mkPending(), pm: mkPending(), it: mkPending(), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9565,7 +9657,7 @@
                 project: site2.name, tower: 'Block 2', location: 'Storm drain excavation along main spine',
                 gps: site2.site, depth: '1.9', slope: '1:1',
                 createdAt: new Date(nowTime() - 4 * 3600 * 1000), submittedAt: new Date(nowTime() - 4 * 3600 * 1000),
-                validTill: new Date(nowTime() + 3 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  3 * 3600 * 1000),
                 status: 'Active – Observation Open', activatedAt: new Date(nowTime() - 3.5 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 30 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 3.9 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { mep: mkApproved('Duty MEP Engineer', 230), pm: mkApproved('Duty P&M Engineer', 225), it: mkApproved('Duty IT Engineer', 220), sectionHead: mkApproved('Excavation Section Head', 215), ehsManager: mkApproved('EHS Safety Manager', 210), ehsOfficer: mkPending() },
@@ -9589,7 +9681,7 @@
                 project: site2.name, tower: 'Block 1', location: 'Ramp excavation for basement vehicular entry',
                 gps: site2.site, depth: '2.0', slope: '1:1.5',
                 createdAt: new Date(nowTime() - 5 * 3600 * 1000), submittedAt: new Date(nowTime() - 5 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Returned for Correction', returnReason: 'Barricading arrangement around excavator swing radius not adequately demonstrated in submitted photo. Please re-verify and attach fresh evidence.', returnedBy: 'MEP Engineer (Duty MEP Engineer)',
                 approvals: { mep: mkPending(), pm: mkApproved('Duty P&M Engineer', 290), it: mkApproved('Duty IT Engineer', 288), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
                 extension: null, closure: null, surrender: null
@@ -9671,7 +9763,7 @@
                 gps: site1.site, hotworkTypes: ['Welding', 'Abrasive wheel cutting'],
                 welderName: 'Ramesh Kumar', welderAffiliation: 'ARPL',
                 createdAt: new Date(nowTime() - 3 * 3600 * 1000), submittedAt: new Date(nowTime() - 3 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.5 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.5 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 2.9 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'hotwork', sectionHead: mkApproved('Duty Tower Incharge', 160), ehsManager: mkApproved('EHS Safety Manager', 150), ehsOfficer: mkPending() },
@@ -9690,7 +9782,7 @@
                 gps: site1.site, hotworkTypes: ['Welding', 'Abrasive wheel cutting'],
                 welderName: 'Sunil Verma', welderAffiliation: 'ARPL',
                 createdAt: new Date(nowTime() - 15 * 60000), submittedAt: new Date(nowTime() - 15 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending Site Engineer Acknowledgment', stageEnteredAt: new Date(nowTime() - 15 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: null,
                 approvals: { kind: 'hotwork', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9706,7 +9798,7 @@
                 gps: site2.site, hotworkTypes: ['Gas Cutting'],
                 welderName: 'Mohammad Ansari', welderAffiliation: 'Subcontractor', welderContractor: 'Apex Heavy Metal Works',
                 createdAt: new Date(nowTime() - 45 * 60000), submittedAt: new Date(nowTime() - 45 * 60000),
-                validTill: new Date(nowTime() + 5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  5 * 3600 * 1000),
                 status: 'Pending Section Head', stageEnteredAt: new Date(nowTime() - 40 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 40 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'hotwork', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9723,7 +9815,7 @@
                 gps: site1.site, hotworkTypes: ['Welding', 'Soldering'],
                 welderName: 'Suresh Patel', welderAffiliation: 'ARPL',
                 createdAt: new Date(nowTime() - 50 * 60000), submittedAt: new Date(nowTime() - 50 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending EHS Approval', stageEnteredAt: new Date(nowTime() - 20 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 45 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'hotwork', sectionHead: mkApproved('Duty Tower Incharge', 20), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9741,7 +9833,7 @@
                 gps: site3.site, hotworkTypes: ['Abrasive wheel cutting'],
                 welderName: 'Vikram Singh', welderAffiliation: 'Subcontractor', welderContractor: 'SteelFab Engineering',
                 createdAt: new Date(nowTime() - 2 * 3600 * 1000), submittedAt: new Date(nowTime() - 2 * 3600 * 1000),
-                validTill: new Date(nowTime() + 3 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  3 * 3600 * 1000),
                 status: 'Returned for Correction', returnReason: 'Item 4 non-compliant: Fire retardant cloth / metal sheet missing at spark drop zone. Please install suitable barrier, retake photo and resubmit.', returnedBy: 'EHS Safety Officer (Duty EHS Officer)',
                 approvals: { kind: 'hotwork', sectionHead: mkApproved('Duty Tower Incharge', 80), ehsManager: mkPending(), ehsOfficer: { status: 'rejected', by: 'Duty EHS Officer', at: new Date(nowTime() - 40 * 60000), gps: site3.site, comment: 'Fire retardant cloth / metal sheet missing at spark drop zone.' } },
                 activityLog: [
@@ -9778,7 +9870,7 @@
                 gps: site1.site, shaftLocationType: 'Tower', shaftFloor: 'Floor 12', numPersonnel: '4',
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 3 * 3600 * 1000), submittedAt: new Date(nowTime() - 3 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.4 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.4 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 2.9 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'shaft', mep: mkApproved('Duty MEP Engineer', 165), sectionHead: mkApproved('Duty Tower Incharge', 155), ehsManager: mkApproved('EHS Safety Manager', 144), ehsOfficer: mkPending() },
@@ -9798,7 +9890,7 @@
                 gps: site1.site, shaftLocationType: 'Tower', shaftFloor: 'Floor 5', numPersonnel: '3',
                 organization: 'Subcontractor', contractor: 'AquaFlow MEP Contracting',
                 createdAt: new Date(nowTime() - 30 * 60000), submittedAt: new Date(nowTime() - 30 * 60000),
-                validTill: new Date(nowTime() + 5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  5 * 3600 * 1000),
                 status: 'Pending MEP Clearance', stageEnteredAt: new Date(nowTime() - 25 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 25 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'shaft', mep: mkPending(), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9815,7 +9907,7 @@
                 gps: site2.site, shaftLocationType: 'Podium', shaftFloor: 'Podium Level 2 (P2)', numPersonnel: '2',
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 40 * 60000), submittedAt: new Date(nowTime() - 40 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending Section Head', stageEnteredAt: new Date(nowTime() - 20 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 35 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'shaft', mep: mkApproved('Duty MEP Engineer', 20), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9863,7 +9955,7 @@
                 activities: ['Removal of Guard rail (Balcony / Common Area / Cutout)', 'Removal of Shaft barrier / Gate'],
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 3.5 * 3600 * 1000), submittedAt: new Date(nowTime() - 3.5 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4.5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4.5 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.8 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.8 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 3.3 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'guardrail', sectionHead: mkApproved('Duty Tower Incharge', 190), ehsManager: mkApproved('EHS Safety Manager', 170), ehsOfficer: mkPending() },
@@ -9884,7 +9976,7 @@
                 activities: ['Floor opening / Cutout cover removal'],
                 organization: 'Contractor', contractor: 'Apex Infrastructure Pvt Ltd',
                 createdAt: new Date(nowTime() - 25 * 60000), submittedAt: new Date(nowTime() - 25 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending Site Engineer Acknowledgment', stageEnteredAt: new Date(nowTime() - 25 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: null,
                 approvals: { kind: 'guardrail', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9902,7 +9994,7 @@
                 activities: ['Removal of Edge protection'],
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 45 * 60000), submittedAt: new Date(nowTime() - 45 * 60000),
-                validTill: new Date(nowTime() + 5.5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  5.5 * 3600 * 1000),
                 status: 'Pending Section Head', stageEnteredAt: new Date(nowTime() - 30 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 30 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'guardrail', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9921,7 +10013,7 @@
                 activities: ['Removal of Guard rail (Balcony / Common Area / Cutout)'],
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 75 * 60000), submittedAt: new Date(nowTime() - 75 * 60000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Pending EHS Approval', stageEnteredAt: new Date(nowTime() - 20 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 60 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'guardrail', sectionHead: mkApproved('Duty Tower Incharge', 20), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -9941,7 +10033,7 @@
                 activities: ['Removal of Guard rail (Balcony / Common Area / Cutout)'],
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 90 * 60000), submittedAt: new Date(nowTime() - 90 * 60000),
-                validTill: new Date(nowTime() + 3.5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  3.5 * 3600 * 1000),
                 status: 'Returned for Correction', returnReason: 'Item 2 non-compliant: Fall protection gear (lifeline and full body harness anchorage) not in place. Install lifeline, retake evidence photo and resubmit.', returnedBy: 'Section Head (Duty Tower Incharge)',
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 75 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'guardrail', sectionHead: { status: 'rejected', by: 'Duty Tower Incharge', at: new Date(nowTime() - 35 * 60000), gps: site2.site, comment: 'Lifeline and full body harness anchorage not in place.' }, ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -10001,7 +10093,7 @@
                 numPersonnel: '3',
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 45 * 60000), submittedAt: new Date(nowTime() - 45 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending Site Engineer Acknowledgment', stageEnteredAt: new Date(nowTime() - 45 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: null,
                 approvals: { kind: 'confined', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -10021,7 +10113,7 @@
                 numPersonnel: '2',
                 organization: 'Contractor', contractor: 'HydraClean Environmental Services',
                 createdAt: new Date(nowTime() - 3.5 * 3600 * 1000), submittedAt: new Date(nowTime() - 3.5 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4.5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4.5 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.8 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.8 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 3.3 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'confined', sectionHead: mkApproved('Duty Tower Incharge', 190), ehsManager: mkApproved('EHS Safety Manager', 170), ehsOfficer: mkPending() },
@@ -10044,7 +10136,7 @@
                 numPersonnel: '4',
                 organization: 'ARPL',
                 createdAt: new Date(nowTime() - 4 * 3600 * 1000), submittedAt: new Date(nowTime() - 4 * 3600 * 1000),
-                validTill: new Date(nowTime() + 3.5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  3.5 * 3600 * 1000),
                 status: 'Active – Observation Open', activatedAt: new Date(nowTime() - 3.5 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 30 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 3.8 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'confined', sectionHead: mkApproved('Duty Tower Incharge', 230), ehsManager: mkApproved('EHS Safety Manager', 210), ehsOfficer: mkPending() },
@@ -10111,7 +10203,7 @@
                     locManualArea: 'Deep Foundation Cutting Sector 4',
                     drillingBlastingType: 'blasting',
                     dbOperationType: 'Blasting',
-                    dbDateTime: new Date(nowTime() + 2 * 3600 * 1000).toISOString().slice(0, 16),
+                    dbDateTime: new Date(nowTime().getTime() +  2 * 3600 * 1000).toISOString().slice(0, 16),
                     dbChargeAmount: '25.5',
                     dbBlastDiameter: '0.115',
                     dbBlastDepth: '6.0',
@@ -10144,7 +10236,7 @@
                 drillingBlastingType: 'blasting',
                 dbOperationType: 'Blasting',
                 createdAt: new Date(nowTime() - 35 * 60000), submittedAt: new Date(nowTime() - 35 * 60000),
-                validTill: new Date(nowTime() + 5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  5 * 3600 * 1000),
                 status: 'Pending Blasting In-charge Acknowledgment', stageEnteredAt: new Date(nowTime() - 35 * 60000), escalation: { stage1: false, stage2: false },
                 approvals: { kind: 'blasting', ehsManager: mkPending(), ehsOfficer: mkPending() },
                 activityLog: [
@@ -10168,7 +10260,7 @@
                 blastingRigHolesLoaded: null, blastingRigHoleDepthM: null, blastingRigHoleDepthFt: null, blastingMufflerLayers: null, blastingSafeDistance: null,
                 dbOtherPrecautions: 'Water mist suppression installed at rig exhaust to prevent dust dispersion.',
                 createdAt: new Date(nowTime() - 3 * 3600 * 1000), submittedAt: new Date(nowTime() - 3 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.2 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.2 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 2.6 * 3600 * 1000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'blasting', ehsManager: mkApproved('EHS Safety Manager', 130), ehsOfficer: mkPending() },
@@ -10223,7 +10315,7 @@
                 location: 'Tower 2 - Floor 8 - Core Wall C',
                 gps: site1.site,
                 createdAt: new Date(nowTime() - 40 * 60000), submittedAt: new Date(nowTime() - 40 * 60000),
-                validTill: new Date(nowTime() + 6 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  6 * 3600 * 1000),
                 status: 'Pending Site Engineer Acknowledgment', stageEnteredAt: new Date(nowTime() - 40 * 60000),
                 escalation: { stage1: false, stage2: false },
                 approvals: { kind: 'general', sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -10242,7 +10334,7 @@
                 location: 'Tower 1 - Floor 16 - External Glazing Grid 3',
                 gps: site2.site,
                 createdAt: new Date(nowTime() - 4 * 3600 * 1000), submittedAt: new Date(nowTime() - 4 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.8 * 3600 * 1000),
                 stageEnteredAt: new Date(nowTime() - 2.8 * 3600 * 1000),
                 escalation: { stage1: false, stage2: false },
@@ -10302,7 +10394,7 @@
                 locManual: 'Batching Plant Yard A',
                 locManualArea: 'Main MCC-01 Feeder Panel',
                 createdAt: new Date(nowTime() - 4 * 3600 * 1000), submittedAt: new Date(nowTime() - 4 * 3600 * 1000),
-                validTill: new Date(nowTime() + 4 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  4 * 3600 * 1000),
                 status: 'Active', activatedAt: new Date(nowTime() - 2.5 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2.5 * 3600 * 1000), escalation: { stage1: false, stage2: false },
                 pmAck: { acknowledged: true, at: new Date(nowTime() - 3.5 * 3600 * 1000), by: 'P&M Plant Engineer', statutoryDeclaration: true },
                 approvals: { kind: 'electrical', pm: mkApproved('P&M Plant Engineer', 210), qualityEngineer: mkApproved('Lead Quality Engineer', 180), ehsManager: mkApproved('EHS Safety Manager', 150), ehsOfficer: mkPending() },
@@ -10332,7 +10424,7 @@
                 lotoRegisterNo: 'LOTO-SITE-2026-114',
                 lotoDateTime: new Date(nowTime() - 45 * 60000).toISOString().slice(0, 16),
                 createdAt: new Date(nowTime() - 45 * 60000), submittedAt: new Date(nowTime() - 45 * 60000),
-                validTill: new Date(nowTime() + 5 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() +  5 * 3600 * 1000),
                 status: 'Pending MEP or P&M Approval', stageEnteredAt: new Date(nowTime() - 20 * 60000), escalation: { stage1: false, stage2: false },
                 siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 20 * 60000), by: 'Duty Site Engineer' },
                 approvals: { kind: 'electrical', siteEngineer: mkApproved('Duty Site Engineer', 20), mep: mkPending(), pm: mkPending(), sectionHead: mkPending(), ehsManager: mkPending(), ehsOfficer: mkPending() },
@@ -10425,7 +10517,11 @@
                 }
             });
         }
-        if (!loadState()) { seedPermits(); stampSeedSignatures(); }
+        try {
+            if (!loadState()) { seedPermits(); stampSeedSignatures(); }
+        } catch (err) {
+            console.error('Initial state load or permit seeding error:', err);
+        }
 
         /* ================================================================
            AUTH / LANDING & DYNAMIC CONFIG-DRIVEN SECTIONS
@@ -10433,51 +10529,55 @@
         let currentRoleFilter = 'all';
 
         function renderLandingDynamicSections() {
-            // 1. Dynamic Supported Permits Bar
-            const permitsBar = document.getElementById('landingPermitsBar') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-permits-bar') : null);
-            if (permitsBar && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
-                const availableTypes = Object.values(APP_CONFIG.permitTypes).filter(t => t.available !== false && !t.hiddenFromGrid);
-                permitsBar.innerHTML = availableTypes.map(t => 
-                    '<span class="ptype-pill"><i class="fa-solid ' + t.icon + '"></i> ' + t.code + ' ' + (t.short || t.name) + '</span>'
-                ).join('');
-            }
+            try {
+                // 1. Dynamic Supported Permits Bar
+                const permitsBar = document.getElementById('landingPermitsBar') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-permits-bar') : null);
+                if (permitsBar && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
+                    const availableTypes = Object.values(APP_CONFIG.permitTypes).filter(t => t.available !== false && !t.hiddenFromGrid);
+                    permitsBar.innerHTML = availableTypes.map(t => 
+                        '<span class="ptype-pill"><i class="fa-solid ' + t.icon + '"></i> ' + t.code + ' ' + (t.short || t.name) + '</span>'
+                    ).join('');
+                }
 
-            // 2. Dynamic Governance Workflow Ribbon
-            const strip = document.getElementById('landingWorkflowStrip') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-workflow-strip') : null);
-            if (strip && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.governanceStages) {
-                strip.innerHTML = APP_CONFIG.governanceStages.map((st, idx) => {
-                    const arrow = (idx < APP_CONFIG.governanceStages.length - 1)
-                        ? '<div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>'
-                        : '';
-                    return '<div class="lw-step">' +
-                        '<div class="lw-num">' + st.step + '</div>' +
-                        '<div class="lw-content">' +
-                            '<div class="lw-title">' + escapeHtml(st.title) + '</div>' +
-                            '<div class="lw-desc">' + escapeHtml(st.desc) + '</div>' +
-                        '</div>' +
-                    '</div>' + arrow;
-                }).join('');
-            }
+                // 2. Dynamic Governance Workflow Ribbon
+                const strip = document.getElementById('landingWorkflowStrip') || (typeof document !== 'undefined' && document.querySelector ? document.querySelector('.landing-workflow-strip') : null);
+                if (strip && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.governanceStages) {
+                    strip.innerHTML = APP_CONFIG.governanceStages.map((st, idx) => {
+                        const arrow = (idx < APP_CONFIG.governanceStages.length - 1)
+                            ? '<div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>'
+                            : '';
+                        return '<div class="lw-step">' +
+                            '<div class="lw-num">' + st.step + '</div>' +
+                            '<div class="lw-content">' +
+                                '<div class="lw-title">' + escapeHtml(st.title) + '</div>' +
+                                '<div class="lw-desc">' + escapeHtml(st.desc) + '</div>' +
+                            '</div>' +
+                        '</div>' + arrow;
+                    }).join('');
+                }
 
-            // 3. Dynamic Role Filter Tabs with live role counts
-            const tabsContainer = document.getElementById('roleFilterTabs');
-            if (tabsContainer && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.roleCategories && typeof ROLES !== 'undefined') {
-                tabsContainer.innerHTML = APP_CONFIG.roleCategories.map(cat => {
-                    const count = cat.key === 'all'
-                        ? ROLES.length
-                        : ROLES.filter(r => r.cat === cat.key).length;
-                    const isActive = currentRoleFilter === cat.key ? ' active' : '';
-                    return '<button class="rf-tab' + isActive + '" onclick="filterRoles(\'' + cat.key + '\', this)"><i class="fa-solid ' + cat.icon + '"></i> ' + escapeHtml(cat.label) + ' (' + count + ')</button>';
-                }).join('');
-            }
+                // 3. Dynamic Role Filter Tabs with live role counts
+                const tabsContainer = document.getElementById('roleFilterTabs');
+                if (tabsContainer && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.roleCategories && typeof ROLES !== 'undefined') {
+                    tabsContainer.innerHTML = APP_CONFIG.roleCategories.map(cat => {
+                        const count = cat.key === 'all'
+                            ? ROLES.length
+                            : ROLES.filter(r => r.cat === cat.key).length;
+                        const isActive = currentRoleFilter === cat.key ? ' active' : '';
+                        return '<button class="rf-tab' + isActive + '" onclick="filterRoles(\'' + cat.key + '\', this)"><i class="fa-solid ' + cat.icon + '"></i> ' + escapeHtml(cat.label) + ' (' + count + ')</button>';
+                    }).join('');
+                }
 
-            // 4. Dynamic Footer Permit Types
-            const footerPermits = document.getElementById('landingFooterPermits');
-            if (footerPermits && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
-                const pList = Object.values(APP_CONFIG.permitTypes)
-                    .filter(t => t.available !== false && !t.hiddenFromGrid)
-                    .map(t => t.code + ' ' + (t.short || t.name));
-                footerPermits.innerHTML = pList.join(' &bull; ');
+                // 4. Dynamic Footer Permit Types
+                const footerPermits = document.getElementById('landingFooterPermits');
+                if (footerPermits && typeof APP_CONFIG !== 'undefined' && APP_CONFIG.permitTypes) {
+                    const pList = Object.values(APP_CONFIG.permitTypes)
+                        .filter(t => t.available !== false && !t.hiddenFromGrid)
+                        .map(t => t.code + ' ' + (t.short || t.name));
+                    footerPermits.innerHTML = pList.join(' &bull; ');
+                }
+            } catch (err) {
+                console.error('renderLandingDynamicSections error:', err);
             }
         }
 
@@ -10493,23 +10593,33 @@
             buildRoleCards();
         }
         function buildRoleCards() {
-            const grid = document.getElementById('roleCardsGrid');
-            if (!grid) return;
-            const list = (currentRoleFilter && currentRoleFilter !== 'all')
-                ? ROLES.filter(r => r.cat === currentRoleFilter)
-                : ROLES;
-            grid.innerHTML = list.map(r =>
-                '<div class="role-card" onclick="doLogin(\'' + r.key + '\')">' +
-                '<div class="role-card-top">' +
-                '<div class="role-card-icon"><i class="fa-solid ' + r.icon + '"></i></div>' +
-                '<span class="role-tier-badge" style="background:' + (r.tierBg || 'rgba(232,96,10,0.15)') + ';color:' + (r.tierColor || 'var(--orange)') + ';"><i class="fa-solid fa-layer-group"></i> ' + escapeHtml(r.tier || 'Role') + '</span>' +
-                '</div>' +
-                '<h3 class="role-card-name">' + escapeHtml(r.label) + '</h3>' +
-                '<div class="role-card-sub">' + escapeHtml(r.sub) + '</div>' +
-                '<p class="role-card-desc">' + escapeHtml(r.desc) + '</p>' +
-                '<div class="role-card-cta">Enter as ' + escapeHtml(r.label) + ' <i class="fa-solid fa-arrow-right"></i></div>' +
-                '</div>'
-            ).join('');
+            try {
+                const grid = document.getElementById('roleCardsGrid');
+                if (!grid) return;
+                const list = (currentRoleFilter && currentRoleFilter !== 'all')
+                    ? ROLES.filter(r => r.cat === currentRoleFilter)
+                    : ROLES;
+                grid.innerHTML = list.map(r =>
+                    '<div class="role-card" onclick="doLogin(\'' + r.key + '\')">' +
+                    '<div class="role-card-top">' +
+                    '<div class="role-card-icon"><i class="fa-solid ' + r.icon + '"></i></div>' +
+                    '<span class="role-tier-badge" style="background:' + (r.tierBg || 'rgba(232,96,10,0.15)') + ';color:' + (r.tierColor || 'var(--orange)') + ';"><i class="fa-solid fa-layer-group"></i> ' + escapeHtml(r.tier || 'Role') + '</span>' +
+                    '</div>' +
+                    '<h3 class="role-card-name">' + escapeHtml(r.label) + '</h3>' +
+                    '<div class="role-card-sub">' + escapeHtml(r.sub) + '</div>' +
+                    '<p class="role-card-desc">' + escapeHtml(r.desc) + '</p>' +
+                    '<div class="role-card-cta">Enter as ' + escapeHtml(r.label) + ' <i class="fa-solid fa-arrow-right"></i></div>' +
+                    '</div>'
+                ).join('');
+            } catch (err) {
+                console.error('buildRoleCards error:', err);
+            }
+        }
+        try {
+            renderLandingDynamicSections();
+            buildRoleCards();
+        } catch (err) {
+            console.error('Initial landing rendering error:', err);
         }
         function doLogin(roleKey) {
             currentUser = Object.assign({ name: '' }, roleInfo(roleKey));

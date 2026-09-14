@@ -333,7 +333,7 @@ const activeBlasting = {
     dbOperationType: 'Blasting',
     status: 'Active',
     startTime: '09:00',
-    validTill: new Date(nowTime() + 7200000)
+    validTill: new Date(nowTime().getTime() + 7200000)
 };
 PERMITS.push(activeBlasting);
 `);
@@ -357,7 +357,7 @@ const activeDrilling = {
     dbOperationType: 'Drilling',
     status: 'Active',
     startTime: '09:00',
-    validTill: new Date(nowTime() + 7200000)
+    validTill: new Date(nowTime().getTime() + 7200000)
 };
 PERMITS.push(activeDrilling);
 `);
@@ -373,7 +373,7 @@ const activeElec = {
     electricalSiteType: 'site',
     status: 'Active',
     startTime: '09:00',
-    validTill: new Date(nowTime() + 7200000)
+    validTill: new Date(nowTime().getTime() + 7200000)
 };
 PERMITS.push(activeElec);
 `);
