@@ -27,7 +27,8 @@ const suites = [
     { num: 18, name: 'PTW-008 GENERAL WORK (FORM PTW-008) SPECIFICATION & COMPLIANCE', file: 'test_pt08_general_work.js' },
     { num: 19, name: 'FORENSIC AUDIT REMEDIATION, SECURITY & RUNTIME ROBUSTNESS', file: 'test_audit_remediation_security.js' },
     { num: 20, name: 'DYNAMIC & CONFIGURATION-DRIVEN ENTERPRISE ARCHITECTURE', file: 'test_dynamic_config_architecture.js' },
-    { num: 21, name: 'PTW-009 LIFTING OPERATIONS & CRITICAL LIFT PLAN (PTW-009A/B) COMPLIANCE', file: 'test_pt09_lifting_operations.js' }
+    { num: 21, name: 'PTW-009 LIFTING OPERATIONS & CRITICAL LIFT PLAN (PTW-009A/B) COMPLIANCE', file: 'test_pt09_lifting_operations.js' },
+    { num: 22, name: 'DRAFT RESUMPTION, SUB-TABLE SCROLL FIX & PART A/B CHECKBOXES', file: 'test_draft_and_pt09_subtables.js' }
 ];
 
 console.log('================================================================');

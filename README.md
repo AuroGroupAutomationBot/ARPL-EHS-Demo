@@ -987,32 +987,61 @@ If the user checks **YES** to any of the following 14 high-risk criteria during 
 | **14** | Heavy plant machinery, generator, transformer, or chiller positioning | Confined basement/roof installation | Floor structural slab load rating certification |
 
 #### 5. Step 2 Statutory Safety Checklist (14 Items: `CHECKLIST_ITEMS_LIFTING`)
-Form ID: `PTW-009A` / `PTW-009B` · Evaluated via `CHECKLIST_ITEMS_LIFTING`:
+Form ID: `PTW-009A` / `PTW-009B` · Common Safety Points & Requirements evaluated via `CHECKLIST_ITEMS_LIFTING` phrased as actionable inspection questions:
 
-| # | Statutory Inspection Item | Category | Required Response | Construction Engineering Rationale |
+| # | Statutory Inspection Question | Category | Required Response | Statutory Engineering Rationale |
 |:---:|:---|:---|:---:|:---|
-| **1** | Is certified and competent Crane Operator and Signaler/Rigger deployed? | Personnel Competency | **YES** / NA | Validates third-party certification, visual acuity, and on-site competency credentials. |
-| **2** | Are valid Third-Party Inspection (TPI) certificates available for crane and all lifting tools/tackles? | Certification | **YES** / NA | Form 11 statutory register compliance; verifies annual proof load test certification. |
-| **3** | Is physical pre-use inspection of crane, wire ropes, hooks, sheaves, limit switches carried out? | Equipment Health | **YES** / NA | Prevents catastrophic mechanical failure; tests anti-two-block (A2B) switches. |
-| **4** | Is lifting area barricaded with warning signages and unauthorized personnel excluded? | Perimeter Safety | **YES** / NA | 360-degree swing counterweight and drop zone exclusion zone established. |
-| **5** | Are crane outriggers fully extended on firm, compacted ground with load-spreading outrigger pads? | Ground Stability | **YES** / NA | Prevents punch-through ground failure; ensures 100% outrigger extension. |
-| **6** | Is weight of load verified and within crane's safe working load (SWL) for operating radius? | Load Management | **YES** / NA | Precludes crane overturning; validates load chart derating at maximum reach. |
-| **7** | Are slings, shackles, spreader beams inspected and free from cuts, kinks, deformation, or wear? | Rigging Gear | **YES** / NA | Eliminates rigging failure; verifies color-coded monthly inspection tags. |
-| **8** | Is safe sling angle maintained ($\ge 45^\circ$ from horizontal, preferably $\ge 60^\circ$)? | Geometry Safety | **YES** / NA | Prevents severe overstressing of multi-leg slings at shallow angles. |
-| **9** | Are taglines attached to control load swinging and rotation during lift? | Load Control | **YES** / NA | Enables riggers to guide loads from safe standoff distances without touching loads. |
-| **10** | Is clear communication established between Crane Operator and Signaler (hand signals / walkie-talkie)? | Telemetry & Signals | **YES** / NA | Dedicated radio channel assigned; standard OSHA/BS hand signal protocols. |
-| **11** | Are overhead power lines and adjacent structures identified and minimum clearance maintained? | Electrical Hazard | **YES** / NA | Prevents fatal boom contact with live cables; enforces statutory 10m buffer. |
-| **12** | Are weather conditions verified safe (wind speed, rain, lighting, visibility)? | Environmental | **YES** / NA | Mobile crane limit: $\le 38\text{ km/h}$; Tower crane limit: $\le 45\text{ km/h}$. |
-| **13** | For critical/tandem lift: is detailed Lift Plan prepared, verified, and briefed to all crew? | Critical Operations | **YES** / NA | Evaluates multi-crane synchrony, load transfer paths, and emergency abort procedures. |
-| **14** | Is emergency response plan ready and first-aid / fire-fighting equipment available at lift zone? | Emergency Preparedness | **YES** / NA | Readies on-site emergency retrieval procedures in the event of an unplanned incident. |
+| **1** | Are outriggers fully extended on solid ground? (MC) | Ground Stability | **YES** / NO / NA | Prevents punch-through ground failure; ensures 100% outrigger extension. |
+| **2** | Is the swivel hook in good condition with free rotation? | Equipment Health | **YES** / NO / NA | Prevents twist-induced sling failure and load tilting during hoisting. |
+| **3** | Are heavy timber or steel plates used under outriggers on soft ground? (MC) | Ground Stability | **YES** / NO / NA | Distributes heavy point loads across adequate bearing area on uncompacted soil. |
+| **4** | Is a safety latch provided on the hook and in good working condition? | Hook Safety | **YES** / NO / NA | Eliminates risk of accidental sling detachment or jump-out under dynamic loads. |
+| **5** | Is the crane manufacturer manual and load chart available in the operator cabin? (TC/MC) | Documentation | **YES** / NO / NA | Ensures operator has immediate access to certified manufacturer rated capacities. |
+| **6** | Are the hoist limit switch, anti-two-block, and warning bell in good working condition? | Safety Limits | **YES** / NO / NA | Prevents catastrophic contact between hook block and boom head; audible warning. |
+| **7** | Are wire rope, webbing, and chain slings in good condition without cuts, kinks, or wear? | Rigging Tackle | **YES** / NO / NA | Eliminates rigging failure; verifies color-coded monthly inspection validity. |
+| **8** | Is the windscreen of the crane operator cabin clean and clear? | Visual Clearance | **YES** / NO / NA | Ensures uninterrupted 360° sightlines of the load, signalman, and perimeter. |
+| **9** | Has a valid Third Party Inspection (TPI / Form 10/Form 11) certificate been verified for TC/MC? | Compliance | **YES** / NO / NA | Mandatory statutory proof load testing and structural fitness under Indian Factories Act. |
+| **10** | Have the crane operator and signalman been briefed thoroughly on the scope of work and safety precautions? | Workforce Briefing | **YES** / NO / NA | Pre-lift toolbox talk alignment on sling hitching, load path, and hand signals. |
+| **11** | Are all safety limit switches (hoist, boom, trolley) in working condition? | Mechanical Limits | **YES** / NO / NA | Verifies physical cut-off limiters for slewing, trolleying, and luffing motions. |
+| **12** | Has the crane operator's statutory heavy equipment driving license / competency card been verified? | Competency | **YES** / NO / NA | Validates statutory driver's license with heavy commercial endorsement and TPI badge. |
+| **13** | Does the lifting equipment have sufficient rated SWL capacity for the planned lift radius? | Capacity Verification | **YES** / NO / NA | Verifies operating radius against manufacturer derating load chart. |
+| **14** | Is the signalman / rigger provided with a dedicated two-way radio (walkie-talkie)? | Telemetry & Comms | **YES** / NO / NA | Dedicated interference-free channel assigned for blind lifts and long distances. |
 
-> **⚠️ Wind Safety Restriction Rules**:
+> **⚠️ Statutory Wind Safety Restriction Rules**:
 > * **Mobile Cranes**: Hard statutory operational cutoff at **$38\text{ km/h}$ ($10.5\text{ m/s}$)**.
 > * **Tower Cranes**: Hard statutory operational cutoff at **$45\text{ km/h}$ ($12.5\text{ m/s}$)**.
 > * Step 2 dynamically renders prominent warning alerts reminding supervisors to halt operations when winds exceed these thresholds.
 >
 > **Other Safety Precautions Textarea**:
 > Step 2 provides a mandatory custom engineering precautions field (`Other Safety Precautions:`) bound directly to `draft.liftingSpecialPrecautions` for recording non-standard site hazards.
+
+#### 5.1 Sub-Table 2: Documentation & On-Site Controls (Part A vs Part B Matrix)
+Sub-Table 2 dynamically switches documentation controls based on whether the lift is classified as Routine (`PTW-009A`) or Critical (`PTW-009B`):
+* **Part A (Routine Lifts — 10 Items)**:
+  1. P&M Green Card Sticker
+  2. Equipment & Accessories Inspection (Color coding, TPI certifications)
+  3. EHS Risk Assessment & SWM
+  4. Lift Plan/ Method Statement (Generic)
+  5. Lift Permit
+  6. HIRA verification & Briefing to workforce
+  7. Auro Crane & Lifting Safety Management Standard
+  8. Crane Operator
+  9. Signaler / Rigger
+  10. Lifting In-charge / Supervisor
+* **Part B (Complex / Critical / Heavy Lifts — 13 Items)**:
+  1. Complex/ Critical/ Heavy/ Lifts Design Calculations & drawings
+  2. P&M Green Card Sticker
+  3. Equipment & Accessories Inspection (Color coding, TPI Certifications)
+  4. EHS Risk Assessment & SWM
+  5. Lift Plan/ Method Statement (Specific)
+  6. Lift Permit
+  7. Pre-start verification & Briefing to workforce
+  8. Auro Crane & Lifting Safety Management Standard
+  9. Crane Operator
+  10. Signaler / Rigger
+  11. Lifting In-charge / Supervisor
+  12. EHS Supervisor
+  13. Design Representative (for first 2 lifts)
+* **In-Place Interactive Checkbox Behavior**: Each document item renders with an interactive toggle badge (`[✓] YES` in green when checked, `NO` in neutral grey when unchecked), persisting state changes without triggering full form DOM rebuilds or scroll displacement.
 
 #### 6. Statutory Extension Pipeline
 * **Requestor**: Exclusively initiated by the **Lifting Supervisor** (`lift-supervisor`).

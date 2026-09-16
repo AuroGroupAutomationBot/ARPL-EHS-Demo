@@ -5116,7 +5116,7 @@
             'P&M Green Card Sticker',
             'Equipment & Accessories Inspection (Color coding, TPI certifications)',
             'EHS Risk Assessment & SWM',
-            'Lift Plan / Method Statement (Generic)',
+            'Lift Plan/ Method Statement (Generic)',
             'Lift Permit',
             'HIRA verification & Briefing to workforce',
             'Auro Crane & Lifting Safety Management Standard',
@@ -5126,11 +5126,11 @@
         ];
 
         const LIFTING_DOCS_CRITICAL = [
-            'Design Calculations & drawings',
+            'Complex/ Critical/ Heavy/ Lifts Design Calculations & drawings',
             'P&M Green Card Sticker',
             'Equipment & Accessories Inspection (Color coding, TPI Certifications)',
             'EHS Risk Assessment & SWM',
-            'Lift Plan / Method Statement (Specific)',
+            'Lift Plan/ Method Statement (Specific)',
             'Lift Permit',
             'Pre-start verification & Briefing to workforce',
             'Auro Crane & Lifting Safety Management Standard',
@@ -5142,20 +5142,20 @@
         ];
 
         const CHECKLIST_ITEMS_LIFTING = [
-            "Outrigger fully extended on solid grounds (MC)",
-            "Swivel hook in good condition",
-            "Heavy timber / steel plate used on soft ground (MC)",
-            "Safety latch is provided & in good condition",
-            "Crane Manual available in cabin (TC / MC)",
-            "Limit switch & warning bell in good condition",
-            "Wire rope / web / chain sling are in good condition",
-            "Windscreen of crane operator is clean and clear",
-            "Third-party certificate verified for TC / MC",
-            "Crane operator & signalman briefed thoroughly on scope of work and safety precautions",
-            "Safety limit switch in working condition",
-            "Operator License verified",
-            "Enough capacity of Lifting Equipment",
-            "Signal man provided with walkie-talkie"
+            "Are outriggers fully extended on solid ground? (MC)",
+            "Is the swivel hook in good condition with free rotation?",
+            "Are heavy timber or steel plates used under outriggers on soft ground? (MC)",
+            "Is a safety latch provided on the hook and in good working condition?",
+            "Is the crane manufacturer manual and load chart available in the operator cabin? (TC/MC)",
+            "Are the hoist limit switch, anti-two-block, and warning bell in good working condition?",
+            "Are wire rope, webbing, and chain slings in good condition without cuts, kinks, or wear?",
+            "Is the windscreen of the crane operator cabin clean and clear?",
+            "Has a valid Third Party Inspection (TPI / Form 10/Form 11) certificate been verified for TC/MC?",
+            "Have the crane operator and signalman been briefed thoroughly on the scope of work and safety precautions?",
+            "Are all safety limit switches (hoist, boom, trolley) in working condition?",
+            "Has the crane operator's statutory heavy equipment driving license / competency card been verified?",
+            "Does the lifting equipment have sufficient rated SWL capacity for the planned lift radius?",
+            "Is the signalman / rigger provided with a dedicated two-way radio (walkie-talkie)?"
         ];
 
         /* ================================================================
@@ -7554,7 +7554,7 @@
                 if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
                 return 'complete';
             }
-            if (chain.kind === 'confined-ext' || chain.kind === 'ext-lifting') {
+            if (chain.kind === 'confined-ext') {
                 if (chain.sectionHead && (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled')) return 'rejected-sectionhead';
                 if ((chain.ehsManager && (chain.ehsManager.status === 'rejected' || chain.ehsManager.status === 'cancelled')) ||
                     (chain.ehsOfficer && (chain.ehsOfficer.status === 'rejected' || chain.ehsOfficer.status === 'cancelled'))) return 'rejected-ehs';
@@ -7574,7 +7574,7 @@
                 if ((!chain.ehsManager || chain.ehsManager.status !== 'approved') && (!chain.ehsOfficer || chain.ehsOfficer.status !== 'approved')) return 'ehs';
                 return 'complete';
             }
-            if (chain.kind === 'exc-ext' || chain.kind === 'ext-flow') {
+            if (chain.kind === 'exc-ext' || chain.kind === 'ext-flow' || chain.kind === 'ext-lifting') {
                 if (chain.siteEngineer && (chain.siteEngineer.status === 'rejected' || chain.siteEngineer.status === 'cancelled')) return 'rejected-siteengineer';
                 if (chain.sectionHead && (chain.sectionHead.status === 'rejected' || chain.sectionHead.status === 'cancelled')) return 'rejected-sectionhead';
                 if ((chain.ehsManager && (chain.ehsManager.status === 'rejected' || chain.ehsManager.status === 'cancelled')) ||
@@ -7674,7 +7674,7 @@
                 }
                 return false;
             }
-            if (chain.kind === 'confined-ext' || chain.kind === 'ext-lifting') {
+            if (chain.kind === 'confined-ext') {
                 if (stage === 'section-head') return (rk === 'hw-section-head' || rk === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
                 if (stage === 'ehs') {
                     if (rk === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
@@ -7693,9 +7693,9 @@
                 }
                 return false;
             }
-            if (chain.kind === 'exc-ext' || chain.kind === 'ext-flow') {
+            if (chain.kind === 'exc-ext' || chain.kind === 'ext-flow' || chain.kind === 'ext-lifting') {
                 if (stage === 'site-engineer') return rk === 'site-engineer' && chain.siteEngineer && chain.siteEngineer.status === 'pending';
-                if (stage === 'section-head') return (rk === 'excavation-head' || rk === 'section-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
+                if (stage === 'section-head') return (rk === 'hw-section-head' || rk === 'section-head' || rk === 'excavation-head') && chain.sectionHead && chain.sectionHead.status === 'pending';
                 if (stage === 'ehs') {
                     if (rk === 'ehs-manager') return chain.ehsManager && chain.ehsManager.status === 'pending';
                     if (rk === 'ehs-officer') return chain.ehsOfficer && chain.ehsOfficer.status === 'pending';
@@ -8707,17 +8707,18 @@
                     requestedAt: nowTime(), requestedBy: reqBy,
                     approvals: {
                         kind: 'ext-lifting',
+                        siteEngineer: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null },
                         sectionHead: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null },
                         ehsManager: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null },
                         ehsOfficer: { status: 'pending', by: null, at: null, gps: null, comment: null, sig: null }
                     },
                     stageEnteredAt: nowTime(), escalation: { stage1: false, stage2: false },
-                    status: 'Pending Section Head'
+                    status: 'Pending Site Engineer'
                 };
-                logActivity(p, 'Extension of ' + fmtDur(mins) + ' requested by Lifting Supervisor (' + reqBy + '). Reason: ' + reason + ' — awaiting Tower Incharge review.');
-                notify([shRoleFor(p)], pLabel(p) + ' — lifting extension request (' + fmtDur(mins) + ') requires Tower Incharge review.', 'info', p.id);
+                logActivity(p, 'Extension of ' + fmtDur(mins) + ' requested by Lifting Supervisor (' + reqBy + '). Reason: ' + reason + ' — awaiting Site Engineer acknowledgment.');
+                notify(['site-engineer'], pLabel(p) + ' — lifting extension request (' + fmtDur(mins) + ') requires Site Engineer acknowledgment.', 'info', p.id);
                 notify(stakeholdersFor(p), 'Extension request for ' + pLabel(p) + ' submitted for approval.', 'info', p.id);
-                showToast('Extension request submitted. Awaiting Tower Incharge review.', 'ok');
+                showToast('Extension request submitted. Awaiting Site Engineer acknowledgment.', 'ok');
                 saveState();
                 return;
             }
@@ -11264,7 +11265,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 const pSubText = (cfg && typeof cfg.detailsSummary === 'function')
                     ? cfg.detailsSummary(p)
                     : (pt === 'confined' ? (p.confinedActivity || p.activity || 'Confined Space Entry') : pt === 'guardrail' ? (p.locationStructure === 'Tower' ? (p.tower + (p.grFloor ? ' &middot; ' + p.grFloor : '')) : (p.grBasementPodium || 'Podium/Basement')) : pt === 'shaft' ? ((p.shaftLocationType || 'Tower') + ' &middot; ' + (p.shaftFloor || '')) : pt === 'hotwork' ? ((p.hotworkTypes || []).join(', ')) : (pt === 'electrical' ? ((p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' ? 'Batching Plant' : 'Site') + ' &middot; ' + (Array.isArray(p.electricalApparatus) ? p.electricalApparatus.join(', ') : (p.apparatus || 'HT/LT Work'))) : (pt === 'blasting' ? ((p.dbOperationType || 'Drilling') + (p.dbOperationType === 'Blasting' ? (' &middot; ' + (p.dbChargeAmount || '—') + ' kg') : (' &middot; ' + (p.dbMachineType || 'Machine')))) : (p.depth + ' m'))));
-                return '<tr style="cursor:pointer;" onclick="viewDetail(\'' + p.id + '\')"><td class="mono">' + p.id + (p.extension && ['Pending Site Engineer', 'Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status) ? ' <span class="badge st-sectionhead" style="margin-left:4px;">EXT</span>' : '') + '</td>' +
+                return '<tr style="cursor:pointer;" onclick="' + (p.status === 'Draft' ? 'resumeDraft(PERMITS.find(x => x.id === \'' + p.id + '\'))' : 'viewDetail(\'' + p.id + '\')') + '"><td class="mono">' + p.id + (p.extension && ['Pending Site Engineer', 'Pending Parallel Approval', 'Pending Section Head', 'Pending EHS Approval'].includes(p.extension.status) ? ' <span class="badge st-sectionhead" style="margin-left:4px;">EXT</span>' : '') + '</td>' +
                     '<td><span class="badge" style="font-size:10px;' + pBadgeStyle + '"><i class="fa-solid ' + pIcon + '"></i> ' + pMeta(p).code + '</span></td>' +
                     '<td>' + p.project + '<br><span style="color:var(--text-muted);font-size:11.5px;">' + (p.tower || (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.tower ? p.locationStructure.tower : 'Site Wide')) + '</span></td>' +
                     '<td><span style="font-size:11.5px;">' + pSubText + '</span></td>' +
@@ -11272,7 +11273,10 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '<td><span style="font-size:11.5px;font-weight:600;">' + shLabelFor(p) + '</span></td>' +
                     '<td>' + (p.validTill ? fmtDateTime(p.validTill) : '<span style="color:var(--text-faint);">&mdash; Draft</span>') + '</td>' +
                     '<td>' + requestedByDisplayFor(p) + '</td>' +
-                    '<td><button class="btn btn-sm btn-ghost" title="View Detail" onclick="event.stopPropagation();viewDetail(\'' + p.id + '\')"><i class="fa-solid fa-arrow-right"></i></button></td></tr>';
+                    (p.status === 'Draft'
+                        ? '<td><button class="btn btn-sm btn-primary" title="Resume Draft" onclick="event.stopPropagation();resumeDraft(PERMITS.find(x => x.id === \'' + p.id + '\'))" style="padding:4px 10px;font-size:11.5px;white-space:nowrap;"><i class="fa-solid fa-pen-to-square"></i> Resume</button></td>'
+                        : '<td><button class="btn btn-sm btn-ghost" title="View Detail" onclick="event.stopPropagation();viewDetail(\'' + p.id + '\')"><i class="fa-solid fa-arrow-right"></i></button></td>') +
+                    '</tr>';
             }).join('');
         }
 
@@ -11432,18 +11436,22 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             correctionMode = false;
             draft = p;
             if (!draft.ptype) draft.ptype = 'excavation';
+            if (draft.ptype === 'lifting' || draft.ptype === 'liftplan') {
+                updateLiftingClassification();
+            }
             if (!draft.approvals) draft.approvals = newChain(ptypeOf(draft));
             if (!('drawing' in draft)) draft.drawing = null;
             if (draft.signature && draft.signature.dataUrl) {
                 draft.signerVerified = true;
-                draft.signerName = draft.signature.by || currentUser.name || '';
+                draft.signerName = draft.signature.by || (currentUser ? currentUser.name : '') || '';
                 draft.signerConsent = true;
             } else if (draft.signerName && draft.signerConsent) {
                 draft.signerVerified = true;
             }
             wizStep = 1;
             goTo('create');
-            renderStepIndicator(); renderWizStep();
+            renderStepIndicator();
+            renderWizStep(false);
             showToast('Draft ' + p.id + ' resumed. Continue where you left off.', 'ok');
         }
         function openCorrectionMode(id) {
@@ -11580,7 +11588,25 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             showToast('Draft saved. You can resume it from My Permits.', 'ok');
             goTo('register');
         }
-        function renderWizStep() {
+        function renderWizStep(preserveScrollAndFocus) {
+            const shouldPreserve = preserveScrollAndFocus !== false;
+            let scrollY = 0;
+            let activeId = null;
+            let selStart = null;
+            let selEnd = null;
+            if (shouldPreserve && typeof window !== 'undefined') {
+                scrollY = window.scrollY || (document.documentElement && document.documentElement.scrollTop) || 0;
+                if (typeof document !== 'undefined' && document.activeElement) {
+                    activeId = document.activeElement.id || null;
+                    if ('selectionStart' in document.activeElement) {
+                        try {
+                            selStart = document.activeElement.selectionStart;
+                            selEnd = document.activeElement.selectionEnd;
+                        } catch (e) {}
+                    }
+                }
+            }
+
             document.getElementById('wizPrevBtn').style.visibility = wizStep === 1 ? 'hidden' : 'visible';
             document.getElementById('wizNextBtn').innerHTML = wizStep === 4 ? '<i class="fa-solid fa-paper-plane"></i> ' + (correctionMode ? 'Re-submit Permit' : 'Submit Permit') : 'Next <i class="fa-solid fa-arrow-right"></i>';
             const draftBtn = document.getElementById('wizDraftBtn'); if (draftBtn) draftBtn.style.display = correctionMode ? 'none' : '';
@@ -11601,6 +11627,27 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             if (wizStep === 3) wireStep3();
             if (wizStep === 4) wireStep4();
             updateNextButtonState();
+
+            if (shouldPreserve && typeof window !== 'undefined') {
+                const restorePos = () => {
+                    if (typeof window.scrollTo === 'function') {
+                        window.scrollTo({ top: scrollY, behavior: 'instant' });
+                    }
+                    if (activeId && typeof document !== 'undefined') {
+                        const el = document.getElementById(activeId);
+                        if (el && typeof el.focus === 'function') {
+                            try { el.focus({ preventScroll: true }); } catch (e) { el.focus(); }
+                            if (selStart !== null && selEnd !== null && typeof el.setSelectionRange === 'function') {
+                                try { el.setSelectionRange(selStart, selEnd); } catch (e) {}
+                            }
+                        }
+                    }
+                };
+                restorePos();
+                if (typeof requestAnimationFrame === 'function') {
+                    requestAnimationFrame(restorePos);
+                }
+            }
         }
 
         /* ---------- STEP 1 ---------- */
@@ -12054,27 +12101,36 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const w = parseFloat(draft.loadWeight) || 0;
             const isTandem = (draft.craneTandemLift === 'yes' || draft.craneTandemLift === true || draft.liftingTandemLift === 'yes' || draft.liftingTandemLift === true);
 
-            const manualStressP = (draft.calculatedStressPercent != null) ? draft.calculatedStressPercent : (draft.riggingStressPercent != null ? draft.riggingStressPercent : null);
-            renderLiftingCalculations();
-
-            const stressP = (draft.calculatedStressPercent != null) ? draft.calculatedStressPercent : ((draft.riggingStressPercent != null) ? draft.riggingStressPercent : manualStressP);
+            if (draft.riggingStressPercent != null && draft.riggingStressPercent !== draft.calculatedStressPercent) {
+                draft.calculatedStressPercent = draft.riggingStressPercent;
+            }
+            if (draft.calculatedStressPercent == null && draft.riggingStressPercent == null) {
+                renderLiftingCalculations();
+            }
+            const stressP = (draft.calculatedStressPercent != null) ? draft.calculatedStressPercent : draft.riggingStressPercent;
             const isStressHigh = stressP != null && stressP > 80;
 
             if (draft.loadChecklist && draft.loadChecklist.length > 0) {
                 if (w > 5.0) {
                     draft.loadChecklist[0].ans = 'yes';
+                } else {
+                    draft.loadChecklist[0].ans = 'no';
                 }
             }
 
             if (draft.loadChecklist && draft.loadChecklist.length > 7) {
                 if (isTandem) {
                     draft.loadChecklist[7].ans = 'yes';
+                } else if (!draft.loadChecklist[7].manuallySet) {
+                    draft.loadChecklist[7].ans = 'no';
                 }
             }
 
             if (draft.loadChecklist && draft.loadChecklist.length > 2) {
                 if (isStressHigh) {
                     draft.loadChecklist[2].ans = 'yes';
+                } else if (!draft.loadChecklist[2].manuallySet) {
+                    draft.loadChecklist[2].ans = 'no';
                 }
             }
 
@@ -12130,40 +12186,408 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             }
         }
 
-        function onLiftingCriterionToggle(idx, val) {
+        function updateLiftingCalculationsUI() {
+            renderLiftingCalculations();
+            const prevClass = draft ? draft.liftingClassification : null;
+            updateLiftingClassification();
+            if (draft && prevClass !== draft.liftingClassification) {
+                if (typeof refreshLiftingClassificationUI === 'function') {
+                    refreshLiftingClassificationUI();
+                } else {
+                    renderWizStep(true);
+                }
+                validateWizStep(1);
+                return;
+            }
+            if (typeof document === 'undefined') return;
+            const box = document.getElementById('slingStressResultBox');
+            if (!box) return;
+            const stressValPerSling = draft.calculatedSlingStress;
+            const stressPctVal = draft.calculatedStressPercent;
+            const isOverload = stressPctVal != null && stressPctVal > 100;
+            const isStressWarning = stressPctVal != null && stressPctVal > 80;
+
+            box.style.borderColor = isOverload ? '#EF4444' : isStressWarning ? '#F59E0B' : '#CBD5E1';
+            const textEl = box.querySelector('.calc-tension-text');
+            if (textEl) {
+                textEl.innerHTML = 'Calculated Tension per Sling: <strong style="font-size:14px;color:' + (isOverload ? '#DC2626' : isStressWarning ? '#D97706' : '#16A34A') + ';">' + (stressValPerSling != null ? stressValPerSling + ' MT' : 'Awaiting parameters') + '</strong>' +
+                    (stressPctVal != null ? ' (' + stressPctVal + '% of Sling SWL)' : '');
+            }
+            const badgeEl = box.querySelector('.calc-badge-container');
+            if (badgeEl) {
+                badgeEl.innerHTML = isOverload
+                    ? '<span class="badge" style="background:#FEE2E2;color:#991B1B;font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> OVERLOAD (&gt; 100% SWL)</span>'
+                    : isStressWarning
+                    ? '<span class="badge" style="background:#FEF3C7;color:#92400E;font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> HIGH STRESS (&gt; 80% SWL &rarr; Critical 9B)</span>'
+                    : (stressValPerSling != null ? '<span class="badge" style="background:#DCFCE7;color:#166534;font-weight:700;"><i class="fa-solid fa-check"></i> Safe Capacity (&le; 80% SWL)</span>' : '');
+            }
+        }
+
+        function fillDemoLiftingSpecs() {
+            if (!draft) return;
+            draft.project = draft.project || 'Auro Grand Residency';
+            draft.tower = draft.tower || 'Tower A';
+            draft.locFloor = draft.locFloor || '5';
+            draft.locUnit = draft.locUnit || '501';
+            draft.loadDescription = draft.loadDescription || 'HVAC Chiller Unit & Air Handling Package (Weight: 4.5 MT)';
+            draft.numWorkers = draft.numWorkers || 4;
+            draft.loadWeight = draft.loadWeight || 4.5;
+            draft.loadWeightType = draft.loadWeightType || 'Known';
+            draft.loadDimX = draft.loadDimX || 3.20;
+            draft.loadDimY = draft.loadDimY || 2.10;
+            draft.loadDimZ = draft.loadDimZ || 1.80;
+            draft.loadCg = draft.loadCg || 'Centered, 0.90m from base';
+            draft.loadCgType = draft.loadCgType || 'Provided by Drawing';
+            draft.craneEquipmentType = draft.craneEquipmentType || 'Tower Crane';
+            draft.craneRegId = draft.craneRegId || 'TC-04 (Potain MCT 205)';
+            draft.craneSwl = draft.craneSwl || 10.0;
+            draft.craneCertDate = draft.craneCertDate || istDateStr();
+            draft.craneCertNo = draft.craneCertNo || 'TPI-ARPL-2026-884';
+            draft.craneBoomLength = draft.craneBoomLength || 45.0;
+            draft.craneFlyJib = (draft.craneFlyJib !== '' && draft.craneFlyJib != null) ? draft.craneFlyJib : 0;
+            draft.craneOffsetAngle = (draft.craneOffsetAngle !== '' && draft.craneOffsetAngle != null) ? draft.craneOffsetAngle : 0;
+            draft.craneRadiusInitial = draft.craneRadiusInitial || 14.0;
+            draft.craneSwlInitial = draft.craneSwlInitial || 8.5;
+            draft.craneRadiusFinal = draft.craneRadiusFinal || 22.0;
+            draft.craneSwlFinal = draft.craneSwlFinal || 6.2;
+            draft.craneRadiusWorst = draft.craneRadiusWorst || 28.0;
+            draft.craneSwlWorst = draft.craneSwlWorst || 5.1;
+            draft.craneGearType = draft.craneGearType || 'Wire Rope Sling';
+            draft.craneGearWeight = (draft.craneGearWeight !== '' && draft.craneGearWeight != null) ? draft.craneGearWeight : 0.35;
+            draft.craneTandemLift = draft.craneTandemLift || 'no';
+            draft.slingDiameter = draft.slingDiameter || 24;
+            draft.slingLength = draft.slingLength || 6.0;
+            draft.slingApexHeight = draft.slingApexHeight || 4.5;
+            draft.slingSwl = draft.slingSwl || 5.0;
+            draft.slingsCount = draft.slingsCount || '4';
+            draft.slingsAdjustable = draft.slingsAdjustable || 'yes';
+            if (!draft.riggingGears || draft.riggingGears.length === 0 || !draft.riggingGears[0].serialNo) {
+                draft.riggingGears = [
+                    { type: 'Wire Rope Sling', serialNo: 'WRS-4L-089', swl: '5.0', certDate: istDateStr() },
+                    { type: 'Bow Shackle', serialNo: 'BS-85T-204', swl: '8.5', certDate: istDateStr() }
+                ];
+            }
+            draft.liftingComms = draft.liftingComms || 'Both Radio & Hand Signals';
+            draft.liftingGround = draft.liftingGround || 'Firm & Compacted';
+            draft.liftingRoadTrap = draft.liftingRoadTrap || 'yes';
+            draft.liftingSpecialPrecautions = draft.liftingSpecialPrecautions || 'Secondary taglines deployed on both ends. 15m radius exclusion zone barricaded with safety marshals.';
+            if (!draft.craneOperatorSig) {
+                draft.craneOperatorSig = { name: 'Rajesh Sharma', license: 'DL-TC-88942', at: nowTime(), sig: 'demo-sig' };
+                draft.craneOperatorName = 'Rajesh Sharma';
+                draft.craneOperatorDpdp = true;
+            }
+            if (!draft.riggerSig) {
+                draft.riggerSig = { name: 'Sunil Kumar', license: 'RIG-B1-4402', at: nowTime(), sig: 'demo-sig' };
+                draft.riggerName = 'Sunil Kumar';
+                draft.riggerDpdp = true;
+            }
+            renderWizStep(false);
+            validateWizStep(1);
+            showToast('Demo Lifting Specifications auto-populated successfully.', 'ok');
+        }
+
+        function onLiftingCriterionToggle(idx, val, el) {
             if (!draft.loadChecklist || !draft.loadChecklist[idx]) return;
             draft.loadChecklist[idx].ans = val;
+            draft.loadChecklist[idx].manuallySet = (val === 'yes');
+            if (el) {
+                const row = el.closest('.radio-row');
+                if (row) {
+                    row.querySelectorAll('.radio-pill').forEach(p => {
+                        p.classList.remove('sel');
+                        p.style.background = '';
+                        p.style.borderColor = '';
+                        p.style.color = '';
+                    });
+                    const pill = el.closest('.radio-pill');
+                    if (pill) {
+                        pill.classList.add('sel');
+                        if (val === 'yes') {
+                            pill.style.background = '#FEE2E2';
+                            pill.style.borderColor = '#EF4444';
+                            pill.style.color = '#991B1B';
+                        }
+                    }
+                }
+            }
             updateLiftingClassification();
-            renderWizStep();
+            refreshLiftingClassificationUI();
             validateWizStep(1);
         }
 
-        function onLiftingDocToggle(docName, isChecked) {
+        function onLiftingLoadWeightTypeChange(val, el) {
+            if (!draft) return;
+            draft.loadWeightType = val;
+            if (el) {
+                const row = el.closest('.radio-row');
+                if (row) {
+                    row.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('sel'));
+                    const pill = el.closest('.radio-pill');
+                    if (pill) pill.classList.add('sel');
+                }
+            }
+            validateWizStep(1);
+        }
+
+        function onLiftingLoadCgTypeChange(val, el) {
+            if (!draft) return;
+            draft.loadCgType = val;
+            if (el) {
+                const row = el.closest('.radio-row');
+                if (row) {
+                    row.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('sel'));
+                    const pill = el.closest('.radio-pill');
+                    if (pill) pill.classList.add('sel');
+                }
+            }
+            validateWizStep(1);
+        }
+
+        function onLiftingTandemChange(val, el) {
+            if (!draft) return;
+            draft.craneTandemLift = val;
+            if (el) {
+                const row = el.closest('.radio-row');
+                if (row) {
+                    row.querySelectorAll('.radio-pill').forEach(p => {
+                        p.classList.remove('sel');
+                        p.style.background = '';
+                        p.style.borderColor = '';
+                        p.style.color = '';
+                    });
+                    const pill = el.closest('.radio-pill');
+                    if (pill) {
+                        pill.classList.add('sel');
+                        if (val === 'yes') {
+                            pill.style.background = '#FEE2E2';
+                            pill.style.borderColor = '#EF4444';
+                            pill.style.color = '#991B1B';
+                        }
+                    }
+                }
+            }
+            const tandemField = document.getElementById('ff-crane-tandem-method');
+            if (tandemField) {
+                tandemField.style.display = (val === 'yes') ? 'block' : 'none';
+            }
+            updateLiftingClassification();
+            refreshLiftingClassificationUI();
+            validateWizStep(1);
+        }
+
+        function onLiftingSlingsAdjChange(val, el) {
+            if (!draft) return;
+            draft.slingsAdjustable = val;
+            if (el) {
+                const row = el.closest('.radio-row');
+                if (row) {
+                    row.querySelectorAll('.radio-pill').forEach(p => p.classList.remove('sel'));
+                    const pill = el.closest('.radio-pill');
+                    if (pill) pill.classList.add('sel');
+                }
+            }
+            updateLiftingCalculationsUI();
+            validateWizStep(1);
+        }
+
+        function refreshLiftingClassificationUI() {
+            if (!draft || typeof document === 'undefined') return;
+            const isCrit = (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan');
+
+            // 1. Classification banner
+            const bannerEl = document.getElementById('liftingClassificationBanner');
+            if (bannerEl) {
+                if (isCrit) {
+                    bannerEl.innerHTML = '<div class="banner-box" style="background:#FFF3E0;border:1.5px solid #FF9800;border-radius:8px;padding:12px 16px;margin:12px 0 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid fa-triangle-exclamation" style="font-size:24px;color:#E65100;"></i>' +
+                        '<div style="color:#BF360C;font-size:12.5px;line-height:1.45;">' +
+                        '<strong style="font-size:13.5px;">⚠️ PTW-009B Non-Routine Lift (Critical Lift Plan) Triggered:</strong><br>' +
+                        'High-risk parameters detected (Load Weight &gt; 5 MT, Tandem lift, Sling stress &gt; 80%, or high-risk criteria answered YES). ' +
+                        'Necessary controls mentioned in <i>"Lifting of Precast Elements Using Stress Bars"</i> shall be strictly adhered to. ' +
+                        '<b>Mandatory Project Manager executive review and Specific Lift Plan required.</b>' +
+                        '</div></div>';
+                } else {
+                    bannerEl.innerHTML = '<div class="banner-box" style="background:#EBF5FB;border:1px solid #AED6F1;border-radius:8px;padding:12px 16px;margin:12px 0 16px;display:flex;align-items:center;gap:12px;">' +
+                        '<i class="fa-solid fa-circle-info" style="font-size:22px;color:#2980B9;"></i>' +
+                        '<div style="color:#1B4F72;font-size:12.5px;line-height:1.45;">' +
+                        '<strong style="font-size:13.5px;">PTW-009A Routine Lifting Operations Active:</strong> ' +
+                        'Standard crane &amp; rigging operations with certified equipment and P&amp;M clearance. ' +
+                        'The system will dynamically auto-upgrade this permit to <b>PTW-009B Critical Lift Plan</b> if weight exceeds 5.0 MT, tandem lifting is used, sling stress exceeds 80%, or any statutory high-risk criteria are triggered below.' +
+                        '</div></div>';
+                }
+            }
+
+            // 2. Criteria header badge
+            const badgeEl = document.getElementById('liftingCriteriaBadge');
+            if (badgeEl) {
+                badgeEl.style.background = isCrit ? '#FEE2E2' : '#E0F2FE';
+                badgeEl.style.color = isCrit ? '#991B1B' : '#0369A1';
+                badgeEl.textContent = isCrit ? '⚠️ Critical Lift Conditions Detected' : 'All Criteria Routine';
+            }
+
+            // 3. Sub-Table 2: Title and Part Scope
+            const sub2Title = document.getElementById('subTable2Title');
+            if (sub2Title) {
+                const partLetter = isCrit ? 'Part B' : 'Part A';
+                const partScope = isCrit ? 'Complex / Critical / Heavy Lifts' : 'Routine Lifts';
+                sub2Title.innerHTML = '<i class="fa-solid fa-folder-open" style="color:var(--orange);"></i> Sub-Table 2: ' + partLetter + ' &mdash; Statutory Documentation &amp; On-Site Controls (' + partScope + ') <span class="req">*</span>';
+            }
+
+            // 4. Sub-Table 2: Docs checkboxes list
+            const docsListEl = document.getElementById('subTable2DocsList');
+            if (docsListEl) {
+                const docsList = isCrit ? LIFTING_DOCS_CRITICAL : LIFTING_DOCS_ROUTINE;
+                const currentDocs = draft.liftingDocs || [];
+                const disAttr = (typeof isCurStepLocked === 'function' && isCurStepLocked(1)) ? ' disabled' : '';
+                docsListEl.innerHTML = docsList.map((doc, idx) => {
+                    const checked = currentDocs.includes(doc);
+                    return '<label class="lifting-doc-pill ' + (checked ? 'checked' : '') + '" style="margin:0;padding:8px 12px;font-size:12px;background:' + (checked ? '#F0FDF4' : '#FFFFFF') + ';border:1.5px solid ' + (checked ? '#86EFAC' : '#E2E8F0') + ';border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all 0.15s ease;">' +
+                        '<div style="display:flex;align-items:center;gap:8px;">' +
+                        '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="onLiftingDocToggle(\'' + escapeHtml(doc).replace(/'/g, "\\'") + '\', this.checked, this)"' + disAttr + ' style="width:16px;height:16px;accent-color:#16A34A;cursor:pointer;">' +
+                        '<span style="color:var(--navy);font-weight:' + (checked ? '600' : '400') + ';">' + (idx + 1) + '. ' + escapeHtml(doc) + '</span>' +
+                        '</div>' +
+                        '<span class="doc-yn-badge badge" style="font-size:10px;font-weight:700;padding:2px 8px;background:' + (checked ? '#DCFCE7' : '#F1F5F9') + ';color:' + (checked ? '#166534' : '#64748B') + ';">' +
+                        (checked ? '<i class="fa-solid fa-check"></i> YES' : 'NO') +
+                        '</span>' +
+                        '</label>';
+                }).join('');
+            }
+
+            // 5. Site Plan Photo label & requirement badge in Step 1
+            const sitePlanLabel = document.getElementById('liftingSitePlanLabel');
+            if (sitePlanLabel) {
+                sitePlanLabel.innerHTML = 'Lifting Operations Site Plan Photo / Rigging Drawing ' +
+                    (isCrit ? '<span class="req">*</span>' : '<span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(Optional for Routine Lifts)</span>');
+            }
+            updateLiftingSitePlanUI();
+        }
+
+        function renderLiftingSitePlanPreviewHtml() {
+            const sketch = draft ? (draft.liftingSketch || draft.sitePlanPhoto) : null;
+            const isCrit = draft ? (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan') : false;
+            const disAttr = (typeof isCurStepLocked === 'function' && isCurStepLocked(1)) ? ' disabled' : '';
+
+            if (sketch) {
+                const isImg = sketch.dataUrl && sketch.dataUrl.startsWith('data:image');
+                return '<div class="file-card" style="margin:0;padding:8px 12px;background:#fff;border:1.5px solid #86EFAC;border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:8px;">' +
+                    '<div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">' +
+                    '<i class="fa-solid ' + (isImg ? 'fa-file-image' : 'fa-file-pdf') + '" style="color:#16A34A;font-size:20px;"></i>' +
+                    '<div style="min-width:0;flex:1;"><div style="font-weight:700;font-size:12px;color:var(--navy);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;"><i class="fa-solid fa-circle-check" style="color:#16A34A;"></i> ' + escapeHtml(sketch.name || 'lifting_site_plan.jpg') + '</div>' +
+                    '<div style="font-size:10.5px;color:var(--text-muted);">Attached to PTW-009 &bull; Verification Ready</div></div>' +
+                    '</div>' +
+                    '<div style="display:flex;gap:6px;flex-shrink:0;">' +
+                    '<button type="button" class="btn btn-xs btn-ghost" onclick="document.getElementById(\'liftingSketchInput\').click()"' + disAttr + '><i class="fa-solid fa-rotate"></i> Replace</button>' +
+                    '<button type="button" class="btn btn-xs btn-ghost" onclick="removeLiftingSitePlan()"' + disAttr + ' style="color:#EF4444;"><i class="fa-solid fa-trash"></i></button>' +
+                    '</div>' +
+                    '</div>' +
+                    (isImg ? '<div style="margin-top:6px;max-width:240px;border-radius:6px;overflow:hidden;border:1px solid #CBD5E1;"><img src="' + sketch.dataUrl + '" style="width:100%;display:block;max-height:120px;object-fit:cover;"></div>' : '');
+            }
+
+            return '<div style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;">' +
+                '<button type="button" class="btn btn-sm ' + (isCrit ? 'btn-primary' : 'btn-outline') + '" onclick="document.getElementById(\'liftingSketchInput\').click()"' + disAttr + '><i class="fa-solid fa-camera"></i> Capture / Upload Site Plan</button>' +
+                '<button type="button" class="btn btn-sm btn-ghost" onclick="attachDemoLiftingSitePlan()"' + disAttr + ' style="font-size:11.5px;color:var(--blue);"><i class="fa-solid fa-wand-magic-sparkles"></i> Demo Plan</button>' +
+                '<span style="font-size:11px;color:' + (isCrit ? '#DC2626;font-weight:600;' : 'var(--text-muted);') + '">' +
+                (isCrit ? '<i class="fa-solid fa-asterisk"></i> Mandatory for Part B' : 'Optional (JPG, PNG, PDF)') +
+                '</span>' +
+                '</div>';
+        }
+
+        function updateLiftingSitePlanUI() {
+            if (typeof document === 'undefined') return;
+            const previewEl = document.getElementById('liftingSitePlanPreview');
+            if (previewEl) {
+                previewEl.innerHTML = renderLiftingSitePlanPreviewHtml();
+            }
+            const isCrit = draft && (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan');
+            const hasPlan = !!(draft && (draft.liftingSketch || draft.sitePlanPhoto));
+            const spErr = document.getElementById('liftingSitePlanError');
+            if (spErr) {
+                spErr.style.display = (isCrit && !hasPlan) ? 'flex' : 'none';
+            }
+            const spStep2Err = document.getElementById('liftingSitePlanStep2Error');
+            if (spStep2Err) {
+                spStep2Err.style.display = (isCrit && !hasPlan) ? 'flex' : 'none';
+            }
+        }
+
+        function removeLiftingSitePlan() {
+            if (!draft) return;
+            draft.liftingSketch = null;
+            draft.sitePlanPhoto = null;
+            updateLiftingSitePlanUI();
+            if (typeof currentStep !== 'undefined' && currentStep === 2) {
+                renderWizStep();
+            } else {
+                validateWizStep(1);
+            }
+        }
+
+        function attachDemoLiftingSitePlan() {
+            if (!draft) return;
+            draft.liftingSketch = {
+                name: 'critical_lift_site_plan_drawing.jpg',
+                dataUrl: 'data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="600" height="400" viewBox="0 0 600 400"><rect width="600" height="400" fill="%230F172A"/><text x="300" y="160" fill="%2338BDF8" font-family="sans-serif" font-size="20" font-weight="bold" text-anchor="middle">CRITICAL LIFT PLAN RIGGING DRAWING</text><text x="300" y="210" fill="%2394A3B8" font-family="sans-serif" font-size="14" text-anchor="middle">Auro Grand Residency - Potain MCT 205</text><circle cx="300" cy="270" r="40" fill="none" stroke="%23F59E0B" stroke-width="4"/><text x="300" y="275" fill="%23F59E0B" font-family="sans-serif" font-size="12" font-weight="bold" text-anchor="middle">28m R</text></svg>'
+            };
+            draft.sitePlanPhoto = draft.liftingSketch;
+            showToast('Demo Critical Lift Site Plan photo attached.', 'ok');
+            updateLiftingSitePlanUI();
+            if (typeof currentStep !== 'undefined' && currentStep === 2) {
+                renderWizStep();
+            } else {
+                validateWizStep(1);
+            }
+        }
+
+        function onLiftingDocToggle(docName, isChecked, el) {
             draft.liftingDocs = draft.liftingDocs || [];
             if (isChecked) {
                 if (!draft.liftingDocs.includes(docName)) draft.liftingDocs.push(docName);
             } else {
                 draft.liftingDocs = draft.liftingDocs.filter(d => d !== docName);
             }
-            renderWizStep();
+            if (el) {
+                const pill = el.closest('.lifting-doc-pill') || el.closest('label');
+                if (pill) {
+                    pill.classList.toggle('checked', isChecked);
+                    pill.style.background = isChecked ? '#F0FDF4' : '#FFFFFF';
+                    pill.style.borderColor = isChecked ? '#86EFAC' : '#E2E8F0';
+                    const tag = pill.querySelector('.doc-yn-badge');
+                    if (tag) {
+                        tag.innerHTML = isChecked ? '<i class="fa-solid fa-check"></i> YES' : 'NO';
+                        tag.style.background = isChecked ? '#DCFCE7' : '#F1F5F9';
+                        tag.style.color = isChecked ? '#166534' : '#64748B';
+                    }
+                }
+            } else {
+                renderWizStep(true);
+            }
+            validateWizStep(1);
         }
 
         function toggleAllLiftingDocs(checkAll) {
-            const list = (draft.liftingClassification === 'critical') ? LIFTING_DOCS_CRITICAL : LIFTING_DOCS_ROUTINE;
+            const list = (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan') ? LIFTING_DOCS_CRITICAL : LIFTING_DOCS_ROUTINE;
             draft.liftingDocs = checkAll ? list.slice() : [];
-            renderWizStep();
+            const docsListEl = document.getElementById('subTable2DocsList');
+            if (docsListEl) {
+                refreshLiftingClassificationUI();
+            } else {
+                renderWizStep(true);
+            }
+            validateWizStep(1);
         }
 
         function addRiggingGearRow() {
             draft.riggingGears = draft.riggingGears || [];
             draft.riggingGears.push({ type: 'Wire Rope Sling', serialNo: '', swl: '', certDate: '' });
-            renderWizStep();
+            renderWizStep(true);
+            validateWizStep(1);
         }
 
         function removeRiggingGearRow(idx) {
             if (draft.riggingGears && draft.riggingGears.length > 1) {
                 draft.riggingGears.splice(idx, 1);
-                renderWizStep();
+                renderWizStep(true);
+                validateWizStep(1);
             } else {
                 showToast('At least one rigging gear row is required.', 'warn');
             }
@@ -12172,6 +12596,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
         function updateRiggingGear(idx, field, val) {
             if (draft.riggingGears && draft.riggingGears[idx]) {
                 draft.riggingGears[idx][field] = val;
+                validateWizStep(1);
             }
         }
 
@@ -12181,8 +12606,14 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const reader = new FileReader();
             reader.onload = function(e) {
                 draft.liftingSketch = { name: file.name, dataUrl: e.target.result };
+                draft.sitePlanPhoto = draft.liftingSketch;
                 showToast('Lifting operations sketch / drawing uploaded successfully.', 'ok');
-                renderWizStep();
+                updateLiftingSitePlanUI();
+                if (typeof currentStep !== 'undefined' && currentStep === 2) {
+                    renderWizStep();
+                } else {
+                    validateWizStep(1);
+                }
             };
             reader.readAsDataURL(file);
         }
@@ -12363,7 +12794,8 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
 
             let html = '';
 
-            // Dynamic Classification Banner
+            // Dynamic Classification Banner (wrapped in container for in-place updating)
+            html += '<div id="liftingClassificationBanner">';
             if (isCrit) {
                 html += '<div class="banner-box" style="background:#FFF3E0;border:1.5px solid #FF9800;border-radius:8px;padding:12px 16px;margin:12px 0 16px;display:flex;align-items:center;gap:12px;">' +
                     '<i class="fa-solid fa-triangle-exclamation" style="font-size:24px;color:#E65100;"></i>' +
@@ -12382,10 +12814,14 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     'The system will dynamically auto-upgrade this permit to <b>PTW-009B Critical Lift Plan</b> if weight exceeds 5.0 MT, tandem lifting is used, sling stress exceeds 80%, or any statutory high-risk criteria are triggered below.' +
                     '</div></div>';
             }
+            html += '</div>';
 
             // Sub-Table 1: LIFTING OBJECT & Load Parameters
             html += '<div class="dsec" style="margin-top:16px;">' +
-                '<div class="dsec-title"><i class="fa-solid fa-box-open" style="color:var(--orange);"></i> Sub-Table 1: Lifting Object &amp; Load Parameters</div>' +
+                '<div class="dsec-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
+                '<span><i class="fa-solid fa-box-open" style="color:var(--orange);"></i> Sub-Table 1: Lifting Object &amp; Load Parameters</span>' +
+                '<button type="button" class="btn btn-xs btn-outline" onclick="fillDemoLiftingSpecs()"' + disAttr + ' style="font-weight:600;"><i class="fa-solid fa-wand-magic-sparkles"></i> Auto-Fill Demo Specs</button>' +
+                '</div>' +
                 '<div class="form-grid">' +
                 '<div class="form-field full" id="ff-load-desc"><label>Description of the Load <span class="req">*</span></label>' +
                 '<textarea id="inLoadDescription" rows="2" placeholder="Describe the physical material, components, machinery, or precast elements to be lifted..." oninput="draft.loadDescription=this.value;validateWizStep(1);"' + disAttr + '>' + escapeHtml(draft.loadDescription || '') + '</textarea>' +
@@ -12394,25 +12830,26 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '<input type="number" id="inNumWorkers" min="1" max="99" placeholder="e.g. 4" value="' + escapeHtml(draft.numWorkers || '') + '" oninput="draft.numWorkers=this.value;validateWizStep(1);"' + disAttr + '>' +
                 '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Number of workers involved is mandatory (minimum 1).</div></div>' +
                 '<div class="form-field" id="ff-load-weight"><label>Weight of Load (Metric Tons) <span class="req">*</span></label>' +
-                '<input type="number" id="inLoadWeight" step="0.01" min="0.01" placeholder="e.g. 3.50 (in MT)" value="' + escapeHtml(draft.loadWeight || '') + '" oninput="draft.loadWeight=this.value;updateLiftingClassification();validateWizStep(1);"' + disAttr + '>' +
+                '<input type="number" id="inLoadWeight" step="0.01" min="0.01" placeholder="e.g. 3.50 (in MT)" value="' + escapeHtml(draft.loadWeight || '') + '" oninput="draft.loadWeight=this.value;updateLiftingCalculationsUI();validateWizStep(1);"' + disAttr + '>' +
                 '<div class="form-hint" style="font-size:11px;color:var(--text-muted);"><i class="fa-solid fa-circle-info"></i> Weight &gt; 5.0 MT dynamically promotes permit to PTW-009B Critical Lift Plan.</div>' +
                 '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Valid load weight in Metric Tons is mandatory.</div></div>' +
-                '<div class="form-field"><label>Weight Classification <span class="req">*</span></label><div class="radio-row">' +
-                '<label class="radio-pill ' + (draft.loadWeightType === 'Known' ? 'sel' : '') + '"><input type="radio" name="loadWeightType" value="Known" ' + (draft.loadWeightType === 'Known' ? 'checked' : '') + ' onchange="draft.loadWeightType=this.value;renderWizStep();"' + disAttr + '> Known Weight</label>' +
-                '<label class="radio-pill ' + (draft.loadWeightType === 'Estimated' ? 'sel' : '') + '"><input type="radio" name="loadWeightType" value="Estimated" ' + (draft.loadWeightType === 'Estimated' ? 'checked' : '') + ' onchange="draft.loadWeightType=this.value;renderWizStep();"' + disAttr + '> Estimated Weight</label>' +
+                '<div class="form-field" id="ff-load-weight-type"><label>Weight Classification <span class="req">*</span></label><div class="radio-row">' +
+                '<label class="radio-pill ' + (draft.loadWeightType === 'Known' ? 'sel' : '') + '"><input type="radio" id="inLoadWeightTypeKnown" name="loadWeightType" value="Known" ' + (draft.loadWeightType === 'Known' ? 'checked' : '') + ' onchange="onLiftingLoadWeightTypeChange(this.value, this)"' + disAttr + '> Known Weight</label>' +
+                '<label class="radio-pill ' + (draft.loadWeightType === 'Estimated' ? 'sel' : '') + '"><input type="radio" id="inLoadWeightTypeEstimated" name="loadWeightType" value="Estimated" ' + (draft.loadWeightType === 'Estimated' ? 'checked' : '') + ' onchange="onLiftingLoadWeightTypeChange(this.value, this)"' + disAttr + '> Estimated Weight</label>' +
                 '</div></div>' +
-                '<div class="form-field full"><label>Overall Dimensions (Length x Width x Height in meters)</label>' +
+                '<div class="form-field full" id="ff-load-dim"><label>Overall Dimensions (Length x Width x Height in meters) <span class="req">*</span></label>' +
                 '<div class="load-dim-grid">' +
-                '<div><input type="number" id="inLoadDimX" step="0.01" placeholder="Length (m)" value="' + escapeHtml(draft.loadDimX || '') + '" oninput="draft.loadDimX=this.value;"' + disAttr + '></div>' +
-                '<div><input type="number" id="inLoadDimY" step="0.01" placeholder="Width (m)" value="' + escapeHtml(draft.loadDimY || '') + '" oninput="draft.loadDimY=this.value;"' + disAttr + '></div>' +
-                '<div><input type="number" id="inLoadDimZ" step="0.01" placeholder="Height (m)" value="' + escapeHtml(draft.loadDimZ || '') + '" oninput="draft.loadDimZ=this.value;"' + disAttr + '></div>' +
-                '</div></div>' +
-                '<div class="form-field"><label>Center of Gravity (CG) Position</label>' +
-                '<input type="text" id="inLoadCg" placeholder="e.g. Centered, 1.2m from base" value="' + escapeHtml(draft.loadCg || '') + '" oninput="draft.loadCg=this.value;"' + disAttr + '></div>' +
-                '<div class="form-field"><label>CG Determination Method</label><div class="radio-row" style="flex-wrap:wrap;">' +
-                ['Obvious', 'Estimated', 'Provided by Design Team', 'Provided by Drawing'].map(m => {
+                '<div><input type="number" id="inLoadDimX" step="0.01" placeholder="Length (m)" value="' + escapeHtml(draft.loadDimX || '') + '" oninput="draft.loadDimX=this.value;validateWizStep(1);"' + disAttr + '></div>' +
+                '<div><input type="number" id="inLoadDimY" step="0.01" placeholder="Width (m)" value="' + escapeHtml(draft.loadDimY || '') + '" oninput="draft.loadDimY=this.value;validateWizStep(1);"' + disAttr + '></div>' +
+                '<div><input type="number" id="inLoadDimZ" step="0.01" placeholder="Height (m)" value="' + escapeHtml(draft.loadDimZ || '') + '" oninput="draft.loadDimZ=this.value;validateWizStep(1);"' + disAttr + '></div>' +
+                '</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Overall dimensions (Length, Width, Height) in meters are all mandatory and must be greater than 0.</div></div>' +
+                '<div class="form-field" id="ff-load-cg"><label>Center of Gravity (CG) Position <span class="req">*</span></label>' +
+                '<input type="text" id="inLoadCg" placeholder="e.g. Centered, 1.2m from base" value="' + escapeHtml(draft.loadCg || '') + '" oninput="draft.loadCg=this.value;validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Center of Gravity position is mandatory.</div></div>' +
+                '<div class="form-field" id="ff-load-cg-type"><label>CG Determination Method <span class="req">*</span></label><div class="radio-row" style="flex-wrap:wrap;">' +
+                ['Obvious', 'Estimated', 'Provided by Design Team', 'Provided by Drawing'].map((m, mIdx) => {
                     const sel = (draft.loadCgType || 'Obvious') === m;
-                    return '<label class="radio-pill ' + (sel ? 'sel' : '') + '"><input type="radio" name="loadCgType" value="' + m + '" ' + (sel ? 'checked' : '') + ' onchange="draft.loadCgType=this.value;renderWizStep();"' + disAttr + '> ' + m + '</label>';
+                    return '<label class="radio-pill ' + (sel ? 'sel' : '') + '"><input type="radio" id="inLoadCgType_' + mIdx + '" name="loadCgType" value="' + m + '" ' + (sel ? 'checked' : '') + ' onchange="onLiftingLoadCgTypeChange(this.value, this)"' + disAttr + '> ' + m + '</label>';
                 }).join('') +
                 '</div></div>' +
                 '</div></div>';
@@ -12425,7 +12862,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             html += '<div class="dsec" style="margin-top:16px;">' +
                 '<div class="dsec-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
                 '<span><i class="fa-solid fa-list-check" style="color:var(--orange);"></i> Type of Load Checklist (14 High-Risk Statutory Criteria)</span>' +
-                '<span class="badge" style="background:' + (isCrit ? '#FEE2E2;color:#991B1B;' : '#E0F2FE;color:#0369A1;') + '">' + (isCrit ? '⚠️ Critical Lift Conditions Detected' : 'All Criteria Routine') + '</span>' +
+                '<span id="liftingCriteriaBadge" class="badge" style="background:' + (isCrit ? '#FEE2E2;color:#991B1B;' : '#E0F2FE;color:#0369A1;') + '">' + (isCrit ? '⚠️ Critical Lift Conditions Detected' : 'All Criteria Routine') + '</span>' +
                 '</div>' +
                 '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' +
                 'If ANY criterion below is answered <b>YES</b>, the permit automatically routes as a <b>PTW-009B Critical Lift Plan</b> requiring Project Manager executive acknowledgment.' +
@@ -12446,90 +12883,104 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         (isAuto8 ? ' <span class="badge badge-warning" style="font-size:10px;padding:1px 6px;margin-left:6px;"><i class="fa-solid fa-bolt"></i> Auto (Tandem Lift)</span>' : '') +
                         '</div>' +
                         '<div class="radio-row" style="margin:0;">' +
-                        '<label class="radio-pill ' + (ans === 'yes' ? 'sel' : '') + (isLockedYes ? ' disabled' : '') + '" style="' + (ans === 'yes' ? 'background:#FEE2E2;border-color:#EF4444;color:#991B1B;' : '') + '"><input type="radio" name="lc_' + idx + '" value="yes" ' + (ans === 'yes' ? 'checked' : '') + ' onchange="onLiftingCriterionToggle(' + idx + ', \'yes\')"' + (disAttr || isLockedYes ? ' disabled' : '') + '> YES</label>' +
-                        '<label class="radio-pill ' + (ans === 'no' ? 'sel' : '') + (isLockedYes ? ' disabled' : '') + '"><input type="radio" name="lc_' + idx + '" value="no" ' + (ans === 'no' ? 'checked' : '') + ' onchange="onLiftingCriterionToggle(' + idx + ', \'no\')"' + (disAttr || isLockedYes ? ' disabled' : '') + '> NO</label>' +
-                        '<label class="radio-pill ' + (ans === 'na' ? 'sel' : '') + (isLockedYes ? ' disabled' : '') + '"><input type="radio" name="lc_' + idx + '" value="na" ' + (ans === 'na' ? 'checked' : '') + ' onchange="onLiftingCriterionToggle(' + idx + ', \'na\')"' + (disAttr || isLockedYes ? ' disabled' : '') + '> N/A</label>' +
+                        '<label class="radio-pill ' + (ans === 'yes' ? 'sel' : '') + (isLockedYes ? ' disabled' : '') + '" style="' + (ans === 'yes' ? 'background:#FEE2E2;border-color:#EF4444;color:#991B1B;' : '') + '"><input type="radio" id="inLc_' + idx + '_yes" name="lc_' + idx + '" value="yes" ' + (ans === 'yes' ? 'checked' : '') + ' onchange="onLiftingCriterionToggle(' + idx + ', \'yes\', this)"' + (disAttr || isLockedYes ? ' disabled' : '') + '> YES</label>' +
+                        '<label class="radio-pill ' + (ans === 'no' ? 'sel' : '') + (isLockedYes ? ' disabled' : '') + '"><input type="radio" id="inLc_' + idx + '_no" name="lc_' + idx + '" value="no" ' + (ans === 'no' ? 'checked' : '') + ' onchange="onLiftingCriterionToggle(' + idx + ', \'no\', this)"' + (disAttr || isLockedYes ? ' disabled' : '') + '> NO</label>' +
+                        '<label class="radio-pill ' + (ans === 'na' ? 'sel' : '') + (isLockedYes ? ' disabled' : '') + '"><input type="radio" id="inLc_' + idx + '_na" name="lc_' + idx + '" value="na" ' + (ans === 'na' ? 'checked' : '') + ' onchange="onLiftingCriterionToggle(' + idx + ', \'na\', this)"' + (disAttr || isLockedYes ? ' disabled' : '') + '> N/A</label>' +
                         '</div>' +
                         '</div>';
                 }).join('') +
                 '</div></div>';
 
-            // Sub-Table 2: Documentation & On-Site Controls Folder
-            html += '<div class="dsec" style="margin-top:16px;">' +
+            // Sub-Table 2: Documentation & On-Site Controls (Part A: Routine Lifts / Part B: Complex / Critical / Heavy Lifts)
+            const partLetter = isCrit ? 'Part B' : 'Part A';
+            const partScope = isCrit ? 'Complex / Critical / Heavy Lifts' : 'Routine Lifts';
+            html += '<div class="dsec" id="subTable2Container" style="margin-top:16px;">' +
                 '<div class="dsec-title" style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
-                '<span><i class="fa-solid fa-folder-open" style="color:var(--orange);"></i> Sub-Table 2: Documentation &amp; On-Site Controls Folder (' + (isCrit ? 'Critical Lift Plan' : 'Routine Lifting') + ')</span>' +
+                '<span id="subTable2Title"><i class="fa-solid fa-folder-open" style="color:var(--orange);"></i> Sub-Table 2: ' + partLetter + ' &mdash; Statutory Documentation &amp; On-Site Controls (' + partScope + ') <span class="req">*</span></span>' +
                 '<div style="display:flex;gap:6px;">' +
                 '<button type="button" class="btn btn-xs btn-ghost" onclick="toggleAllLiftingDocs(true)"><i class="fa-solid fa-check-double"></i> Select All</button>' +
                 '<button type="button" class="btn btn-xs btn-ghost" onclick="toggleAllLiftingDocs(false)"><i class="fa-solid fa-xmark"></i> Deselect All</button>' +
                 '</div></div>' +
                 '<div style="font-size:12px;color:var(--text-muted);margin-bottom:12px;">' +
-                'Verify presence and physical availability of statutory documentation and personnel credentials on site:' +
+                'Verify presence and physical availability of statutory documentation and personnel credentials on site. Items can be checked or not checked (checked = <b>YES</b>, unchecked = <b>NO</b>):' +
                 '</div>' +
-                '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:8px;">' +
+                '<div id="subTable2DocsList" style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:8px;">' +
                 docsList.map((doc, idx) => {
                     const checked = currentDocs.includes(doc);
-                    return '<label class="dpdp-consent-pill ' + (checked ? 'checked' : '') + '" style="margin:0;padding:8px 12px;font-size:12px;background:' + (checked ? '#F0FDF4' : '#FFFFFF') + ';border-color:' + (checked ? '#86EFAC' : '#E2E8F0') + ';">' +
-                        '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="onLiftingDocToggle(\'' + escapeHtml(doc).replace(/'/g, "\\'") + '\', this.checked)"' + disAttr + ' style="width:16px;height:16px;accent-color:#16A34A;cursor:pointer;">' +
+                    return '<label class="lifting-doc-pill ' + (checked ? 'checked' : '') + '" style="margin:0;padding:8px 12px;font-size:12px;background:' + (checked ? '#F0FDF4' : '#FFFFFF') + ';border:1.5px solid ' + (checked ? '#86EFAC' : '#E2E8F0') + ';border-radius:6px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;transition:all 0.15s ease;">' +
+                        '<div style="display:flex;align-items:center;gap:8px;">' +
+                        '<input type="checkbox" ' + (checked ? 'checked' : '') + ' onchange="onLiftingDocToggle(\'' + escapeHtml(doc).replace(/'/g, "\\'") + '\', this.checked, this)"' + disAttr + ' style="width:16px;height:16px;accent-color:#16A34A;cursor:pointer;">' +
                         '<span style="color:var(--navy);font-weight:' + (checked ? '600' : '400') + ';">' + (idx + 1) + '. ' + escapeHtml(doc) + '</span>' +
+                        '</div>' +
+                        '<span class="doc-yn-badge badge" style="font-size:10px;font-weight:700;padding:2px 8px;background:' + (checked ? '#DCFCE7' : '#F1F5F9') + ';color:' + (checked ? '#166534' : '#64748B') + ';">' +
+                        (checked ? '<i class="fa-solid fa-check"></i> YES' : 'NO') +
+                        '</span>' +
                         '</label>';
                 }).join('') +
+                '</div>' +
+                '<div id="subTable2Error" class="form-error" style="display:' + (currentDocs.length === 0 ? 'flex' : 'none') + ';margin-top:10px;padding:8px 12px;background:#FEE2E2;border:1px solid #FCA5A5;border-radius:6px;color:#991B1B;font-size:12px;align-items:center;gap:6px;">' +
+                '<i class="fa-solid fa-circle-exclamation"></i> ' + (isCrit ? 'Sub-Table 2: Part B &mdash; Statutory Documentation &amp; On-Site Controls (Complex / Critical / Heavy Lifts) cannot be all unchecked. At least one statutory control must be verified and checked to proceed to next page.' : 'Sub-Table 2: Part A &mdash; Statutory Documentation &amp; On-Site Controls cannot be all unchecked. At least one statutory control must be verified and checked to proceed.') +
                 '</div></div>';
 
             // Sub-Table 3: CRANE & Lifting Equipment Specification
             html += '<div class="dsec" style="margin-top:16px;">' +
                 '<div class="dsec-title"><i class="fa-solid fa-truck-pickup" style="color:var(--orange);"></i> Sub-Table 3: Crane &amp; Lifting Equipment Specification</div>' +
                 '<div class="form-grid">' +
-                '<div class="form-field"><label>Type of Lifting Equipment</label>' +
-                '<select id="inCraneEquipType" onchange="draft.craneEquipmentType=this.value;"' + disAttr + '>' +
+                '<div class="form-field" id="ff-crane-equip-type"><label>Type of Lifting Equipment <span class="req">*</span></label>' +
+                '<select id="inCraneEquipType" onchange="draft.craneEquipmentType=this.value;validateWizStep(1);"' + disAttr + '>' +
                 '<option value="">Select equipment type&hellip;</option>' +
-                LIFTING_EQUIPMENT_TYPES.map(t => '<option value="' + t + '" ' + (draft.craneEquipmentType === t ? 'selected' : '') + '>' + t + '</option>').join('') +
-                '</select></div>' +
-                '<div class="form-field"><label>Crane Asset / Reg. Identification No.</label>' +
-                '<input type="text" id="inCraneRegId" placeholder="e.g. TC-04 / ARPL-MC-09" value="' + escapeHtml(draft.craneRegId || '') + '" oninput="draft.craneRegId=this.value;"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Max Certified SWL (Metric Tons)</label>' +
-                '<input type="number" id="inCraneSwl" step="0.1" placeholder="e.g. 10.0" value="' + escapeHtml(draft.craneSwl || '') + '" oninput="draft.craneSwl=this.value;"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Last TPI Certification Date &amp; Document No.</label>' +
+                LIFTING_EQUIPMENT_TYPES.map(t => '<option value="' + t + '" ' + ((draft.craneEquipmentType || draft.liftingEquipmentType) === t ? 'selected' : '') + '>' + t + '</option>').join('') +
+                '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Type of lifting equipment is mandatory.</div></div>' +
+                '<div class="form-field" id="ff-crane-reg-id"><label>Crane Asset / Reg. Identification No. <span class="req">*</span></label>' +
+                '<input type="text" id="inCraneRegId" placeholder="e.g. TC-04 / ARPL-MC-09" value="' + escapeHtml(draft.craneRegId || '') + '" oninput="draft.craneRegId=this.value;validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Crane identification number is mandatory.</div></div>' +
+                '<div class="form-field" id="ff-crane-swl"><label>Max Certified SWL (Metric Tons) <span class="req">*</span></label>' +
+                '<input type="number" id="inCraneSwl" step="0.1" placeholder="e.g. 10.0" value="' + escapeHtml(draft.craneSwl || '') + '" oninput="draft.craneSwl=this.value;validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Maximum certified SWL in MT is mandatory (greater than 0).</div></div>' +
+                '<div class="form-field" id="ff-crane-cert"><label>Last TPI Certification Date &amp; Document No. <span class="req">*</span></label>' +
                 '<div class="responsive-flex-row">' +
-                '<input type="date" id="inCraneCertDate" value="' + escapeHtml(draft.craneCertDate || '') + '" oninput="draft.craneCertDate=this.value;"' + disAttr + ' style="width:45%;">' +
-                '<input type="text" id="inCraneCertNo" placeholder="TPI Cert No." value="' + escapeHtml(draft.craneCertNo || '') + '" oninput="draft.craneCertNo=this.value;"' + disAttr + ' style="flex:1;">' +
-                '</div></div>' +
-                '<div class="form-field"><label>Boom Length (m)</label>' +
-                '<input type="number" id="inCraneBoomLength" step="0.1" placeholder="e.g. 45.0" value="' + escapeHtml(draft.craneBoomLength || '') + '" oninput="draft.craneBoomLength=this.value;"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Fly Jib Length (m) &amp; Offset Angle (&deg;)</label>' +
+                '<input type="date" id="inCraneCertDate" value="' + escapeHtml(draft.craneCertDate || '') + '" oninput="draft.craneCertDate=this.value;validateWizStep(1);"' + disAttr + ' style="width:45%;">' +
+                '<input type="text" id="inCraneCertNo" placeholder="TPI Cert No." value="' + escapeHtml(draft.craneCertNo || '') + '" oninput="draft.craneCertNo=this.value;validateWizStep(1);"' + disAttr + ' style="flex:1;">' +
+                '</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> TPI certification date and document number are mandatory.</div></div>' +
+                '<div class="form-field" id="ff-crane-boom-length"><label>Boom Length (m) <span class="req">*</span></label>' +
+                '<input type="number" id="inCraneBoomLength" step="0.1" placeholder="e.g. 45.0" value="' + escapeHtml(draft.craneBoomLength || '') + '" oninput="draft.craneBoomLength=this.value;validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Boom length in meters is mandatory (greater than 0).</div></div>' +
+                '<div class="form-field" id="ff-crane-fly-jib"><label>Fly Jib Length (m) &amp; Offset Angle (&deg;) <span class="req">*</span></label>' +
                 '<div class="responsive-flex-row">' +
-                '<input type="number" id="inCraneFlyJib" step="0.1" placeholder="Jib (m)" value="' + escapeHtml(draft.craneFlyJib || '') + '" oninput="draft.craneFlyJib=this.value;"' + disAttr + ' style="width:50%;">' +
-                '<input type="number" id="inCraneOffsetAngle" step="1" placeholder="Angle (&deg;)" value="' + escapeHtml(draft.craneOffsetAngle || '') + '" oninput="draft.craneOffsetAngle=this.value;"' + disAttr + ' style="width:50%;">' +
-                '</div></div>' +
-                '<div class="form-field full"><label>Working Radii &amp; Safe Working Capacities</label>' +
+                '<input type="number" id="inCraneFlyJib" step="0.1" placeholder="Jib (m)" value="' + escapeHtml(draft.craneFlyJib != null ? draft.craneFlyJib : '') + '" oninput="draft.craneFlyJib=this.value;validateWizStep(1);"' + disAttr + ' style="width:50%;">' +
+                '<input type="number" id="inCraneOffsetAngle" step="1" placeholder="Angle (&deg;)" value="' + escapeHtml(draft.craneOffsetAngle != null ? draft.craneOffsetAngle : '') + '" oninput="draft.craneOffsetAngle=this.value;validateWizStep(1);"' + disAttr + ' style="width:50%;">' +
+                '</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Fly jib length and offset angle are mandatory (enter 0 if not equipped).</div></div>' +
+                '<div class="form-field full" id="ff-crane-radii"><label>Working Radii &amp; Safe Working Capacities <span class="req">*</span></label>' +
                 '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(200px, 1fr));gap:10px;">' +
                 '<div style="background:#F1F5F9;padding:8px 10px;border-radius:6px;">' +
-                '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Initial Load Position</div>' +
-                '<input type="number" step="0.1" placeholder="Radius (m)" value="' + escapeHtml(draft.craneRadiusInitial || '') + '" oninput="draft.craneRadiusInitial=this.value;"' + disAttr + ' style="margin-bottom:4px;">' +
-                '<input type="number" step="0.1" placeholder="SWL at Radius (MT)" value="' + escapeHtml(draft.craneSwlInitial || '') + '" oninput="draft.craneSwlInitial=this.value;"' + disAttr + '>' +
+                '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Initial Load Position <span class="req">*</span></div>' +
+                '<input type="number" step="0.1" placeholder="Radius (m)" value="' + escapeHtml(draft.craneRadiusInitial || '') + '" oninput="draft.craneRadiusInitial=this.value;validateWizStep(1);"' + disAttr + ' style="margin-bottom:4px;">' +
+                '<input type="number" step="0.1" placeholder="SWL at Radius (MT)" value="' + escapeHtml(draft.craneSwlInitial || '') + '" oninput="draft.craneSwlInitial=this.value;validateWizStep(1);">' +
                 '</div>' +
                 '<div style="background:#F1F5F9;padding:8px 10px;border-radius:6px;">' +
-                '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Final Set Position</div>' +
-                '<input type="number" step="0.1" placeholder="Radius (m)" value="' + escapeHtml(draft.craneRadiusFinal || '') + '" oninput="draft.craneRadiusFinal=this.value;"' + disAttr + ' style="margin-bottom:4px;">' +
-                '<input type="number" step="0.1" placeholder="SWL at Radius (MT)" value="' + escapeHtml(draft.craneSwlFinal || '') + '" oninput="draft.craneSwlFinal=this.value;"' + disAttr + '>' +
+                '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Final Set Position <span class="req">*</span></div>' +
+                '<input type="number" step="0.1" placeholder="Radius (m)" value="' + escapeHtml(draft.craneRadiusFinal || '') + '" oninput="draft.craneRadiusFinal=this.value;validateWizStep(1);"' + disAttr + ' style="margin-bottom:4px;">' +
+                '<input type="number" step="0.1" placeholder="SWL at Radius (MT)" value="' + escapeHtml(draft.craneSwlFinal || '') + '" oninput="draft.craneSwlFinal=this.value;validateWizStep(1);">' +
                 '</div>' +
                 '<div style="background:#F1F5F9;padding:8px 10px;border-radius:6px;">' +
-                '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Worst Case Working Position</div>' +
-                '<input type="number" step="0.1" placeholder="Radius (m)" value="' + escapeHtml(draft.craneRadiusWorst || '') + '" oninput="draft.craneRadiusWorst=this.value;"' + disAttr + ' style="margin-bottom:4px;">' +
-                '<input type="number" step="0.1" placeholder="SWL at Radius (MT)" value="' + escapeHtml(draft.craneSwlWorst || '') + '" oninput="draft.craneSwlWorst=this.value;"' + disAttr + '>' +
+                '<div style="font-size:11px;font-weight:700;color:var(--navy);margin-bottom:4px;">Worst Case Working Position <span class="req">*</span></div>' +
+                '<input type="number" step="0.1" placeholder="Radius (m)" value="' + escapeHtml(draft.craneRadiusWorst || '') + '" oninput="draft.craneRadiusWorst=this.value;validateWizStep(1);"' + disAttr + ' style="margin-bottom:4px;">' +
+                '<input type="number" step="0.1" placeholder="SWL at Radius (MT)" value="' + escapeHtml(draft.craneSwlWorst || '') + '" oninput="draft.craneSwlWorst=this.value;validateWizStep(1);">' +
                 '</div>' +
-                '</div></div>' +
-                '<div class="form-field"><label>Primary Lifting Gear Type</label>' +
-                '<select id="inCraneGearType" onchange="draft.craneGearType=this.value;"' + disAttr + '>' +
+                '</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Working radius (m) and SWL (MT) for Initial, Final, and Worst-case positions are all mandatory.</div></div>' +
+                '<div class="form-field" id="ff-crane-gear-type"><label>Primary Lifting Gear Type <span class="req">*</span></label>' +
+                '<select id="inCraneGearType" onchange="draft.craneGearType=this.value;validateWizStep(1);"' + disAttr + '>' +
                 '<option value="">Select gear type&hellip;</option>' +
-                LIFTING_GEAR_TYPES.map(g => '<option value="' + g + '" ' + (draft.craneGearType === g ? 'selected' : '') + '>' + g + '</option>').join('') +
-                '</select></div>' +
-                '<div class="form-field"><label>Combined Rigging Gear Weight (MT)</label>' +
-                '<input type="number" id="inCraneGearWeight" step="0.01" placeholder="e.g. 0.30" value="' + escapeHtml(draft.craneGearWeight || '') + '" oninput="draft.craneGearWeight=this.value;renderLiftingCalculations();updateLiftingClassification();"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Tandem Lift (Two or more cranes)? <span class="req">*</span></label><div class="radio-row">' +
-                '<label class="radio-pill ' + (draft.craneTandemLift === 'yes' ? 'sel' : '') + '" style="' + (draft.craneTandemLift === 'yes' ? 'background:#FEE2E2;border-color:#EF4444;color:#991B1B;' : '') + '"><input type="radio" name="craneTandemLift" value="yes" ' + (draft.craneTandemLift === 'yes' ? 'checked' : '') + ' onchange="draft.craneTandemLift=this.value;updateLiftingClassification();renderWizStep();"' + disAttr + '> Yes (Critical)</label>' +
-                '<label class="radio-pill ' + (draft.craneTandemLift !== 'yes' ? 'sel' : '') + '"><input type="radio" name="craneTandemLift" value="no" ' + (draft.craneTandemLift !== 'yes' ? 'checked' : '') + ' onchange="draft.craneTandemLift=this.value;updateLiftingClassification();renderWizStep();"' + disAttr + '> No</label>' +
+                LIFTING_GEAR_TYPES.map(g => '<option value="' + g + '" ' + ((draft.craneGearType || (draft.riggingGear && draft.riggingGear[0] && draft.riggingGear[0].type)) === g ? 'selected' : '') + '>' + g + '</option>').join('') +
+                '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Primary lifting gear type is mandatory.</div></div>' +
+                '<div class="form-field" id="ff-crane-gear-weight"><label>Combined Rigging Gear Weight (MT) <span class="req">*</span></label>' +
+                '<input type="number" id="inCraneGearWeight" step="0.01" placeholder="e.g. 0.30" value="' + escapeHtml(draft.craneGearWeight != null ? draft.craneGearWeight : '') + '" oninput="draft.craneGearWeight=this.value;updateLiftingCalculationsUI();validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Combined rigging gear weight in MT is mandatory (0 or greater).</div></div>' +
+                '<div class="form-field" id="ff-crane-tandem"><label>Tandem Lift (Two or more cranes)? <span class="req">*</span></label><div class="radio-row">' +
+                '<label class="radio-pill ' + (draft.craneTandemLift === 'yes' ? 'sel' : '') + '" style="' + (draft.craneTandemLift === 'yes' ? 'background:#FEE2E2;border-color:#EF4444;color:#991B1B;' : '') + '"><input type="radio" id="inCraneTandemLiftYes" name="craneTandemLift" value="yes" ' + (draft.craneTandemLift === 'yes' ? 'checked' : '') + ' onchange="onLiftingTandemChange(this.value, this)"' + disAttr + '> Yes (Critical)</label>' +
+                '<label class="radio-pill ' + (draft.craneTandemLift !== 'yes' ? 'sel' : '') + '"><input type="radio" id="inCraneTandemLiftNo" name="craneTandemLift" value="no" ' + (draft.craneTandemLift !== 'yes' ? 'checked' : '') + ' onchange="onLiftingTandemChange(this.value, this)"' + disAttr + '> No</label>' +
                 '</div></div>' +
-                (draft.craneTandemLift === 'yes' ? ('<div class="form-field full"><label>Tandem Lift Synchronization Method <span class="req">*</span></label><textarea id="inCraneTandemMethod" rows="2" placeholder="Specify crane synchronization, communication frequencies, and load sharing calculation..." oninput="draft.craneTandemMethod=this.value;"' + disAttr + '>' + escapeHtml(draft.craneTandemMethod || '') + '</textarea></div>') : '') +
+                '<div class="form-field full" id="ff-crane-tandem-method" style="display:' + (draft.craneTandemLift === 'yes' ? 'block' : 'none') + ';"><label>Tandem Lift Synchronization Method <span class="req">*</span></label><textarea id="inCraneTandemMethod" rows="2" placeholder="Specify crane synchronization, communication frequencies, and load sharing calculation..." oninput="draft.craneTandemMethod=this.value;validateWizStep(1);"' + disAttr + '>' + escapeHtml(draft.craneTandemMethod || '') + '</textarea><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Tandem lift synchronization method is mandatory for tandem lifts.</div></div>' +
                 '</div></div>';
 
             // Sub-Table 4: Rigging Plan & Engineering Stress Calculation
@@ -12542,62 +12993,68 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             html += '<div class="dsec" style="margin-top:16px;">' +
                 '<div class="dsec-title"><i class="fa-solid fa-calculator" style="color:var(--orange);"></i> Sub-Table 4: Rigging Plan &amp; Engineering Stress Calculation</div>' +
                 '<div class="form-grid">' +
-                '<div class="form-field"><label>Sling Diameter (mm)</label>' +
-                '<input type="number" id="inSlingDiameter" placeholder="e.g. 24" value="' + escapeHtml(draft.slingDiameter || '') + '" oninput="draft.slingDiameter=this.value;"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Sling Length (L, in meters)</label>' +
-                '<input type="number" id="inSlingLength" step="0.1" placeholder="e.g. 6.0" value="' + escapeHtml(draft.slingLength || '') + '" oninput="draft.slingLength=this.value;renderLiftingCalculations();updateLiftingClassification();renderWizStep();"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Vertical Apex Height (H, in meters)</label>' +
-                '<input type="number" id="inSlingApexHeight" step="0.1" placeholder="e.g. 4.5" value="' + escapeHtml(draft.slingApexHeight || '') + '" oninput="draft.slingApexHeight=this.value;renderLiftingCalculations();updateLiftingClassification();renderWizStep();"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Sling Certified SWL (Metric Tons)</label>' +
-                '<input type="number" id="inSlingSwl" step="0.1" placeholder="e.g. 5.0" value="' + escapeHtml(draft.slingSwl || '') + '" oninput="draft.slingSwl=this.value;renderLiftingCalculations();updateLiftingClassification();renderWizStep();"' + disAttr + '></div>' +
-                '<div class="form-field"><label>Number of Slings (N)</label>' +
-                '<select id="inSlingsCount" onchange="draft.slingsCount=this.value;renderLiftingCalculations();updateLiftingClassification();renderWizStep();"' + disAttr + '>' +
+                '<div class="form-field" id="ff-sling-dia"><label>Sling Diameter (mm) <span class="req">*</span></label>' +
+                '<input type="number" id="inSlingDiameter" placeholder="e.g. 24" value="' + escapeHtml(draft.slingDiameter || '') + '" oninput="draft.slingDiameter=this.value;validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Sling diameter in mm is mandatory (greater than 0).</div></div>' +
+                '<div class="form-field" id="ff-sling-length"><label>Sling Length (L, in meters) <span class="req">*</span></label>' +
+                '<input type="number" id="inSlingLength" step="0.1" placeholder="e.g. 6.0" value="' + escapeHtml(draft.slingLength || '') + '" oninput="draft.slingLength=this.value;updateLiftingCalculationsUI();validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Sling length in meters is mandatory (greater than 0).</div></div>' +
+                '<div class="form-field" id="ff-sling-apex"><label>Vertical Apex Height (H, in meters) <span class="req">*</span></label>' +
+                '<input type="number" id="inSlingApexHeight" step="0.1" placeholder="e.g. 4.5" value="' + escapeHtml(draft.slingApexHeight || '') + '" oninput="draft.slingApexHeight=this.value;updateLiftingCalculationsUI();validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Vertical apex height in meters is mandatory (greater than 0).</div></div>' +
+                '<div class="form-field" id="ff-sling-swl"><label>Sling Certified SWL (Metric Tons) <span class="req">*</span></label>' +
+                '<input type="number" id="inSlingSwl" step="0.1" placeholder="e.g. 5.0" value="' + escapeHtml(draft.slingSwl || '') + '" oninput="draft.slingSwl=this.value;updateLiftingCalculationsUI();validateWizStep(1);"' + disAttr + '>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Sling certified SWL in MT is mandatory (greater than 0).</div></div>' +
+                '<div class="form-field" id="ff-slings-count"><label>Number of Slings (N) <span class="req">*</span></label>' +
+                '<select id="inSlingsCount" onchange="draft.slingsCount=this.value;updateLiftingCalculationsUI();validateWizStep(1);"' + disAttr + '>' +
                 ['2', '3', '4'].map(n => '<option value="' + n + '" ' + ((draft.slingsCount || '2') === n ? 'selected' : '') + '>' + n + ' Slings' + (n !== '2' ? ' (Clamped to 2 if unadjustable)' : '') + '</option>').join('') +
                 '</select></div>' +
-                '<div class="form-field"><label>Slings Adjustable?</label><div class="radio-row">' +
-                '<label class="radio-pill ' + (draft.slingsAdjustable === 'yes' ? 'sel' : '') + '"><input type="radio" name="slingsAdjustable" value="yes" ' + (draft.slingsAdjustable === 'yes' ? 'checked' : '') + ' onchange="draft.slingsAdjustable=this.value;renderLiftingCalculations();updateLiftingClassification();renderWizStep();"' + disAttr + '> Yes</label>' +
-                '<label class="radio-pill ' + (draft.slingsAdjustable !== 'yes' ? 'sel' : '') + '"><input type="radio" name="slingsAdjustable" value="no" ' + (draft.slingsAdjustable !== 'yes' ? 'checked' : '') + ' onchange="draft.slingsAdjustable=this.value;renderLiftingCalculations();updateLiftingClassification();renderWizStep();"' + disAttr + '> No</label>' +
+                '<div class="form-field" id="ff-slings-adj"><label>Slings Adjustable? <span class="req">*</span></label><div class="radio-row">' +
+                '<label class="radio-pill ' + (draft.slingsAdjustable === 'yes' ? 'sel' : '') + '"><input type="radio" id="inSlingsAdjustableYes" name="slingsAdjustable" value="yes" ' + (draft.slingsAdjustable === 'yes' ? 'checked' : '') + ' onchange="onLiftingSlingsAdjChange(this.value, this)"' + disAttr + '> Yes</label>' +
+                '<label class="radio-pill ' + (draft.slingsAdjustable !== 'yes' ? 'sel' : '') + '"><input type="radio" id="inSlingsAdjustableNo" name="slingsAdjustable" value="no" ' + (draft.slingsAdjustable !== 'yes' ? 'checked' : '') + ' onchange="onLiftingSlingsAdjChange(this.value, this)"' + disAttr + '> No</label>' +
                 '</div></div>' +
                 '<div class="form-field full">' +
-                '<div style="background:#F8FAFC;border:1px solid ' + (isOverload ? '#EF4444' : isStressWarning ? '#F59E0B' : '#CBD5E1') + ';border-radius:8px;padding:12px 16px;">' +
+                '<div id="slingStressResultBox" style="background:#F8FAFC;border:1px solid ' + (isOverload ? '#EF4444' : isStressWarning ? '#F59E0B' : '#CBD5E1') + ';border-radius:8px;padding:12px 16px;">' +
                 '<div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px;">' +
                 '<div>' +
                 '<div style="font-size:12px;font-weight:700;color:var(--navy);">Dynamic Sling Tension Calculation: <code style="background:#E2E8F0;padding:2px 6px;border-radius:4px;">Stress = (W_total &times; L) / (H &times; N_eff)</code></div>' +
-                '<div style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Calculated Tension per Sling: <strong style="font-size:14px;color:' + (isOverload ? '#DC2626' : isStressWarning ? '#D97706' : '#16A34A') + ';">' + (stressValPerSling != null ? stressValPerSling + ' MT' : 'Awaiting parameters') + '</strong>' +
+                '<div class="calc-tension-text" style="font-size:11.5px;color:var(--text-muted);margin-top:2px;">Calculated Tension per Sling: <strong style="font-size:14px;color:' + (isOverload ? '#DC2626' : isStressWarning ? '#D97706' : '#16A34A') + ';">' + (stressValPerSling != null ? stressValPerSling + ' MT' : 'Awaiting parameters') + '</strong>' +
                 (stressPctVal != null ? ' (' + stressPctVal + '% of Sling SWL)' : '') +
                 '</div></div>' +
+                '<div class="calc-badge-container">' +
                 (isOverload
                     ? '<span class="badge" style="background:#FEE2E2;color:#991B1B;font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> OVERLOAD (&gt; 100% SWL)</span>'
                     : isStressWarning
                     ? '<span class="badge" style="background:#FEF3C7;color:#92400E;font-weight:700;"><i class="fa-solid fa-triangle-exclamation"></i> HIGH STRESS (&gt; 80% SWL &rarr; Critical 9B)</span>'
                     : (stressValPerSling != null ? '<span class="badge" style="background:#DCFCE7;color:#166534;font-weight:700;"><i class="fa-solid fa-check"></i> Safe Capacity (&le; 80% SWL)</span>' : '')) +
+                '</div>' +
                 '</div></div></div>' +
                 '</div>' +
                 '<div style="margin-top:14px;">' +
                 '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">' +
-                '<strong style="font-size:12.5px;color:var(--navy);"><i class="fa-solid fa-table-list" style="color:var(--orange);"></i> Rigging Gears Registry Table</strong>' +
+                '<strong style="font-size:12.5px;color:var(--navy);"><i class="fa-solid fa-table-list" style="color:var(--orange);"></i> Rigging Gears Registry Table <span class="req">*</span></strong>' +
                 '<button type="button" class="btn btn-xs btn-primary" onclick="addRiggingGearRow()"><i class="fa-solid fa-plus"></i> Add Gear Row</button>' +
                 '</div>' +
                 '<div style="overflow-x:auto;">' +
                 '<table class="table" style="font-size:12px;width:100%;border-collapse:collapse;">' +
                 '<thead><tr style="background:#F1F5F9;text-align:left;">' +
                 '<th style="padding:6px 8px;">#</th>' +
-                '<th style="padding:6px 8px;">Gear Type</th>' +
-                '<th style="padding:6px 8px;">Serial No. / Tag</th>' +
-                '<th style="padding:6px 8px;">SWL (MT)</th>' +
-                '<th style="padding:6px 8px;">TPI Date</th>' +
+                '<th style="padding:6px 8px;">Gear Type <span class="req">*</span></th>' +
+                '<th style="padding:6px 8px;">Serial No. / Tag <span class="req">*</span></th>' +
+                '<th style="padding:6px 8px;">SWL (MT) <span class="req">*</span></th>' +
+                '<th style="padding:6px 8px;">TPI Date <span class="req">*</span></th>' +
                 '<th style="padding:6px 8px;width:50px;">Action</th>' +
                 '</tr></thead>' +
                 '<tbody>' +
                 (draft.riggingGears || []).map((gear, gIdx) => {
                     return '<tr>' +
                         '<td style="padding:6px 8px;font-weight:600;">' + (gIdx + 1) + '</td>' +
-                        '<td style="padding:4px 6px;"><select onchange="updateRiggingGear(' + gIdx + ', \'type\', this.value);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;">' +
+                        '<td style="padding:4px 6px;"><select onchange="updateRiggingGear(' + gIdx + ', \'type\', this.value);validateWizStep(1);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;">' +
                         LIFTING_GEAR_TYPES.map(gt => '<option value="' + gt + '" ' + (gear.type === gt ? 'selected' : '') + '>' + gt + '</option>').join('') +
                         '</select></td>' +
-                        '<td style="padding:4px 6px;"><input type="text" placeholder="Tag / Sl. No." value="' + escapeHtml(gear.serialNo || '') + '" oninput="updateRiggingGear(' + gIdx + ', \'serialNo\', this.value);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;"></td>' +
-                        '<td style="padding:4px 6px;"><input type="number" step="0.1" placeholder="SWL" value="' + escapeHtml(gear.swl || '') + '" oninput="updateRiggingGear(' + gIdx + ', \'swl\', this.value);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;width:80px;"></td>' +
-                        '<td style="padding:4px 6px;"><input type="date" value="' + escapeHtml(gear.certDate || '') + '" oninput="updateRiggingGear(' + gIdx + ', \'certDate\', this.value);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;"></td>' +
+                        '<td style="padding:4px 6px;"><input type="text" placeholder="Tag / Sl. No." value="' + escapeHtml(gear.serialNo || '') + '" oninput="updateRiggingGear(' + gIdx + ', \'serialNo\', this.value);validateWizStep(1);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;"></td>' +
+                        '<td style="padding:4px 6px;"><input type="number" step="0.1" placeholder="SWL" value="' + escapeHtml(gear.swl || '') + '" oninput="updateRiggingGear(' + gIdx + ', \'swl\', this.value);validateWizStep(1);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;width:80px;"></td>' +
+                        '<td style="padding:4px 6px;"><input type="date" value="' + escapeHtml(gear.certDate || '') + '" oninput="updateRiggingGear(' + gIdx + ', \'certDate\', this.value);validateWizStep(1);"' + disAttr + ' style="padding:4px 6px;font-size:11.5px;"></td>' +
                         '<td style="padding:4px 6px;text-align:center;">' +
                         ((draft.riggingGears || []).length > 1
                             ? '<button type="button" class="btn btn-xs btn-ghost" onclick="removeRiggingGearRow(' + gIdx + ')" title="Remove" style="color:#EF4444;"><i class="fa-solid fa-trash"></i></button>'
@@ -12605,31 +13062,33 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         '</td>' +
                         '</tr>';
                 }).join('') +
-                '</tbody></table></div></div></div>';
+                '</tbody></table></div>' +
+                '<div id="riggingGearsError" class="form-error" style="display:none;margin-top:6px;color:#DC2626;font-size:12px;"><i class="fa-solid fa-circle-exclamation"></i> At least one rigging gear row is required, and all gear fields (Gear Type, Serial No./Tag, SWL, TPI Date) are mandatory.</div>' +
+                '</div></div>';
 
             // Communications, Constraints & Special Precautions
             html += '<div class="dsec" style="margin-top:16px;">' +
                 '<div class="dsec-title"><i class="fa-solid fa-tower-broadcast" style="color:var(--orange);"></i> Communications, Environmental &amp; Site Controls</div>' +
                 '<div class="form-grid">' +
-                '<div class="form-field"><label>Primary Means of Communication</label>' +
-                '<select id="inLiftingComms" onchange="draft.liftingComms=this.value;"' + disAttr + '>' +
+                '<div class="form-field" id="ff-lifting-comms"><label>Primary Means of Communication <span class="req">*</span></label>' +
+                '<select id="inLiftingComms" onchange="draft.liftingComms=this.value;validateWizStep(1);"' + disAttr + '>' +
                 ['Radio (walkie-talkie)', 'Standard Hand Signals', 'Both Radio & Hand Signals'].map(c => '<option value="' + c + '" ' + ((draft.liftingComms || 'Both Radio & Hand Signals') === c ? 'selected' : '') + '>' + c + '</option>').join('') +
-                '</select></div>' +
-                '<div class="form-field"><label>Ground Condition Verification</label>' +
-                '<select id="inLiftingGround" onchange="draft.liftingGround=this.value;"' + disAttr + '>' +
+                '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Primary means of communication is mandatory.</div></div>' +
+                '<div class="form-field" id="ff-lifting-ground"><label>Ground Condition Verification <span class="req">*</span></label>' +
+                '<select id="inLiftingGround" onchange="draft.liftingGround=this.value;validateWizStep(1);"' + disAttr + '>' +
                 ['Firm & Compacted', 'Heavy Timber / Steel Plates Used', 'Hard Concrete Pavement'].map(g => '<option value="' + g + '" ' + ((draft.liftingGround || 'Firm & Compacted') === g ? 'selected' : '') + '>' + g + '</option>').join('') +
-                '</select></div>' +
-                '<div class="form-field"><label>Traffic / Pedestrian Demarcation (TRAP)</label><div class="radio-row">' +
-                '<label class="radio-pill ' + (draft.liftingRoadTrap === 'yes' ? 'sel' : '') + '"><input type="radio" name="liftingRoadTrap" value="yes" ' + (draft.liftingRoadTrap === 'yes' ? 'checked' : '') + ' onchange="draft.liftingRoadTrap=this.value;"' + disAttr + '> Implemented</label>' +
-                '<label class="radio-pill ' + (draft.liftingRoadTrap !== 'yes' ? 'sel' : '') + '"><input type="radio" name="liftingRoadTrap" value="no" ' + (draft.liftingRoadTrap !== 'yes' ? 'checked' : '') + ' onchange="draft.liftingRoadTrap=this.value;"' + disAttr + '> Not Applicable</label>' +
+                '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Ground condition verification is mandatory.</div></div>' +
+                '<div class="form-field" id="ff-lifting-road-trap"><label>Traffic / Pedestrian Demarcation (TRAP) <span class="req">*</span></label><div class="radio-row">' +
+                '<label class="radio-pill ' + (draft.liftingRoadTrap === 'yes' ? 'sel' : '') + '"><input type="radio" name="liftingRoadTrap" value="yes" ' + (draft.liftingRoadTrap === 'yes' ? 'checked' : '') + ' onchange="draft.liftingRoadTrap=this.value;validateWizStep(1);"' + disAttr + '> Implemented</label>' +
+                '<label class="radio-pill ' + (draft.liftingRoadTrap !== 'yes' ? 'sel' : '') + '"><input type="radio" name="liftingRoadTrap" value="no" ' + (draft.liftingRoadTrap !== 'yes' ? 'checked' : '') + ' onchange="draft.liftingRoadTrap=this.value;validateWizStep(1);"' + disAttr + '> Not Applicable</label>' +
                 '</div></div>' +
-                '<div class="form-field"><label>Lifting Operations Sketch / Rigging Drawing</label>' +
-                '<div style="display:flex;gap:8px;align-items:center;">' +
-                '<button type="button" class="btn btn-sm btn-ghost" onclick="document.getElementById(\'liftingSketchInput\').click()"' + disAttr + '><i class="fa-solid fa-paperclip"></i> ' + (draft.liftingSketch ? 'Replace Sketch' : 'Upload Sketch / Plan') + '</button>' +
-                (draft.liftingSketch ? '<span style="font-size:11.5px;color:var(--green);font-weight:600;"><i class="fa-solid fa-circle-check"></i> ' + escapeHtml(draft.liftingSketch.name) + '</span>' : '<span style="font-size:11.5px;color:var(--text-muted);">Optional (PDF/PNG/JPG)</span>') +
-                '</div></div>' +
-                '<div class="form-field full"><label>Special Activity Safety Precautions</label>' +
-                '<textarea id="inLiftingSpecialPrecautions" rows="2" placeholder="Detail any specialized swing path buffers, anti-collision coordination, or structural precautions..." oninput="draft.liftingSpecialPrecautions=this.value;"' + disAttr + '>' + escapeHtml(draft.liftingSpecialPrecautions || '') + '</textarea>' +
+                '<div class="form-field" id="ff-lifting-site-plan"><label id="liftingSitePlanLabel">Lifting Operations Site Plan Photo / Rigging Drawing ' + (isCrit ? '<span class="req">*</span>' : '<span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(Optional for Routine Lifts)</span>') + '</label>' +
+                '<div id="liftingSitePlanPreview">' + renderLiftingSitePlanPreviewHtml() + '</div>' +
+                '<div class="form-error" id="liftingSitePlanError" style="display:none;"><i class="fa-solid fa-circle-exclamation"></i> Lifting site plan photo / rigging drawing plan is mandatory for PTW-009B Critical Lift Plan (Part B).</div>' +
+                '</div>' +
+                '<div class="form-field full" id="ff-lifting-precautions"><label>Special Activity Safety Precautions <span class="req">*</span></label>' +
+                '<textarea id="inLiftingSpecialPrecautions" rows="2" placeholder="Detail any specialized swing path buffers, anti-collision coordination, or structural precautions..." oninput="draft.liftingSpecialPrecautions=this.value;validateWizStep(1);"' + disAttr + '>' + escapeHtml(draft.liftingSpecialPrecautions || '') + '</textarea>' +
+                '<div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Special activity safety precautions are mandatory.</div>' +
                 '</div>' +
                 '</div></div>';
 
@@ -13183,7 +13642,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const answered = draft.checklist.filter(checklistItemComplete).length;
             const total = draft.checklist.length;
             let html = isLifting
-                ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> ' + (ptypeOf(draft) === 'liftplan' ? 'Critical Lift Safety Checklist' : 'Routine Lifting Safety Checklist') + ' — ' + pMeta(draft).form + ' &sect;II. All 14 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo is mandatory.</div>'
+                ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Common Safety Points &amp; Requirements (' + (ptypeOf(draft) === 'liftplan' ? 'Critical Lift Safety Checklist' : 'Routine Lifting Safety Checklist') + ') — ' + pMeta(draft).form + ' &sect;II. All 14 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo is mandatory.</div>'
                 : isElectrical
                 ? '<div class="section-banner"><i class="fa-solid fa-clipboard-check"></i> Electrical Work Safety Checklist — ' + pMeta(draft).form + ' &sect;II. All 14 items require a response — any mix of YES, NO and N/A is acceptable. NO requires a mandatory comment, evidence photo and GPS. N/A requires a mandatory comment. Work-area site photo was captured in Step 1.</div>'
                 : isBlasting
@@ -13395,6 +13854,28 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 } else {
                     html += '<div style="max-width:440px;"><div class="photo-drop" onclick="document.getElementById(\'drawingFileInput\').click()"><i class="fa-solid fa-compass-drafting"></i>Click to attach the drawing indicating the proposed excavation.<div class="form-hint" style="margin-top:4px;">PDF, DWG, DXF or image</div></div>' +
                         '<div style="text-align:center;margin-top:12px;"><button class="btn btn-sm" onclick="useDemoDrawing()"><i class="fa-solid fa-wand-magic-sparkles"></i> Use Demo Excavation Drawing</button></div></div>';
+                }
+            }
+
+            if (isLifting) {
+                const isCritLift = (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan');
+                const sketch = draft.liftingSketch || draft.sitePlanPhoto;
+                html += '<div class="dsec-title" style="margin-top:22px;"><i class="fa-solid fa-compass-drafting"></i> Lifting Operations Site Plan Photo / Rigging Drawing ' +
+                    (isCritLift ? '<span class="req">*</span>' : '<span style="font-size:11px;font-weight:normal;color:var(--text-muted);">(Optional for Routine Lifts)</span>') + '</div>';
+                html += '<div class="form-hint" style="margin-bottom:8px;">' +
+                    (isCritLift ? 'Mandatory attachment for PTW-009B Critical Lift Plan &mdash; attach site plan photo or engineering rigging drawing.' : 'Rigging drawing or site layout plan (optional for Routine Lifting PTW-009A).') + '</div>';
+                if (sketch) {
+                    const isImg = sketch.dataUrl && sketch.dataUrl.startsWith('data:image');
+                    html += '<div style="max-width:440px;"><div class="file-card">' +
+                        '<div class="fc-icon"><i class="fa-solid ' + (isImg ? 'fa-file-image' : 'fa-file-pdf') + '" style="color:var(--green);"></i></div>' +
+                        '<div class="fc-body"><div class="fc-name"><i class="fa-solid fa-circle-check" style="color:var(--green);"></i> ' + escapeHtml(sketch.name || 'lifting_site_plan.jpg') + '</div><div class="fc-meta">Attached to PTW-009</div></div>' +
+                        '<div class="fc-actions"><button type="button" class="btn btn-sm" onclick="document.getElementById(\'liftingSketchInput\').click()"><i class="fa-solid fa-rotate"></i> Replace</button><button type="button" class="btn btn-sm btn-danger" onclick="removeLiftingSitePlan()"><i class="fa-solid fa-trash-can"></i> Remove</button></div>' +
+                        '</div>' + (isImg ? '<div class="photo-preview" style="margin-top:10px;"><img src="' + sketch.dataUrl + '"></div>' : '') + '</div>';
+                } else {
+                    html += '<div style="max-width:440px;"><div class="photo-drop" onclick="document.getElementById(\'liftingSketchInput\').click()"><i class="fa-solid fa-camera"></i>Click to capture / upload Lifting Site Plan Photo or Rigging Drawing<div class="form-hint" style="margin-top:4px;">JPG, PNG, or PDF' + (isCritLift ? ' &mdash; Strictly Mandatory for Part B' : '') + '</div></div>' +
+                        '<div style="text-align:center;margin-top:12px;"><button type="button" class="btn btn-sm" onclick="attachDemoLiftingSitePlan()" style="background:#EDE9FE;color:#6D28D9;border-color:#C4B5FD;"><i class="fa-solid fa-wand-magic-sparkles"></i> Attach Demo Site Plan Photo</button></div>' +
+                        '<div class="form-error" id="liftingSitePlanStep2Error" style="' + (isCritLift ? 'display:flex;' : 'display:none;') + 'margin-top:8px;"><i class="fa-solid fa-circle-exclamation"></i> Site plan photo / rigging drawing plan is mandatory for PTW-009B Critical Lift Plan (Part B).</div>' +
+                        '</div>';
                 }
             }
             return html;
@@ -13762,6 +14243,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '<div class="dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                 '<div class="attach-row">' + (draft.sitePhoto && draft.sitePhoto !== 'demo' ? '<img src="' + draft.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' Work-area site photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>' +
                 (ptypeOf(draft) === 'excavation' ? ('<div class="attach-row">' + (draft.drawing && draft.drawing.isImage && draft.drawing.dataUrl ? '<img src="' + draft.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + (draft.drawing ? draft.drawing.name : 'Excavation drawing') + ' <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
+                ((ptypeOf(draft) === 'lifting' || ptypeOf(draft) === 'liftplan') && (draft.liftingSketch || draft.sitePlanPhoto) ? ('<div class="attach-row">' + (((draft.liftingSketch && draft.liftingSketch.dataUrl && draft.liftingSketch.dataUrl.startsWith('data:image')) || (draft.sitePlanPhoto && draft.sitePlanPhoto.dataUrl && draft.sitePlanPhoto.dataUrl.startsWith('data:image'))) ? '<img src="' + ((draft.liftingSketch && draft.liftingSketch.dataUrl) || (draft.sitePlanPhoto && draft.sitePlanPhoto.dataUrl)) + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' Lifting Site Plan Photo / Rigging Drawing <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 (isConfined && draft.confinedChecklistAttachment ? ('<div class="attach-row"><i class="fa-solid fa-file-circle-check" style="color:var(--green);"></i> Confined Space Pre-Task Checklist (' + escapeHtml(draft.confinedChecklistAttachment.name) + ') <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>') : '') +
                 noItems.filter(c => c.photo).map(() => '<div class="attach-row"><i class="fa-regular fa-image"></i> NO-item evidence photo <span class="ci-chip ok" style="margin-left:auto;"><i class="fa-solid fa-check"></i> Attached</span></div>').join('') +
                 '</div>' +
@@ -14240,16 +14722,153 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     }
                     ok = ok && wtOk && otherOk;
                 } else if (isLifting) {
+                    // --- SUB-TABLE 1: Details of the Load ---
                     const descOk = !!(draft.loadDescription && draft.loadDescription.trim());
                     markField('ff-load-desc', descOk);
+
                     const numWorkers = parseInt(draft.numWorkers, 10);
                     const numOk = !isNaN(numWorkers) && numWorkers >= 1;
                     markField('ff-num-workers', numOk);
+
                     const weightVal = parseFloat(draft.loadWeight);
                     const weightOk = !isNaN(weightVal) && weightVal > 0;
                     markField('ff-load-weight', weightOk);
+
+                    const weightTypeOk = !!(draft.loadWeightType && String(draft.loadWeightType).trim());
+                    markField('ff-load-weight-type', weightTypeOk);
+
+                    const dimX = parseFloat(draft.loadDimX);
+                    const dimY = parseFloat(draft.loadDimY);
+                    const dimZ = parseFloat(draft.loadDimZ);
+                    const dimOk = (!isNaN(dimX) && dimX > 0) && (!isNaN(dimY) && dimY > 0) && (!isNaN(dimZ) && dimZ > 0);
+                    markField('ff-load-dim', dimOk);
+
+                    const cgOk = !!(draft.loadCg && String(draft.loadCg).trim());
+                    markField('ff-load-cg', cgOk);
+
+                    const cgTypeOk = !!(draft.loadCgType && String(draft.loadCgType).trim());
+                    markField('ff-load-cg-type', cgTypeOk);
+
+                    // --- SUB-TABLE 2: Statutory Documentation & On-Site Controls ---
+                    // Gating rule: "if Sub-Table 2: Part B — Statutory Documentation & On-Site Controls (Complex / Critical / Heavy Lifts) is all unchecked it should not go to next page."
+                    const isCritLift = (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan' || (parseFloat(draft.loadWeight) || 0) > 5.0 || (draft.calculatedStressPercent != null && draft.calculatedStressPercent > 80) || (draft.craneTandemLift === 'yes') || (draft.loadChecklist && draft.loadChecklist.some(c => c.ans === 'yes')));
+                    const docsList = draft.liftingDocs || [];
+                    const subTable2Ok = Array.isArray(docsList) && docsList.length > 0;
+                    const sub2Err = document.getElementById('subTable2Error');
+                    if (sub2Err) {
+                        sub2Err.style.display = subTable2Ok ? 'none' : 'flex';
+                        sub2Err.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> ' + (isCritLift ? 'Sub-Table 2: Part B &mdash; Statutory Documentation &amp; On-Site Controls (Complex / Critical / Heavy Lifts) cannot be all unchecked. At least one statutory control must be verified and checked to proceed to next page.' : 'Sub-Table 2: Part A &mdash; Statutory Documentation &amp; On-Site Controls cannot be all unchecked. At least one statutory control must be verified and checked to proceed.');
+                    }
+
+                    // --- SUB-TABLE 3: Crane & Lifting Equipment Specification ---
+                    const equipType = draft.craneEquipmentType || draft.liftingEquipmentType;
+                    const equipTypeOk = !!(equipType && String(equipType).trim());
+                    markField('ff-crane-equip-type', equipTypeOk);
+
+                    const regIdOk = !!(draft.craneRegId && String(draft.craneRegId).trim());
+                    markField('ff-crane-reg-id', regIdOk);
+
+                    const cSwl = parseFloat(draft.craneSwl);
+                    const cSwlOk = !isNaN(cSwl) && cSwl > 0;
+                    markField('ff-crane-swl', cSwlOk);
+
+                    const certDateOk = !!(draft.craneCertDate && String(draft.craneCertDate).trim());
+                    const certNoOk = !!(draft.craneCertNo && String(draft.craneCertNo).trim());
+                    const certOk = certDateOk && certNoOk;
+                    markField('ff-crane-cert', certOk);
+
+                    const boomVal = parseFloat(draft.craneBoomLength);
+                    const boomOk = !isNaN(boomVal) && boomVal > 0;
+                    markField('ff-crane-boom-length', boomOk);
+
+                    const jibVal = parseFloat(draft.craneFlyJib);
+                    const angleVal = parseFloat(draft.craneOffsetAngle);
+                    const flyJibOk = (draft.craneFlyJib !== '' && draft.craneFlyJib != null && !isNaN(jibVal) && jibVal >= 0) &&
+                                     (draft.craneOffsetAngle !== '' && draft.craneOffsetAngle != null && !isNaN(angleVal) && angleVal >= 0);
+                    markField('ff-crane-fly-jib', flyJibOk);
+
+                    const rInit = parseFloat(draft.craneRadiusInitial), sInit = parseFloat(draft.craneSwlInitial);
+                    const rFinal = parseFloat(draft.craneRadiusFinal), sFinal = parseFloat(draft.craneSwlFinal);
+                    const rWorst = parseFloat(draft.craneRadiusWorst), sWorst = parseFloat(draft.craneSwlWorst);
+                    const radiiOk = (!isNaN(rInit) && rInit > 0 && !isNaN(sInit) && sInit > 0) &&
+                                    (!isNaN(rFinal) && rFinal > 0 && !isNaN(sFinal) && sFinal > 0) &&
+                                    (!isNaN(rWorst) && rWorst > 0 && !isNaN(sWorst) && sWorst > 0);
+                    markField('ff-crane-radii', radiiOk);
+
+                    const gearType = draft.craneGearType || (draft.riggingGear && draft.riggingGear[0] && draft.riggingGear[0].type);
+                    const gearTypeOk = !!(gearType && String(gearType).trim());
+                    markField('ff-crane-gear-type', gearTypeOk);
+
+                    const gearWeightVal = parseFloat(draft.craneGearWeight);
+                    const gearWeightOk = (draft.craneGearWeight !== '' && draft.craneGearWeight != null && !isNaN(gearWeightVal) && gearWeightVal >= 0);
+                    markField('ff-crane-gear-weight', gearWeightOk);
+
+                    const tandemMethodOk = (draft.craneTandemLift !== 'yes') || !!(draft.craneTandemMethod && draft.craneTandemMethod.trim());
+                    markField('ff-crane-tandem-method', tandemMethodOk);
+                    const tandemOk = (draft.craneTandemLift === 'yes' || draft.craneTandemLift === 'no') && tandemMethodOk;
+
+                    // --- SUB-TABLE 4: Rigging Plan & Engineering Stress Calculation ---
+                    const sDia = parseFloat(draft.slingDiameter);
+                    const sDiaOk = !isNaN(sDia) && sDia > 0;
+                    markField('ff-sling-dia', sDiaOk);
+
+                    const sLen = parseFloat(draft.slingLength);
+                    const sLenOk = !isNaN(sLen) && sLen > 0;
+                    markField('ff-sling-length', sLenOk);
+
+                    const sApex = parseFloat(draft.slingApexHeight);
+                    const sApexOk = !isNaN(sApex) && sApex > 0;
+                    markField('ff-sling-apex', sApexOk);
+
+                    const sSwl = parseFloat(draft.slingSwl);
+                    const sSwlOk = !isNaN(sSwl) && sSwl > 0;
+                    markField('ff-sling-swl', sSwlOk);
+
+                    const sCountOk = !!draft.slingsCount;
+                    markField('ff-slings-count', sCountOk);
+
+                    const sAdjOk = draft.slingsAdjustable === 'yes' || draft.slingsAdjustable === 'no';
+
+                    const gearList = (draft.riggingGears && draft.riggingGears.length > 0) ? draft.riggingGears : (draft.riggingGear || []);
+                    const gearListOk = Array.isArray(gearList) && gearList.length >= 1 && gearList.every(g => {
+                        const hasType = !!(g.type && String(g.type).trim());
+                        const hasTag = !!(g.serialNo && String(g.serialNo).trim()) || !!(g.certNo && String(g.certNo).trim());
+                        const swlVal = parseFloat(g.swl);
+                        const hasSwl = !isNaN(swlVal) && swlVal > 0;
+                        const hasDate = !!(g.certDate && String(g.certDate).trim()) || !!(g.validTill && String(g.validTill).trim());
+                        return hasType && hasTag && hasSwl && hasDate;
+                    });
+                    const rgErr = document.getElementById('riggingGearsError');
+                    if (rgErr) rgErr.style.display = gearListOk ? 'none' : 'flex';
+
+                    // --- COMMUNICATIONS, SITE CONTROLS & SPECIAL PRECAUTIONS ---
+                    const commsOk = !!(draft.liftingComms && String(draft.liftingComms).trim());
+                    markField('ff-lifting-comms', commsOk);
+
+                    const groundOk = !!(draft.liftingGround && String(draft.liftingGround).trim());
+                    markField('ff-lifting-ground', groundOk);
+
+                    const roadTrapOk = draft.liftingRoadTrap === 'yes' || draft.liftingRoadTrap === 'no';
+
+                    const precOk = !!(draft.liftingSpecialPrecautions && String(draft.liftingSpecialPrecautions).trim());
+                    markField('ff-lifting-precautions', precOk);
+
+                    const hasSitePlan = !!(draft.liftingSketch && (draft.liftingSketch.dataUrl || draft.liftingSketch.name) || draft.sitePlanPhoto);
+                    const sitePlanOk = !isCritLift || hasSitePlan;
+                    markField('ff-lifting-site-plan', sitePlanOk);
+                    const spErr = document.getElementById('liftingSitePlanError');
+                    if (spErr) spErr.style.display = sitePlanOk ? 'none' : 'flex';
+
+                    // --- PRE-LOCATION SIGNATURES ---
                     const sigsOk = !!(draft.craneOperatorSig && draft.riggerSig);
-                    ok = ok && descOk && numOk && weightOk && sigsOk;
+
+                    const st1Ok = descOk && numOk && weightOk && weightTypeOk && dimOk && cgOk && cgTypeOk;
+                    const st2Ok = subTable2Ok;
+                    const st3Ok = equipTypeOk && regIdOk && cSwlOk && certOk && boomOk && flyJibOk && radiiOk && gearTypeOk && gearWeightOk && tandemOk;
+                    const st4Ok = sDiaOk && sLenOk && sApexOk && sSwlOk && sCountOk && sAdjOk && gearListOk;
+                    const siteControlsOk = commsOk && groundOk && roadTrapOk && precOk && sitePlanOk;
+
+                    ok = ok && st1Ok && st2Ok && st3Ok && st4Ok && siteControlsOk && sigsOk;
                 } else {
                     const depthOk = /^\d+(\.\d+)?$/.test(draft.depth || ''); markField('ff-depth', depthOk); ok = ok && depthOk;
                     const slopeOk = /^\d+(\.\d+)?$/.test(draft.slope || ''); markField('ff-slope', slopeOk); ok = ok && slopeOk;
@@ -14272,10 +14891,15 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 const isBlasting = ptypeOf(draft) === 'blasting';
                 const isElectrical = ptypeOf(draft) === 'electrical';
                 const isLifting = ptypeOf(draft) === 'lifting' || ptypeOf(draft) === 'liftplan';
+                const isCritLifting = isLifting && (draft.liftingClassification === 'critical' || ptypeOf(draft) === 'liftplan');
                 const isExcavation = ptypeOf(draft) === 'excavation';
                 const itemsOk = draft.checklist.every(checklistItemComplete);
                 const drawingOk = !isExcavation || !!draft.drawing;
-                ok = itemsOk && !!draft.sitePhoto && drawingOk;
+                const hasLiftingSitePlan = !!(draft.liftingSketch && (draft.liftingSketch.dataUrl || draft.liftingSketch.name) || draft.sitePlanPhoto);
+                const liftingSitePlanOk = !isCritLifting || hasLiftingSitePlan;
+                const spStep2Err = document.getElementById('liftingSitePlanStep2Error');
+                if (spStep2Err) spStep2Err.style.display = liftingSitePlanOk ? 'none' : 'flex';
+                ok = itemsOk && !!draft.sitePhoto && drawingOk && liftingSitePlanOk;
 
                 let dbPrecOk = true;
                 if (isBlasting) {
@@ -14309,6 +14933,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     draft.checklist.forEach((c, i) => { const m = checklistItemMissing(c, i); if (m) pend.push(m); });
                     if (!draft.sitePhoto) pend.push('Work-area site photo pending');
                     if (isExcavation && !draft.drawing) pend.push('Excavation drawing pending');
+                    if (isCritLifting && !liftingSitePlanOk) pend.push('Critical lift site plan photo / rigging drawing pending');
                     if (isBlasting && !dbPrecOk) pend.push('Item 15 specific precautions pending');
                     if (isBlasting && draft.drillingBlastingType === 'blasting' && !blastParamsOk) pend.push('Blasting rig & muffler parameters pending');
                     if (!pend.length) {
@@ -14873,6 +15498,10 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
 
             const isLifting = (p && (ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan')) || a.kind === 'ext-lifting';
             if (isLifting) {
+                const engApproved = a.siteEngineer && a.siteEngineer.status === 'approved';
+                const engCancelled = a.siteEngineer && (a.siteEngineer.status === 'rejected' || a.siteEngineer.status === 'cancelled');
+                const engState = engApproved ? 'done' : (engCancelled ? 'rejected' : (ext.status === 'Pending Site Engineer' ? 'current' : ''));
+
                 const shApproved = a.sectionHead && a.sectionHead.status === 'approved';
                 const shCancelled = a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled');
                 const shState = shApproved ? 'done' : (shCancelled ? 'rejected' : (ext.status === 'Pending Section Head' ? 'current' : ''));
@@ -14888,6 +15517,8 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
 
                 let html = '<div class="tracker" style="margin-top:10px;">';
                 html += node('Lifting Supervisor', '+' + fmtExtDur(ext), 'done');
+                html += '<div class="tr-line ' + (engApproved ? 'done' : '') + '"></div>';
+                html += node('Site Engineer', engApproved ? (a.siteEngineer.by || 'Acknowledged') : (engCancelled ? 'Returned' : (ext.status === 'Pending Site Engineer' ? 'Ack Required' : 'Awaiting Ack')), engState);
                 html += '<div class="tr-line ' + (shApproved ? 'done' : '') + '"></div>';
                 html += node(shLabel, shApproved ? (a.sectionHead.by || 'Approved') : (shCancelled ? 'Cancelled' : (ext.status === 'Pending Section Head' ? 'Review & Approve' : 'Awaiting Review')), shState);
                 html += '<div class="tr-line ' + (ehsApproved ? 'done' : '') + '"></div>';
@@ -15271,6 +15902,15 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         '<div class="aa-desc">This permit was corrected by the Site Supervisor and is currently pending on-site verification and re-acknowledgment by the <b>Site Engineer</b> before returning directly to <b>' + escapeHtml(origLabel) + '</b>.</div>' +
                         '</div>';
                 }
+            }
+
+            // ---- Draft: Permittee / Initiator resumes draft to complete & submit ----
+            if (p.status === 'Draft') {
+                html += '<div class="approval-action-card" style="border-color:var(--orange);background:rgba(239,108,0,0.06);">' +
+                    '<div class="aa-title"><i class="fa-solid fa-file-pen" style="color:var(--orange);"></i> Draft Permit &mdash; Pending Submission</div>' +
+                    '<div class="aa-desc">This permit was saved as a draft and has not yet been submitted to the approval chain. Click below to continue editing all steps and submit this permit.</div>' +
+                    '<button class="btn btn-primary" onclick="resumeDraft(PERMITS.find(x => x.id === \'' + p.id + '\'))"><i class="fa-solid fa-pen-to-square"></i> Continue Editing &amp; Submit Draft</button>' +
+                    '</div>';
             }
 
             // ---- Returned for correction: Permittee (Site Supervisor or Blasting In-charge) refills/resubmits ----
@@ -15910,6 +16550,42 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     const sName = p.signerName || p.createdBy || (p.signature && p.signature.by) || 'Lifting Supervisor';
                     sigObj = { name: sName, sig: p.signature.dataUrl || p.signature, consent: true, at: (p.signature && p.signature.at) || p.createdAt };
                     p.signatories['lift-supervisor'] = sigObj;
+                    return sigObj;
+                }
+            } else if (roleKey === 'crane-operator') {
+                if (p.signatories && p.signatories['crane-operator']) return p.signatories['crane-operator'];
+                if (p.craneOperatorSig && p.craneOperatorSig.name) {
+                    sigObj = { name: p.craneOperatorSig.name, sig: p.craneOperatorSig.sig, consent: true, at: p.craneOperatorSig.at || p.createdAt, license: p.craneOperatorSig.license };
+                    p.signatories['crane-operator'] = sigObj;
+                    return sigObj;
+                }
+                if (p.craneOperatorName && p.craneOperatorSig) {
+                    sigObj = { name: p.craneOperatorName, sig: (p.craneOperatorSig.sig || p.craneOperatorSig), consent: true, at: p.createdAt, license: p.craneOperatorLicense };
+                    p.signatories['crane-operator'] = sigObj;
+                    return sigObj;
+                }
+            } else if (roleKey === 'rigger') {
+                if (p.signatories && p.signatories['rigger']) return p.signatories['rigger'];
+                if (p.riggerSig && p.riggerSig.name) {
+                    sigObj = { name: p.riggerSig.name, sig: p.riggerSig.sig, consent: true, at: p.riggerSig.at || p.createdAt, license: p.riggerSig.license };
+                    p.signatories['rigger'] = sigObj;
+                    return sigObj;
+                }
+                if (p.riggerName && p.riggerSig) {
+                    sigObj = { name: p.riggerName, sig: (p.riggerSig.sig || p.riggerSig), consent: true, at: p.createdAt, license: p.riggerLicense };
+                    p.signatories['rigger'] = sigObj;
+                    return sigObj;
+                }
+            } else if (roleKey === 'project-manager') {
+                if (p.signatories && p.signatories['project-manager']) return p.signatories['project-manager'];
+                if (p.projectManagerAck && p.projectManagerAck.acknowledged && p.projectManagerAck.by && p.projectManagerAck.sig) {
+                    sigObj = { name: p.projectManagerAck.by, sig: p.projectManagerAck.sig, consent: true, at: p.projectManagerAck.at || nowTime() };
+                    p.signatories['project-manager'] = sigObj;
+                    return sigObj;
+                }
+                if (p.approvals && p.approvals.projectManager && p.approvals.projectManager.by && p.approvals.projectManager.sig && p.approvals.projectManager.status !== 'pending') {
+                    sigObj = { name: p.approvals.projectManager.by, sig: p.approvals.projectManager.sig, consent: true, at: p.approvals.projectManager.at || nowTime() };
+                    p.signatories['project-manager'] = sigObj;
                     return sigObj;
                 }
             } else if (roleKey === 'site-engineer') {
@@ -17501,6 +18177,18 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     y += 30;
                 }
                 const isLifting = ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan';
+                if (isLifting) {
+                    if (p.craneOperatorSig) {
+                        const opSig = p.craneOperatorSig.sig || (typeof p.craneOperatorSig === 'string' ? p.craneOperatorSig : null);
+                        const opName = p.craneOperatorName || (p.craneOperatorSig && p.craneOperatorSig.name) || 'Crane Operator';
+                        sigBlock('Crane Operator — Pre-Location Statutory Briefing', { gps: p.gps, comment: p.craneOperatorLicense ? 'License: ' + p.craneOperatorLicense : null }, opSig, opName, (p.craneOperatorSig && p.craneOperatorSig.at) || p.createdAt);
+                    }
+                    if (p.riggerSig) {
+                        const rigSig = p.riggerSig.sig || (typeof p.riggerSig === 'string' ? p.riggerSig : null);
+                        const rigName = p.riggerName || (p.riggerSig && p.riggerSig.name) || 'Signaler / Rigger';
+                        sigBlock('Signaler / Rigger — Pre-Location Statutory Briefing', { gps: p.gps, comment: p.riggerLicense || p.riggerCertNo ? 'Cert: ' + (p.riggerLicense || p.riggerCertNo) : null }, rigSig, rigName, (p.riggerSig && p.riggerSig.at) || p.createdAt);
+                    }
+                }
                 const pCreatorSigRole = (ptypeOf(p) === 'electrical') ? 'Permittee Electrician' : (isLifting ? 'Lifting Supervisor (Permittee)' : ((p.createdByRole === 'blasting-incharge') ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)'));
                 sigBlock(pCreatorSigRole + ' — Submission', { gps: p.gps, comment: null }, p.signature && p.signature.dataUrl, p.createdBy, (p.signature && p.signature.at) || p.submittedAt);
                 if (ptypeOf(p) === 'blasting' && p.blastingInchargeAck && p.blastingInchargeAck.acknowledged) {
@@ -17521,9 +18209,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     const shLabel = ((pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge')) + ' — Review & Approval';
                     if (isExt) {
                         const extRows = [];
-                        if (ch && ch.kind === 'ext-lifting') {
-                            extRows.push(['sectionHead', shLabel]);
-                        } else if (isElecBatching || (ch && ch.kind === 'ext-batching-elec')) {
+                        if (isElecBatching || (ch && ch.kind === 'ext-batching-elec')) {
                             extRows.push(['pm', 'P&M Engineer — Verification & Step 2 Acknowledgment']);
                             extRows.push(['qualityEngineer', 'Quality Engineer (Section Head) — Review & Approval']);
                         } else {
@@ -17714,25 +18400,189 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             }
         }
 
+        /* ---------- DYNAMIC STATUTORY SIGNATORIES FLOW RESOLVER ---------- */
+        function getPermitSignatoriesFlow(p) {
+            const pt = ptypeOf(p);
+            const kind = (p.approvals && p.approvals.kind) || pt;
+            const isCritLifting = (pt === 'liftplan' || kind === 'lifting-critical' || p.liftingClassification === 'critical');
+            const isRoutineLifting = (pt === 'lifting' || kind === 'lifting-routine');
+            const shLabel = (typeof pMeta === 'function' && pMeta(p) && pMeta(p).shLabel) ? pMeta(p).shLabel : 'Tower Incharge';
+
+            const flow = [];
+
+            // 1. Pre-Location Signatories (Permit 9 Lifting Operations & Critical Lift Plan)
+            if (isRoutineLifting || isCritLifting) {
+                flow.push({
+                    key: 'crane-operator',
+                    label: 'Crane Operator',
+                    stage: 'Pre-Location: Statutory Briefing & Competency Verification'
+                });
+                flow.push({
+                    key: 'rigger',
+                    label: 'Signaler / Rigger',
+                    stage: 'Pre-Location: Statutory Briefing & Competency Verification'
+                });
+            }
+
+            // 2. Permittee / Initiator (Step 1)
+            if (isRoutineLifting || isCritLifting) {
+                flow.push({
+                    key: 'lift-supervisor',
+                    label: 'Lifting Supervisor (Permittee)',
+                    stage: 'Step 1: Form Filling & ' + (isCritLifting ? 'Critical Rigging Plan' : 'Routine Lifting') + ' Declaration'
+                });
+            } else if (pt === 'electrical') {
+                flow.push({
+                    key: 'electrician',
+                    label: 'Permittee Electrician',
+                    stage: 'Step 1: Form Filling & Statutory Declaration'
+                });
+            } else if (pt === 'blasting') {
+                const isBlaster = (p.createdByRole === 'blasting-incharge');
+                flow.push({
+                    key: isBlaster ? 'blasting-incharge' : 'site-supervisor',
+                    label: isBlaster ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)',
+                    stage: 'Step 1: Form Filling & ' + (isBlaster ? 'PESA Statutory Declaration' : 'Permittee Signature')
+                });
+            } else {
+                flow.push({
+                    key: 'site-supervisor',
+                    label: 'Site Supervisor (Permittee)',
+                    stage: 'Step 1: Form Filling & Permittee Signature'
+                });
+            }
+
+            // 3. Middle Approvers / Clearance Stages based on flow topology
+            if (isRoutineLifting || isCritLifting) {
+                flow.push({
+                    key: 'site-engineer',
+                    label: 'Site Engineer',
+                    stage: 'Step 2: Site Verification & Acknowledgment'
+                });
+                flow.push({
+                    key: 'pm',
+                    label: 'P&M Engineer',
+                    stage: 'Step 3: Crane Technical Clearance & Chart Verification'
+                });
+                flow.push({
+                    key: 'section-head',
+                    altKey: 'hw-section-head',
+                    label: shLabel,
+                    stage: 'Step 4: ' + shLabel + ' Review'
+                });
+                if (isCritLifting) {
+                    flow.push({
+                        key: 'project-manager',
+                        label: 'Project Manager',
+                        stage: 'Step 5: Executive Lift Plan Clearance & Authorization'
+                    });
+                    flow.push({
+                        key: 'ehs-manager',
+                        altKey: 'ehs-officer',
+                        label: 'EHS Safety Manager / Officer',
+                        stage: 'Step 6: Final Safety Endorsement & Decision'
+                    });
+                } else {
+                    flow.push({
+                        key: 'ehs-manager',
+                        altKey: 'ehs-officer',
+                        label: 'EHS Safety Manager / Officer',
+                        stage: 'Step 5: Final Safety Endorsement & Decision'
+                    });
+                }
+                return flow;
+            }
+
+            if (pt === 'electrical') {
+                const isBatching = (kind === 'electrical-batching' || p.electricalSiteType === 'batching_plant');
+                if (isBatching) {
+                    flow.push({ key: 'pm', label: 'P&M Engineer', stage: 'Step 2: Plant & Machinery Statutory Acknowledgment' });
+                    flow.push({ key: 'quality-engineer', label: 'Quality Engineer', stage: 'Step 3: Quality Review & Statutory Declaration' });
+                    flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' });
+                } else {
+                    flow.push({ key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Verification & Acknowledgment' });
+                    flow.push({ key: 'mep', altKey: 'pm', label: 'MEP / P&M Engineer', stage: 'Step 3: Domain Clearance & Statutory Declaration' });
+                    flow.push({ key: 'hw-section-head', altKey: 'section-head', label: shLabel, stage: 'Step 4: ' + shLabel + ' Review' });
+                    flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Verification & Decision' });
+                }
+                return flow;
+            }
+
+            if (pt === 'blasting') {
+                const isDbBlasting = (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
+                const isBlasterCreator = (p.createdByRole === 'blasting-incharge');
+                if (isDbBlasting && !isBlasterCreator) {
+                    flow.push({ key: 'blasting-incharge', label: 'Blasting / Drilling In-charge', stage: 'Step 2: Statutory PESO Verification & In-charge Acknowledgment' });
+                    flow.push({ key: 'site-engineer', label: 'Site Engineer', stage: 'Step 3: Site Engineer Verification & Acknowledgment' });
+                    flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' });
+                } else {
+                    flow.push({ key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Engineer Verification & Acknowledgment' });
+                    flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 3: Safety Verification & Decision' });
+                }
+                return flow;
+            }
+
+            if (pt === 'shaft') {
+                flow.push({ key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' });
+                flow.push({ key: 'mep', label: 'MEP Engineer', stage: 'Step 3: Single MEP Clearance' });
+                flow.push({ key: 'hw-section-head', altKey: 'section-head', label: shLabel, stage: 'Step 4: ' + shLabel + ' Review' });
+                flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Verification & Decision' });
+                return flow;
+            }
+
+            if (pt === 'confined' || pt === 'guardrail' || pt === 'hotwork' || pt === 'general') {
+                flow.push({ key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' });
+                flow.push({ key: 'hw-section-head', altKey: 'section-head', label: shLabel, stage: 'Step 3: ' + shLabel + ' Review' });
+                flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' });
+                return flow;
+            }
+
+            // Default: Excavation (5-stage parallel clearance)
+            flow.push({ key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Engineer Verification & Acknowledgment' });
+            flow.push({ key: 'mep', label: 'MEP Engineer', stage: 'Step 3: Parallel Discipline Clearance' });
+            flow.push({ key: 'pm', label: 'P&M Plant & Machinery', stage: 'Step 3: Parallel Discipline Clearance' });
+            flow.push({ key: 'it', label: 'IT & Telecommunications', stage: 'Step 3: Parallel Discipline Clearance' });
+            flow.push({ key: 'excavation-head', altKey: 'section-head', label: shLabel, stage: 'Step 4: ' + shLabel + ' Review' });
+            flow.push({ key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Endorsement' });
+            return flow;
+        }
+
         /* ---------- STATUTORY SIGNATORIES & DPDP RECORD DISPLAY ---------- */
         function buildPermitSignatoriesCardHtml(p) {
             p.signatories = p.signatories || {};
-            const isHw = ptypeOf(p) === 'hotwork';
-            const isShaft = ptypeOf(p) === 'shaft';
-            const isGr = ptypeOf(p) === 'guardrail';
-            const isConf = ptypeOf(p) === 'confined';
-            const isGeneral = ptypeOf(p) === 'general';
-            const isBlast = ptypeOf(p) === 'blasting';
-            const isDbBlasting = isBlast && (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
-            const isElec = ptypeOf(p) === 'electrical';
+            const pt = ptypeOf(p);
+            const isLiftingPermit = (pt === 'lifting' || pt === 'liftplan');
+            const isCritLifting = isLiftingPermit && (pt === 'liftplan' || p.liftingClassification === 'critical');
+            const isElec = (pt === 'electrical');
             const isElecBatching = isElec && (p.electricalSiteType === 'batching_plant' || (p.approvals && p.approvals.kind === 'electrical-batching'));
+            const isShaft = (pt === 'shaft');
+            const isHw = (pt === 'hotwork');
+            const isGr = (pt === 'guardrail');
+            const isConf = (pt === 'confined');
+            const isGeneral = (pt === 'general');
+            const isBlast = (pt === 'blasting');
+            const isDbBlasting = isBlast && (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
 
             // Clean up any non-applicable signatories for this permit type so no record of their name or sign exists
-            if (isElec) {
+            if (isLiftingPermit) {
+                delete p.signatories['mep'];
+                delete p.signatories['it'];
+                delete p.signatories['excavation-head'];
+                delete p.signatories['quality-engineer'];
+                delete p.signatories['blasting-incharge'];
+                delete p.signatories['site-supervisor'];
+                if (!isCritLifting) {
+                    delete p.signatories['project-manager'];
+                }
+            } else if (isElec) {
                 delete p.signatories['site-supervisor'];
                 delete p.signatories['it'];
                 delete p.signatories['excavation-head'];
                 delete p.signatories['blasting-incharge'];
+                delete p.signatories['crane-operator'];
+                delete p.signatories['rigger'];
+                delete p.signatories['lift-supervisor'];
+                delete p.signatories['project-manager'];
                 if (isElecBatching) {
                     delete p.signatories['site-engineer'];
                     delete p.signatories['mep'];
@@ -17744,10 +18594,18 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             } else if (isShaft) {
                 delete p.signatories['pm'];
                 delete p.signatories['it'];
+                delete p.signatories['crane-operator'];
+                delete p.signatories['rigger'];
+                delete p.signatories['lift-supervisor'];
+                delete p.signatories['project-manager'];
             } else if (isHw || isGr || isConf || isGeneral) {
                 delete p.signatories['mep'];
                 delete p.signatories['pm'];
                 delete p.signatories['it'];
+                delete p.signatories['crane-operator'];
+                delete p.signatories['rigger'];
+                delete p.signatories['lift-supervisor'];
+                delete p.signatories['project-manager'];
             } else if (isBlast) {
                 delete p.signatories['mep'];
                 delete p.signatories['pm'];
@@ -17755,61 +18613,16 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 delete p.signatories['section-head'];
                 delete p.signatories['hw-section-head'];
                 delete p.signatories['excavation-head'];
+                delete p.signatories['crane-operator'];
+                delete p.signatories['rigger'];
+                delete p.signatories['lift-supervisor'];
+                delete p.signatories['project-manager'];
                 if (!isDbBlasting) {
                     delete p.signatories['blasting-incharge'];
                 }
             }
 
-            const isBlasterCreator = (p.createdByRole === 'blasting-incharge');
-            const rolesList = isElec ? (isElecBatching ? [
-                { key: 'electrician', label: 'Permittee Electrician', stage: 'Step 1: Form Filling & Statutory Declaration' },
-                { key: 'pm', label: 'P&M Engineer', stage: 'Step 2: Plant & Machinery Statutory Acknowledgment' },
-                { key: 'quality-engineer', label: 'Quality Engineer', stage: 'Step 3: Quality Review & Statutory Declaration' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
-            ] : [
-                { key: 'electrician', label: 'Permittee Electrician', stage: 'Step 1: Form Filling & Statutory Declaration' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Verification & Acknowledgment' },
-                { key: 'mep', altKey: 'pm', label: 'MEP / P&M Engineer', stage: 'Step 3: Domain Clearance & Statutory Declaration' },
-                { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 4: Tower Incharge Review' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Verification & Decision' }
-            ]) : isBlast ? (isDbBlasting ? (isBlasterCreator ? [
-                { key: 'blasting-incharge', label: 'Blasting / Drilling In-charge (Permittee)', stage: 'Step 1: Form Filling & PESA Statutory Declaration' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Engineer Verification & Acknowledgment' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 3: Safety Verification & Decision' }
-            ] : [
-                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'blasting-incharge', label: 'Blasting / Drilling In-charge', stage: 'Step 2: Statutory PESO Verification & In-charge Acknowledgment' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 3: Site Engineer Verification & Acknowledgment' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
-            ]) : [
-                { key: isBlasterCreator ? 'blasting-incharge' : 'site-supervisor', label: isBlasterCreator ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Site Engineer Verification & Acknowledgment' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 3: Safety Verification & Decision' }
-            ]) : isShaft ? [
-                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
-                { key: 'mep', label: 'MEP Engineer', stage: 'Step 3: Single MEP Clearance' },
-                { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 4: Tower Incharge Review' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Verification & Decision' }
-            ] : isConf ? [
-                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
-                { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 3: Tower Incharge Review' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
-            ] : (isHw || isGr || isGeneral) ? [
-                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Verification & Acknowledgment' },
-                { key: 'hw-section-head', altKey: 'section-head', label: 'Tower Incharge', stage: 'Step 3: Tower Incharge Review' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 4: Safety Verification & Decision' }
-            ] : [
-                { key: 'site-supervisor', label: 'Site Supervisor (Permittee)', stage: 'Step 1: Form Filling & Permittee Signature' },
-                { key: 'site-engineer', label: 'Site Engineer', stage: 'Step 2: Engineer Verification & Acknowledgment' },
-                { key: 'mep', label: 'MEP Engineer', stage: 'Step 3: Parallel Discipline Clearance' },
-                { key: 'pm', label: 'P&M Plant & Machinery', stage: 'Step 3: Parallel Discipline Clearance' },
-                { key: 'it', label: 'IT & Telecommunications', stage: 'Step 3: Parallel Discipline Clearance' },
-                { key: 'excavation-head', altKey: 'section-head', label: 'Excavation Head', stage: 'Step 4: Excavation Head Review' },
-                { key: 'ehs-manager', altKey: 'ehs-officer', label: 'EHS Safety Manager / Officer', stage: 'Step 5: Safety Endorsement' }
-            ];
+            const rolesList = getPermitSignatoriesFlow(p);
 
             let rowsHtml = '';
             rolesList.forEach(r => {
@@ -17914,7 +18727,16 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     return;
                 }
                 currentDetailId = id;
-                if (p.status === 'Draft' && currentUser && currentUser.key === 'site-supervisor' && draft && draft.id === id) { resumeDraft(p); return; }
+                if (p.status === 'Draft') {
+                    const rk = currentUser ? currentUser.key : null;
+                    const pt = ptypeOf(p);
+                    const canInitiate = rk && INITIATOR_PERMIT_RULES[rk] && INITIATOR_PERMIT_RULES[rk].includes(pt);
+                    const isCreator = p.createdByRole === rk || p.createdBy === (currentUser ? currentUser.name : null);
+                    if (canInitiate || isCreator || rk === 'admin' || !rk) {
+                        resumeDraft(p);
+                        return;
+                    }
+                }
                 if (!p.approvals) p.approvals = newChain(ptypeOf(p));
                 const countdownMs = new Date(p.validTill) - nowTime();
                 let countdownHtml = '';
@@ -18154,6 +18976,7 @@ ptypeOf(p) === 'general' ?
                     '<div class="card card-pad dsec"><div class="dsec-title"><i class="fa-solid fa-paperclip"></i> Attachments</div>' +
                     '<div class="attach-row">' + (p.sitePhoto && p.sitePhoto !== 'demo' ? '<img src="' + p.sitePhoto + '">' : '<i class="fa-regular fa-image"></i>') + ' work_area_site_photo.jpg</div>' +
                     (p.drawing && ptypeOf(p) === 'excavation' ? '<div class="attach-row">' + (p.drawing.isImage && p.drawing.dataUrl ? '<img src="' + p.drawing.dataUrl + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + p.drawing.name + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Excavation drawing</span></div>' : '') +
+                    (p.liftingSketch || p.sitePlanPhoto ? '<div class="attach-row">' + (((p.liftingSketch && p.liftingSketch.dataUrl && p.liftingSketch.dataUrl.startsWith('data:image')) || (p.sitePlanPhoto && p.sitePlanPhoto.dataUrl && p.sitePlanPhoto.dataUrl.startsWith('data:image'))) ? '<img src="' + ((p.liftingSketch && p.liftingSketch.dataUrl) || (p.sitePlanPhoto && p.sitePlanPhoto.dataUrl)) + '">' : '<i class="fa-solid fa-compass-drafting"></i>') + ' ' + escapeHtml((p.liftingSketch && p.liftingSketch.name) || (p.sitePlanPhoto && p.sitePlanPhoto.name) || 'lifting_site_plan.jpg') + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Lifting Site Plan Photo / Rigging Drawing</span></div>' : '') +
                     (p.confinedChecklistAttachment ? '<div class="attach-row">' + (p.confinedChecklistAttachment.dataUrl && p.confinedChecklistAttachment.isImage ? '<img src="' + p.confinedChecklistAttachment.dataUrl + '">' : '<i class="fa-solid fa-file-shield"></i>') + ' ' + escapeHtml(p.confinedChecklistAttachment.name || 'Confined_Space_Physical_Checklist.pdf') + ' <span style="margin-left:auto;font-size:10.5px;color:var(--text-faint);">Pre-Task Checklist Doc</span></div>' : '') +
                     ((p.blastingInchargeAck && p.blastingInchargeAck.photo) ? '<div class="attach-row">' + (p.blastingInchargeAck.photo !== 'demo' ? '<img src="' + p.blastingInchargeAck.photo + '">' : '<i class="fa-solid fa-camera"></i>') + ' Blasting In-charge On-Site Statutory Photo</div>' : '') +
                     (p.checklist.filter(c => c.photo).map((c, i) => '<div class="attach-row">' + (c.photo && c.photo !== 'demo' ? '<img src="' + c.photo + '">' : '<i class="fa-regular fa-image"></i>') + ' NO-item evidence photo</div>').join('')) +

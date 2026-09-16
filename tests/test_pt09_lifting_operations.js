@@ -263,13 +263,100 @@ draft.riggerDpdp = true;
 draft.loadDescription = 'HVAC Chiller Unit Lifting to Terrace';
 draft.numWorkers = 4;
 draft.loadWeight = 4.5;
+draft.loadWeightType = 'Known';
+draft.loadDimX = 3.2;
+draft.loadDimY = 2.1;
+draft.loadDimZ = 1.8;
+draft.loadCg = 'Centered, 0.9m from base';
+draft.loadCgType = 'Provided by Drawing';
 draft.liftingEquipmentType = 'Tower Crane';
-draft.riggingGear = [{ type: 'Wire Rope Sling', swl: 10, certNo: 'CERT-101', validTill: '2027-01-01', inspected: true }];
+draft.craneEquipmentType = 'Tower Crane';
+draft.craneRegId = 'TC-04';
+draft.craneSwl = 10.0;
+draft.craneCertDate = '2026-01-01';
+draft.craneCertNo = 'TPI-101';
+draft.craneBoomLength = 45.0;
+draft.craneFlyJib = 0;
+draft.craneOffsetAngle = 0;
+draft.craneRadiusInitial = 14.0;
+draft.craneSwlInitial = 8.5;
+draft.craneRadiusFinal = 22.0;
+draft.craneSwlFinal = 6.2;
+draft.craneRadiusWorst = 28.0;
+draft.craneSwlWorst = 5.1;
+draft.craneGearType = 'Wire Rope Sling';
+draft.craneGearWeight = 0;
+draft.craneTandemLift = 'no';
+draft.slingDiameter = 24;
+draft.slingLength = 6.0;
+draft.slingApexHeight = 4.5;
+draft.slingSwl = 5.0;
+draft.slingsCount = '4';
+draft.slingsAdjustable = 'yes';
+draft.riggingGears = [{ type: 'Wire Rope Sling', serialNo: 'WRS-4L-089', swl: 5.0, certDate: '2026-01-01' }];
+draft.liftingDocs = ['P&M Green Card Sticker', 'Lift Permit'];
+draft.liftingComms = 'Both Radio & Hand Signals';
+draft.liftingGround = 'Firm & Compacted';
+draft.liftingRoadTrap = 'yes';
+draft.liftingSpecialPrecautions = 'Secondary taglines deployed on both ends.';
 `);
 step1Valid = evalInVM('validateWizStep(1)');
 assert.strictEqual(step1Valid, true, 'Step 1 validation must succeed when all parameters and pre-location signatures are provided');
 
+// Verify mandatory validation on sub-table fields:
+evalInVM("draft.loadDimX = 0;");
+assert.strictEqual(evalInVM('validateWizStep(1)'), false, 'Step 1 must fail when Sub-Table 1 dimensions are missing');
+evalInVM("draft.loadDimX = 3.2;");
+
+evalInVM("draft.craneSwl = 0;");
+assert.strictEqual(evalInVM('validateWizStep(1)'), false, 'Step 1 must fail when Sub-Table 3 crane SWL is missing');
+evalInVM("draft.craneSwl = 10.0;");
+
+evalInVM("draft.slingSwl = 0;");
+assert.strictEqual(evalInVM('validateWizStep(1)'), false, 'Step 1 must fail when Sub-Table 4 sling SWL is missing');
+evalInVM("draft.slingSwl = 5.0;");
+
+evalInVM("draft.riggingGears = [];");
+assert.strictEqual(evalInVM('validateWizStep(1)'), false, 'Step 1 must fail when Sub-Table 4 rigging gears table is empty');
+evalInVM("draft.riggingGears = [{ type: 'Wire Rope Sling', serialNo: 'WRS-4L-089', swl: 5.0, certDate: '2026-01-01' }];");
+
+// Verify Sub-Table 2 Part B all unchecked requirement & mandatory site plan photo:
+evalInVM(`
+draft.loadWeight = 6.0; // Promotes to Critical Lift Plan (Part B)
+updateLiftingClassification();
+draft.liftingDocs = []; // All unchecked
+draft.sitePlanPhoto = '';
+draft.liftingSketch = '';
+`);
+assert.strictEqual(evalInVM('validateWizStep(1)'), false, 'Sub-Table 2 Part B all unchecked MUST NOT go to next page');
+
+evalInVM("draft.liftingDocs = ['Complex/ Critical/ Heavy/ Lifts Design Calculations & drawings'];");
+assert.strictEqual(evalInVM('validateWizStep(1)'), false, 'Part B must strictly fail Step 1 validation without Site Plan Photo / Rigging Drawing');
+
+evalInVM("draft.sitePlanPhoto = 'data:image/svg+xml;utf8,<svg>demo-site-plan</svg>';");
+assert.strictEqual(evalInVM('validateWizStep(1)'), true, 'Sub-Table 2 Part B with checked item and site plan photo must allow next page');
+
+// Reset to 4.5 MT routine for subsequent tests (verify sitePlanPhoto is optional for Routine Part A)
+evalInVM(`
+draft.loadWeight = 4.5;
+draft.craneGearWeight = 0;
+draft.slingLength = 6.0;
+draft.slingApexHeight = 4.5;
+draft.sitePlanPhoto = '';
+draft.liftingSketch = '';
+updateLiftingClassification();
+draft.liftingDocs = ['P&M Green Card Sticker', 'Lift Permit'];
+`);
+assert.strictEqual(evalInVM('validateWizStep(1)'), true, 'Routine Part A must allow Step 1 progression without Site Plan Photo');
+
+evalInVM(`
+draft.slingLength = 0;
+draft.slingApexHeight = 0;
+`);
+
 console.log('  ✓ PASS: Pre-location signature gate strictly locks location selection until Operator and Rigger sign');
+console.log('  ✓ PASS: All sub-table fields are strictly mandatory and Sub-Table 2 Part B all unchecked blocks next page');
+console.log('  ✓ PASS: Site Plan Photo is strictly mandatory for Part B (Critical Lift) and optional for Part A (Routine Lift)');
 
 // --- 5. Dynamic Routing & Auto-Promotion Engine ---
 console.log('\n--- 5. Dynamic Routing & Auto-Promotion Engine ---');
@@ -349,7 +436,10 @@ console.log('\n--- 6. Sling Stress Calculation Engine ---');
 
 evalInVM(`
 draft.loadWeight = 4.0;
+draft.craneGearWeight = 0;
 draft.riggingNumSlings = 2;
+draft.slingsCount = '2';
+draft.slingsAdjustable = 'yes';
 draft.riggingSlingAngle = 60;
 draft.riggingSlingSwl = 5.0;
 renderLiftingCalculations();
@@ -362,6 +452,8 @@ assert(stressPercent >= 46 && stressPercent <= 47, 'Calculated stress % should b
 // Clamping test: 4-leg bridle should clamp N=2 for non-rigid loads
 evalInVM(`
 draft.riggingNumSlings = 4;
+draft.slingsCount = '4';
+draft.slingsAdjustable = 'no';
 renderLiftingCalculations();
 `);
 const stressClamped = evalInVM('draft.riggingStressPerSling');
@@ -396,7 +488,26 @@ draft.liftingSpecialPrecautions = 'Continuous two-way radio communication on Cha
 let step2Valid = evalInVM('validateWizStep(2)');
 assert.strictEqual(step2Valid, true, 'Step 2 validation must succeed when all 14 items answered and site photo attached');
 
+// Verify Step 2 Part B Mandatory Site Plan Photo:
+evalInVM(`
+draft.ptype = 'liftplan';
+draft.liftingClassification = 'critical';
+draft.sitePlanPhoto = '';
+draft.liftingSketch = null;
+`);
+assert.strictEqual(evalInVM('validateWizStep(2)'), false, 'Step 2 must fail for Critical Lift Plan (Part B) when Site Plan Photo is missing');
+
+evalInVM("draft.sitePlanPhoto = 'data:image/svg+xml;utf8,<svg>demo-site-plan-step2</svg>';");
+assert.strictEqual(evalInVM('validateWizStep(2)'), true, 'Step 2 must pass for Critical Lift Plan (Part B) when Site Plan Photo is attached');
+
+// Reset to routine lifting
+evalInVM(`
+draft.ptype = 'lifting';
+draft.liftingClassification = 'routine';
+`);
+
 console.log('  ✓ PASS: Step 2 evaluates 14 statutory items, wind speed warnings, and binds Other Safety Precautions');
+console.log('  ✓ PASS: Step 2 strictly mandates Site Plan Photo for Part B Critical Lift and allows progression once attached');
 
 // --- 8. Routine Lifting (PTW-009A) 5-Step Approval Spine ---
 console.log('\n--- 8. Routine Lifting (PTW-009A) 5-Step Approval Spine ---');
@@ -555,8 +666,56 @@ assert(trackerCrit.includes('EHS Safety'), 'Critical lift tracker must display E
 
 console.log('  ✓ PASS: Tracker HTML cleanly renders 5 nodes for Routine and 6 nodes with Project Manager for Critical Lift');
 
-// --- 11. Extension Workflow (Tower Incharge -> EHS, 20:30 Ceiling) ---
-console.log('\n--- 11. Extension Workflow (Tower Incharge -> EHS, 20:30 Ceiling) ---');
+// --- 10B. Dynamic Statutory Signatories & DPDP Consent Record ---
+console.log('\n--- 10B. Dynamic Statutory Signatories & DPDP Consent Record ---');
+
+evalInVM(`
+pRoutine.craneOperatorSig = { name: 'Rajesh Sharma', sig: 'data:image/png;base64,mockCraneOpSig', license: 'DL-TC-2024-88', at: new Date() };
+pRoutine.riggerSig = { name: 'Sunil Kumar', sig: 'data:image/png;base64,mockRiggerSig', license: 'RIG-CERT-992', at: new Date() };
+
+pCrit.craneOperatorSig = { name: 'Rajesh Sharma', sig: 'data:image/png;base64,mockCraneOpSig', license: 'DL-TC-2024-88', at: new Date() };
+pCrit.riggerSig = { name: 'Sunil Kumar', sig: 'data:image/png;base64,mockRiggerSig', license: 'RIG-CERT-992', at: new Date() };
+`);
+
+const routineFlow = evalInVM('getPermitSignatoriesFlow(pRoutine)');
+assert.strictEqual(routineFlow.length, 7, 'Routine lifting must have exactly 7 statutory signatories (2 pre-loc + 5 approval stages)');
+assert.strictEqual(routineFlow[0].key, 'crane-operator', 'Signatory 1 must be Crane Operator');
+assert.strictEqual(routineFlow[1].key, 'rigger', 'Signatory 2 must be Signaler / Rigger');
+assert.strictEqual(routineFlow[2].key, 'lift-supervisor', 'Signatory 3 must be Lifting Supervisor');
+assert.strictEqual(routineFlow[3].key, 'site-engineer', 'Signatory 4 must be Site Engineer');
+assert.strictEqual(routineFlow[4].key, 'pm', 'Signatory 5 must be P&M Engineer');
+assert.strictEqual(routineFlow[5].key, 'section-head', 'Signatory 6 must be Tower / Section Incharge');
+assert.strictEqual(routineFlow[6].key, 'ehs-manager', 'Signatory 7 must be EHS Safety Manager');
+assert(!routineFlow.some(s => s.key === 'project-manager'), 'Routine lifting must NOT include Project Manager');
+
+const critFlow = evalInVM('getPermitSignatoriesFlow(pCrit)');
+assert.strictEqual(critFlow.length, 8, 'Critical lift plan must have exactly 8 statutory signatories (2 pre-loc + 6 approval stages)');
+assert.strictEqual(critFlow[0].key, 'crane-operator');
+assert.strictEqual(critFlow[1].key, 'rigger');
+assert.strictEqual(critFlow[2].key, 'lift-supervisor');
+assert.strictEqual(critFlow[3].key, 'site-engineer');
+assert.strictEqual(critFlow[4].key, 'pm');
+assert.strictEqual(critFlow[5].key, 'section-head');
+assert.strictEqual(critFlow[6].key, 'project-manager', 'Signatory 7 in Critical Lift must be Project Manager');
+assert.strictEqual(critFlow[7].key, 'ehs-manager', 'Signatory 8 in Critical Lift must be EHS Safety Manager');
+
+const sigCardRoutine = evalInVM('buildPermitSignatoriesCardHtml(pRoutine)');
+assert(sigCardRoutine.includes('Crane Operator'), 'Signatories card must include Crane Operator');
+assert(sigCardRoutine.includes('Rajesh Sharma'), 'Signatories card must display Crane Operator name');
+assert(sigCardRoutine.includes('Signaler / Rigger'), 'Signatories card must include Signaler / Rigger');
+assert(sigCardRoutine.includes('Sunil Kumar'), 'Signatories card must display Rigger name');
+assert(sigCardRoutine.includes('Lifting Supervisor'), 'Signatories card must include Lifting Supervisor');
+assert(!sigCardRoutine.includes('Project Manager'), 'Routine signatories card must NOT include Project Manager');
+
+const sigCardCrit = evalInVM('buildPermitSignatoriesCardHtml(pCrit)');
+assert(sigCardCrit.includes('Project Manager'), 'Critical lift signatories card MUST include Project Manager');
+assert(sigCardCrit.includes('Crane Operator'), 'Critical lift signatories card must include Crane Operator');
+assert(sigCardCrit.includes('Signaler / Rigger'), 'Critical lift signatories card must include Signaler / Rigger');
+
+console.log('  ✓ PASS: Dynamic Statutory Signatories & DPDP Record dynamically computes 7 rows for PTW-009A and 8 rows (with PM) for PTW-009B');
+
+// --- 11. Extension Workflow (Supervisor -> Site Engineer -> Tower Incharge -> EHS, 20:30 Ceiling) ---
+console.log('\n--- 11. Extension Workflow (Supervisor -> Site Engineer -> Tower Incharge -> EHS, 20:30 Ceiling) ---');
 
 evalInVM(`
 const vt = new Date();
@@ -578,24 +737,36 @@ requestExtension(pRoutine, 60, 'Wind settled, concluding final roof lifts', {
 `);
 
 assert(evalInVM('!!pRoutine.extension'), 'Extension object must be created');
-assert.strictEqual(evalInVM('pRoutine.extension.status'), 'Pending Section Head', 'Lifting extension starts directly at Tower Incharge (Section Head)');
+assert.strictEqual(evalInVM('pRoutine.extension.status'), 'Pending Site Engineer', 'Lifting extension must trigger acknowledgment to Site Engineer first');
 assert.strictEqual(evalInVM('pRoutine.extension.approvals.kind'), 'ext-lifting', 'Extension chain kind must be ext-lifting');
+assert.strictEqual(evalInVM('pRoutine.extension.approvals.siteEngineer.status'), 'pending', 'Site Engineer approval must be pending');
 
-// Tower Incharge approves extension
+// Verify tracker includes Site Engineer
+const extTracker = evalInVM('extTrackerHtml(pRoutine.extension, pRoutine)');
+assert(extTracker.includes('Site Engineer'), 'Extension tracker must display Site Engineer node');
+
+// Step 1: Site Engineer acknowledges extension
+evalInVM(`
+currentUser = Object.assign({}, roleInfo('site-engineer'));
+approveExtensionStage(pRoutine, 'site-engineer', { comment: 'Lifting extension area inspected and acknowledged', gps: { lat: 19.0760, lng: 72.8777, within: true }, sig: 'data:image/png;base64,mockEngExtSig' });
+`);
+assert.strictEqual(evalInVM('pRoutine.extension.status'), 'Pending Section Head', 'Extension routes to Tower Incharge (Section Head) after Site Engineer acknowledgment');
+
+// Step 2: Tower Incharge approves extension
 evalInVM(`
 currentUser = Object.assign({}, roleInfo('section-head'));
 approveExtensionStage(pRoutine, 'section-head', { comment: 'Extension approved by Tower Incharge', gps: { lat: 19.0760, lng: 72.8777, within: true }, sig: 'data:image/png;base64,mockShExtSig' });
 `);
 assert.strictEqual(evalInVM('pRoutine.extension.status'), 'Pending EHS Approval', 'Extension routes to EHS Safety after Section Head');
 
-// EHS approves extension
+// Step 3: EHS approves extension
 evalInVM(`
 currentUser = Object.assign({}, roleInfo('ehs-manager'));
 approveExtensionStage(pRoutine, 'ehs-manager', { comment: 'Extension verified and granted', gps: { lat: 19.0760, lng: 72.8777, within: true }, sig: 'data:image/png;base64,mockEhsExtSig' });
 `);
 assert.strictEqual(evalInVM('pRoutine.extension.status'), 'Approved', 'Extension status must be Approved');
 
-console.log('  ✓ PASS: Extension flow verified: requested by Lifting Supervisor, approved by Tower Incharge -> EHS with 20:30 ceiling');
+console.log('  ✓ PASS: Extension flow verified: requested by Lifting Supervisor -> Site Engineer acknowledgment -> Tower Incharge review -> EHS Safety endorsement with 20:30 ceiling');
 
 // --- 12. Exclusive Closure & Surrender with Demobilization Declaration ---
 console.log('\n--- 12. Exclusive Closure & Surrender with Demobilization Declaration ---');
