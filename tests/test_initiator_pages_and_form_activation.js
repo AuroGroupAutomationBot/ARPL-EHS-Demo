@@ -233,7 +233,7 @@ assert.strictEqual(blastAvailForSup.statusClass, 'restricted', "PTW-007 must hav
 console.log('  ✓ PASS: For Site Supervisor, PTW-007 Drilling & Blasting is strictly inactive with lock badge (Restricted to Blasting In-charge)');
 
 // Verify full 11-permit activation matrix for Site Supervisor
-const supervisorAllowedPermits = ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 'general'];
+const supervisorAllowedPermits = ['excavation', 'hotwork', 'guardrail', 'confined', 'shaft', 'general', 'nightshift'];
 ALL_PERMITS.forEach(pKey => {
     const avail = evalInVM(`getPermitAvailabilityForRole('${pKey}', 'site-supervisor')`);
     if (supervisorAllowedPermits.includes(pKey)) {

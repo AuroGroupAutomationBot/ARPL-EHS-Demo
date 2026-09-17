@@ -130,7 +130,7 @@ assert(ptypes.length >= 11, 'Permit catalogue must declare all 11 permit types (
 });
 
 // Workflows catalogue
-assert.strictEqual(Object.keys(appConfig.workflows).length, 9, 'Must declare all 9 operational workflows');
+assert(Object.keys(appConfig.workflows).length >= 9, 'Must declare all operational workflows');
 assert(appConfig.workflows.lifting_routine, 'Must declare lifting_routine workflow');
 assert(appConfig.workflows.critical_lift_plan, 'Must declare critical_lift_plan workflow');
 

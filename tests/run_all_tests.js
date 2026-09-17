@@ -28,7 +28,9 @@ const suites = [
     { num: 19, name: 'FORENSIC AUDIT REMEDIATION, SECURITY & RUNTIME ROBUSTNESS', file: 'test_audit_remediation_security.js' },
     { num: 20, name: 'DYNAMIC & CONFIGURATION-DRIVEN ENTERPRISE ARCHITECTURE', file: 'test_dynamic_config_architecture.js' },
     { num: 21, name: 'PTW-009 LIFTING OPERATIONS & CRITICAL LIFT PLAN (PTW-009A/B) COMPLIANCE', file: 'test_pt09_lifting_operations.js' },
-    { num: 22, name: 'DRAFT RESUMPTION, SUB-TABLE SCROLL FIX & PART A/B CHECKBOXES', file: 'test_draft_and_pt09_subtables.js' }
+    { num: 22, name: 'DRAFT RESUMPTION, SUB-TABLE SCROLL FIX & PART A/B CHECKBOXES', file: 'test_draft_and_pt09_subtables.js' },
+    { num: 23, name: 'PTW-010 NIGHT SHIFT / HOLIDAY WORK & DUAL-PHASE HANDOVER', file: 'test_pt10_night_shift.js' },
+    { num: 24, name: 'SUNDAY WORK TILE & WEEKEND GOVERNANCE', file: 'test_sunday_work_tile.js' }
 ];
 
 console.log('================================================================');
@@ -51,5 +53,5 @@ for (const suite of suites) {
 
 console.log('\n================================================================');
 console.log(`MASTER TEST SUITE SUMMARY: ALL ${passedCount} / ${suites.length} SUITES PASSED CLEANLY (100% PASS RATE)`);
-console.log('ALL 9 PERMIT WORK TYPES (PTW-001 TO PTW-009A/B) FULLY VALIDATED');
+console.log('ALL 10 PERMIT WORK TYPES (PTW-001 TO PTW-010) FULLY VALIDATED');
 console.log('================================================================');

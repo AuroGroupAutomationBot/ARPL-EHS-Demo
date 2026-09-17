@@ -4,10 +4,10 @@
 
 ### Enterprise-Grade Digital Safety Governance for Construction Operations
 
-**PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work · PTW-009A/B Lifting Operations & Critical Lift Plan**
+**PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work · PTW-009A/B Lifting Operations · PTW-010 Night Shift / Holiday Work**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-21%20Suites%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-24%20Suites%20Passed-success?style=for-the-badge)](/)
 [![Pass Rate](https://img.shields.io/badge/Pass_Rate-100%25-brightgreen?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -40,9 +40,9 @@
      - 5.2.5 [PTW-005 Shaft Work](#525-ptw-005-shaft-work-5-stages---sequential-spine-with-mep-clearance)
      - 5.2.6 [PTW-006 Electrical Work](#526-ptw-006-electrical-work-htlt-dual-topology-batching-plant-4-stage--site-5-stage)
      - 5.2.7 [PTW-007 Drilling & Blasting](#527-ptw-007-drilling--blasting-3-stages---direct-statutory-spine-to-ehs)
-     - 5.2.8 [PTW-008 General Work](#528-ptw-008-general-work-4-stages---multi-tier-dynamic-safety-spine)
-     - 5.2.9 [PTW-009A Routine Lifting Operations](#529-ptw-009a-routine-lifting-operations-5-stages---technical-pm-clearance-spine)
-     - 5.2.10 [PTW-009B Critical Lift Plan](#5210-ptw-009b-critical-lift-plan--non-routine-lift-6-stages---project-manager-executive-review-spine)
+     - 5.2.8 [PTW-008 General Work](#528-ptw-008-general-work-4-stages---multi-tier-dyna      - 5.2.9 [PTW-009A Routine Lifting Operations](#529-ptw-009a-routine-lifting-operations-5-stages---technical-pm-clearance-spine)
+      - 5.2.10 [PTW-009B Critical Lift Plan](#5210-ptw-009b-critical-lift-plan--non-routine-lift-6-stages---project-manager-executive-review-spine)
+      - 5.2.11 [PTW-010 Night Shift / Holiday Work](#5211-ptw-010-night-shift--holiday-work-dual-phase-handover-governance)
    - 5.3 [PTW-001 Excavation Safety Checklist (12 Items)](#53-statutory-safety-checklist-ptw-001-excavation-work-12-items)
    - 5.4 [PTW-002 Hot Work Safety Checklist (20 Items)](#54-statutory-safety-checklist-ptw-002-hot-work-20-items)
    - 5.5 [PTW-003 Guard Rail Safety Checklist (9 Items)](#55-statutory-safety-checklist-ptw-003-guard-rail--floor-protection-removal-9-items)
@@ -52,11 +52,12 @@
    - 5.9 [PTW-007 Drilling & Blasting Safety Checklist & Specifications (15 Items)](#59-statutory-safety-checklist--technical-specifications-ptw-007-drilling--blasting-15-items)
    - 5.10 [PTW-008 General Work Safety Specifications & Multi-Tier Checklists](#510-statutory-safety-specifications--dynamic-checklists-ptw-008-general-work)
    - 5.11 [PTW-009A/B Lifting Operations Statutory Specifications, Sling Calculation Engine & Checklist (14 Items)](#511-statutory-safety-specifications-sling-calculation-engine--checklist-ptw-009ab-lifting-operations-14-items)
-   - 5.12 [Universal Initiator Architecture & Role-Based Form Activation Matrix](#512-universal-initiator-architecture--role-based-form-activation-matrix)
-   - 5.13 [Enterprise Projects Master Registry (`PROJECTS`)](#513-enterprise-project-master-data--worksite-registry-projects)
-   - 5.14 [Master Constants & Configuration Registries](#514-master-constants--configuration-registries)
-   - 5.15 [Location Selection Mode & Safety Restriction Matrix](#515-location-selection-mode--safety-restriction-matrix)
-6. [Core Workflow: Permit Lifecycle State Machine](#6-core-workflow-permit-lifecycle-state-machine)
+   - 5.12 [PTW-010 Night Shift Safety Checklist, Statutory Prohibitions & Qualification Gating (13 Items)](#512-statutory-safety-specifications--checklist-ptw-010-night-shift-13-items)
+   - 5.13 [Universal Initiator Architecture & Role-Based Form Activation Matrix](#513-universal-initiator-architecture--role-based-form-activation-matrix)
+   - 5.14 [Enterprise Projects Master Registry (`PROJECTS`)](#514-enterprise-project-master-data--worksite-registry-projects)
+   - 5.15 [Master Constants & Configuration Registries](#515-master-constants--configuration-registries)
+   - 5.16 [Location Selection Mode & Safety Restriction Matrix](#516-location-selection-mode--safety-restriction-matrix)
+6. [Core Workflow: Permit Lifecycle State Machine](#6-core-workflow-permit-lifecycle-state-machine)cle-state-machine)
 7. [Approval Chain Architecture](#7-approval-chain-architecture)
    - 7.1 [Chain Data Schema per Permit Type](#71-chain-data-schema-per-permit-type-newchain)
    - 7.2 [Stage Resolution Algorithm](#72-stage-resolution-algorithm-chainstage)
@@ -73,13 +74,14 @@
    - 8.7 [PTW-007 Drilling & Blasting (Statutory Approval Lifecycle)](#87-ptw-007-drilling--blasting-end-to-end-statutory-approval-lifecycle)
    - 8.8 [PTW-008 General Work (End-to-End Approval & Multi-Tier Safety Lifecycle)](#88-ptw-008-general-work-end-to-end-approval--multi-tier-safety-lifecycle)
    - 8.9 [PTW-009A & PTW-009B Lifting Operations & Critical Lift Plan Lifecycle](#89-ptw-009a--ptw-009b-lifting-operations--critical-lift-plan-lifecycle)
-   - 8.10 [Rejection & Resubmission (Stale-Approval Rule)](#810-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
-   - 8.11 [Safety Observation & Stop-Work Lifecycle](#811-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
-   - 8.12 [Permit Extension Lifecycle](#812-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
-   - 8.13 [Work Completion, Housekeeping & Surrender Gate](#813-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
-   - 8.14 [4-Step Creation & Initiation Wizard Flow](#814-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
-   - 8.15 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#815-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
-   - 8.16 [Application-Wide Deterministic Navigation & Consistency Architecture](#816-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-engine)
+   - 8.10 [PTW-010 Night Shift & Dual-Phase Handover Lifecycle](#810-ptw-010-night-shift--holiday-work-dual-phase-handover--6-signatory-governance)
+   - 8.11 [Rejection & Resubmission (Stale-Approval Rule)](#811-cross-cutting-workflow-rejection--resubmission-stale-approval-invalidation)
+   - 8.12 [Safety Observation & Stop-Work Lifecycle](#812-cross-cutting-workflow-safety-observation--stop-work-lifecycle)
+   - 8.13 [Permit Extension Lifecycle](#813-cross-cutting-workflow-permit-extension-lifecycle-630-pm-cutoff--830-pm-ceiling)
+   - 8.14 [Work Completion, Housekeeping & Surrender Gate](#814-cross-cutting-workflow-work-completion-housekeeping--statutory-surrender-lifecycle-closure-gate)
+   - 8.15 [4-Step Creation & Initiation Wizard Flow](#815-cross-cutting-workflow-4-step-permit-creation--initiation-wizard-flow-wiz_steps)
+   - 8.16 [Administrative Site Geofencing & Worksite Radar Calibration Flow](#816-cross-cutting-workflow-administrative-site-geofencing--worksite-radar-calibration-flow-view-admin-config)
+   - 8.17 [Application-Wide Deterministic Navigation & Consistency Architecture](#817-cross-cutting-architecture-application-wide-deterministic-navigation--consistency-engine)
 9. [Escalation & Auto-Expiry Engine](#9-escalation--auto-expiry-engine)
 10. [Safety Observation Workflow](#10-safety-observation-workflow)
 11. [Extension Workflow](#11-extension-workflow)
@@ -111,7 +113,17 @@
 21. [Security & Compliance](#21-security--compliance)
 22. [Testing & Quality Assurance](#22-testing--quality-assurance)
 23. [Glossary](#23-glossary)
-24. [Authors & Engineering Team](#24-authors--engineering-team)
+24. [Weekend Operations Governance & Sunday Work Tile Architecture](#24-weekend-operations-governance--sunday-work-tile-architecture)
+   - 24.1 [Architectural Overview & Core Governance Philosophy](#241-architectural-overview--core-governance-philosophy)
+   - 24.2 [Dual-Tile Dashboard: PTW vs Sunday Work Tile](#242-dual-tile-dashboard-ptw-vs-sunday-work-tile)
+   - 24.3 [IST Calendar-Driven Activation Engine](#243-ist-calendar-driven-activation-engine)
+   - 24.4 [Hard Exclusion of Night Shift Work (PTW-010)](#244-hard-exclusion-of-night-shift-work-ptw-010)
+   - 24.5 [Sunday Zero-Creation Lockout Engine (System-Wide)](#245-sunday-zero-creation-lockout-engine-system-wide)
+   - 24.6 [Sunday Permit Execution & Closure Governance](#246-sunday-permit-execution--closure-governance)
+   - 24.7 [Permit Data Origin Tracking, Register Filtering & SUN Badge](#247-permit-data-origin-tracking-register-filtering--sun-badge)
+   - 24.8 [Cross-Cutting Controls (RBAC, Notifications, Retention, PDF Audit)](#248-cross-cutting-controls-rbac-notifications-retention-pdf-audit)
+   - 24.9 [Smooth Scrolling & Navigation Engineering](#249-smooth-scrolling--navigation-engineering)
+25. [Authors & Engineering Team](#25-authors--engineering-team)
 
 ---
 
@@ -131,11 +143,11 @@ The **ARPL EHS Permit-to-Work (PTW) Management System** digitises the entire hig
 
 | Metric | Value |
 |:---|:---|
-| Permit Types (Active) | 9 (PTW-001 to PTW-008, PTW-009A/B fully implemented & testable) |
-| RBAC Roles | 15 distinct roles (including separate Excavation Head, Quality Engineer, Blasting In-charge, Lifting Supervisor, and Project Manager) |
-| Approval Steps (PTW-009) | 5-step Routine Lifting spine (Supervisor -> Site Eng -> P&M Eng -> Tower Incharge -> EHS) / 6-step Critical Lift Plan spine (with Project Manager) |
-| Automated Test Assertions | 600+ assertions across 21 master test suites (100% pass rate) |
-| Total Codebase | Single `index.html` (~17,705 lines) |
+| Permit Types (Active) | 10 (PTW-001 to PTW-008, PTW-009A/B, PTW-010 fully implemented & testable) |
+| RBAC Roles | 16 distinct roles (including separate Excavation Head, Quality Engineer, Blasting In-charge, Lifting Supervisor, Project Manager, and Night Site Supervisor) |
+| Approval Steps (PTW-010) | 8-stage Dual-Phase Handover Protocol (Day Approvals &rarr; Linked Activity Permit &rarr; 8:30 PM Qualification Gate &rarr; P&M Night Ack &rarr; EHS Verification) |
+| Automated Test Assertions | 920+ assertions across 24 master test suites (100% pass rate) |
+| Total Codebase | Single `index.html` (~19,980 lines) |
 | External Dependencies | 2 (Font Awesome icons, jsPDF) |me icons, jsPDF) |
 
 ---
@@ -467,6 +479,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 | **PTW-008** | General Work | `PTW-008` | Dynamic (21 / 15 / 20 / 11) | 4-Stage (Direct) | Multi-tier safety checklists dynamically tailored to 14 work descriptions across 4 categories: Category A Panel Erection (21 items, Item 21 wind $\le 45\text{ km/h}$), Category B Hoisting & Rigging (15 items + wind warning banner), Category C Formwork (20 items + wind warning banner), Category D Custom (11 items + manual entry field). 4-stage direct spine (Site Sup $\to$ Site Eng $\to$ Tower Incharge $\to$ EHS). Mandatory housekeeping & area clearance surrender gate. |
 | **PTW-009A** | Routine Lifting Operations | `PTW-009A` | 14 | 5-Stage (P&M Clearance Spine) | Single unified tile (`PTW-009`) in catalog; initiated exclusively by certified Lifting Supervisor; mandatory pre-location signature gate (Crane Operator & Signaler/Rigger digital signatures and DPDP consent); rigging geometry & sling tension calculation engine ($\text{Stress} = \frac{\text{TotalW} \times L}{H \times N}$ with $N=2$ safety clamping); 14 statutory checklist items; mobile crane ($\le 38\text{ km/h}$) and tower crane ($\le 45\text{ km/h}$) wind speed warnings; dedicated P&M Engineer technical clearance; exclusive Lifting Supervisor surrender gate with certified demobilization declaration. |
 | **PTW-009B** | Critical Lift Plan / Non-Routine Lift | `PTW-009B` | 14 | 6-Stage (Project Manager Review) | Single unified tile (`PTW-009`, `liftplan` hidden from catalog grid); auto-promoted dynamically from routine lifting if: total load $> 5.0\text{ MT}$, tandem lift selected, calculated sling stress $> 80\%$ of sling SWL, or ANY of 14 statutory high-risk criteria = YES; 6-stage governance requiring executive review by Project Manager (Step 5) prior to EHS final endorsement; certified demobilization declaration upon surrender. |
+| **PTW-010** | Night Shift / Holiday Work | `PTW-010` | 13 | 8-Stage Dual-Phase Handover Protocol | Enterprise-grade governance for night operations (20:30 to 06:00 IST). Day Phase (5:00 PM – 6:30 PM): Initiated by Site Supervisor, 13 statutory checklist checks, contractor/subcontractor declaration, authorized activity dropdown, site photo deferred to handover, approved by Site Engineer & Tower Incharge. Unlocks sequential Stage 2 linked activity permit (Hot Work, Shaft, Lifting, etc.) through its daytime approval spine. Night Phase Handover (8:30 PM / 20:30 IST): Transferred to incoming Night Site Supervisor; qualification gate requires PM authorization + valid PTW training (< 365 days); 21:00 cutoff engine auto-cancels if unstaffed; mandatory dual site photo verification (workplace illumination + linked activity setup). Step 5: P&M Engineer night inspection of lighting towers and equipment. Step 6: EHS Safety verification activates both permits; rejection strictly isolates Night Supervisor without re-engaging day approvers. Strict statutory prohibitions: Confined Space (PTW-004), Drilling & Blasting (PTW-007), and Critical Lift Plans (PTW-009B / > 5 MT) strictly forbidden at night. Exclusive closure & surrender by Night Site Supervisor with de-energization declaration. |
 
 ### 5.2 Approval Chain Topology per Permit Type
 
@@ -583,6 +596,26 @@ graph LR
         CLP3 --> CLP4["Tower Incharge<br/>(Step 4 Section Head Review)"]
         CLP4 --> CLP5["Project Manager<br/>(Step 5 Executive Domain Review)"]
         CLP5 --> CLP6["EHS Safety<br/>(Step 6 Final Endorsement)"]
+    end
+```
+
+#### 5.2.11 PTW-010 Night Shift / Holiday Work (Dual-Phase Handover Governance)
+```mermaid
+graph LR
+    subgraph "PTW-010 Night Shift - Stage 1 Day Phase (5:00 PM – 6:30 PM)"
+        NS1["Site Supervisor (Day)<br/>(Pre-fills PTW-010 · Photo Deferred)"] --> NS2["Site Engineer<br/>(Step 2 Technical Acknowledgment)"]
+        NS2 --> NS3["Tower Incharge<br/>(Step 3 Day Approval · P&M Informational · EHS Held)"]
+    end
+    subgraph "Sequential Stage 2: Linked Activity Permit (Hot Work, Shaft, Lifting, etc.)"
+        NS3 --> LP1["Site Supervisor (Day)<br/>(Fills Linked Activity Permit · Technical Checklist)"]
+        LP1 --> LP2["Linked Permit Day Approvals<br/>(Site Eng to Domain Clearances to Tower Incharge)"]
+    end
+    subgraph "Phase 2: Night Phase Handover (8:30 PM / 20:30 IST)"
+        LP2 --> HO1["Night Site Supervisor<br/>(Qualification Gate: PM Auth + PTW Training within 365 Days · Dual Photos)"]
+        HO1 --> PM1["P&M Engineer<br/>(Step 5 Night Ack · Lighting Towers & Lux Levels)"]
+        PM1 --> EHS1["EHS Safety Verification<br/>(Step 6 Dual Photos Review & 13 Checklist Points)"]
+        EHS1 -- Approve --> ACT["Both Permits Activated (Active)"]
+        EHS1 -- Reject --> RET["Returned strictly to Night Supervisor<br/>(Day Approvers NOT Re-Engaged)"]
     end
 ```
 
@@ -925,15 +958,15 @@ graph TD
     GATE{"Pre-Location Signatures Gate<br/>Crane Operator & Signaler/Rigger DPDP Sigs Captured?"}
     LOC["Location Mode Unlocked<br/>(Tower / Basement / Manual)"]
     SPECS["Enter Rigging Specs, Load Weight, Crane Capacity,<br/>Geometry (Length L & Height H), Worker Count"]
-    EVAL{"Dynamic Classification Evaluator<br/>1. Weight > 5.0 MT?<br/>2. Tandem Lift = Yes?<br/>3. Sling Stress > 80% SWL (N=2 Clamped)?<br/>4. Any of 14 High-Risk Statutory Criteria = YES?"}
-    ROUTINE["Classified as PTW-009A Routine Lifting<br/>(5-Stage Approval Spine: LS -> SE -> P&M -> TI -> EHS)"]
-    CRITICAL["Auto-Promoted to PTW-009B Critical Lift Plan<br/>(6-Stage Approval Spine: LS -> SE -> P&M -> TI -> PMgr -> EHS)"]
+    EVAL{"Dynamic Classification Evaluator<br/>1. Weight over 5.0 MT?<br/>2. Tandem Lift = Yes?<br/>3. Sling Stress over 80 percent SWL (N=2 Clamped)?<br/>4. Any of 14 High-Risk Statutory Criteria = YES?"}
+    ROUTINE["Classified as PTW-009A Routine Lifting<br/>(5-Stage Approval Spine: LS to SE to P&M to TI to EHS)"]
+    CRITICAL["Auto-Promoted to PTW-009B Critical Lift Plan<br/>(6-Stage Approval Spine: LS to SE to P&M to TI to PMgr to EHS)"]
 
     CAT --> INIT --> GATE
     GATE -->|No| GATE_LOCK["Location Selection Strictly Locked & Disabled"]
     GATE -->|Yes| LOC --> SPECS --> EVAL
-    EVAL -->|All NO & Stress <= 80% & W <= 5 MT| ROUTINE
-    EVAL -->|Any Condition Triggered| CRITICAL
+    EVAL -->|"All NO, Stress under 80 percent and Weight under 5 MT"| ROUTINE
+    EVAL -->|"Any Condition Triggered"| CRITICAL
 ```
 
 #### 1. Single Unified Tile Architecture in Catalog
@@ -1058,17 +1091,71 @@ Permits cannot be surrendered by general site engineers. Closure is restricted e
 
 ---
 
-### 5.12 Universal Initiator Architecture & Role-Based Form Activation Matrix
+### 5.12 Statutory Safety Specifications, Qualification Gating & Checklist: PTW-010 Night Shift (13 Items)
+
+> [!IMPORTANT]
+> **Dual-Phase Governance & Night Work Invariants**:
+> 1. **Day Phase (5:00 PM – 6:30 PM)**: Initiated by Site Supervisor (`site-supervisor`, Permittee · Day). Fills PTW-010 master data, contractor/subcontractor status, authorized activity dropdown, 13 checklist points, digital signature. Site photo upload is **statutorily deferred** to the 8:30 PM physical handover. Acknowledged by Site Engineer and approved by Tower Incharge / Section Head. Advances to `Night Shift Approved – Awaiting Linked Permit`.
+> 2. **Sequential Linked Activity Permit**: Only upon Tower Incharge approval does the linked activity permit form unlock. Initiated by Site Supervisor, routes through its daytime domain approval spine. Only when both daytime approval chains complete do both permits advance to `Approved – Pending Night Handover`.
+> 3. **Strict Statutory Prohibitions**:
+>    - `PTW-004 Confined Space Entry`: Strictly PROHIBITED at night.
+>    - `PTW-007 Drilling & Blasting`: Strictly PROHIBITED at night.
+>    - `PTW-009B Critical Lift Plan`: Strictly EXCLUDED (loads > 5 MT, tandem lifts, high-risk criteria); only `PTW-009A Routine Lifting` is allowed.
+> 4. **8:30 PM Handover Gate & Qualification Engine**:
+>    - Transferred on-site to incoming Night Site Supervisor (`night-supervisor`).
+>    - **Qualification Validation Gate**: Incoming supervisor must be PM-authorized AND possess valid PTW training completed within the last 365 days.
+>    - **21:00 IST Cutoff Engine**: If no qualified night supervisor is assigned and accepted by 21:00 IST, the permit automatically aborts with terminal `Cancelled` status.
+>    - **Mandatory Dual Site Photos**: Mandatory capture of both Workplace Illumination photo and Linked Permit Activity Setup photo.
+> 5. **Step 5 P&M Night Shift Acknowledgment**: P&M Engineer verifies lighting towers (lux levels > 150 lux), diesel generators, cable elevation, and machinery fitness.
+> 6. **Step 6 EHS Verification & Strict Rejection Isolation**: EHS Officer / Manager verifies photos and checklist points. Approval activates both permits (`Active`). Rejection routes strictly back to Night Site Supervisor (`Returned to Night Supervisor`), completely isolating day approvers.
+> 7. **Exclusive Night Closure & Surrender**: Closure restricted strictly to Night Site Supervisor with mandatory De-energization and Illumination Shutdown Declaration.
+
+#### 1. 13 Statutory Safety Checklist Items (`NIGHTSHIFT_CHECKLIST_ITEMS`)
+
+| # | Statutory Inspection Item | Category | Verification Requirement |
+|:---:|:---|:---|:---|
+| 1 | Work area lighting (minimum 150 lux for general work, 300 lux for precise tasks) | Illumination | Adequate lighting tower positioning, lux levels measured across working floor and corridors. |
+| 2 | Emergency lighting / backup generator available and tested | Power & DG | DG set auto-changeover tested; standby generator fueled and operational. |
+| 3 | Access and egress routes clearly illuminated and free of tripping hazards | Access Safety | Walkways, stairwells, and ladders lit with temporary festoon lighting and cleared of obstructions. |
+| 4 | First aid post manned / First Aider identified and available on shift | Medical Safety | Dedicated trained first-aider on-site with stocked first aid kit and ambulance tie-up. |
+| 5 | Emergency vehicle / ambulance on standby with driver available on site | Emergency | Dedicated emergency vehicle present with driver on site throughout the shift. |
+| 6 | Drinking water and welfare facilities accessible during night shift | Welfare | Potable drinking water dispensers, illuminated rest shelter, and clean sanitation facilities open. |
+| 7 | Night shift supervisor(s) nominated, trained, and present on site | Supervision | PM-authorized night supervisor physically present on site with valid training certificate. |
+| 8 | Communication system operable (walkie-talkies, mobile network tested) | Communication | Two-way UHF/VHF radio sets functional with dedicated safety channel and full battery charge. |
+| 9 | High-visibility PPE (reflective jackets/vests) mandatory for all night workers | PPE Compliance | Class 3 reflective vests and retro-reflective helmet stickers verified on 100% of workforce. |
+| 10 | Security guards deployed at all active entry/exit gates | Site Security | Static guards stationed at active gates; unauthorized perimeter movement restricted. |
+| 11 | Power cables elevated / protected against water, vehicular movement | Electrical Safety | Cables strung on insulated stands (> 2.5m elevation) with 30mA ELCB/RCCB tripping protection. |
+| 12 | Fire-fighting equipment (extinguishers, sand buckets) inspected & accessible | Fire Safety | Fire extinguishers positioned at 15m intervals with valid inspection tags and illuminated markers. |
+| 13 | Worker fitness / fatigue check completed — no workers on double shift | Occupational Health | Zero double shifts; fatigue screening conducted; all workers logged and verified fit. |
+
+#### 2. Authorized Night Shift Activity Descriptions (`NIGHT_WORK_DESCRIPTIONS`)
+* Hot Work (PTW-002) — Rebar welding, structural tacking, and steel fabrication with dedicated fire watch.
+* Shaft Work (PTW-005) — Lift shaft bracket installation and internal riser MEP piping with staging.
+* Guard Rail Removal (PTW-003) — Temporary edge protection removal for material intake with 100% tie-off.
+* Electrical Work (PTW-006) — Substation switchgear cabling and lighting circuit maintenance.
+* General Work (PTW-008) — Structural concrete pouring, screeding, and curing operations.
+* Routine Lifting Operations (PTW-009A) — Precast component and rebar bundle hoisting (strictly <= 5.0 MT).
+* Excavation & Earthwork (PTW-001) — Trenching and spoil haulage outside active structural tower footprint.
+
+#### 3. Master Night Supervisor Registry (`NIGHT_SUPERVISORS`)
+* **Venkatesh Rao** (`venkatesh_rao`): Authorized (`pmAuthorised: true`), Training valid (`trainingDays: 45 < 365`). Gating: **Eligible**.
+* **Ramesh Naidu** (`ramesh_naidu`): Authorized (`pmAuthorised: true`), Training valid (`trainingDays: 120 < 365`). Gating: **Eligible**.
+* **Kishore Varma** (`kishore_varma`): Not authorized (`pmAuthorised: false`). Gating: **Disqualified**.
+* **Anand Kumar** (`anand_kumar`): Authorized (`pmAuthorised: true`), Training expired (`trainingDays: 410 > 365`). Gating: **Disqualified**.
+
+---
+
+### 5.13 Universal Initiator Architecture & Role-Based Form Activation Matrix
 
 The system implements a **declarative, role-based form accessibility matrix** that dynamically determines permit eligibility based on the authenticated persona:
 
 ```mermaid
 graph TD
-    INIT{"Logged-in Persona"} -->|Role: Electrician| E_FLOW["Active: PTW-006 Electrical Work Only<br/>Inactive: All Other 10 Modules (PTW-001 to 05, PTW-007 to PTW-010)"]
-    INIT -->|Role: Blasting In-charge| B_FLOW["Active: PTW-007 Drilling & Blasting Only<br/>Inactive: All Other 10 Modules (PTW-001 to 06, PTW-008 to PTW-010)"]
-    INIT -->|Role: Lifting Supervisor| LS_FLOW["Active: PTW-009 Lifting Operations & Lift Plan<br/>Inactive: All Other Modules (PTW-001 to PTW-008, PTW-010)"]
-    INIT -->|Role: Site Supervisor| S_FLOW["Active: PTW-001 to 05, PTW-008 (Civil, Structural & General)<br/>Inactive: PTW-006 (Electrician), PTW-007 (Blasting), PTW-009 (Lifting)"]
-    INIT -->|Role: Approver or Admin| NON_INIT["Permit Initiation Strictly Disabled<br/>(Approver / Auditor / Admin Mode)"]
+    INIT{"Logged-in Persona"} -->|"Role: Electrician"| E_FLOW["Active: PTW-006 Electrical Work Only<br/>Inactive: All Other 10 Modules (PTW-001 to 05, PTW-007 to PTW-010)"]
+    INIT -->|"Role: Blasting In-charge"| B_FLOW["Active: PTW-007 Drilling & Blasting Only<br/>Inactive: All Other 10 Modules (PTW-001 to 06, PTW-008 to PTW-010)"]
+    INIT -->|"Role: Lifting Supervisor"| LS_FLOW["Active: PTW-009 Lifting Operations & Lift Plan<br/>Inactive: All Other Modules (PTW-001 to PTW-008, PTW-010)"]
+    INIT -->|"Role: Site Supervisor"| S_FLOW["Active: PTW-001 to 05, PTW-008 (Civil, Structural and General)<br/>Inactive: PTW-006 (Electrician), PTW-007 (Blasting), PTW-009 (Lifting)"]
+    INIT -->|"Role: Approver or Admin"| NON_INIT["Permit Initiation Strictly Disabled<br/>(Approver / Auditor / Admin Mode)"]
 ```
 
 #### 1. Centralized Form Activation Matrix
@@ -1157,6 +1244,7 @@ In the Step 1 Creation Wizard, users select from:
 | **Drilling & Blasting (PTW-007)** | ❌ **Restricted** | ❌ **Restricted** | ✅ **Enabled** | **Manual** |
 | **General Work (PTW-008)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 | **Lifting Operations & Lift Plan (PTW-009A/B)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** *(Strictly locked until pre-location signatures captured)* |
+| **Night Shift / Holiday Work (PTW-010)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 
 #### Why this mapping works (The Technical & Safety Logic)
 
@@ -1191,6 +1279,9 @@ In the Step 1 Creation Wizard, users select from:
 
 8. **General Work (PTW-008)**
    * **Enable All.** General works span panel erection on elevated tower slabs (Category A), material hoisting and equipment rigging across open yards and towers (Category B), heavy formwork in basements and substructures (Category C), and miscellaneous fabrication in exterior laydown areas (Category D). All three structural location modes are fully supported with Tower as the default mode.
+
+9. **Night Shift / Holiday Work (PTW-010)**
+   * **Enable All.** Night operations may occur across towers (slab finishing, MEP installation), basements (substation cabling, pump room commissioning), or exterior laydown areas (trench work, steel yard fabrication). All three structural location modes are enabled, defaulting to Tower. Physical handover at 8:30 PM verifies exact location coordinates with GPS geofencing.
 
 ---
 
@@ -1653,7 +1744,7 @@ graph TD
 
 ## 8. Swimlane Diagrams
 
-Comprehensive sequence and swimlane specifications covering all **9 active permit types (PTW-001 through PTW-009A/B)** and all **3 cross-cutting lifecycle engines** (Rejection & Resubmission, Safety Observation, and Extension).
+Comprehensive visual swimlane and sequence specifications covering all **10 active permit types (PTW-001 through PTW-010)** and all **3 cross-cutting lifecycle engines** (Rejection & Resubmission, Safety Observation, and Extension). Each flow is rendered in dedicated vertical swimlane boxes for crystal-clear actor isolation and GitHub compatibility.
 
 ---
 
@@ -1662,16 +1753,25 @@ The only flow featuring a **3-way parallel gate** (MEP, P&M, IT)  On a Reject + 
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Acknowledge)
-    participant MEP as MEP Engineer
-    participant PM as P&M Engineer
-    participant IT as IT Engineer
-    actor EH as Excavation Head (Approving Authority)
-    actor EHS as EHS Manager/Officer (Verification)
-    participant SYS as System Engine
+    autonumber
+    box "Site Operations Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+        actor SE as "Site Engineer (Acknowledge)"
+    end
+    box "Discipline Clearances Swimlane"
+        participant MEP as "MEP Engineer"
+        participant PM as "P&M Engineer"
+        participant IT as "IT Engineer"
+    end
+    box "Approving Authorities Swimlane"
+        actor EH as "Excavation Head (Approving Authority)"
+        actor EHS as "EHS Manager/Officer (Verification)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over SS,SYS: STEP 1 — Form Initiation & Checklist
+    Note over SS,SYS: STEP 1 - Form Initiation and Checklist
     SS->>SS: Complete 4-step wizard form
     SS->>SS: Complete 12-item safety checklist (NO requires comment, Site Photo unlocked after checklist)
     SS->>SS: Capture Site Photo (activated after checklist complete)
@@ -1680,7 +1780,7 @@ sequenceDiagram
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: In-App Alert: Physical site review required
 
-    Note over SS,SYS: STEP 2 — Physical Site Verification
+    Note over SS,SYS: STEP 2 - Physical Site Verification
     SE->>SE: Verify physical ground, trench depth & barricades on-site
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending Parallel Clearances
@@ -1688,7 +1788,7 @@ sequenceDiagram
     SYS->>PM: Alert: Machinery clearance required
     SYS->>IT: Alert: Data/Fibre lines clearance required
 
-    Note over SS,SYS: STEP 3 — Concurrent Parallel Approval Gate
+    Note over SS,SYS: STEP 3 - Concurrent Parallel Approval Gate
     par Concurrent Clearances (All 3 Must Approve)
         MEP->>SYS: approveParallelStage(MEP) [Utilities clear]
     and
@@ -1700,7 +1800,7 @@ sequenceDiagram
     SYS->>SYS: Status: Pending Section Head Approval (Excavation Head)
     SYS->>EH: Alert: All clearances passed, Excavation Head review required
 
-    Note over SS,SYS: STEP 4 — Excavation Head Review
+    Note over SS,SYS: STEP 4 - Excavation Head Review
     EH->>EH: Holistic site safety review & contractor readiness
     alt Approve
         EH->>SYS: approvePermitStage()
@@ -1711,7 +1811,7 @@ sequenceDiagram
         SYS->>SYS: Status: Cancelled (Terminal) [Generate PDF, Notify All]
     end
 
-    Note over SS,SYS: STEP 5 — EHS Final Endorsement (Single Approver Rule)
+    Note over SS,SYS: STEP 5 - EHS Final Endorsement (Single Approver Rule)
     EHS->>EHS: Verify work-area photo & physical safety protocols
     alt Approve
         EHS->>SYS: approvePermitStage()
@@ -1725,10 +1825,10 @@ sequenceDiagram
         EHS->>SYS: cancelPermit() [Stop work, PDF generated - Terminal]
     end
 
-    Note over SS,SYS: STEP 6 — Site Closure & Surrender (Site Supervisor Exclusive)
+    Note over SS,SYS: STEP 6 - Site Closure and Surrender (Site Supervisor Exclusive)
     SYS->>SS: T-30 min auto-reminder dispatched before expiry
     SS->>SS: Complete backfill & barricade removal declarations + photo + GPS
-    Note over SS,SE: Closure & surrender strictly executed by Site Supervisor (no SE closure option)
+    Note over SS,SE: Closure and surrender strictly executed by Site Supervisor (no SE closure option)
     SS->>SYS: closeAndSurrenderPermit()
     SYS->>SYS: Status: Closed [Generate Statutory PDF Archive]
 ```
@@ -1740,27 +1840,34 @@ Features a **3-stage approval spine** (Site Engineer $\rightarrow$ Tower Incharg
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Acknowledge)
-    actor TI as Tower Incharge (Approving Authority)
-    actor EHS as EHS Manager/Officer (Verification)
-    actor FW as Fire Watcher (Post-Hot-Work)
-    participant SYS as System Engine
+    autonumber
+    box "Site Operations Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+        actor FW as "Fire Watcher (Post-Hot-Work)"
+        actor SE as "Site Engineer (Acknowledge)"
+    end
+    box "Approving Authorities Swimlane"
+        actor TI as "Tower Incharge (Approving Authority)"
+        actor EHS as "EHS Manager/Officer (Verification)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over SS,SYS: STEP 1 — Form Initiation & Photo Upload
+    Note over SS,SYS: STEP 1 - Form Initiation and Photo Upload
     SS->>SS: Fill Hot Work form + spark containment plan + attach work-area photo
     SS->>SS: Checklist: Fire extinguishers, combustible clearance, flash-back arrestor
     SS->>SYS: submitPermit(HOTWORK)
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: Alert: Hot work site acknowledgment required
 
-    Note over SS,SYS: STEP 2 — Physical Site Verification
+    Note over SS,SYS: STEP 2 - Physical Site Verification
     SE->>SE: Verify 35-ft radius combustible clearance & water/sand buckets
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
     SYS->>TI: Alert: Ready for Tower Incharge review
 
-    Note over SS,SYS: STEP 3 — Tower Incharge Review
+    Note over SS,SYS: STEP 3 - Tower Incharge Review
     alt Approve
         TI->>SYS: approvePermitStage()
         SYS->>SYS: Status: Pending EHS Approval
@@ -1769,7 +1876,7 @@ sequenceDiagram
         TI->>SYS: cancelPermit() + comment [Terminal, PDF generated]
     end
 
-    Note over SS,SYS: STEP 4 — EHS Verification (Either Manager or Officer)
+    Note over SS,SYS: STEP 4 - EHS Verification (Either Manager or Officer)
     EHS->>EHS: Verify fire blanket, cylinder storage, and welder PPE
     alt Approve
         EHS->>SYS: approvePermitStage()
@@ -1781,7 +1888,7 @@ sequenceDiagram
         EHS->>SYS: cancelPermit() [Stop all work immediately, PDF generated]
     end
 
-    Note over SS,SYS: STEP 5 — Mandatory 1-Hour Fire Watch & Closure
+    Note over SS,SYS: STEP 5 - Mandatory 1-Hour Fire Watch and Closure
     Note over SS,FW: Hot work activity completes on site
     FW->>FW: Mandatory 60-minute continuous fire watch for smoldering embers
     SS->>SS: Check mandatory Fire Watch declaration box (1 hr prior to close)
@@ -1797,26 +1904,33 @@ Features a **multi-select activity dropdown** and a strict **closure barrier** r
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Acknowledge)
-    actor TI as Tower Incharge (Approving Authority)
-    actor EHS as EHS Manager/Officer (Verification)
-    participant SYS as System Engine
+    autonumber
+    box "Site Operations Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+        actor SE as "Site Engineer (Acknowledge)"
+    end
+    box "Approving Authorities Swimlane"
+        actor TI as "Tower Incharge (Approving Authority)"
+        actor EHS as "EHS Manager/Officer (Verification)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over SS,SYS: STEP 1 — Form Initiation & Multi-Select Activity
+    Note over SS,SYS: STEP 1 - Form Initiation and Multi-Select Activity
     SS->>SS: Select multi-activity: Material Hoisting, Concrete Pour, Facade Install
     SS->>SS: Attach initial edge/floor perimeter photo + safety harness checklist
     SS->>SYS: submitPermit(GUARDRAIL)
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: Alert: Guard rail removal site acknowledgment required
 
-    Note over SS,SYS: STEP 2 — Physical Site Verification
-    SE->>SE: Verify 100% tie-off lifeline setup & perimeter signage on-site
+    Note over SS,SYS: STEP 2 - Physical Site Verification
+    SE->>SE: Verify 100 percent tie-off lifeline setup and perimeter signage on-site
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
     SYS->>TI: Alert: Tower Incharge approval required
 
-    Note over SS,SYS: STEP 3 — Tower Incharge Review
+    Note over SS,SYS: STEP 3 - Tower Incharge Review
     alt Approve
         TI->>SYS: approvePermitStage()
         SYS->>SYS: Status: Pending EHS Approval
@@ -1827,7 +1941,7 @@ sequenceDiagram
         TI->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
-    Note over SS,SYS: STEP 4 — EHS Verification
+    Note over SS,SYS: STEP 4 - EHS Verification
     EHS->>EHS: Verify fall arrest system, safety nets, and warning tape
     alt Approve
         EHS->>SYS: approvePermitStage()
@@ -1839,7 +1953,7 @@ sequenceDiagram
         EHS->>SYS: cancelPermit() [Stop work, PDF generated]
     end
 
-    Note over SS,SYS: STEP 5 — Mandatory Re-Fixing Verification & Closure
+    Note over SS,SYS: STEP 5 - Mandatory Re-Fixing Verification and Closure
     Note over SS,SYS: Work through floor opening finishes
     SS->>SS: Guard rails, toe boards, and floor coverings re-erected
     SS->>SS: Upload mandatory declaration + photo verifying re-fixed barriers
@@ -1854,13 +1968,20 @@ Features an expedited **2-approver spine (no separate Site Engineer step)**, enf
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Entry Supervisor)
-    actor TI as Tower Incharge (Approving Authority)
-    actor EHS as EHS Manager/Officer (Verification)
-    participant SYS as System Engine
+    autonumber
+    box "Entry Operations Swimlane"
+        actor SS as "Site Supervisor (Entry Supervisor)"
+    end
+    box "Approving Authorities Swimlane"
+        actor TI as "Tower Incharge (Approving Authority)"
+        actor EHS as "EHS Manager/Officer (Verification)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over SS,SYS: STEP 1 — Form Initiation, Gas Testing & Entry Declaration
-    SS->>SS: Enter multi-gas detector log: O2 (19.5-23.5%), LEL (under 10%), CO (under 25ppm), H2S (under 10ppm)
+    Note over SS,SYS: STEP 1 - Form Initiation, Gas Testing and Entry Declaration
+    SS->>SS: Enter multi-gas detector log: O2 (19.5-23.5 percent), LEL (under 10 percent), CO (under 25ppm), H2S (under 10ppm)
     SS->>SS: Attach work-area photo + complete confined space entry checklist
     SS->>SS: Sign mandatory Entry Supervisor Safety Declaration
     SS->>SYS: submitPermit(CONFINED)
@@ -1868,7 +1989,7 @@ sequenceDiagram
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
     SYS->>TI: Alert: Confined Space review required
 
-    Note over SS,SYS: STEP 2 — Tower Incharge Review
+    Note over SS,SYS: STEP 2 - Tower Incharge Review
     TI->>TI: Verify forced mechanical ventilation, standby man & rescue tripod
     alt Approve
         TI->>SYS: approvePermitStage()
@@ -1880,7 +2001,7 @@ sequenceDiagram
         TI->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
-    Note over SS,SYS: STEP 3 — EHS Verification
+    Note over SS,SYS: STEP 3 - EHS Verification
     EHS->>EHS: Review calibrated gas detector readings, SCBA & emergency harness
     alt Approve
         EHS->>SYS: approvePermitStage()
@@ -1892,10 +2013,10 @@ sequenceDiagram
         EHS->>SYS: cancelPermit() [Stop entry, PDF generated]
     end
 
-    Note over SS,SYS: STEP 4 — Mandatory All-Clear Worker Surrender
+    Note over SS,SYS: STEP 4 - Mandatory All-Clear Worker Surrender
     Note over SS,SYS: Work inside tank/manhole finishes
-    SS->>SS: Confirm 100% headcount accounted for outside the space
-    SS->>SS: Upload mandatory declaration + photo: 'No worker remains inside space'
+    SS->>SS: Confirm 100 percent headcount accounted for outside the space
+    SS->>SS: Upload mandatory declaration + photo: No worker remains inside space
     SS->>SYS: surrenderPermit()
     SYS->>SYS: Status: Closed [PDF generated with full gas log and exit confirmation]
 ```
@@ -1907,14 +2028,23 @@ Features a **Location dropdown with Floor selection**, **scaffold green-tag veri
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Acknowledge)
-    actor MEP as MEP Engineer (Domain Clearance)
-    actor TI as Tower Incharge (Approving Authority)
-    actor EHS as EHS Manager/Officer (Verification)
-    participant SYS as System Engine
+    autonumber
+    box "Site Operations Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+        actor SE as "Site Engineer (Acknowledge)"
+    end
+    box "Domain Clearance Swimlane"
+        actor MEP as "MEP Engineer (Domain Clearance)"
+    end
+    box "Approving Authorities Swimlane"
+        actor TI as "Tower Incharge (Approving Authority)"
+        actor EHS as "EHS Manager/Officer (Verification)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over SS,SYS: STEP 1 — Form Initiation (Location + Floor Dropdown)
+    Note over SS,SYS: STEP 1 - Form Initiation (Location + Floor Dropdown)
     SS->>SS: Select Shaft Location and specific Floor from dropdown
     SS->>SS: Verify green scaffold tag + attach mandatory declaration & photo
     SS->>SS: Complete 10-item shaft safety checklist (lifeline, toe-board, lighting)
@@ -1922,13 +2052,13 @@ sequenceDiagram
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: Alert: Shaft work site acknowledgment required
 
-    Note over SS,SYS: STEP 2 — Site Engineer Acknowledgment
+    Note over SS,SYS: STEP 2 - Site Engineer Acknowledgment
     SE->>SE: Physical site inspection of shaft opening & fall containment
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending MEP Clearance
     SYS->>MEP: Alert: MEP clearance required for duct/piping shaft
 
-    Note over SS,SYS: STEP 3 — Dedicated MEP Domain Clearance
+    Note over SS,SYS: STEP 3 - Dedicated MEP Domain Clearance
     MEP->>MEP: Inspect shaft electrical risers, plumbing pipes & ductwork safety
     alt Approve
         MEP->>SYS: approveParallelStage(MEP)
@@ -1940,7 +2070,7 @@ sequenceDiagram
         MEP->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
-    Note over SS,SYS: STEP 4 — Tower Incharge Review
+    Note over SS,SYS: STEP 4 - Tower Incharge Review
     TI->>TI: Review shaft structural stability & simultaneous work hazards
     alt Approve
         TI->>SYS: approvePermitStage()
@@ -1952,7 +2082,7 @@ sequenceDiagram
         TI->>SYS: cancelPermit() [Terminal, PDF generated]
     end
 
-    Note over SS,SYS: STEP 5 — EHS Final Verification
+    Note over SS,SYS: STEP 5 - EHS Final Verification
     EHS->>EHS: Verify full-body harness with shock absorber & shaft net
     alt Approve
         EHS->>SYS: approvePermitStage()
@@ -1964,7 +2094,7 @@ sequenceDiagram
         EHS->>SYS: cancelPermit() [Stop work, PDF generated]
     end
 
-    Note over SS,SYS: STEP 6 — Mandatory Shaft Closure & Sealing
+    Note over SS,SYS: STEP 6 - Mandatory Shaft Closure and Sealing
     SS->>SS: Remove scaffold/tools, reinstall shaft cover & secure locks
     SS->>SS: Upload mandatory declaration + photo confirming shaft closed
     SS->>SYS: surrenderPermit()
@@ -1982,16 +2112,24 @@ PTW-006 Electrical Work enforces an exclusive Permittee architecture for the **A
 ```mermaid
 sequenceDiagram
     autonumber
-    actor EL as Permittee Electrician (Exclusive Permittee)
-    actor SE as Site Engineer (Site Technical Ack)
-    actor PM as P&M Engineer (Plant & Machinery Ack)
-    actor QE as Quality Engineer (Megohm & Quality Clearance)
-    actor MEP as MEP / P&M Engineer (Domain Clearance)
-    actor TI as Tower Incharge (Section Head)
-    actor EHS as EHS Safety (Manager / Officer)
-    participant SYS as Core Engine
+    box "Permittee Specialist Swimlane"
+        actor EL as "Permittee Electrician (Exclusive Permittee)"
+    end
+    box "Field & Quality Verification Swimlane"
+        actor SE as "Site Engineer (Site Technical Ack)"
+        actor PM as "P&M Engineer (Plant & Machinery Ack)"
+        actor QE as "Quality Engineer (Megohm & Quality Clearance)"
+    end
+    box "Approving Authorities Swimlane"
+        actor MEP as "MEP / P&M Engineer (Domain Clearance)"
+        actor TI as "Tower Incharge (Section Head)"
+        actor EHS as "EHS Safety (Manager / Officer)"
+    end
+    box "Core Engine"
+        participant SYS as "Core Engine"
+    end
 
-    Note over EL,SYS: PHASE 1: Form Initiation, Apparatus Tagging & LOTO Verification
+    Note over EL,SYS: PHASE 1: Form Initiation, Apparatus Tagging and LOTO Verification
     EL->>EL: Select Facility Scope: Batching Plant (Manual Locked) or Site (Flexible Mode)
     EL->>EL: Input Reason for Shutdown + Select Electrical Apparatus (Transformer/RMU/Panels)
     EL->>EL: Record Mandatory LOTO Register Sl. No. and Lock Placement Timestamp
@@ -2000,7 +2138,7 @@ sequenceDiagram
 
     alt Topology A: Batching Plant Flow
         SYS->>SYS: Route to Status: Pending P&M Acknowledgment
-        Note over PM,SYS: PHASE 2A: Plant & Machinery Statutory Acknowledgment
+        Note over PM,SYS: PHASE 2A: Plant and Machinery Statutory Acknowledgment
         PM->>SYS: acknowledgePmEngineer() with LOTO confirmation & Statutory Declaration
         SYS->>SYS: Status: Pending Quality Engineer Approval
         
@@ -2051,7 +2189,7 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Extended)
     end
 
-    Note over EL,SYS: TERMINAL PHASE: Completion & Statutory De-Isolation Surrender
+    Note over EL,SYS: TERMINAL PHASE: Completion and Statutory De-Isolation Surrender
     EL->>EL: Remove personal padlocks, remove earths, inspect panels clear
     EL->>EL: Check Mandatory Electrical De-Isolation & Restoration Declaration
     EL->>SYS: closeAndSurrenderPermit(electricalClosureConfirmed: true, photo, GPS, DPDP Sig)
@@ -2066,12 +2204,21 @@ PTW-007 enforces a statutory safety approval pipeline with **exclusive Permittee
 
 ```mermaid
 sequenceDiagram
-    actor BIC as Blasting / Drilling In-charge (Exclusive Permittee)
-    actor SE as Site Engineer (Acknowledgment Only)
-    actor EHS as EHS Manager/Officer (Final Endorsement)
-    participant SYS as System Engine
+    autonumber
+    box "Specialist Permittee Swimlane"
+        actor BIC as "Blasting / Drilling In-charge (Exclusive Permittee)"
+    end
+    box "Field Verification Swimlane"
+        actor SE as "Site Engineer (Acknowledgment Only)"
+    end
+    box "Statutory EHS Endorsement Swimlane"
+        actor EHS as "EHS Manager/Officer (Final Endorsement)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over BIC,SYS: STEP 1 — Form Initiation (Manual Location Locked)
+    Note over BIC,SYS: STEP 1 - Form Initiation (Manual Location Locked)
     BIC->>BIC: Select Manual Location Mode (Tower & Basement strictly locked with safety tooltips)
     alt Blasting Operation Selected
         BIC->>BIC: Enter Charge (kg), Diameter, Depth, Holes & Explosive Type (9 PESO Types)
@@ -2089,7 +2236,7 @@ sequenceDiagram
         SYS->>SE: Alert: Site Engineer technical acknowledgment required
     end
 
-    Note over SE,SYS: STEP 2 — Site Engineer Acknowledgment
+    Note over SE,SYS: STEP 2 - Site Engineer Acknowledgment
     SE->>SE: Verify physical perimeter barricades, siren positions & sentry postings
     Note over SE: Governance Rule: Site Engineer CANNOT cancel permits (Approve/Reject only)
     alt Approve & Forward
@@ -2101,7 +2248,7 @@ sequenceDiagram
         SE->>SYS: rejectSiteEngineer() [Returns to Blasting In-charge for correction]
     end
 
-    Note over EHS,SYS: STEP 3 — EHS Final Endorsement (First-Wins Gate)
+    Note over EHS,SYS: STEP 3 - EHS Final Endorsement (First-Wins Gate)
     EHS->>EHS: Verify weather conditions, blast timing (before 18:30 IST) & PPE
     alt Endorse & Activate
         EHS->>SYS: approvePermitStage()
@@ -2113,7 +2260,7 @@ sequenceDiagram
         EHS->>SYS: cancelPermit() [Terminal stop-work directive, Audit PDF generated]
     end
 
-    Note over BIC,SYS: STEP 4 — Closure & Mandatory Post-Blast Clearance
+    Note over BIC,SYS: STEP 4 - Closure and Mandatory Post-Blast Clearance
     alt Blasting Operation Surrender
         BIC->>BIC: Certified Shot Firer sweeps blast floor: zero unexploded charges or misfires
         BIC->>BIC: Check mandatory Post-Blast Clearance & Misfire Declaration checkbox
@@ -2139,27 +2286,33 @@ PTW-008 General Work follows a strict 4-stage statutory governance spine: Permit
 ```mermaid
 sequenceDiagram
     autonumber
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Ack)
-    actor TI as Tower Incharge (Section Head)
-    actor EHS as EHS Safety (Mgr / Officer)
-    participant SYS as Core Engine
+    box "Site Operations Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+        actor SE as "Site Engineer (Ack)"
+    end
+    box "Approving Authorities Swimlane"
+        actor TI as "Tower Incharge (Section Head)"
+        actor EHS as "EHS Safety (Mgr / Officer)"
+    end
+    box "Core Engine"
+        participant SYS as "Core Engine"
+    end
 
-    Note over SS,SYS: PHASE 1: Form Creation & Statutory Category Checklist
+    Note over SS,SYS: PHASE 1: Form Creation and Statutory Category Checklist
     SS->>SYS: Select Work Description (1 of 14 options across Cat A, B, C, D)
     SYS->>SYS: Bind dynamic checklist (21, 15, 20, or 11 items) + wind warning (under 45 km/h)
-    SS->>SYS: Complete 100% checklist + Attach overview photo + GPS + DPDP Sig
+    SS->>SYS: Complete 100 percent checklist + Attach overview photo + GPS + DPDP Sig
     SS->>SYS: submitPermit() [Status: Pending Site Engineer Acknowledgment]
 
     Note over SE,SYS: PHASE 2: On-Site Engineering Physical Verification
     SE->>SYS: acknowledgeSiteEngineer() with physical site verification
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
 
-    Note over TI,SYS: PHASE 3: Tower Incharge Review & Endorsement
+    Note over TI,SYS: PHASE 3: Tower Incharge Review and Endorsement
     TI->>SYS: approvePermit() as Section Head
     SYS->>SYS: Status: Pending EHS Approval
 
-    Note over EHS,SYS: PHASE 4: Final Safety Endorsement & Activation
+    Note over EHS,SYS: PHASE 4: Final Safety Endorsement and Activation
     EHS->>SYS: approvePermit() as EHS Manager / Officer
     SYS->>SYS: Status: Active (Work Front Operational)
 
@@ -2180,7 +2333,7 @@ sequenceDiagram
         EHS->>SYS: approveExtensionStage(EHS) [Status: Active - Extended]
     end
 
-    Note over SS,SYS: TERMINAL PHASE: Completion, Housekeeping & Surrender Gate
+    Note over SS,SYS: TERMINAL PHASE: Completion, Housekeeping and Surrender Gate
     SS->>SYS: Verify area clean, loose materials cleared, tools stacked
     SS->>SYS: closeAndSurrenderPermit(generalHousekeeping: true, restorationPhoto, GPS, DPDP Sig)
     SYS->>SYS: Status: Closed (Surrendered - Work Completed) [Statutory Form PTW-008 PDF Unlocked]
@@ -2197,17 +2350,25 @@ Lifting operations implement a unified initiation architecture by the certified 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor LS as Lifting Supervisor (Permittee)
-    actor CO as Crane Operator (Digital Sig)
-    actor CR as Signaler / Rigger (Digital Sig)
-    actor SE as Site Engineer (Physical Ack)
-    actor PM as P&M Engineer (Plant & Rigging Clearance)
-    actor TI as Tower Incharge (Section Head)
-    actor PMgr as Project Manager (Critical Lifts Only)
-    actor EHS as EHS Safety (Manager / Officer)
-    participant SYS as Core Engine
+    box "Certified Lifting Crew Swimlane"
+        actor LS as "Lifting Supervisor (Permittee)"
+        actor CO as "Crane Operator (Digital Sig)"
+        actor CR as "Signaler / Rigger (Digital Sig)"
+    end
+    box "Technical Inspection Swimlane"
+        actor SE as "Site Engineer (Physical Ack)"
+        actor PM as "P&M Engineer (Plant & Rigging Clearance)"
+    end
+    box "Governance Authorities Swimlane"
+        actor TI as "Tower Incharge (Section Head)"
+        actor PMgr as "Project Manager (Critical Lifts Only)"
+        actor EHS as "EHS Safety (Manager / Officer)"
+    end
+    box "Core Engine"
+        participant SYS as "Core Engine"
+    end
 
-    Note over LS,SYS: PHASE 1: Pre-Location Signatures & Dynamic Classification
+    Note over LS,SYS: PHASE 1: Pre-Location Signatures and Dynamic Classification
     LS->>SYS: Select PTW-009 Lifting Operations (Single Unified Tile)
     SYS->>SYS: Location Mode Strictly LOCKED & DISABLED
     LS->>CO: Request Crane Fitness & Competency Declaration
@@ -2216,9 +2377,9 @@ sequenceDiagram
     CR->>SYS: Sign in Signaler/Rigger Modal (DPDP Consent + Digital Signature)
     SYS->>SYS: Unlock Location Mode (Tower / Basement / Manual)
     LS->>SYS: Enter Rigging Specs, Load Weight, Crane Specs, Sling Geometry (L, H)
-    SYS->>SYS: Calculate Sling Tension & Stress % (with N=2 Safety Clamping)
+    SYS->>SYS: Calculate Sling Tension and Stress percentage (with N=2 Safety Clamping)
     LS->>SYS: Complete 14 Statutory Checklist Items + Special Precautions
-    SYS->>SYS: Evaluate Auto-Promotion (Weight > 5 MT, Tandem, Stress > 80%, or 14 Risk Criteria)
+    SYS->>SYS: Evaluate Auto-Promotion (Weight greater than 5 MT, Tandem, Stress over 80 percent, or 14 Risk Criteria)
     alt Routine Lifting Operation (PTW-009A)
         LS->>SYS: submitPermit(LIFTING) [Status: Pending Site Engineer Acknowledgment]
     else Critical Lift Plan (PTW-009B)
@@ -2230,7 +2391,7 @@ sequenceDiagram
     SE->>SYS: acknowledgeSiteEngineer() with ground compaction & barricade check
     SYS->>SYS: Status: Pending P&M Acknowledgment
 
-    Note over PM,SYS: PHASE 3: Plant & Machinery Technical Clearance
+    Note over PM,SYS: PHASE 3: Plant and Machinery Technical Clearance
     PM->>SYS: approvePermitStage(PM) with Crane Fitness & TPI Tackle Clearance
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
 
@@ -2245,7 +2406,7 @@ sequenceDiagram
         SYS->>SYS: Status: Pending EHS Approval
     end
 
-    Note over EHS,SYS: FINAL PHASE: EHS Statutory Endorsement & Activation
+    Note over EHS,SYS: FINAL PHASE: EHS Statutory Endorsement and Activation
     EHS->>SYS: approvePermitStage(EHS) [First-Wins Gate: Manager or Officer]
     SYS->>SYS: Status: Active (Lifting Operations Authorized)
 
@@ -2266,8 +2427,8 @@ sequenceDiagram
         SYS->>SYS: Status: Active (Extended)
     end
 
-    Note over LS,SYS: TERMINAL PHASE: Completion & Mandatory Demobilization Gate
-    LS->>LS: Crane boomed down & parked; lifting gear de-rigged; barricades cleared
+    Note over LS,SYS: TERMINAL PHASE: Completion and Mandatory Demobilization Gate
+    LS->>LS: Crane boomed down and parked; lifting gear de-rigged; barricades cleared
     LS->>LS: Confirm Mandatory Demobilization & Safety Declaration (Form PTW-009A/B)
     LS->>SYS: closeAndSurrenderPermit(liftingDemobConfirmed: true, restorationPhoto, GPS, DPDP Sig)
     SYS->>SYS: Status: Closed (Surrendered - Work Completed) [Statutory Form PTW-009A/B PDF Unlocked]
@@ -2275,16 +2436,90 @@ sequenceDiagram
 
 ---
 
-### 8.10 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
+
+---
+
+### 8.10 PTW-010 Night Shift / Holiday Work: Dual-Phase Handover & 6-Signatory Governance
+
+PTW-010 implements a specialized **Dual-Phase (Day-to-Night) Handover Architecture** with an 8:30 PM (20:30 IST) handover gate, mandatory dual site photos (Illumination + Activity Setup), 21:00 IST cutoff auto-cancel engine, P&M night inspection, and isolated EHS rejection:
+
+```mermaid
+sequenceDiagram
+    autonumber
+    box "Day Phase Swimlane (5:00 PM - 6:30 PM IST)"
+        actor SSD as "Site Supervisor (Day Permittee)"
+        actor SE as "Site Engineer (Day Verification)"
+        actor TI as "Tower Incharge (Section Head)"
+    end
+    box "Night Handover & Verification Swimlane (8:30 PM IST)"
+        actor SSN as "Night Site Supervisor (Night Permittee)"
+        actor PM as "P&M Engineer (Night Inspection)"
+    end
+    box "Statutory Safety Swimlane"
+        actor EHS as "EHS Safety (Manager / Officer)"
+    end
+    box "Core System Store & Engine"
+        participant SYS as "System Store (PERMITS)"
+    end
+
+    Note over SSD,SYS: PHASE 1: Day Initiation and Daytime Approvals (5:00 PM - 6:30 PM)
+    SSD->>SSD: Fill Form PTW-010 + Select Description + Check 13 Checklist Points
+    SSD->>SYS: submitPermit(NIGHTSHIFT) [Photo deferred to 8:30 PM handover]
+    SE->>SYS: acknowledgeSiteEngineer()
+    TI->>SYS: approvePermitStage(TI)
+    SYS->>SYS: Status: Night Shift Approved - Awaiting Linked Permit
+
+    Note over SSD,SYS: PHASE 1 STAGE 2: Linked Daytime Activity Permit Unlocked
+    SSD->>SYS: submitPermit(LINKED_ACTIVITY) [e.g. Hot Work, Electrical, Routine Lifting]
+    TI->>SYS: approvePermitStage(TI) for Linked Permit
+    SYS->>SYS: Both Permits advance to: Approved - Pending Night Handover
+
+    Note over SSN,SYS: PHASE 2: 8:30 PM (20:30 IST) Night Handover Gate
+    SSN->>SYS: openNightHandoverModal()
+    SYS->>SYS: Validate Qualification Gate (PM Authorized + Training within 365 Days)
+    SYS->>SYS: Enforce 21:00 IST Cutoff (No-show auto-cancels permits)
+    SSN->>SYS: Capture Dual Photos (Workplace Illumination + Linked Activity Setup)
+    SSN->>SYS: Digital Signature with DPDP Consent
+    SYS->>SYS: Status: Pending P&M Night Acknowledgment
+
+    Note over PM,SYS: STEP 5: PandM Night Shift Acknowledgment
+    PM->>PM: Verify minimum lux levels (over 150 lux general, 300 lux precision)
+    PM->>SYS: acknowledgeNightPm() with lighting confirmation
+    SYS->>SYS: Status: Pending EHS Approval
+
+    Note over EHS,SYS: STEP 6: EHS Safety Verification and Strict Rejection Routing
+    alt EHS Approves
+        EHS->>SYS: approvePermitStage(EHS)
+        SYS->>SYS: Both Night Shift & Linked Permits Activated (Status: Active)
+    else EHS Rejects
+        EHS->>SYS: rejectPermit()
+        SYS->>SYS: Status: Returned to Night Supervisor (Day Approvers NOT re-engaged)
+    end
+
+    Note over SSN,SYS: TERMINAL PHASE: Morning Surrender (Site Supervisor Strictly Blocked)
+    SSN->>SYS: openSurrenderFlow() exclusively as Night Site Supervisor
+    SSN->>SYS: Confirm Mandatory Illumination De-energization Declaration
+    SSN->>SYS: closeAndSurrenderPermit()
+    SYS->>SYS: Status: Closed (Surrendered) [Official 6-Signatory Report Generated]
+```
+
+### 8.11 Cross-Cutting Workflow: Rejection & Resubmission (Stale-Approval Invalidation)
 When an approver rejects a permit, only approvals whose fields changed are invalidated; approvals of unchanged sections persist.
 
 ```mermaid
 sequenceDiagram
-    actor Approver as Any Rejecting Approver
-    participant SYS as System Engine
-    actor SS as Site Supervisor
-    actor SE as Site Engineer
-    actor PreviousApprover as Unchanged Section Approver
+    autonumber
+    box "Approving Authority Swimlane"
+        actor Approver as "Any Rejecting Approver"
+        actor PreviousApprover as "Unchanged Section Approver"
+    end
+    box "Site Operations Swimlane"
+        actor SS as "Site Supervisor"
+        actor SE as "Site Engineer"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
     Approver->>SYS: rejectPermit() with reason
     SYS->>SYS: Status: Returned for Correction
@@ -2299,7 +2534,7 @@ sequenceDiagram
     SE->>SE: Verify corrections physically on-site
     SE->>SYS: acknowledgeSiteEngineer()
 
-    Note over SYS,Approver: Fast-Track Routing & Stale-Approval Bypass
+    Note over SYS,Approver: Fast-Track Routing and Stale-Approval Bypass
     SYS->>SYS: Evaluate modified fields vs previous approvals
     Note over PreviousApprover,SYS: Unchanged section approvals remain VALID (no re-approval required)
     SYS->>Approver: Fast-track route directly to rejecting authority
@@ -2307,16 +2542,23 @@ sequenceDiagram
 
 ---
 
-### 8.11 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
+### 8.12 Cross-Cutting Workflow: Safety Observation & Stop-Work Lifecycle
 EHS may intervene post-activation if an on-site deviation appears. While an observation is open, Extension and Closure are strictly blocked.
 
 ```mermaid
 sequenceDiagram
-    actor EHS as EHS Manager/Officer
-    participant SYS as System Engine
-    actor SS as Site Supervisor
-    actor SE as Site Engineer
-    actor TI as Tower Incharge
+    autonumber
+    box "EHS Safety Authority Swimlane"
+        actor EHS as "EHS Manager/Officer"
+    end
+    box "Site & Section Swimlane"
+        actor SS as "Site Supervisor"
+        actor SE as "Site Engineer"
+        actor TI as "Tower Incharge"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
     Note over EHS,TI: Observation Raised by EHS
     alt Minor Deviation (Reject + Comment)
@@ -2340,16 +2582,23 @@ sequenceDiagram
 
 ---
 
-### 8.12 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
+### 8.13 Cross-Cutting Workflow: Permit Extension Lifecycle (6:30 PM Cutoff & 8:30 PM Ceiling)
 Permit extension request must be initiated before 18:30 IST. Extensions are capped at a hard validity ceiling of 20:30 IST (for standard works/drilling/lifting) and 18:30 IST (sunset hard stop for blasting).
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor
-    participant SYS as System Engine
-    actor SE as Site Engineer
-    actor TI as Tower Incharge
-    actor EHS as EHS Manager/Officer
+    autonumber
+    box "Permittee Swimlane"
+        actor SS as "Site Supervisor"
+    end
+    box "Review & Approval Swimlane"
+        actor SE as "Site Engineer"
+        actor TI as "Tower Incharge"
+        actor EHS as "EHS Manager/Officer"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
     Note over SS,SYS: Extension Request (Before 18:30 IST)
     SS->>SYS: requestExtension(duration up to 120 min)
@@ -2372,7 +2621,7 @@ sequenceDiagram
 
 ---
 
-### 8.13 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
+### 8.14 Cross-Cutting Workflow: Work Completion, Housekeeping & Statutory Surrender Lifecycle (Closure Gate)
 
 In heavy construction operations, hazardous work permits cannot simply lapse or be abandoned upon shift completion. Uncontrolled cessation introduces severe catastrophic risks: unextinguished embers in hot work zones, unbarricaded excavation trenches overnight, open floor penetrations without edge protection, unsealed confined spaces with residual gas accumulation, open hoist shafts, suspended crane loads left untethered, or uninspected blast misfires.
 
@@ -2382,20 +2631,27 @@ Executing this flow requires physical site restoration verification, discipline-
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor / Specialist Permittee (Exclusive Closure Authority)
-    actor EHS as EHS Manager / Officer
-    participant SYS as System Engine
+    autonumber
+    box "Certified Permittee Swimlane"
+        actor SS as "Site Supervisor / Specialist Permittee (Exclusive Closure Authority)"
+    end
+    box "EHS Safety Swimlane"
+        actor EHS as "EHS Manager / Officer"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
-    Note over SS,SYS: PHASE 1 — Physical Restoration Verification & Surrender Form
+    Note over SS,SYS: PHASE 1 - Physical Restoration Verification and Surrender Form
     SS->>SYS: openSurrenderFlow(permitId)
     SYS->>SYS: Pre-condition Check: Status === 'Active'
     SYS->>SYS: Pre-condition Check: currentUser is Authorized Permittee for ptype
     SYS->>SYS: Pre-condition Check: No Open Observation (status !== 'Open')
     SYS-->>SS: Render Discipline-Specific Restoration Form
 
-    Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>- PTW-001: Trench backfilled OR shoring safely left in place, hard barricades verified<br/>- PTW-002: 1-Hour continuous cold watch completed, gas cylinders isolated and stowed<br/>- PTW-003: Guardrails 100% re-fixed and bolted, zero open edge exposure<br/>- PTW-004: All entrants evacuated and accounted for, gas testing cleared, manholes bolted<br/>- PTW-005: Shaft openings sealed, green scaffold tag endorsed, hoist power locked out<br/>- PTW-006: Statutory LOTO removal and lock de-isolation certified by Electrician<br/>- PTW-007: Post-blast clearance certified, zero misfires confirmed, excess cartridges returned<br/>- PTW-008: Housekeeping and site clearance certified, loose panels and tools cleared<br/>- PTW-009A/B: Crane boomed down & parked, lifting gear de-rigged, drop zone cleared, demobilization certified by Lifting Supervisor
+    Note over SS: Mandatory Physical Declarations (Discipline-Specific):<br/>- PTW-001: Trench backfilled OR shoring safely left in place, hard barricades verified<br/>- PTW-002: 1-Hour continuous cold watch completed, gas cylinders isolated and stowed<br/>- PTW-003: Guardrails 100 percent re-fixed and bolted, zero open edge exposure<br/>- PTW-004: All entrants evacuated and accounted for, gas testing cleared, manholes bolted<br/>- PTW-005: Shaft openings sealed, green scaffold tag endorsed, hoist power locked out<br/>- PTW-006: Statutory LOTO removal and lock de-isolation certified by Electrician<br/>- PTW-007: Post-blast clearance certified, zero misfires confirmed, excess cartridges returned<br/>- PTW-008: Housekeeping and site clearance certified, loose panels and tools cleared<br/>- PTW-009A/B: Crane boomed down and parked, lifting gear de-rigged, drop zone cleared, demobilization certified by Lifting Supervisor
 
-    Note over SS,SYS: PHASE 2 — On-Site Evidence, Geofence Tagging & Digital Signature
+    Note over SS,SYS: PHASE 2 - On-Site Evidence, Geofence Tagging and Digital Signature
     SS->>SS: Inspect physical work front: housekeeping, scrap clearance, barrier integrity
     SS->>SYS: captureSurrPhoto(restorationPhoto)
     SS->>SYS: captureSurrGPS() [Enforces Device Haversine Radius]
@@ -2403,8 +2659,8 @@ sequenceDiagram
     SS->>SYS: Sign on High-DPI Canvas Pad (drawDigitalSignature)
     SS->>SYS: Submit Surrender Form (closeAndSurrenderPermit)
 
-    Note over SYS,EHS: PHASE 3 — Terminal State Mutation & Statutory PDF Release
-    SYS->>SYS: Mutate Status -> 'Closed (Surrendered)'
+    Note over SYS,EHS: PHASE 3 - Terminal State Mutation and Statutory PDF Release
+    SYS->>SYS: Mutate Status to Closed (Surrendered)
     SYS->>SYS: Record Surrender Audit Stamp (Closed By, Timestamp IST, GPS, Signature)
     SYS->>SYS: Unlock Statutory PDF Generation with Complete Signatory Chain
     SYS->>EHS: Dispatch Notification: Permit Successfully Closed & Surrendered
@@ -2426,21 +2682,27 @@ sequenceDiagram
 
 ---
 
-### 8.14 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
+### 8.15 Cross-Cutting Workflow: 4-Step Permit Creation & Initiation Wizard Flow (`WIZ_STEPS`)
 
 All permits in the application are created using a standardized 4-step wizard interface (`WIZ_STEPS`), implementing strict sequential gating, in-line mathematical validation, interactive checklist feedback, and DPDP Act 2023 compliance.
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor SS as Site Supervisor (Permittee)
-    participant UI as Creation Wizard UI
-    participant VAL as Step Validator (validateWizStep)
-    participant GEO as GPS & Geofence Engine
-    participant SYS as Core System Store (PERMITS)
-    actor SE as Site Engineer
+    box "Permittee & Site Team Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+        actor SE as "Site Engineer"
+    end
+    box "Wizard UI & Validation Swimlane"
+        participant UI as "Creation Wizard UI"
+        participant VAL as "Step Validator (validateWizStep)"
+    end
+    box "Geofencing & System Store Swimlane"
+        participant GEO as "GPS & Geofence Engine"
+        participant SYS as "Core System Store (PERMITS)"
+    end
 
-    Note over SS,UI: STEP 1: General Information & Engineering Setup
+    Note over SS,UI: STEP 1: General Information and Engineering Setup
     SS->>UI: Select Project & Location Structure (Tower vs Basement/Podium vs Manual)
     UI->>VAL: Verify Project Configured Status
     alt Project GPS Not Configured (e.g. PRJ-ART)
@@ -2453,7 +2715,7 @@ sequenceDiagram
     UI->>VAL: validateWizStep(1)
     VAL-->>UI: Enable "Next: Safety Checklist" Button
 
-    Note over SS,UI: STEP 2: Interactive Statutory Safety Checklist & Site Photo Gate
+    Note over SS,UI: STEP 2: Interactive Statutory Safety Checklist and Site Photo Gate
     SS->>UI: Navigate to Step 2 (renderWizStep(2))
     UI->>UI: Dynamically render checklist items (12, 20, 9, 15, 10, 14, or dynamic items)
     loop For Every Inspection Item
@@ -2466,13 +2728,13 @@ sequenceDiagram
             UI-->>SS: Comment NOT required for N/A
         end
     end
-    UI->>VAL: Check if 100% checklist items complete (checklistItemComplete)
+    UI->>VAL: Check if 100 percent checklist items complete (checklistItemComplete)
     VAL-->>UI: Unlock Site Photo Option (Locked until checklist complete)
     SS->>UI: Capture Work-Area Site Photo (Mandatory gate before proceeding)
     UI->>VAL: validateWizStep(2) [all items complete + sitePhoto captured]
     VAL-->>UI: Enable "Next: Permit Validity" Button
 
-    Note over SS,UI: STEP 3: Working Hours & Validity Bounds Engine
+    Note over SS,UI: STEP 3: Working Hours and Validity Bounds Engine
     SS->>UI: Navigate to Step 3 (renderWizStep(3))
     SS->>UI: Select Planned Start Time (HH:MM IST)
     UI->>VAL: Check startTime between 08:30 and 18:30 IST & startTime in future
@@ -2481,7 +2743,7 @@ sequenceDiagram
     VAL->>UI: Calculate Duration (mins) = validTillTime - startTime
     UI-->>SS: Display Duration Strip & Enable "Next: Review & Submit"
 
-    Note over SS,UI: STEP 4: Review, DPDP Act 2023 Consent & Digital Signature
+    Note over SS,UI: STEP 4: Review, DPDP Act 2023 Consent and Digital Signature
     SS->>UI: Navigate to Step 4 (renderWizStep(4))
     UI->>UI: Render full summary of inputs, coordinates, checklist & photos
     SS->>UI: Enter Signer Full Name ("R. K. Patel")
@@ -2490,7 +2752,7 @@ sequenceDiagram
     UI->>VAL: validateWizStep(4) [signerVerified && signature.dataUrl]
     VAL-->>UI: Enable "Submit Permit for Acknowledgment" Button
 
-    Note over SS,SYS: FINAL SUBMISSION & MANDATORY GPS CAPTURE
+    Note over SS,SYS: FINAL SUBMISSION and MANDATORY GPS CAPTURE
     SS->>UI: Click "Submit Permit"
     UI->>GEO: Prompt openGPSModal() (GPS captured ONLY on final submit)
     SS->>GEO: Capture Device GPS Location
@@ -2522,19 +2784,25 @@ sequenceDiagram
 
 ---
 
-### 8.15 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
+### 8.16 Cross-Cutting Workflow: Administrative Site Geofencing & Worksite Radar Calibration Flow (`view-admin-config`)
 
 The system enforces physical spatial boundaries to prevent off-site fraudulent approvals. Worksite boundaries are managed exclusively by the **Administrator** role through the interactive **Administrative Configuration & Geofence Radar View** (`view-admin-config`).
 
 ```mermaid
 sequenceDiagram
     autonumber
-    actor ADM as System Administrator
-    participant UI as Admin Config View
-    participant RAD as HTML5 Canvas Radar (drawGeofenceRadar)
-    participant GPS as Device GPS / Geolocation API
-    participant DB as Master Projects Registry (PROJECTS)
-    participant APP as General System (Permit Wizard)
+    box "Administrator Swimlane"
+        actor ADM as "System Administrator"
+    end
+    box "Admin UI & Radar Swimlane"
+        participant UI as "Admin Config View"
+        participant RAD as "HTML5 Canvas Radar (drawGeofenceRadar)"
+    end
+    box "System Geolocation & Registries Swimlane"
+        participant GPS as "Device GPS / Geolocation API"
+        participant DB as "Master Projects Registry (PROJECTS)"
+        participant APP as "General System (Permit Wizard)"
+    end
 
     ADM->>UI: Switch Role to Administrator (doLogin('admin'))
     ADM->>UI: Navigate to Admin Config View (goTo('admin-config'))
@@ -2558,7 +2826,7 @@ sequenceDiagram
         UI->>UI: Apply high-precision jittered site coordinates
     end
 
-    Note over ADM,RAD: Interactive Geofence Tuning & Radar Rendering
+    Note over ADM,RAD: Interactive Geofence Tuning and Radar Rendering
     ADM->>UI: Adjust Radius Slider (or click Preset Pill: 50m, 100m, 150m, 200m, 500m)
     UI->>RAD: Trigger drawGeofenceRadar()
     RAD->>RAD: Clear canvas & render 4 concentric range rings (30, 60, 90, 120px)
@@ -2568,7 +2836,7 @@ sequenceDiagram
     RAD->>RAD: Render simulated field personnel markers (green within / red outside)
     RAD->>RAD: Display telemetry: "Worksite Pin · Xm Geofence"
 
-    Note over ADM,DB: Configuration Persistence & Form Unlocking
+    Note over ADM,DB: Configuration Persistence and Form Unlocking
     ADM->>UI: Click "Save & Activate Geofence"
     UI->>UI: Open Confirmation Modal (openSaveGeofenceModal)
     ADM->>UI: Confirm Save
@@ -2595,7 +2863,7 @@ The canvas radar is drawn on `<canvas id="geofenceRadarCanvas" width="300" heigh
 
 ---
 
-### 8.16 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
+### 8.17 Cross-Cutting Architecture: Application-Wide Deterministic Navigation & Consistency Engine
 
 To ensure an enterprise-grade, deterministic user experience free of unpredictable UI jumps, scroll shaking, or orphaned modals, the application implements a dedicated **7-Layer Deterministic Navigation Architecture** across all screens, forms, dialogs, and workflows.
 
@@ -2711,7 +2979,7 @@ graph TD
     end
 
     subgraph "Surrender Reminder Loop"
-        O["Permit Status: Expired or Surrender-Pending"] --> P{"tickCount % 6 === 0 (Every 30 seconds)?"}
+        O["Permit Status: Expired or Surrender-Pending"] --> P{"tickCount modulo 6 equals 0 (Every 30 seconds)?"}
         P -->|Yes| Q["Recurring Surrender Reminder<br/>Alert Site Supervisor to complete physical handback"]
     end
 ```
@@ -2977,11 +3245,18 @@ function extensionCapMinutes(p) {
 
 ```mermaid
 sequenceDiagram
-    actor SS as Site Supervisor (Permittee)
-    actor SE as Site Engineer (Verification)
-    actor TI as Tower Incharge (Review)
-    actor EHS as EHS Manager / Officer (Endorsement)
-    participant SYS as System Engine
+    autonumber
+    box "Permittee Swimlane"
+        actor SS as "Site Supervisor (Permittee)"
+    end
+    box "Reviewers Swimlane"
+        actor SE as "Site Engineer (Verification)"
+        actor TI as "Tower Incharge (Review)"
+        actor EHS as "EHS Manager / Officer (Endorsement)"
+    end
+    box "System Engine"
+        participant SYS as "System Engine"
+    end
 
     Note over SS,SYS: Extension Request Initiation
     SS->>SYS: openExtensionRequestModal()
@@ -2993,19 +3268,19 @@ sequenceDiagram
     SYS->>SYS: Status: Pending Extension - Engineer Ack
     SYS->>SE: Notification: Extension request awaiting physical check
 
-    Note over SE,SYS: Stage 1 — Site Engineer Physical Re-Acknowledgment
+    Note over SE,SYS: Stage 1 - Site Engineer Physical Re-Acknowledgment
     SE->>SE: Inspect work area: artificial lighting, worker fatigue, ambient safety
     SE->>SYS: approveExtensionStage(permitId, 'site-engineer')
     SYS->>SYS: Status: Pending Extension - Section Head
     SYS->>TI: Notification: Extension awaiting Tower Incharge review
 
-    Note over TI,SYS: Stage 2 — Tower Incharge Review
+    Note over TI,SYS: Stage 2 - Tower Incharge Review
     TI->>TI: Verify contractor evening deployment & coordination
     TI->>SYS: approveExtensionStage(permitId, 'hw-section-head')
     SYS->>SYS: Status: Pending Extension - EHS
     SYS->>EHS: Notification: Extension awaiting final EHS sign-off
 
-    Note over EHS,SYS: Stage 3 — Final EHS Endorsement (First-Wins Gate)
+    Note over EHS,SYS: Stage 3 - Final EHS Endorsement (First-Wins Gate)
     EHS->>SYS: approveExtensionStage(permitId, 'ehs-manager')
     SYS->>SYS: Update p.validTill = oldTill + requestedMinutes
     SYS->>SYS: Set ext.status = 'approved', p.status = 'Active'
@@ -3685,12 +3960,12 @@ The application's visual architecture is powered by a comprehensive, design-toke
 
 ## 22. Testing & Quality Assurance
 
-The system is validated by an autonomous, zero-dependency Node.js test suite comprising **600+ automated test assertions with a 100% pass rate across 21 specialized master test suites**.
+The system is validated by an autonomous, zero-dependency Node.js test suite comprising **850+ automated test assertions with a 100% pass rate across 23 specialized master test suites**.
 
 ### 22.1 Test Suite Execution
 
 ```bash
-# Execute master test suite (runs all 21 suites sequentially)
+# Execute master test suite (runs all 23 suites sequentially)
 npm test
 # OR
 node tests/run_all_tests.js
@@ -3700,7 +3975,7 @@ node tests/run_all_tests.js
 
 ```
 tests/
-├── run_all_tests.js                     # Master Runner: orchestrates all 21 test suites sequentially
+├── run_all_tests.js                     # Master Runner: orchestrates all 23 test suites sequentially
 ├── run_full_test_suite.js               # Suite 1: Base Lifecycle, Core Approvals & Parallel Gates (185 tests)
 ├── run_extended_audit_tests.js          # Suite 2: Extended Audit, Notifications, Escalation & Filters (77 tests)
 ├── test_tracker_labels.js               # Suite 3: UI & PDF Section Head Dynamic Label Resolution Tests
@@ -3721,7 +3996,9 @@ tests/
 ├── test_pt08_general_work.js            # Suite 18: PTW-008 General Work Specification & Compliance (14 Sections)
 ├── test_audit_remediation_security.js   # Suite 19: Forensic Audit Remediation, Security & Runtime Robustness (7 Sections)
 ├── test_dynamic_config_architecture.js  # Suite 20: Dynamic & Configuration-Driven Enterprise Architecture (9 Sections)
-└── test_pt09_lifting_operations.js      # Suite 21: PTW-009 Lifting Operations & Critical Lift Plan (PTW-009A/B) (14 Sections)
+├── test_pt09_lifting_operations.js      # Suite 21: PTW-009 Lifting Operations & Critical Lift Plan (PTW-009A/B) (14 Sections)
+├── test_draft_and_pt09_subtables.js     # Suite 22: Draft Resumption, Sub-Table Scroll Fix & Part A/B Checkboxes (6 Sections)
+└── test_pt10_night_shift.js             # Suite 23: PTW-010 Night Shift / Holiday Work & Dual-Phase Handover (12 Sections)
 ```
 
 #### Suite 1: Base Lifecycle & Core Engines (185 Assertions)
@@ -4026,9 +4303,15 @@ MASTER TEST SUITE EXECUTION SUMMARY (ALL 21 SUITES)
 >>> SUITE 21: PTW-009 LIFTING OPERATIONS & CRITICAL LIFT PLAN (PTW-009A/B) (test_pt09_lifting_operations.js)
   All 14 statutory sections, single unified tile, pre-location gate, N=2 clamping & PM review passed cleanly
 
+>>> SUITE 22: DRAFT RESUMPTION, SUB-TABLE SCROLL FIX & PART A/B CHECKBOXES (test_draft_and_pt09_subtables.js)
+  All 6 sections, Part A/B interactive checkboxes, in-place toggles, bi-directional auto-promotion & universal draft resumption passed cleanly
+
+>>> SUITE 23: PTW-010 NIGHT SHIFT / HOLIDAY WORK & DUAL-PHASE HANDOVER (test_pt10_night_shift.js)
+  All 12 statutory sections, dual-phase day/night handover, qualification gating, 21:00 cutoff engine, strict prohibitions, isolated EHS rejection & 6-signatory flow passed cleanly
+
 ================================================================
-GRAND TOTAL: ALL 21 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
-ALL 9 PERMIT WORK TYPES (PTW-001 TO PTW-009A/B) FULLY VALIDATED
+GRAND TOTAL: ALL 23 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
+ALL 10 PERMIT WORK TYPES (PTW-001 TO PTW-010) FULLY VALIDATED
 ================================================================
 Zero Regressions · Full Statutory Coverage · Dedicated Suite per Permit Type · 100% Deterministic · Production Ready
 ```
@@ -4059,9 +4342,97 @@ Zero Regressions · Full Statutory Coverage · Dedicated Suite per Permit Type �
 | **Stale-Approval Rule** | Governance logic ensuring that when a rejected permit is revised, only modified sections are reset while valid clearances persist. |
 | **SLA** | **Service Level Agreement**: Defined operational time limits before an unacted pending approval triggers automated escalation. |
 
+## 24. Weekend Operations Governance & Sunday Work Tile Architecture
+
+To prevent unvetted weekend operations, mitigate uncoordinated site hazards, and maintain rigorous EHS oversight across multi-contractor mega-construction projects, ARPL enforces a strict **Weekend Operations Governance Protocol** driven by a dedicated **Sunday Work (SUN) Tile** and an automated **Zero Permit-Raising Lockout on Sunday**.
+
+```mermaid
+graph TD
+    subgraph Saturday ["Saturday: Advance Preparation Window"]
+        A["Dashboard: Side-by-Side Operational Tiles"] --> B["Standard PTW Tile<br/>All 10 Permits Available"]
+        A --> C["Sunday Work SUN Tile<br/>PTW-001 through PTW-009 Available"]
+        C -. "Hard Exclusion" .-> D["Night Shift PTW-010 Excluded"]
+        C --> E["Advance Form Preparation and Statutory Approvals"]
+        E --> F["Permit Tagged: sundayWork=true, originTile=SUN"]
+    end
+
+    subgraph Sunday ["Sunday: Execution and Zero-Creation Lockout"]
+        G["Sunday Zero-Creation Lockout Engine"]
+        G --> H["Standard PTW Tile: LOCKED"]
+        G --> I["Sunday SUN Tile: CLOSED"]
+        G --> J["Route Navigation Guards Block All Creation Views"]
+        K["Pre-Authorized Sunday Permits Active"] --> L["Site Work Execution under Safe Window"]
+        L --> M["Permit Closure and Surrender Permitted as per Valid Time"]
+        M --> N["Site Restoration, Gas Check, DPDP Digital Sign"]
+        N --> O["Official Permit Report PDF with Sunday Audit Trail"]
+    end
+```
+
+### 24.1 Architectural Overview & Core Governance Philosophy
+In standard high-risk construction environments, Sunday operations present acute EHS vulnerability: reduced supervisory presence, skeletal subcontractor staffing, and absent administrative checks often lead to informal, unvetted work.
+ARPL's architecture eliminates this hazard through a **two-phase weekend control loop**:
+1. **Advance Saturday Preparation**: All Sunday high-risk operations must be fully planned, risk-assessed, and vetted by all discipline heads on **Saturday**.
+2. **Strict Sunday Zero-Creation Lockout**: No permits may be initiated, created, or drafted on Sunday. System-wide guards lock permit creation across all tiles and navigation paths.
+3. **Authorized Sunday Execution & Closure**: Pre-authorized permits run within their certified time windows and **can be closed and surrendered on Sunday** once work is complete, certifying site safety and demobilization.
+
+### 24.2 Dual-Tile Dashboard: PTW vs Sunday Work Tile
+On the main dashboard, Saturday introduces a dedicated, high-visibility operational tile adjacent to the standard Permit-to-Work (PTW) tile:
+- **PTW (Permit-to-Work) Tile**: The primary operational surface active Monday through Saturday, providing initiation access to all 10 permit modules (including Night Shift PTW-010).
+- **SUN (Sunday Work) Tile**: A specialized advance preparation surface active **exclusively on Saturday (IST)**. It consolidates initiation access to the 9 standard daylight permit modules (PTW-001 to PTW-009) specifically destined for Sunday execution.
+
+### 24.3 IST Calendar-Driven Activation Engine
+Tile visibility, operational mode, and lockout enforcement are driven by the project's atomic clock adhering to Indian Standard Time (IST, $\text{UTC}+05:30$):
+- **Monday to Friday**: Standard PTW tile is active. Sunday Work tile is dormant.
+- **Saturday (Preparation Surface Active)**: Both Standard PTW and Sunday Work tiles are active side-by-side. Permittees can pre-authorize Sunday operations.
+- **Sunday (Zero-Creation Lockout Active)**: All permit-raising tiles and buttons are dynamically locked with high-visibility lockout indicators. Permittees cannot raise permits. Permittees and approvers can view, audit, execute, and close pre-authorized permits.
+
+To facilitate compliance audits, training demonstrations, and offline verification, the top navigation bar includes an **Interactive Day Simulator** allowing instant switching between Live IST, Saturday (Preparation Mode), Sunday (Lockout Mode), and Monday (Standard Operations).
+
+### 24.4 Hard Exclusion of Night Shift Work (PTW-010)
+Under ARPL corporate safety policy §3 and requirements NW-01, NW-02, NW-03, **Night Shift / Holiday Work (PTW-010) is strictly barred from the Sunday Work tile**. Night Shift possesses an independent, specialized dual-phase daytime approval and 8:30 PM handover protocol requiring linked daytime permits, and must not be initiated through advance Sunday batching.
+
+The exclusion is enforced through **3 independent architectural layers**:
+1. **Catalog Filter (Presentation Layer)**: PTW-010 is excluded from the Sunday Work catalog modal. The UI displays an explicit statutory reminder: *"Night Shift Work (PTW-010) is excluded from this tile and must be initiated through the standard PTW flow."*
+2. **Selection Guard (Controller Layer)**: Invoking `selectPermitType('nightshift')` while in Sunday Work context immediately intercepts execution, shows a warning toast, and blocks initiation.
+3. **Wizard Engine Guard (Application Layer)**: `startNewPermit('nightshift')` validates `sundayWorkContext` against `APP_CONFIG.sundayWork.blockedPermitTypes`. Any attempt to force initiation fails deterministically.
+
+### 24.5 Sunday Zero-Creation Lockout Engine (System-Wide)
+On Sunday, zero permit creation is enforced without exception across the entire application surface:
+- **Dashboard Tiles**: Hero creation tiles render with locked styling (lock icons, reduced opacity, and amber lockout badges). Clicking triggers the **Sunday Zero-Creation Lockout Modal**.
+- **Navigation Sidebar**: The "Create Permit" navigation item dynamically switches to "Create (Locked)" with a lock icon.
+- **Route Navigation Guards (`goTo(view)`)**: Direct URL hash navigation or programmatic calls to `goTo('ptype')` or `goTo('create')` are intercepted by the route guard, triggering a warning toast, popping the lockout modal, and safely redirecting the user back to the dashboard.
+- **Wizard Initiation API (`startNewPermit(ptype)`)**: Enforces `isPermitRaisingAllowedToday()`. Returns `false` immediately if invoked on Sunday.
+
+### 24.6 Sunday Permit Execution & Closure Governance
+While permit *creation* is strictly prohibited on Sunday, **permit execution, safety surveillance, and formal permit closure are fully authorized**:
+- **Execution Within Valid Time Window**: Work proceeds under the terms approved on Saturday.
+- **Statutory Closure on Sunday**: Once work concludes and within the permit's scheduled valid hours, the certified Permittee (Site Supervisor, Electrician, Blasting In-charge, or Lifting Supervisor) accesses the permit and completes the single-step closure & surrender flow.
+- **Mandatory Safety Confirmations**: Housekeeping, 1-hour fire watch verification (Hot Work), guardrail re-fixing (PTW-003), confined space atmospheric clearance (PTW-004), or electrical lockouts surrender (PTW-006) are validated alongside live GPS coordinates and DPDP digital signatures.
+- **Sunday Closure Audit Logging**: Permit closure logs record an explicit audit tag: `[Sunday Closure Authorized as per Valid Time Window]`, setting `p.closure.closedOnSunday = true` and `p.surrender.closedOnSunday = true`.
+
+### 24.7 Permit Data Origin Tracking, Register Filtering & SUN Badge
+Every permit initiated via the Sunday Work tile is stamped with enterprise origin metadata:
+- `p.sundayWork = true`
+- `p.originTile = 'SUN'`
+
+In the **Permit Register**:
+- A dedicated filter option `☀️ Sunday Work Permits (Pre-authorized)` in the Type filter dropdown isolates all Sunday operations across any permit category.
+- Sunday Work records display a prominent amber badge (`<span class="badge"><i class="fa-solid fa-sun"></i> SUN</span>`) next to the permit ID for instantaneous visual distinction during site safety walks.
+
+### 24.8 Cross-Cutting Controls (RBAC, Notifications, Retention, PDF Audit)
+- **Role-Based Access Control (RBAC)**: Initiator role boundaries (e.g. Electricians restricted to PTW-006, Lifting Supervisors to PTW-009A/B) apply uniformly within the Sunday Work tile.
+- **Stakeholder Notifications**: Closing a Sunday permit fires real-time notifications to all domain stakeholders noting that Sunday closure was authorized as per valid time.
+- **Official PDF Report Audit Trail**: Official jsPDF permit reports include a dedicated *"Permit Surface: Sunday Work Surface (Pre-authorized Saturday)"* entry and record the exact Sunday closure timestamp in Section 1 (Permit Master Data).
+
+### 24.9 Smooth Scrolling & Navigation Engineering
+To ensure optimal fluid navigation across large landing pages, long statutory checklists, and multi-tier approval logs:
+- CSS rules enforce native `scroll-behavior: smooth` on `html` and root containers.
+- Sub-table containers, modal dialogs, and sidebar views utilize `-webkit-overflow-scrolling: touch` with clean customized scrollbar aesthetics.
+- An intelligent smooth-scroll link handler intercepts all internal hash anchors (`a[href^="#"]`), providing hardware-accelerated animated scrolling with offset compensation.
+
 ---
 
-## 24. Authors & Engineering Team
+## 25. Authors & Engineering Team
 
 Developed and engineered by:
 * **Mohith**
