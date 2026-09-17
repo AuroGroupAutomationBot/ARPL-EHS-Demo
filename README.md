@@ -40,9 +40,14 @@
      - 5.2.5 [PTW-005 Shaft Work](#525-ptw-005-shaft-work-5-stages---sequential-spine-with-mep-clearance)
      - 5.2.6 [PTW-006 Electrical Work](#526-ptw-006-electrical-work-htlt-dual-topology-batching-plant-4-stage--site-5-stage)
      - 5.2.7 [PTW-007 Drilling & Blasting](#527-ptw-007-drilling--blasting-3-stages---direct-statutory-spine-to-ehs)
-     - 5.2.8 [PTW-008 General Work](#528-ptw-008-general-work-4-stages---multi-tier-dyna      - 5.2.9 [PTW-009A Routine Lifting Operations](#529-ptw-009a-routine-lifting-operations-5-stages---technical-pm-clearance-spine)
-      - 5.2.10 [PTW-009B Critical Lift Plan](#5210-ptw-009b-critical-lift-plan--non-routine-lift-6-stages---project-manager-executive-review-spine)
-      - 5.2.11 [PTW-010 Night Shift / Holiday Work](#5211-ptw-010-night-shift--holiday-work-dual-phase-handover-governance)
+     - 5.2.8 [PTW-008 General Work](#528-ptw-008-general-work-4-stages---multi-tier-dynamic-safety-spine)
+     - 5.2.9 [PTW-009A Routine Lifting Operations](#529-ptw-009a-routine-lifting-operations-5-stages---technical-pm-clearance-spine)
+     - 5.2.10 [PTW-009B Critical Lift Plan](#5210-ptw-009b-critical-lift-plan--non-routine-lift-6-stages---project-manager-executive-review-spine)
+     - 5.2.11 [PTW-010 Night Shift / Holiday Work (Dual-Phase Handover Governance)](#5211-ptw-010-night-shift--holiday-work-dual-phase-handover-governance)
+       - 5.2.11.1 [Phase 1: Stage 1 Daytime Approval Spine](#52111-phase-1-day-phase-stage-1-daytime-initiation--approval-spine-500-pm--630-pm-ist)
+       - 5.2.11.2 [Phase 1: Stage 2 Linked Activity Approval Spine](#52112-phase-1-day-phase-sequential-stage-2-linked-activity-permit-approval-spine)
+       - 5.2.11.3 [Phase 2: Night Handover & EHS Activation](#52113-phase-2-night-phase-830-pm-handover-gate-pm-inspection--ehs-final-activation)
+       - 5.2.11.4 [Phase 3: Morning Closure & Surrender](#52114-phase-3-morning-statutory-closure--surrender-night-site-supervisor-exclusive)
    - 5.3 [PTW-001 Excavation Safety Checklist (12 Items)](#53-statutory-safety-checklist-ptw-001-excavation-work-12-items)
    - 5.4 [PTW-002 Hot Work Safety Checklist (20 Items)](#54-statutory-safety-checklist-ptw-002-hot-work-20-items)
    - 5.5 [PTW-003 Guard Rail Safety Checklist (9 Items)](#55-statutory-safety-checklist-ptw-003-guard-rail--floor-protection-removal-9-items)
@@ -600,22 +605,56 @@ graph LR
 ```
 
 #### 5.2.11 PTW-010 Night Shift / Holiday Work (Dual-Phase Handover Governance)
+
+Night Shift and Holiday Work operates under an enterprise multi-phase governance protocol separated into distinct, independent operational stages:
+
+##### 5.2.11.1 Phase 1 (Day Phase): Stage 1 Daytime Initiation & Approval Spine (5:00 PM – 6:30 PM IST)
+Initiated during late afternoon by the daytime Site Supervisor, verified by the Site Engineer, and endorsed by the Tower Incharge. Plant & Machinery (P&M) receives an informational alert while formal EHS verification is held until nightfall.
+
 ```mermaid
 graph LR
-    subgraph "PTW-010 Night Shift - Stage 1 Day Phase (5:00 PM – 6:30 PM)"
+    subgraph "Phase 1: Stage 1 Daytime Approval Spine"
         NS1["Site Supervisor (Day)<br/>(Pre-fills PTW-010 · Photo Deferred)"] --> NS2["Site Engineer<br/>(Step 2 Technical Acknowledgment)"]
-        NS2 --> NS3["Tower Incharge<br/>(Step 3 Day Approval · P&M Informational · EHS Held)"]
+        NS2 --> NS3["Tower Incharge<br/>(Step 3 Section Head Approval)"]
+        NS3 --> NS_STAT["Status: Night Shift Approved -<br/>Awaiting Linked Permit"]
     end
-    subgraph "Sequential Stage 2: Linked Activity Permit (Hot Work, Shaft, Lifting, etc.)"
-        NS3 --> LP1["Site Supervisor (Day)<br/>(Fills Linked Activity Permit · Technical Checklist)"]
-        LP1 --> LP2["Linked Permit Day Approvals<br/>(Site Eng to Domain Clearances to Tower Incharge)"]
+```
+
+##### 5.2.11.2 Phase 1 (Day Phase): Sequential Stage 2 Linked Activity Permit Approval Spine
+Unlocked strictly after Stage 1 Tower Incharge approval. The Day Supervisor initiates the specific trade permit (Hot Work, Shaft, Electrical, Routine Lifting, etc.), routing it through its full daytime engineering approval spine until both permits synchronize.
+
+```mermaid
+graph LR
+    subgraph "Phase 1: Stage 2 Linked Daytime Activity Approval Spine"
+        LP1["Site Supervisor (Day)<br/>(Fills Linked Activity Permit)"] --> LP2["Site Engineer<br/>(Step 2 Physical Verification)"]
+        LP2 --> LP3["Discipline Clearances<br/>(MEP / P&M / Quality)"]
+        LP3 --> LP4["Tower Incharge<br/>(Section Head Approval)"]
+        LP4 --> LP_STAT["Both Permits Synchronized:<br/>Approved - Pending Night Handover"]
     end
-    subgraph "Phase 2: Night Phase Handover (8:30 PM / 20:30 IST)"
-        LP2 --> HO1["Night Site Supervisor<br/>(Qualification Gate: PM Auth + PTW Training within 365 Days · Dual Photos)"]
-        HO1 --> PM1["P&M Engineer<br/>(Step 5 Night Ack · Lighting Towers & Lux Levels)"]
-        PM1 --> EHS1["EHS Safety Verification<br/>(Step 6 Dual Photos Review & 13 Checklist Points)"]
-        EHS1 -- Approve --> ACT["Both Permits Activated (Active)"]
+```
+
+##### 5.2.11.3 Phase 2 (Night Phase): 8:30 PM Handover Gate, P&M Inspection & EHS Final Activation
+At 8:30 PM (20:30 IST), physical handover occurs on-site. The incoming Night Site Supervisor must pass the PM-Authorization and valid PTW training qualification gate before the 21:00 cutoff. P&M verifies minimum lux levels and equipment, and EHS executes final activation.
+
+```mermaid
+graph LR
+    subgraph "Phase 2: Night Handover & EHS Activation Spine"
+        HO1["Night Site Supervisor<br/>(Qualification Gate · Dual Photos)"] --> PM1["P&M Engineer (Step 5)<br/>(Lighting Towers & Lux Levels)"]
+        PM1 --> EHS1["EHS Safety Verification (Step 6)<br/>(Dual Photos & 13 Checklist Points)"]
+        EHS1 -- Approve --> ACT["Both Permits Activated<br/>(Status: Active)"]
         EHS1 -- Reject --> RET["Returned strictly to Night Supervisor<br/>(Day Approvers NOT Re-Engaged)"]
+    end
+```
+
+##### 5.2.11.4 Phase 3 (Morning): Statutory Closure & Surrender (Night Site Supervisor Exclusive)
+At 06:00 IST the following morning, night operations conclude. Closure and formal surrender to EHS are restricted exclusively to the Night Site Supervisor with mandatory illumination de-energization confirmation. Day supervisors are strictly blocked.
+
+```mermaid
+graph LR
+    subgraph "Phase 3: Morning Closure & Demobilization"
+        SUR1["Night Site Supervisor Exclusively<br/>(Day Supervisor Strictly Blocked)"] --> SUR2["Mandatory De-energization Check<br/>(Lighting towers de-energized, cables secured)"]
+        SUR2 --> SUR3["GPS + Photo + DPDP Digital Signature"]
+        SUR3 --> SUR_STAT["Status: Completed (Surrendered)<br/>(Official 6-Signatory Report Released)"]
     end
 ```
 
@@ -1781,7 +1820,7 @@ sequenceDiagram
     SYS->>SE: In-App Alert: Physical site review required
 
     Note over SS,SYS: STEP 2 - Physical Site Verification
-    SE->>SE: Verify physical ground, trench depth & barricades on-site
+    SE->>SE: Verify physical ground, trench depth and barricades on-site
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending Parallel Clearances
     SYS->>MEP: Alert: Utilities clearance required
@@ -1801,7 +1840,7 @@ sequenceDiagram
     SYS->>EH: Alert: All clearances passed, Excavation Head review required
 
     Note over SS,SYS: STEP 4 - Excavation Head Review
-    EH->>EH: Holistic site safety review & contractor readiness
+    EH->>EH: Holistic site safety review and contractor readiness
     alt Approve
         EH->>SYS: approvePermitStage()
         SYS->>SYS: Status: Pending EHS Approval
@@ -1812,7 +1851,7 @@ sequenceDiagram
     end
 
     Note over SS,SYS: STEP 5 - EHS Final Endorsement (Single Approver Rule)
-    EHS->>EHS: Verify work-area photo & physical safety protocols
+    EHS->>EHS: Verify work-area photo and physical safety protocols
     alt Approve
         EHS->>SYS: approvePermitStage()
         SYS->>SYS: Status: Active (Work authorized to commence)
@@ -1827,7 +1866,7 @@ sequenceDiagram
 
     Note over SS,SYS: STEP 6 - Site Closure and Surrender (Site Supervisor Exclusive)
     SYS->>SS: T-30 min auto-reminder dispatched before expiry
-    SS->>SS: Complete backfill & barricade removal declarations + photo + GPS
+    SS->>SS: Complete backfill and barricade removal declarations + photo + GPS
     Note over SS,SE: Closure and surrender strictly executed by Site Supervisor (no SE closure option)
     SS->>SYS: closeAndSurrenderPermit()
     SYS->>SYS: Status: Closed [Generate Statutory PDF Archive]
@@ -1862,7 +1901,7 @@ sequenceDiagram
     SYS->>SE: Alert: Hot work site acknowledgment required
 
     Note over SS,SYS: STEP 2 - Physical Site Verification
-    SE->>SE: Verify 35-ft radius combustible clearance & water/sand buckets
+    SE->>SE: Verify 35-ft radius combustible clearance and water/sand buckets
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
     SYS->>TI: Alert: Ready for Tower Incharge review
@@ -1990,7 +2029,7 @@ sequenceDiagram
     SYS->>TI: Alert: Confined Space review required
 
     Note over SS,SYS: STEP 2 - Tower Incharge Review
-    TI->>TI: Verify forced mechanical ventilation, standby man & rescue tripod
+    TI->>TI: Verify forced mechanical ventilation, standby man and rescue tripod
     alt Approve
         TI->>SYS: approvePermitStage()
         SYS->>SYS: Status: Pending EHS Approval
@@ -2002,7 +2041,7 @@ sequenceDiagram
     end
 
     Note over SS,SYS: STEP 3 - EHS Verification
-    EHS->>EHS: Review calibrated gas detector readings, SCBA & emergency harness
+    EHS->>EHS: Review calibrated gas detector readings, SCBA and emergency harness
     alt Approve
         EHS->>SYS: approvePermitStage()
         SYS->>SYS: Status: Active (Entry authorized)
@@ -2046,20 +2085,20 @@ sequenceDiagram
 
     Note over SS,SYS: STEP 1 - Form Initiation (Location + Floor Dropdown)
     SS->>SS: Select Shaft Location and specific Floor from dropdown
-    SS->>SS: Verify green scaffold tag + attach mandatory declaration & photo
+    SS->>SS: Verify green scaffold tag + attach mandatory declaration and photo
     SS->>SS: Complete 10-item shaft safety checklist (lifeline, toe-board, lighting)
     SS->>SYS: submitPermit(SHAFT)
     SYS->>SYS: Status: Pending Site Engineer Acknowledgment
     SYS->>SE: Alert: Shaft work site acknowledgment required
 
     Note over SS,SYS: STEP 2 - Site Engineer Acknowledgment
-    SE->>SE: Physical site inspection of shaft opening & fall containment
+    SE->>SE: Physical site inspection of shaft opening and fall containment
     SE->>SYS: acknowledgeSiteEngineer()
     SYS->>SYS: Status: Pending MEP Clearance
     SYS->>MEP: Alert: MEP clearance required for duct/piping shaft
 
     Note over SS,SYS: STEP 3 - Dedicated MEP Domain Clearance
-    MEP->>MEP: Inspect shaft electrical risers, plumbing pipes & ductwork safety
+    MEP->>MEP: Inspect shaft electrical risers, plumbing pipes and ductwork safety
     alt Approve
         MEP->>SYS: approveParallelStage(MEP)
         SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
@@ -2071,7 +2110,7 @@ sequenceDiagram
     end
 
     Note over SS,SYS: STEP 4 - Tower Incharge Review
-    TI->>TI: Review shaft structural stability & simultaneous work hazards
+    TI->>TI: Review shaft structural stability and simultaneous work hazards
     alt Approve
         TI->>SYS: approvePermitStage()
         SYS->>SYS: Status: Pending EHS Approval
@@ -2083,7 +2122,7 @@ sequenceDiagram
     end
 
     Note over SS,SYS: STEP 5 - EHS Final Verification
-    EHS->>EHS: Verify full-body harness with shock absorber & shaft net
+    EHS->>EHS: Verify full-body harness with shock absorber and shaft net
     alt Approve
         EHS->>SYS: approvePermitStage()
         SYS->>SYS: Status: Active (Shaft work authorized)
@@ -2095,7 +2134,7 @@ sequenceDiagram
     end
 
     Note over SS,SYS: STEP 6 - Mandatory Shaft Closure and Sealing
-    SS->>SS: Remove scaffold/tools, reinstall shaft cover & secure locks
+    SS->>SS: Remove scaffold/tools, reinstall shaft cover and secure locks
     SS->>SS: Upload mandatory declaration + photo confirming shaft closed
     SS->>SYS: surrenderPermit()
     SYS->>SYS: Status: Closed [PDF generated with sealed shaft evidence]
@@ -2133,13 +2172,13 @@ sequenceDiagram
     EL->>EL: Select Facility Scope: Batching Plant (Manual Locked) or Site (Flexible Mode)
     EL->>EL: Input Reason for Shutdown + Select Electrical Apparatus (Transformer/RMU/Panels)
     EL->>EL: Record Mandatory LOTO Register Sl. No. and Lock Placement Timestamp
-    EL->>EL: Confirm Safe to Work Under IS 5216 & Check Pre-Work Statutory Undertaking
+    EL->>EL: Confirm Safe to Work Under IS 5216 and Check Pre-Work Statutory Undertaking
     EL->>SYS: submitPermit(ELECTRICAL) + Attach overview photo + GPS + DPDP Sig
 
     alt Topology A: Batching Plant Flow
-        SYS->>SYS: Route to Status: Pending P&M Acknowledgment
+        SYS->>SYS: Route to Status: Pending P and M Acknowledgment
         Note over PM,SYS: PHASE 2A: Plant and Machinery Statutory Acknowledgment
-        PM->>SYS: acknowledgePmEngineer() with LOTO confirmation & Statutory Declaration
+        PM->>SYS: acknowledgePmEngineer() with LOTO confirmation and Statutory Declaration
         SYS->>SYS: Status: Pending Quality Engineer Approval
         
         Note over QE,SYS: PHASE 3A: Quality Engineer Insulation Clearance
@@ -2152,7 +2191,7 @@ sequenceDiagram
         SYS->>SYS: Route to Status: Pending Site Engineer Acknowledgment
         Note over SE,SYS: PHASE 2B: Site Physical Verification
         SE->>SYS: acknowledgeSiteEngineer() with physical installation verification
-        SYS->>SYS: Status: Pending MEP or P&M Approval (Either/Or Gate)
+        SYS->>SYS: Status: Pending MEP or P and M Approval (Either/Or Gate)
         
         Note over MEP,SYS: PHASE 3B: Dual Domain Clearance Gate
         MEP->>SYS: approvePermitStage(MEP or PM) with Domain Clearance Declaration
@@ -2191,8 +2230,8 @@ sequenceDiagram
 
     Note over EL,SYS: TERMINAL PHASE: Completion and Statutory De-Isolation Surrender
     EL->>EL: Remove personal padlocks, remove earths, inspect panels clear
-    EL->>EL: Check Mandatory Electrical De-Isolation & Restoration Declaration
-    EL->>SYS: closeAndSurrenderPermit(electricalClosureConfirmed: true, photo, GPS, DPDP Sig)
+    EL->>EL: Check Mandatory Electrical De-Isolation and Restoration Declaration
+    EL->>SYS: closeAndSurrenderPermit with electricalClosureConfirmed, photo, GPS and DPDP Sig
     SYS->>SYS: Status: Closed (Surrendered - De-Isolated) [Statutory Form PTW-006 PDF Unlocked]
 ```
 
@@ -2219,9 +2258,9 @@ sequenceDiagram
     end
 
     Note over BIC,SYS: STEP 1 - Form Initiation (Manual Location Locked)
-    BIC->>BIC: Select Manual Location Mode (Tower & Basement strictly locked with safety tooltips)
+    BIC->>BIC: Select Manual Location Mode (Tower and Basement strictly locked with safety tooltips)
     alt Blasting Operation Selected
-        BIC->>BIC: Enter Charge (kg), Diameter, Depth, Holes & Explosive Type (9 PESO Types)
+        BIC->>BIC: Enter Charge (kg), Diameter, Depth, Holes and Explosive Type (9 PESO Types)
         BIC->>BIC: Complete 15-item checklist (Item 8 auto-weather telemetry, Item 15 custom precautions)
         BIC->>BIC: Fill 4 Post-Checklist Rig fields (Holes loaded, Depth m, Mufflers, Safe distance)
         BIC->>BIC: Check on-form Mandatory PESO Statutory Safety Declaration Card
@@ -2229,7 +2268,7 @@ sequenceDiagram
         SYS->>SYS: Status: Pending Site Engineer Acknowledgment (Direct Route)
         SYS->>SE: Alert: Site Engineer technical acknowledgment required
     else Drilling Operation Selected
-        BIC->>BIC: Enter Drill Machine Type, Hole Diameter, Depth & Holes Count
+        BIC->>BIC: Enter Drill Machine Type, Hole Diameter, Depth and Holes Count
         BIC->>BIC: Complete 15-item checklist (rig/muffler fields suppressed)
         BIC->>SYS: submitPermit(DRILLING) as Blasting / Drilling In-charge
         SYS->>SYS: Status: Pending Site Engineer Acknowledgment
@@ -2237,7 +2276,7 @@ sequenceDiagram
     end
 
     Note over SE,SYS: STEP 2 - Site Engineer Acknowledgment
-    SE->>SE: Verify physical perimeter barricades, siren positions & sentry postings
+    SE->>SE: Verify physical perimeter barricades, siren positions and sentry postings
     Note over SE: Governance Rule: Site Engineer CANNOT cancel permits (Approve/Reject only)
     alt Approve & Forward
         SE->>SYS: acknowledgeSiteEngineer()
@@ -2249,7 +2288,7 @@ sequenceDiagram
     end
 
     Note over EHS,SYS: STEP 3 - EHS Final Endorsement (First-Wins Gate)
-    EHS->>EHS: Verify weather conditions, blast timing (before 18:30 IST) & PPE
+    EHS->>EHS: Verify weather conditions, blast timing (before 18:30 IST) and PPE
     alt Endorse & Activate
         EHS->>SYS: approvePermitStage()
         SYS->>SYS: Status: Active (Drilling / Blasting authorized)
@@ -2263,9 +2302,9 @@ sequenceDiagram
     Note over BIC,SYS: STEP 4 - Closure and Mandatory Post-Blast Clearance
     alt Blasting Operation Surrender
         BIC->>BIC: Certified Shot Firer sweeps blast floor: zero unexploded charges or misfires
-        BIC->>BIC: Check mandatory Post-Blast Clearance & Misfire Declaration checkbox
+        BIC->>BIC: Check mandatory Post-Blast Clearance and Misfire Declaration checkbox
         BIC->>BIC: Attach post-blast restoration photograph
-        BIC->>SYS: closeAndSurrenderPermit(blastingClearanceConfirmed: true)
+        BIC->>SYS: closeAndSurrenderPermit with blastingClearanceConfirmed
         SYS->>SYS: Status: Closed [PDF generated with Post-Blast Clearance Certification]
     else Drilling Operation Surrender
         BIC->>BIC: Remove drill rig, cap drilled holes, attach restoration photograph
@@ -2319,7 +2358,7 @@ sequenceDiagram
     Note over SS,EHS: POST-ACTIVATION LIFECYCLES
     opt Safety Observation Raised
         EHS->>SYS: raiseObservation() [Status: Active - Observation Open]
-        SYS-->>SS: Extension & Closure BLOCKED until rectified & endorsed
+        SYS-->>SS: Extension and Closure BLOCKED until rectified and endorsed
         SS->>SYS: respondToObservation() + rectification photo
         SE->>SYS: acknowledgeObservationEng()
         TI->>SYS: approveObservationTI()
@@ -2370,8 +2409,8 @@ sequenceDiagram
 
     Note over LS,SYS: PHASE 1: Pre-Location Signatures and Dynamic Classification
     LS->>SYS: Select PTW-009 Lifting Operations (Single Unified Tile)
-    SYS->>SYS: Location Mode Strictly LOCKED & DISABLED
-    LS->>CO: Request Crane Fitness & Competency Declaration
+    SYS->>SYS: Location Mode Strictly LOCKED and DISABLED
+    LS->>CO: Request Crane Fitness and Competency Declaration
     CO->>SYS: Sign in Crane Operator Modal (DPDP Consent + Digital Signature)
     LS->>CR: Request Rigging Credentials Declaration
     CR->>SYS: Sign in Signaler/Rigger Modal (DPDP Consent + Digital Signature)
@@ -2388,11 +2427,11 @@ sequenceDiagram
     end
 
     Note over SE,SYS: PHASE 2: Site Physical Verification
-    SE->>SYS: acknowledgeSiteEngineer() with ground compaction & barricade check
-    SYS->>SYS: Status: Pending P&M Acknowledgment
+    SE->>SYS: acknowledgeSiteEngineer() with ground compaction and barricade check
+    SYS->>SYS: Status: Pending P and M Acknowledgment
 
     Note over PM,SYS: PHASE 3: Plant and Machinery Technical Clearance
-    PM->>SYS: approvePermitStage(PM) with Crane Fitness & TPI Tackle Clearance
+    PM->>SYS: approvePermitStage(PM) with Crane Fitness and TPI Tackle Clearance
     SYS->>SYS: Status: Pending Section Head Approval (Tower Incharge)
 
     Note over TI,SYS: PHASE 4: Tower Incharge Section Head Review
@@ -2413,7 +2452,7 @@ sequenceDiagram
     Note over LS,EHS: POST-ACTIVATION LIFECYCLES
     opt Safety Observation Raised
         EHS->>SYS: raiseObservation() [Status: Active - Observation Open]
-        SYS-->>LS: Extension & Closure BLOCKED until rectified & cleared
+        SYS-->>LS: Extension and Closure BLOCKED until rectified and cleared
         LS->>SYS: respondToObservation() + rectification photo
         SE->>SYS: acknowledgeObservationEng()
         TI->>SYS: approveObservationTI()
@@ -2428,9 +2467,9 @@ sequenceDiagram
     end
 
     Note over LS,SYS: TERMINAL PHASE: Completion and Mandatory Demobilization Gate
-    LS->>LS: Crane boomed down and parked; lifting gear de-rigged; barricades cleared
-    LS->>LS: Confirm Mandatory Demobilization & Safety Declaration (Form PTW-009A/B)
-    LS->>SYS: closeAndSurrenderPermit(liftingDemobConfirmed: true, restorationPhoto, GPS, DPDP Sig)
+    LS->>LS: Crane boomed down and parked, lifting gear de-rigged, barricades cleared
+    LS->>LS: Confirm Mandatory Demobilization and Safety Declaration (Form PTW-009A/B)
+    LS->>SYS: closeAndSurrenderPermit with liftingDemobConfirmed, restorationPhoto, GPS and DPDP Sig
     SYS->>SYS: Status: Closed (Surrendered - Work Completed) [Statutory Form PTW-009A/B PDF Unlocked]
 ```
 
@@ -2480,7 +2519,7 @@ sequenceDiagram
     SYS->>SYS: Enforce 21:00 IST Cutoff (No-show auto-cancels permits)
     SSN->>SYS: Capture Dual Photos (Workplace Illumination + Linked Activity Setup)
     SSN->>SYS: Digital Signature with DPDP Consent
-    SYS->>SYS: Status: Pending P&M Night Acknowledgment
+    SYS->>SYS: Status: Pending P and M Night Acknowledgment
 
     Note over PM,SYS: STEP 5: PandM Night Shift Acknowledgment
     PM->>PM: Verify minimum lux levels (over 150 lux general, 300 lux precision)
@@ -2490,7 +2529,7 @@ sequenceDiagram
     Note over EHS,SYS: STEP 6: EHS Safety Verification and Strict Rejection Routing
     alt EHS Approves
         EHS->>SYS: approvePermitStage(EHS)
-        SYS->>SYS: Both Night Shift & Linked Permits Activated (Status: Active)
+        SYS->>SYS: Both Night Shift and Linked Permits Activated (Status: Active)
     else EHS Rejects
         EHS->>SYS: rejectPermit()
         SYS->>SYS: Status: Returned to Night Supervisor (Day Approvers NOT re-engaged)
@@ -2523,7 +2562,7 @@ sequenceDiagram
 
     Approver->>SYS: rejectPermit() with reason
     SYS->>SYS: Status: Returned for Correction
-    SYS->>SYS: Record rejectionOrigin & lock unaffected sections
+    SYS->>SYS: Record rejectionOrigin and lock unaffected sections
     SYS->>SS: Notification: Permit returned for correction
     Note over SS,SYS: Correction Phase
     SS->>SS: Update only rejected checklist responses / upload revised photo
@@ -2602,7 +2641,7 @@ sequenceDiagram
 
     Note over SS,SYS: Extension Request (Before 18:30 IST)
     SS->>SYS: requestExtension(duration up to 120 min)
-    SYS->>SYS: Validate clock prior to 18:30 IST & validity ceiling
+    SYS->>SYS: Validate clock prior to 18:30 IST and validity ceiling
     SYS->>SYS: Status: Pending Extension - Engineer Ack
     SYS->>SE: Alert: Extension acknowledgment required
 
@@ -2663,7 +2702,7 @@ sequenceDiagram
     SYS->>SYS: Mutate Status to Closed (Surrendered)
     SYS->>SYS: Record Surrender Audit Stamp (Closed By, Timestamp IST, GPS, Signature)
     SYS->>SYS: Unlock Statutory PDF Generation with Complete Signatory Chain
-    SYS->>EHS: Dispatch Notification: Permit Successfully Closed & Surrendered
+    SYS->>EHS: Dispatch Notification: Permit Successfully Closed and Surrendered
 ```
 
 #### Discipline-Specific Surrender & Restoration Gates
@@ -2703,7 +2742,7 @@ sequenceDiagram
     end
 
     Note over SS,UI: STEP 1: General Information and Engineering Setup
-    SS->>UI: Select Project & Location Structure (Tower vs Basement/Podium vs Manual)
+    SS->>UI: Select Project and Location Structure (Tower vs Basement/Podium vs Manual)
     UI->>VAL: Verify Project Configured Status
     alt Project GPS Not Configured (e.g. PRJ-ART)
         VAL-->>UI: Form LOCKED — Admin configuration required
@@ -2737,19 +2776,19 @@ sequenceDiagram
     Note over SS,UI: STEP 3: Working Hours and Validity Bounds Engine
     SS->>UI: Navigate to Step 3 (renderWizStep(3))
     SS->>UI: Select Planned Start Time (HH:MM IST)
-    UI->>VAL: Check startTime between 08:30 and 18:30 IST & startTime in future
+    UI->>VAL: Check startTime between 08:30 and 18:30 IST and startTime in future
     SS->>UI: Select Planned End Time (HH:MM IST)
-    UI->>VAL: Check validTillTime after startTime & validTillTime at or before 19:30 IST
+    UI->>VAL: Check validTillTime after startTime and validTillTime at or before 19:30 IST
     VAL->>UI: Calculate Duration (mins) = validTillTime - startTime
-    UI-->>SS: Display Duration Strip & Enable "Next: Review & Submit"
+    UI-->>SS: Display Duration Strip and Enable "Next: Review and Submit"
 
     Note over SS,UI: STEP 4: Review, DPDP Act 2023 Consent and Digital Signature
     SS->>UI: Navigate to Step 4 (renderWizStep(4))
-    UI->>UI: Render full summary of inputs, coordinates, checklist & photos
+    UI->>UI: Render full summary of inputs, coordinates, checklist and photos
     SS->>UI: Enter Signer Full Name ("R. K. Patel")
     SS->>UI: Check Statutory DPDP Act 2023 Consent Box
     SS->>UI: Draw Signature on High-DPI Canvas / Upload File
-    UI->>VAL: validateWizStep(4) [signerVerified && signature.dataUrl]
+    UI->>VAL: validateWizStep(4) [signerVerified and signature.dataUrl]
     VAL-->>UI: Enable "Submit Permit for Acknowledgment" Button
 
     Note over SS,SYS: FINAL SUBMISSION and MANDATORY GPS CAPTURE
@@ -2767,7 +2806,7 @@ sequenceDiagram
         SYS->>SYS: Initialize Approval Chain (newChain(ptype))
         SYS->>SYS: Record Signatory in p.signatories
         SYS->>SYS: Status = "Pending Site Engineer Acknowledgment"
-        SYS->>SYS: Append to activityLog & Save LocalStorage
+        SYS->>SYS: Append to activityLog and Save LocalStorage
         SYS->>SE: Dispatch Real-Time Notification: "New Permit Awaiting Step 2 Acknowledgment"
         SYS-->>UI: Route to Permit Register with Success Toast
     end
@@ -2812,15 +2851,15 @@ sequenceDiagram
     alt Project is Unconfigured (Forms Locked)
         UI-->>ADM: Display Red Status Banner: "Project GPS Not Configured (Forms Locked)"
     else Project is Configured & Active
-        UI-->>ADM: Display Green Status Banner: "Project GPS Configured & Active"
+        UI-->>ADM: Display Green Status Banner: "Project GPS Configured and Active"
     end
 
     Note over ADM,UI: Worksite Coordinate Tagging
     alt On-Site Hardware GPS Tagging
-        ADM->>UI: Click "Go to Location & Tag (On-Site GPS)"
+        ADM->>UI: Click "Go to Location and Tag (On-Site GPS)"
         UI->>GPS: navigator.geolocation.getCurrentPosition({enableHighAccuracy: true})
         GPS-->>UI: Return Lat, Lng with accuracy radius (+-4m)
-        UI->>UI: Update Site Lat & Lng input fields
+        UI->>UI: Update Site Lat and Lng input fields
     else Simulated Worksite Calibration (Field Testing)
         ADM->>UI: Click "Simulate Tag (Test Worksite)"
         UI->>UI: Apply high-precision jittered site coordinates
@@ -2829,15 +2868,15 @@ sequenceDiagram
     Note over ADM,RAD: Interactive Geofence Tuning and Radar Rendering
     ADM->>UI: Adjust Radius Slider (or click Preset Pill: 50m, 100m, 150m, 200m, 500m)
     UI->>RAD: Trigger drawGeofenceRadar()
-    RAD->>RAD: Clear canvas & render 4 concentric range rings (30, 60, 90, 120px)
+    RAD->>RAD: Clear canvas and render 4 concentric range rings (30, 60, 90, 120px)
     RAD->>RAD: Render dual-axis crosshairs aligned to center
-    RAD->>RAD: Render circular geofence boundary with dashed stroke & orange fill
+    RAD->>RAD: Render circular geofence boundary with dashed stroke and orange fill
     RAD->>RAD: Render center worksite pin (Lat/Lng center)
     RAD->>RAD: Render simulated field personnel markers (green within / red outside)
     RAD->>RAD: Display telemetry: "Worksite Pin · Xm Geofence"
 
     Note over ADM,DB: Configuration Persistence and Form Unlocking
-    ADM->>UI: Click "Save & Activate Geofence"
+    ADM->>UI: Click "Save and Activate Geofence"
     UI->>UI: Open Confirmation Modal (openSaveGeofenceModal)
     ADM->>UI: Confirm Save
     UI->>DB: Mutate project: site.lat, site.lng, radius, configured = true
@@ -3107,7 +3146,7 @@ stateDiagram-v2
     PendingEHS --> Open : EHS rejects rectification via rejectObservationEhs() (Fast-Track loop)
     PendingEHS --> Resolved : EHS conducts final sign-off via resolveObservation()
     
-    Resolved --> [*] : Observation Cleared; Safety Locks Released; Status returns to Active
+    Resolved --> [*] : Observation Cleared, Safety Locks Released, Status returns to Active
     
     Open --> Cancelled : Clock passes validTill before resolution (Emergency Stop-Work)
     RectifiedAwaitingEngAck --> Cancelled : Clock passes validTill before resolution
@@ -3275,7 +3314,7 @@ sequenceDiagram
     SYS->>TI: Notification: Extension awaiting Tower Incharge review
 
     Note over TI,SYS: Stage 2 - Tower Incharge Review
-    TI->>TI: Verify contractor evening deployment & coordination
+    TI->>TI: Verify contractor evening deployment and coordination
     TI->>SYS: approveExtensionStage(permitId, 'hw-section-head')
     SYS->>SYS: Status: Pending Extension - EHS
     SYS->>EHS: Notification: Extension awaiting final EHS sign-off
