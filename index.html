@@ -71,7 +71,8 @@
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
             -webkit-overflow-scrolling: touch;
-            overscroll-behavior-y: none;
+            overflow-x: hidden;
+            overflow-y: auto;
         }
 
         body {
@@ -80,8 +81,8 @@
             width: 100%;
             min-height: 100%;
             min-height: 100dvh;
-            overflow-x: clip;
-            overflow-y: auto;
+            overflow-x: hidden;
+            overflow-y: visible;
             scroll-behavior: smooth;
             font-family: var(--font-ui);
             background: var(--bg);
@@ -2036,15 +2037,18 @@
 
         /* ================= LANDING ================= */
         .landing {
+            width: 100%;
             min-height: 100vh;
+            min-height: 100dvh;
             background: radial-gradient(ellipse at 20% -10%, #16283F 0%, #0A1628 55%, #060C16 100%);
             display: flex;
             flex-direction: column;
             align-items: center;
             padding: 60px 20px 40px;
             position: relative;
-            overflow-x: clip;
-            overflow-y: visible;
+            overflow: visible;
+            box-sizing: border-box;
+            contain: paint;
         }
 
         .landing-decor {
@@ -2052,6 +2056,7 @@
             color: rgba(255, 255, 255, .035);
             font-size: 130px;
             pointer-events: none;
+            user-select: none;
         }
 
         .landing-decor.d1 {
@@ -2351,6 +2356,7 @@
             text-align: left;
             position: relative;
             overflow: hidden;
+            will-change: transform;
         }
 
         .role-card:hover {
@@ -2432,10 +2438,29 @@
             margin-top: 4px;
         }
 
-        .landing-footer {
+        .landing-weekend-strip {
+            order: 8 !important;
+            width: 100%;
+            max-width: 1200px;
+            margin: 28px auto 20px;
+            background: linear-gradient(135deg, rgba(16, 28, 48, 0.95), rgba(10, 22, 40, 0.98));
+            border: 1px solid rgba(232, 96, 10, 0.3);
+            border-radius: 12px;
+            padding: 18px 24px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.35);
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-sizing: border-box;
             position: relative;
             z-index: 1;
-            margin-top: 46px;
+        }
+
+        .landing-footer {
+            order: 10 !important;
+            position: relative;
+            z-index: 1;
+            margin-top: 36px;
             color: #7286A6;
             font-size: 11px;
             text-align: center;
@@ -3064,10 +3089,19 @@
            Zero horizontal scrolling, fluid scaling, accessible touch targets (>=42px)
            ================================================================ */
 
-        html,
+        html {
+            max-width: 100vw;
+            overflow-x: hidden;
+            overflow-y: auto;
+            position: relative;
+            -webkit-text-size-adjust: 100%;
+            text-size-adjust: 100%;
+        }
+
         body {
             max-width: 100vw;
             overflow-x: hidden;
+            overflow-y: visible;
             position: relative;
             -webkit-text-size-adjust: 100%;
             text-size-adjust: 100%;
@@ -3446,8 +3480,7 @@
                 padding: 26px 14px 28px;
                 display: flex;
                 flex-direction: column;
-                overflow-x: clip;
-                overflow-y: visible;
+                overflow: visible;
             }
 
             .landing-brand {
@@ -3500,13 +3533,15 @@
                 margin: 16px 0 20px;
             }
 
-            .landing-footer {
-                order: 4;
+            .landing-weekend-strip {
+                order: 8 !important;
+                margin: 16px auto 20px;
+                padding: 14px 16px;
             }
 
-            .landing-mobile-cta {
-                display: block;
-                margin: 14px 0 6px;
+            .landing-footer {
+                order: 10 !important;
+                margin-top: 20px;
             }
 
             .landing-mark {
@@ -4536,13 +4571,6 @@
                 <span class="statutory-tag"><i class="fa-solid fa-clock"></i> Live Indian Standard Time (IST)</span>
                 <span class="statutory-tag"><i class="fa-solid fa-location-crosshairs"></i> GPS Geofence Verification</span>
             </div>
-
-            <!-- Mobile Direct Jump Button -->
-            <div class="landing-mobile-cta" style="margin-top:14px;width:100%;text-align:center;">
-                <a href="#landingRoleSection" onclick="document.getElementById('landingRoleSection').scrollIntoView({behavior:'smooth'});return false;" class="btn-hero-roles" style="display:inline-flex;align-items:center;gap:8px;background:linear-gradient(135deg,var(--orange),var(--orange-dark));color:#fff;font-weight:700;font-size:13px;padding:10px 20px;border-radius:100px;text-decoration:none;box-shadow:0 4px 14px rgba(232,96,10,0.35);transition:all .2s ease;">
-                    <i class="fa-solid fa-users-gear"></i> Choose Persona to Enter <i class="fa-solid fa-arrow-down"></i>
-                </a>
-            </div>
         </div>
 
         <!-- 4-Stage Governance Workflow Ribbon -->
@@ -4580,8 +4608,28 @@
             </div>
         </div>
 
-        <!-- ARPL Weekend Governance Protocol Ribbon -->
-        <div class="landing-weekend-strip" id="landingWeekendStrip" style="width:100%;max-width:1200px;margin:20px auto 28px;background:linear-gradient(135deg,rgba(16,28,48,0.95),rgba(10,22,40,0.98));border:1px solid rgba(232,96,10,0.3);border-radius:12px;padding:18px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.35);display:flex;flex-direction:column;gap:12px;">
+        <!-- Interactive Role Switcher Header & Filter Tabs -->
+        <div class="landing-role-section" id="landingRoleSection">
+            <div class="landing-role-header">
+                <div>
+                    <h2><i class="fa-solid fa-users-gear" style="color:var(--orange);"></i> Enterprise Role Authorization &amp; Access</h2>
+                    <p>Select an authorized operational role to access the permit governance portal. User permissions, verification gates, and statutory sign-off authority are strictly enforced based on role assignments.</p>
+                </div>
+                <div class="role-filter-tabs" id="roleFilterTabs">
+                    <button class="rf-tab active" onclick="filterRoles('all', this)"><i class="fa-solid fa-border-all"></i> All Roles (13)</button>
+                    <button class="rf-tab" onclick="filterRoles('initiator', this)"><i class="fa-solid fa-user-pen"></i> Initiators (3)</button>
+                    <button class="rf-tab" onclick="filterRoles('verification', this)"><i class="fa-solid fa-hard-hat"></i> Field &amp; Clearances (4)</button>
+                    <button class="rf-tab" onclick="filterRoles('approver', this)"><i class="fa-solid fa-user-tie"></i> Domain Approvers (3)</button>
+                    <button class="rf-tab" onclick="filterRoles('ehs', this)"><i class="fa-solid fa-shield-halved"></i> EHS Safety (2)</button>
+                    <button class="rf-tab" onclick="filterRoles('admin', this)"><i class="fa-solid fa-user-gear"></i> Admin (1)</button>
+                </div>
+            </div>
+
+            <div class="role-grid" id="roleCardsGrid"></div>
+        </div>
+
+        <!-- ARPL Weekend Governance Protocol Ribbon (Positioned at bottom to ensure clear visual hierarchy) -->
+        <div class="landing-weekend-strip" id="landingWeekendStrip" style="order:8;width:100%;max-width:1200px;margin:28px auto 20px;background:linear-gradient(135deg,rgba(16,28,48,0.95),rgba(10,22,40,0.98));border:1px solid rgba(232,96,10,0.3);border-radius:12px;padding:18px 24px;box-shadow:0 8px 32px rgba(0,0,0,0.35);display:flex;flex-direction:column;gap:12px;">
             <div style="display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px;border-bottom:1px solid rgba(255,255,255,0.08);padding-bottom:10px;">
                 <div style="display:flex;align-items:center;gap:10px;">
                     <span style="background:var(--orange);color:#fff;font-weight:800;font-size:11px;padding:3px 10px;border-radius:100px;text-transform:uppercase;letter-spacing:0.5px;"><i class="fa-solid fa-calendar-week"></i> Weekend Protocol</span>
@@ -4620,27 +4668,7 @@
             </div>
         </div>
 
-        <!-- Interactive Role Switcher Header & Filter Tabs -->
-        <div class="landing-role-section" id="landingRoleSection">
-            <div class="landing-role-header">
-                <div>
-                    <h2><i class="fa-solid fa-users-gear" style="color:var(--orange);"></i> Select a Role to Enter the Demonstration</h2>
-                    <p>Click any persona below to simulate their permit creation, verification, or approval experience. You can switch roles at any time from the top navigation bar.</p>
-                </div>
-                <div class="role-filter-tabs" id="roleFilterTabs">
-                    <button class="rf-tab active" onclick="filterRoles('all', this)"><i class="fa-solid fa-border-all"></i> All Roles (13)</button>
-                    <button class="rf-tab" onclick="filterRoles('initiator', this)"><i class="fa-solid fa-user-pen"></i> Initiators (3)</button>
-                    <button class="rf-tab" onclick="filterRoles('verification', this)"><i class="fa-solid fa-hard-hat"></i> Field &amp; Clearances (4)</button>
-                    <button class="rf-tab" onclick="filterRoles('approver', this)"><i class="fa-solid fa-user-tie"></i> Domain Approvers (3)</button>
-                    <button class="rf-tab" onclick="filterRoles('ehs', this)"><i class="fa-solid fa-shield-halved"></i> EHS Safety (2)</button>
-                    <button class="rf-tab" onclick="filterRoles('admin', this)"><i class="fa-solid fa-user-gear"></i> Admin (1)</button>
-                </div>
-            </div>
-
-            <div class="role-grid" id="roleCardsGrid"></div>
-        </div>
-
-        <div class="landing-footer">
+        <div class="landing-footer" style="order:10;">
             <div class="lf-title"><i class="fa-solid fa-shield-halved" style="color:var(--orange);"></i> ARPL Digital Permit-to-Work (PTW) Management System</div>
             <div id="landingFooterPermits">PTW-001 Excavation &bull; PTW-002 Hot Work &bull; PTW-003 Guard Rail &bull; PTW-004 Confined Space &bull; PTW-005 Shaft Work &bull; PTW-006 Electrical Work &bull; PTW-007 Drilling &amp; Blasting &bull; PTW-008 General Work &bull; PTW-009 Lifting Operations &bull; PTW-010 Night Shift</div>
             <div>Demo Build &bull; September 2026</div>
