@@ -855,7 +855,7 @@ Under the Central Electricity Authority (Measures relating to Safety and Electri
 
 ##### 4. Dual Approval Workflows
 * **Batching Plant Flow (4 Stages):**
-  $$\text{Electrician (Init)} \xrightarrow{\text{Submit}} \text{P\&M Eng (Ack + Statutory Decl)} \xrightarrow{\text{Approve}} \text{Quality Eng (Insulation & Quality Clearance)} \xrightarrow{\text{Endorse}} \text{EHS Safety} \xrightarrow{} \text{Active}$$
+  $$\text{Electrician (Init)} \xrightarrow{\text{Submit}} \text{P\&M Eng (Ack + Statutory Decl)} \xrightarrow{\text{Approve}} \text{Quality Eng (Insulation \& Quality Clearance)} \xrightarrow{\text{Endorse}} \text{EHS Safety} \xrightarrow{} \text{Active}$$
 * **Site Flow (5 Stages):**
   $$\text{Electrician (Init)} \xrightarrow{\text{Submit}} \text{Site Eng (Technical Ack)} \xrightarrow{\text{Ack}} \text{MEP or P\&M Eng (Domain Clearance Gate)} \xrightarrow{\text{Approve}} \text{Tower Incharge} \xrightarrow{\text{Approve}} \text{EHS Safety} \xrightarrow{} \text{Active}$$
   *(Step 3 Either/Or Rule: Approval by either MEP or P&M satisfies the domain gate and advances permit to Tower Incharge).*
@@ -2894,7 +2894,7 @@ The canvas radar is drawn on `<canvas id="geofenceRadarCanvas" width="300" heigh
 1. **Range Rings:** Concentric circles drawn at radii $r \in \{30\text{px}, 60\text{px}, 90\text{px}, 120\text{px}\}$ with stroke `rgba(255, 255, 255, 0.08)`.
 2. **Crosshairs:** Bisecting horizontal and vertical center lines with stroke `rgba(255, 255, 255, 0.12)`.
 3. **Dynamic Boundary Projection:** The physical radius $R_{\text{meters}}$ is mapped non-linearly to pixel radius $R_{\text{px}}$ to maintain crisp visibility across both compact ($50\text{m}$) and wide ($2000\text{m}$) perimeters:
-   $$R_{\text{px}} = \operatorname{clamp}\big(30, \, 25 + 4.4 \cdot \sqrt{R_{\text{meters}}}, \, 125\big)$$
+   $$R_{\text{px}} = \text{clamp}\big(30, \, 25 + 4.4 \cdot \sqrt{R_{\text{meters}}}, \, 125\big)$$
 4. **Perimeter Stroke & Fill:** Rendered with dashed line pattern `[6, 4]`, stroke color `#E8600A`, and background fill `rgba(232, 96, 10, 0.12)`.
 5. **Spatial Personnel Simulation:**
    - **In-Bounds Beacon:** Plotted at $(x_c + 0.45 \cdot R_{\text{px}}, \, y_c - 0.35 \cdot R_{\text{px}})$ in emerald green (`#2E7D32`), demonstrating compliant on-site staff.
@@ -3409,18 +3409,15 @@ To eliminate fraudulent off-site approvals ("armchair approvals"), every signato
 
 ### 13.1 Mathematical Foundation: Haversine Great-Circle Distance
 
-The distance $d$ between the approver's device GPS $(phi_1, lambda_1)$ and the project site center $(phi_2, lambda_2)$ is computed using the **Haversine formula on a spherical Earth model**:
+The distance $d$ between the approver's device GPS $(\phi_1, \lambda_1)$ and the project site center $(\phi_2, \lambda_2)$ is computed using the **Haversine formula on a spherical Earth model**:
 
-$$Deltaphi = phi_2 - phi_1, quad Deltalambda = lambda_2 - lambda_1$$
+$$\Delta\phi = \phi_2 - \phi_1, \quad \Delta\lambda = \lambda_2 - \lambda_1$$
 
-$$a = sin^2left(rac{Deltaphi}{2}
-ight) + cos(phi_1)cos(phi_2)sin^2left(rac{Deltalambda}{2}
-ight)$$
+$$a = \sin^2\left(\frac{\Delta\phi}{2}\right) + \cos(\phi_1)\cos(\phi_2)\sin^2\left(\frac{\Delta\lambda}{2}\right)$$
 
-$$c = 2 cdot operatorname{atan2}left(sqrt{a}, sqrt{1-a}
-ight)$$
+$$c = 2 \cdot \text{atan2}\left(\sqrt{a}, \, \sqrt{1-a}\right)$$
 
-$$d = R cdot c quad 	ext{where } R = 6,371,000	ext{ metres (mean Earth radius)}$$
+$$d = R \cdot c \quad \text{where } R = 6{,}371{,}000\text{ metres (mean Earth radius)}$$
 
 #### Code Implementation in `index.html` (`lines 5280–5295`):
 
