@@ -1,0 +1,2554 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Enterprise Permit-to-Work (PTW) Operational Process Swimlanes</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Barlow+Semi+Condensed:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600;700&family=Inter:wght@400;500;600;700&display=swap');
+
+  :root {
+    --bg-page: #f8fafc;
+    --card-bg: #ffffff;
+    --card-border: #cbd5e1;
+    --ink-primary: #0f172a;
+    --ink-secondary: #334155;
+    --ink-muted: #64748b;
+    
+    /* Trade & Domain Theme Colors */
+    --navy-blue: #1e3a8a;
+    --navy-light: #eff6ff;
+    --navy-border: #bfdbfe;
+
+    --civil-color: #0369a1;
+    --civil-bg: #f0f9ff;
+    --civil-border: #bae6fd;
+
+    --mep-color: #0f766e;
+    --mep-bg: #f0fdfa;
+    --mep-border: #99f6e4;
+
+    --elec-color: #b45309;
+    --elec-bg: #fffbeb;
+    --elec-border: #fde68a;
+
+    --highrisk-color: #b91c1c;
+    --highrisk-bg: #fef2f2;
+    --highrisk-border: #fecaca;
+
+    --weekend-color: #7c2d12;
+    --weekend-bg: #fff7ed;
+    --weekend-border: #fed7aa;
+
+    --sun-brand: #ea580c;
+    --sun-bg: #fffedd;
+    --sun-border: #fdba74;
+
+    /* Semantic Gateway Indicators */
+    --approve: #15803d;
+    --approve-bg: #f0fdf4;
+    --approve-border: #bbf7d0;
+
+    --reject: #c2410c;
+    --reject-bg: #fff7ed;
+    --reject-border: #ffedd5;
+
+    --halt: #b91c1c;
+    --halt-bg: #fef2f2;
+    --halt-border: #fecaca;
+
+    --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+    --shadow-md: 0 4px 6px -1px rgba(0, 0, 0, 0.07), 0 2px 4px -2px rgba(0, 0, 0, 0.04);
+    --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -4px rgba(0, 0, 0, 0.03);
+  }
+
+  * { box-sizing: border-box; }
+  html { scroll-behavior: smooth; }
+  body {
+    margin: 0;
+    background-color: var(--bg-page);
+    color: var(--ink-primary);
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  h1, h2, h3, h4, .font-heading {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+  }
+  .font-mono {
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* Container */
+  .container {
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 32px 24px 80px;
+  }
+
+  /* Header Masthead */
+  .masthead {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 32px 36px 28px;
+    box-shadow: var(--shadow-sm);
+    margin-bottom: 24px;
+    position: relative;
+    overflow: hidden;
+  }
+  .masthead::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 4px;
+    background: linear-gradient(90deg, #1e3a8a, #0369a1, #0f766e, #ea580c);
+  }
+
+  .org-eyebrow {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--navy-blue);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    background: var(--navy-light);
+    border: 1px solid var(--navy-border);
+    padding: 4px 10px;
+    border-radius: 4px;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-size: clamp(28px, 3.5vw, 42px);
+    margin: 0 0 10px;
+    color: var(--ink-primary);
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .masthead-subtitle {
+    font-size: 16px;
+    color: var(--ink-secondary);
+    max-width: 95ch;
+    margin: 0 0 20px;
+  }
+
+  /* Standards Strip */
+  .standards-row {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 18px;
+    padding-top: 18px;
+    border-top: 1px solid #e2e8f0;
+  }
+  .standard-badge {
+    background: #f8fafc;
+    border: 1px solid #cbd5e1;
+    border-radius: 4px;
+    padding: 6px 12px;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    color: var(--ink-secondary);
+    font-weight: 500;
+  }
+  .standard-badge i {
+    color: var(--navy-blue);
+    font-size: 14px;
+  }
+
+  /* Clocks & Controls Bar */
+  .control-summary-bar {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+  }
+
+  .clock-items {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    align-items: center;
+  }
+  .clock-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-secondary);
+    background: #f1f5f9;
+    padding: 4px 10px;
+    border-radius: 4px;
+    border: 1px solid #e2e8f0;
+  }
+  .clock-pill b {
+    color: var(--navy-blue);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+
+  /* Legend Strip */
+  .legend-strip {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 24px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 18px;
+  }
+  .legend-title {
+    font-size: 12px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--ink-muted);
+    font-family: 'IBM Plex Mono', monospace;
+  }
+  .legend-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--ink-secondary);
+  }
+  .legend-dot {
+    width: 10px;
+    height: 10px;
+    border-radius: 50%;
+  }
+  .legend-dot.start { background: #0284c7; }
+  .legend-dot.step { background: #1e3a8a; }
+  .legend-dot.decide { background: #d97706; }
+  .legend-dot.approve { background: #16a34a; }
+  .legend-dot.reject { background: #dc2626; }
+  .legend-dot.end { background: #334155; }
+  .legend-dot.sun { background: #ea580c; }
+
+  /* Navigation Index */
+  .flow-nav {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 8px;
+    margin-bottom: 28px;
+  }
+  .flow-nav-item {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    padding: 8px 12px;
+    text-decoration: none;
+    color: var(--ink-primary);
+    font-size: 13px;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    transition: all 0.15s ease;
+  }
+  .flow-nav-item:hover {
+    border-color: var(--navy-blue);
+    background: var(--navy-light);
+    color: var(--navy-blue);
+    transform: translateY(-1px);
+  }
+  .flow-nav-item .nav-code {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    color: var(--ink-muted);
+    background: #f1f5f9;
+    padding: 2px 6px;
+    border-radius: 3px;
+  }
+  .flow-nav-item.sun-nav {
+    border-color: var(--sun-border);
+    background: var(--sun-bg);
+  }
+  .flow-nav-item.sun-nav .nav-code {
+    color: var(--sun-brand);
+    background: #ffedd5;
+  }
+
+  /* Search & Filter Bar */
+  .search-filter-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    padding: 16px 20px;
+    margin-bottom: 28px;
+    box-shadow: var(--shadow-sm);
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+  }
+  .search-input-wrap {
+    position: relative;
+    width: 100%;
+  }
+  .search-input-wrap i {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: var(--ink-muted);
+    font-size: 14px;
+  }
+  .search-input {
+    width: 100%;
+    padding: 10px 14px 10px 38px;
+    border: 1px solid var(--card-border);
+    border-radius: 6px;
+    font-size: 14px;
+    font-family: inherit;
+    background: #f8fafc;
+    transition: border-color 0.15s ease;
+  }
+  .search-input:focus {
+    outline: none;
+    border-color: var(--navy-blue);
+    background: #ffffff;
+  }
+  .filter-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .filter-btn {
+    background: #f1f5f9;
+    border: 1px solid #cbd5e1;
+    border-radius: 20px;
+    padding: 5px 14px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: var(--ink-secondary);
+    cursor: pointer;
+    transition: all 0.15s ease;
+  }
+  .filter-btn:hover {
+    background: #e2e8f0;
+    color: var(--ink-primary);
+  }
+  .filter-btn.active {
+    background: var(--navy-blue);
+    border-color: var(--navy-blue);
+    color: #ffffff;
+  }
+
+  /* Flow Section Card */
+  .flow-card {
+    background: #ffffff;
+    border: 1px solid var(--card-border);
+    border-radius: 8px;
+    margin-bottom: 32px;
+    box-shadow: var(--shadow-md);
+    overflow: hidden;
+  }
+  .flow-card-head {
+    padding: 20px 24px 18px;
+    border-bottom: 1px solid #e2e8f0;
+    background: linear-gradient(180deg, #ffffff, #f8fafc);
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+  .flow-title-group {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    flex-wrap: wrap;
+  }
+  .flow-code-badge {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 14px;
+    font-weight: 700;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: var(--navy-light);
+    color: var(--navy-blue);
+    border: 1px solid var(--navy-border);
+  }
+  .flow-code-badge.sun-badge {
+    background: #ffedd5;
+    color: var(--sun-brand);
+    border-color: var(--sun-border);
+  }
+  .flow-card-head h2 {
+    font-size: 22px;
+    margin: 0;
+    color: var(--ink-primary);
+  }
+  .flow-scope-tag {
+    font-size: 13px;
+    color: var(--ink-muted);
+    font-weight: 500;
+  }
+
+  /* Flow Scope & Key Safeguards */
+  .flow-overview {
+    padding: 16px 24px;
+    background: #fbfcfe;
+    border-bottom: 1px solid #e2e8f0;
+  }
+  .flow-desc {
+    font-size: 14px;
+    color: var(--ink-secondary);
+    margin-bottom: 12px;
+    line-height: 1.55;
+  }
+  .safeguards-bar {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+  }
+  .safeguard-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12.5px;
+    padding: 4px 10px;
+    border-radius: 4px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: var(--ink-secondary);
+  }
+  .safeguard-pill i {
+    color: var(--approve);
+    font-size: 12px;
+  }
+  .safeguard-pill b {
+    color: var(--ink-primary);
+  }
+
+  /* ===================================================
+     PROPER SWIMLANE LAYOUT & STYLES
+     =================================================== */
+  .swimlane-container {
+    display: flex;
+    flex-direction: column;
+    background: #ffffff;
+  }
+
+  /* Individual Swimlane (One Lane Per Actor/Role) */
+  .swimlane-row {
+    display: grid;
+    grid-template-columns: 240px 1fr;
+    border-bottom: 1px solid #e2e8f0;
+    min-height: 110px;
+  }
+  .swimlane-row:last-child {
+    border-bottom: none;
+  }
+
+  /* Role / Actor Lane Header (Left Column) */
+  .lane-actor-col {
+    background: #f8fafc;
+    border-right: 1px solid #cbd5e1;
+    padding: 18px 16px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    position: relative;
+  }
+  .lane-actor-col::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    bottom: 0;
+    left: 0;
+    width: 4px;
+    background: #94a3b8;
+  }
+  .lane-actor-col.actor-supervisor::after { background: #0284c7; }
+  .lane-actor-col.actor-engineer::after { background: #0d9488; }
+  .lane-actor-col.actor-specialist::after { background: #7c3aed; }
+  .lane-actor-col.actor-sectionhead::after { background: #2563eb; }
+  .lane-actor-col.actor-ehs::after { background: #16a34a; }
+  .lane-actor-col.actor-surrender::after { background: #475569; }
+  .lane-actor-col.actor-sun::after { background: #ea580c; }
+
+  .actor-title {
+    font-family: 'Barlow Semi Condensed', sans-serif;
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--ink-primary);
+    margin-bottom: 2px;
+  }
+  .actor-role-desc {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    font-weight: 500;
+    margin-bottom: 6px;
+  }
+  .actor-badge {
+    align-self: flex-start;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    text-transform: uppercase;
+    padding: 2px 6px;
+    border-radius: 3px;
+    background: #e2e8f0;
+    color: var(--ink-secondary);
+  }
+
+  /* Process Track (Right Column) */
+  .lane-track-col {
+    padding: 18px 24px;
+    display: flex;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 14px;
+    background: #ffffff;
+    position: relative;
+  }
+
+  /* Process Nodes */
+  .step-node {
+    background: #ffffff;
+    border: 1.5px solid #94a3b8;
+    border-radius: 6px;
+    padding: 10px 14px;
+    font-size: 13px;
+    color: var(--ink-primary);
+    display: inline-flex;
+    flex-direction: column;
+    gap: 3px;
+    min-width: 170px;
+    max-width: 250px;
+    box-shadow: var(--shadow-sm);
+    position: relative;
+  }
+  .step-node .node-seq {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--navy-blue);
+    text-transform: uppercase;
+  }
+  .step-node .node-action {
+    font-weight: 600;
+    line-height: 1.3;
+  }
+  .step-node .node-detail {
+    font-size: 11.5px;
+    color: var(--ink-muted);
+    line-height: 1.35;
+    margin-top: 2px;
+  }
+
+  .step-node.node-start {
+    border-color: #0284c7;
+    background: #f0f9ff;
+  }
+  .step-node.node-start .node-seq {
+    color: #0284c7;
+  }
+
+  .step-node.node-highlight {
+    border-color: #7c3aed;
+    background: #faf5ff;
+  }
+  .step-node.node-highlight .node-seq {
+    color: #7c3aed;
+  }
+
+  .step-node.node-active {
+    border-color: #0d9488;
+    background: #f0fdfa;
+  }
+  .step-node.node-active .node-seq {
+    color: #0d9488;
+  }
+
+  .step-node.node-end {
+    border-color: #475569;
+    background: #f8fafc;
+  }
+  .step-node.node-end .node-seq {
+    color: #475569;
+  }
+
+  .step-node.node-sun {
+    border-color: var(--sun-brand);
+    background: #fff7ed;
+  }
+  .step-node.node-sun .node-seq {
+    color: var(--sun-brand);
+  }
+
+  /* Decision Gateways (Diamonds / Checkpoint Blocks) */
+  .decision-gateway {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 8px 12px;
+    background: #fffbeb;
+    border: 1.5px solid #f59e0b;
+    border-radius: 6px;
+    box-shadow: var(--shadow-sm);
+    min-width: 180px;
+    max-width: 260px;
+  }
+  .decision-title {
+    font-size: 11.5px;
+    font-weight: 700;
+    color: #92400e;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .decision-paths {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 11.5px;
+  }
+  .path-approved {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--approve);
+    font-weight: 600;
+  }
+  .path-rejected {
+    display: flex;
+    align-items: center;
+    gap: 5px;
+    color: var(--reject);
+    font-weight: 500;
+  }
+
+  /* Flow Connectors & Arrows */
+  .flow-arrow {
+    color: #94a3b8;
+    font-size: 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .lane-handoff-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10.5px;
+    padding: 3px 8px;
+    border-radius: 4px;
+    background: #f1f5f9;
+    border: 1px dashed #94a3b8;
+    color: var(--ink-secondary);
+    white-space: nowrap;
+  }
+
+  /* Multi-Specialist Parallel Box */
+  .parallel-gate-box {
+    display: inline-flex;
+    flex-direction: column;
+    gap: 6px;
+    background: #f8fafc;
+    border: 1.5px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 8px 12px;
+    box-shadow: var(--shadow-sm);
+  }
+  .parallel-gate-title {
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 10px;
+    font-weight: 700;
+    color: var(--navy-blue);
+    text-transform: uppercase;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .parallel-branches {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+  .parallel-item {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--ink-secondary);
+    background: #ffffff;
+    border: 1px solid #e2e8f0;
+    padding: 3px 8px;
+    border-radius: 3px;
+  }
+  .parallel-item i {
+    color: var(--navy-blue);
+    font-size: 11px;
+  }
+
+  /* Return Loop Badge */
+  .return-loop-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: #fff7ed;
+    border: 1px dashed #ea580c;
+    padding: 4px 8px;
+    border-radius: 4px;
+    font-size: 11.5px;
+    color: #c2410c;
+  }
+
+  /* Operational Responsibility Summary */
+  .flow-footer-summary {
+    padding: 14px 24px;
+    background: #f8fafc;
+    border-top: 1px solid #e2e8f0;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    font-size: 12.5px;
+    color: var(--ink-muted);
+  }
+  .summary-signatories {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    align-items: center;
+  }
+  .sig-pill {
+    display: inline-flex;
+    align-items: center;
+    gap: 5px;
+    font-family: 'IBM Plex Mono', monospace;
+    font-size: 11px;
+    padding: 2px 7px;
+    border-radius: 3px;
+    background: #ffffff;
+    border: 1px solid #cbd5e1;
+    color: var(--ink-secondary);
+  }
+
+  /* Footer */
+  footer {
+    max-width: 1320px;
+    margin: 40px auto 0;
+    padding: 24px;
+    border-top: 1px solid #cbd5e1;
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    color: var(--ink-muted);
+    font-size: 13px;
+  }
+
+  @media (max-width: 900px) {
+    .swimlane-row {
+      grid-template-columns: 1fr;
+    }
+    .lane-actor-col {
+      border-right: none;
+      border-bottom: 1px solid #cbd5e1;
+    }
+    .lane-actor-col::after {
+      top: 0;
+      bottom: auto;
+      left: 0;
+      right: 0;
+      width: auto;
+      height: 4px;
+    }
+  }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- Masthead -->
+  <header class="masthead">
+    <div class="org-eyebrow">
+      <i class="fa-solid fa-shield-halved"></i> Enterprise EHS Governance Standard
+    </div>
+    <h1>Permit-to-Work (PTW) Operational Process Swimlanes</h1>
+    <p class="masthead-subtitle">
+      Authoritative operational swimlane workflows across 10 statutory construction permit modules, dual approval pathways, weekend governance, and formal handover protocols.
+    </p>
+
+    <!-- Standards Strip -->
+    <div class="standards-row">
+      <div class="standard-badge"><i class="fa-solid fa-scale-balanced"></i> BOCW Act 1996 §36-44</div>
+      <div class="standard-badge"><i class="fa-solid fa-bolt"></i> CEA Regulations 2010</div>
+      <div class="standard-badge"><i class="fa-solid fa-burst"></i> PESO Rules 2008</div>
+      <div class="standard-badge"><i class="fa-solid fa-industry"></i> IS 13367 / Factories Act 1948</div>
+      <div class="standard-badge"><i class="fa-solid fa-certificate"></i> ISO 45001:2018 §8.1.2</div>
+      <div class="standard-badge"><i class="fa-solid fa-file-signature"></i> DPDP Act 2023 §6</div>
+    </div>
+  </header>
+
+  <!-- Operating Clocks & Controls -->
+  <div class="control-summary-bar">
+    <div class="clock-items">
+      <span class="clock-pill"><i class="fa-regular fa-clock"></i> Earliest Start: <b>08:30 IST</b></span>
+      <span class="clock-pill"><i class="fa-regular fa-clock"></i> Creation Cutoff: <b>18:30 IST</b></span>
+      <span class="clock-pill"><i class="fa-regular fa-clock"></i> Daylight Ceiling: <b>19:30 IST</b></span>
+      <span class="clock-pill"><i class="fa-regular fa-clock"></i> Extension Ceiling: <b>20:30 IST</b></span>
+      <span class="clock-pill"><i class="fa-regular fa-clock"></i> Night Handover: <b>20:30–21:00 IST</b></span>
+      <span class="clock-pill"><i class="fa-regular fa-clock"></i> Demobilization: <b>06:00 IST</b></span>
+    </div>
+    <div class="legend-badge">
+      <span class="legend-dot sun"></span> <b>Saturday:</b> SUN Tile Active &nbsp;|&nbsp; <b>Sunday:</b> Zero-Creation Lockout
+    </div>
+  </div>
+
+  <!-- Legend Strip -->
+  <div class="legend-strip">
+    <span class="legend-title">Swimlane Symbols:</span>
+    <span class="legend-badge"><span class="legend-dot start"></span> Start / Initiation Node</span>
+    <span class="legend-badge"><span class="legend-dot step"></span> Process Activity Task</span>
+    <span class="legend-badge"><span class="legend-dot decide"></span> Decision Gateway (Approve / Return)</span>
+    <span class="legend-badge"><span class="legend-dot approve"></span> Active Monitored Work</span>
+    <span class="legend-badge"><span class="legend-dot end"></span> Closure &amp; Surrender</span>
+    <span class="legend-badge"><span class="legend-dot sun"></span> Weekend / Sunday Flow</span>
+  </div>
+
+  <!-- Quick Nav Index -->
+  <nav class="flow-nav">
+    <a href="#f1" class="flow-nav-item"><span>Excavation Work</span><span class="nav-code">PTW-001</span></a>
+    <a href="#f2" class="flow-nav-item"><span>Hot Work</span><span class="nav-code">PTW-002</span></a>
+    <a href="#f3" class="flow-nav-item"><span>Guard Rail Removal</span><span class="nav-code">PTW-003</span></a>
+    <a href="#f4" class="flow-nav-item"><span>Confined Space Entry</span><span class="nav-code">PTW-004</span></a>
+    <a href="#f5" class="flow-nav-item"><span>Shaft Work</span><span class="nav-code">PTW-005</span></a>
+    <a href="#f6" class="flow-nav-item"><span>Electrical HT / LT</span><span class="nav-code">PTW-006</span></a>
+    <a href="#f7" class="flow-nav-item"><span>Drilling &amp; Blasting</span><span class="nav-code">PTW-007</span></a>
+    <a href="#f8" class="flow-nav-item"><span>General Work</span><span class="nav-code">PTW-008</span></a>
+    <a href="#f9" class="flow-nav-item"><span>Lifting Operations</span><span class="nav-code">PTW-009</span></a>
+    <a href="#f10" class="flow-nav-item"><span>Night Shift Work</span><span class="nav-code">PTW-010</span></a>
+    <a href="#f11" class="flow-nav-item sun-nav"><span>Sunday Work (SUN) Tile</span><span class="nav-code">WEEKEND</span></a>
+    <a href="#f12" class="flow-nav-item"><span>Governance Lifecycles</span><span class="nav-code">UNIVERSAL</span></a>
+  </nav>
+
+  <!-- Filter & Search Bar -->
+  <div class="search-filter-card">
+    <div class="search-input-wrap">
+      <i class="fa-solid fa-magnifying-glass"></i>
+      <input type="text" id="swimlaneSearch" class="search-input" placeholder="Search swimlanes by role, permit type, checkpoint, or safety gate..." oninput="handleSearch()">
+    </div>
+    <div class="filter-pills">
+      <button class="filter-btn active" onclick="filterFlows('all')">All Workflows (12 Flows)</button>
+      <button class="filter-btn" onclick="filterFlows('civil')">Civil &amp; Structural (PTW-001, 003, 008)</button>
+      <button class="filter-btn" onclick="filterFlows('mep')">Mechanical &amp; Utilities (PTW-002, 005)</button>
+      <button class="filter-btn" onclick="filterFlows('electrical')">Electrical Dual-Voltage (PTW-006)</button>
+      <button class="filter-btn" onclick="filterFlows('highrisk')">High-Risk Specialists (PTW-004, 007, 009)</button>
+      <button class="filter-btn" onclick="filterFlows('weekend')">Night &amp; Weekend Governance (PTW-010, Sunday SUN)</button>
+      <button class="filter-btn" onclick="filterFlows('governance')">Universal Safety Governance</button>
+    </div>
+  </div>
+
+  <!-- ========================================================
+       FLOW I · EXCAVATION WORK (PTW-001)
+       ======================================================== -->
+  <section class="flow-card" id="f1" data-cat="civil">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-001</span>
+        <h2>Excavation Work Process Swimlane</h2>
+        <span class="flow-scope-tag">Civil &amp; Groundworks · 3-Way Parallel Domain Clearance</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-layer-group"></i> 6-Stage Approval Spine</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Governs earthmoving, trenching, pit digging, and foundation works. Enforces physical shoring, underground service clearance (gas, electrical, fiber, water), and mandatory multi-trade clearances before any ground penetration.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Surcharge Buffer: <b>&ge; 1.5m From Edge</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Trench Egress: <b>Ladder Every 7.5m</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Depth Threshold: <b>Shoring Required &ge; 1.5m</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Underground Scan: <b>Cable Locator &amp; Drawing Sign-off</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <!-- Lane 1: Site Supervisor -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Site Supervisor</span>
+          <span class="actor-role-desc">Permittee / Initiator</span>
+          <span class="actor-badge">Field Initiation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Draft Excavation Request</span>
+            <span class="node-detail">Defines depth, soil type, machinery, and uploads excavation drawing plan</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to Field Engineer</span>
+        </div>
+      </div>
+
+      <!-- Lane 2: Site Engineer -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Ground Inspection</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Inspection</span>
+            <span class="node-action">Conduct On-Site Ground Check</span>
+            <span class="node-detail">Verifies soil stability, benching ratio, edge barricades, and ingress/egress</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-code-fork"></i> Ground Verification Passed?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Passed &rarr; Advances to Specialists</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Issues Found &rarr; Returns to Supervisor</span>
+            </div>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Forward to 3 Domain Authorities</span>
+        </div>
+      </div>
+
+      <!-- Lane 3: Domain Specialists (Parallel Gate) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-specialist">
+          <span class="actor-title">Domain Specialists</span>
+          <span class="actor-role-desc">MEP · P&amp;M · Civil/IT</span>
+          <span class="actor-badge">Parallel Clearance</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="parallel-gate-box">
+            <span class="parallel-gate-title"><i class="fa-solid fa-network-wired"></i> Step 3 · 3-Way Parallel Clearances (All 3 Required)</span>
+            <div class="parallel-branches">
+              <span class="parallel-item"><i class="fa-solid fa-faucet-drip"></i> <b>MEP Specialist:</b> Underground utility pipes &amp; conduits cleared</span>
+              <span class="parallel-item"><i class="fa-solid fa-truck-monster"></i> <b>P&amp;M Specialist:</b> Excavator TPI fitness, reverse alarm &amp; operator certified</span>
+              <span class="parallel-item"><i class="fa-solid fa-trowel-bricks"></i> <b>Civil / IT Specialist:</b> Adjacent structure integrity &amp; telecom cable safety cleared</span>
+            </div>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Combined Clearances Forwarded</span>
+        </div>
+      </div>
+
+      <!-- Lane 4: Tower Incharge -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Area Coordination</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 4 · Operational Review</span>
+            <span class="node-action">Deconflict Site Operations</span>
+            <span class="node-detail">Checks traffic management, spoil pile disposal, and multi-trade work zone conflicts</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-check-double"></i> Area Clearance Approved?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Approved &rarr; Handoff to EHS Safety</span>
+              <span class="path-rejected"><i class="fa-solid fa-xmark"></i> Rejected &rarr; Returned with Comments</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 5: EHS Safety Officer -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorsement</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 5 · Statutory Review</span>
+            <span class="node-action">Safety Audit &amp; Gas Check</span>
+            <span class="node-detail">Verifies emergency ladder access, PPE compliance, and signs digital endorsement</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Excavation Work Active</span>
+            <span class="node-detail">Ongoing monitoring of soil cracks, spoil setback (&ge;1.5m), and barricade integrity</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Work Completed</span>
+        </div>
+      </div>
+
+      <!-- Lane 6: Surrender & Handback Custodian -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Surrender Custodian</span>
+          <span class="actor-role-desc">Site Supervisor / Engineer</span>
+          <span class="actor-badge">Permit Closeout</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 6 · Demobilization</span>
+            <span class="node-action">Trench Restoration &amp; Handback</span>
+            <span class="node-detail">Confirms trench backfilling/covering, personnel exited, barricades secured &amp; digital surrender</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Statutory Signatories Required:</b> Site Supervisor &rarr; Site Engineer &rarr; MEP Engineer &rarr; P&amp;M Engineer &rarr; Civil Engineer &rarr; Tower Incharge &rarr; EHS Safety</span>
+      <span class="sig-pill"><i class="fa-solid fa-clock"></i> Max Daily Validity: 08:30 – 19:30 IST</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW II · HOT WORK (PTW-002)
+       ======================================================== -->
+  <section class="flow-card" id="f2" data-cat="mep">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-002</span>
+        <h2>Hot Work Process Swimlane</h2>
+        <span class="flow-scope-tag">Welding, Cutting, Grinding &amp; Open Flame · Mandatory 60-Min Fire Watch</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-fire-extinguisher"></i> NFPA 51B Protocol</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Covers all activities generating heat, sparks, or open flames. Mandates removal of combustible materials within 10 meters, flame-retardant blanketing, calibrated fire extinguishers within 5 meters, and a dedicated 60-minute post-work fire watch.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Combustible Clearance: <b>10m Radius Removed/Covered</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Fire Extinguishers: <b>2 x 10kg DCP Staged Within 5m</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Welder Certification: <b>Certified Welder Card &amp; Leather PPE</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Post-Work Watch: <b>Mandatory 60-Minute Continuous Fire Watch</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Hot Work Supervisor</span>
+          <span class="actor-role-desc">Permittee</span>
+          <span class="actor-badge">Initiator</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Submit Hot Work Request</span>
+            <span class="node-detail">Declares equipment (welding set, gas cylinders with flash-back arrestors), hot work location, and appoints designated Fire Watch</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff for Physical Inspection</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Site Inspection</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Verification</span>
+            <span class="node-action">Inspect 10m Combustible Zone</span>
+            <span class="node-detail">Checks sparks containment screens, cylinder trolleys &amp; safety chains, cable insulation, and fire extinguishers</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-fire"></i> Fire Hazards Mitigated?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Cleared &rarr; Handoff to Section Head</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Flammable Hazards &rarr; Stop &amp; Clean</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Area Coordination</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 3 · Area Clearance</span>
+            <span class="node-action">Coordinate Nearby Trades</span>
+            <span class="node-detail">Ensures no painting, chemical, or flammable solvent storage activities within spark dispersion range</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 4 · Statutory Review</span>
+            <span class="node-action">Verify Fire Control Measures</span>
+            <span class="node-detail">Verifies fire blanket ratings, welder PPE, and signs formal digital permit endorsement</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Hot Work Execution</span>
+            <span class="node-detail">Continuous spark monitoring by designated Fire Watch during all flame operations</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Dedicated Fire Watch</span>
+          <span class="actor-role-desc">Surrender Custodian</span>
+          <span class="actor-badge">60-Min Fire Watch</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node" style="border-color:#d97706;background:#fffbeb;">
+            <span class="node-seq" style="color:#d97706;">Mandatory Safety Gate</span>
+            <span class="node-action">60-Minute Fire Watch Vigil</span>
+            <span class="node-detail">Remains at hot work spot for full 60 mins post-flame; checks for smoldering sparks</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-end">
+            <span class="node-seq">Step 5 · Closeout</span>
+            <span class="node-action">Cold Inspection &amp; Surrender</span>
+            <span class="node-detail">Signs "No Smoldering Sparks Detected" declaration &amp; formally closes permit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Mandatory Signatories:</b> Hot Work Supervisor &rarr; Site Engineer &rarr; Tower Incharge &rarr; EHS Safety Officer &rarr; Fire Watch Attendant</span>
+      <span class="sig-pill"><i class="fa-solid fa-clock"></i> Post-Work Fire Watch: Mandatory 60 Minutes</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW III · GUARD RAIL & FLOOR OPENING (PTW-003)
+       ======================================================== -->
+  <section class="flow-card" id="f3" data-cat="civil">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-003</span>
+        <h2>Guard Rail &amp; Floor Protection Removal Swimlane</h2>
+        <span class="flow-scope-tag">Working at Height · Edge Protection &amp; Re-Fixing Gate</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-person-falling"></i> Fall Arrest Protocol</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Governs temporary removal of perimeter edge protection, slab opening covers, or shaft barriers for material hoisting. Mandates 100% tie-off, full-body safety harness with shock absorber, lower-level exclusion zone, and immediate re-fixing upon completion.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Fall Protection: <b>100% Tie-Off to Certified Lifeline</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Lower Exclusion: <b>Red Danger Tape &amp; Signage Below Opening</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Dedicated Sentry: <b>Standby Spotter Stationed at Exposed Edge</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Re-Fixing Rule: <b>Immediate Restoration Before Shift End</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Site Supervisor</span>
+          <span class="actor-role-desc">Permittee</span>
+          <span class="actor-badge">Initiator</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Request Temporary Removal</span>
+            <span class="node-detail">Specifies exact floor, opening dimensions, material delivery window, and restoration plan</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff for Field Check</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Fall Hazard Check</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Verification</span>
+            <span class="node-action">Inspect Lifelines &amp; Harnesses</span>
+            <span class="node-detail">Verifies lifeline anchor points (min 22 kN rating), safety harnesses, and barricades at lower levels</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-shield"></i> Fall Arrest System Certified?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Certified &rarr; Advances to Section Head</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Inadequate Anchor &rarr; Prohibit Removal</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Logistics Review</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 3 · Operations Clearance</span>
+            <span class="node-action">Coordinate Material Intake Window</span>
+            <span class="node-detail">Aligns crane delivery schedule; confirms dedicated sentry stationed at open edge</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 4 · Statutory Review</span>
+            <span class="node-action">Safety Audit &amp; Issuance</span>
+            <span class="node-detail">Verifies warning signs and shock-absorbing lanyards; activates permit</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Material Shifting Underway</span>
+            <span class="node-detail">Exposed edge monitored continuously by sentry; 100% tie-off enforced</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Closure Custodian</span>
+          <span class="actor-role-desc">Supervisor &amp; Engineer</span>
+          <span class="actor-badge">Re-Fixing &amp; Handback</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 5 · Mandatory Re-Fixing</span>
+            <span class="node-action">Guard Rail Re-Installed &amp; Tested</span>
+            <span class="node-detail">Edge barrier re-anchored, tested for lateral load, photo uploaded &amp; permit formally surrendered</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Approval Chain:</b> Site Supervisor &rarr; Site Engineer &rarr; Tower Incharge &rarr; EHS Safety Officer &rarr; Re-Fixing Handback Sign-off</span>
+      <span class="sig-pill"><i class="fa-solid fa-lock"></i> Edge Re-Fixing Mandatory Before Shift End</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW IV · CONFINED SPACE ENTRY (PTW-004)
+       ======================================================== -->
+  <section class="flow-card" id="f4" data-cat="highrisk">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-004</span>
+        <h2>Confined Space Entry Swimlane</h2>
+        <span class="flow-scope-tag">High-Risk Atmospheric Space · Mandatory Gas Testing &amp; Standby Attendant</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-wind"></i> Multi-Gas Protocol</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Applies to manholes, tanks, deep pits (&gt;1.5m), underground chambers, and unventilated ducts. Requires multi-gas atmospheric testing, forced mechanical ventilation, tripods with rescue winches, entrant roster logging, and a dedicated outside Standby Attendant.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Oxygen Level: <b>19.5% – 23.5% Mandatory</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Flammable Gas: <b>LEL &lt; 5% (Zero Tolerance)</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Toxic Limits: <b>CO &lt; 25 ppm, H2S &lt; 10 ppm</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Standby Attendant: <b>Dedicated Sentry Stationed Outside Manhole</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Entry Supervisor</span>
+          <span class="actor-role-desc">Permittee</span>
+          <span class="actor-badge">Initiator</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Submit Entry Request</span>
+            <span class="node-detail">Declares space ID, entrant names, task scope, forced air blower, and appoints certified Standby Attendant</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff for Atmospheric Test</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Gas Tester / Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Atmospheric Test</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Pre-Entry Gas Test</span>
+            <span class="node-action">Test Multi-Gas Levels</span>
+            <span class="node-detail">Calibrated detector tests O2, LEL, CO, H2S; verifies forced mechanical air blower &amp; rescue tripod</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-gauge-high"></i> Atmosphere Within Safe Limits?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> All 4 Gases Safe &rarr; Advances</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Hazardous Gas &rarr; Force Ventilate &amp; Retest</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Direct Clearance</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 3 · Section Clearance</span>
+            <span class="node-action">Clear Entry Operations</span>
+            <span class="node-detail">Verifies emergency response team availability and clears adjacent utility lines</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 4 · Statutory Review</span>
+            <span class="node-action">Audit Calibration &amp; Winch</span>
+            <span class="node-detail">Checks gas detector calibration certificate, entrant briefing log &amp; activates permit</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Entrants Inside Chamber</span>
+            <span class="node-detail">Continuous gas detection; Standby Attendant logs entrant times and maintains lifeline communication</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Standby Attendant</span>
+          <span class="actor-role-desc">Surrender Custodian</span>
+          <span class="actor-badge">Headcount &amp; Seal</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 5 · Evacuation &amp; Closeout</span>
+            <span class="node-action">Verify All Entrants Out &amp; Reseal</span>
+            <span class="node-detail">Confirms 100% entrant headcount out of space, removes ventilation ducts, secures cover &amp; closes permit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Approval Spine:</b> Entry Supervisor &rarr; Site Engineer (Gas Tester) &rarr; Tower Incharge &rarr; EHS Safety Officer &rarr; Standby Attendant Closeout</span>
+      <span class="sig-pill"><i class="fa-solid fa-ban"></i> Night Work &amp; Sunday Entry Strictly Barred</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW V · SHAFT WORK (PTW-005)
+       ======================================================== -->
+  <section class="flow-card" id="f5" data-cat="mep">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-005</span>
+        <h2>Shaft Work Process Swimlane</h2>
+        <span class="flow-scope-tag">Elevator Cores, MEP Risers &amp; Vertical Ducts · Dedicated MEP Clearance</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-arrows-up-down"></i> Vertical Riser Safety</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Governs work inside vertical elevator shafts, electrical shafts, and plumbing riser cores. Requires debris catch netting every 2 floors, tethered tools, no simultaneous overhead work, and dedicated MEP specialist clearance.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Vertical Safety: <b>Catch Netting Every 2 Floors</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Tool Security: <b>100% Tethered Hand Tools</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Deconfliction: <b>Zero Simultaneous Overhead Work</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Communication: <b>Walkie-Talkie Link Ground to Floor</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Shaft Supervisor</span>
+          <span class="actor-role-desc">Permittee</span>
+          <span class="actor-badge">Initiator</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Submit Shaft Work Plan</span>
+            <span class="node-detail">Defines shaft ID, vertical floor range, scaffold/cradle inspection, and tool tethering list</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to Field Engineer</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Site Inspection</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Verification</span>
+            <span class="node-action">Inspect Shaft Platforms &amp; Nets</span>
+            <span class="node-detail">Checks working platform anchorage, debris nets, shaft lighting, and edge toe-boards</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-arrow-up-from-ground-water"></i> Shaft Safety Sound?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Passed &rarr; Handoff to MEP Specialist</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Netting Gaps &rarr; Rectify &amp; Retest</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-specialist">
+          <span class="actor-title">MEP Shaft Specialist</span>
+          <span class="actor-role-desc">Domain Specialist</span>
+          <span class="actor-badge">Dedicated Clearance</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 3 · MEP Clearance</span>
+            <span class="node-action">Verify Service Isolation</span>
+            <span class="node-detail">Clears plumbing pressure lines, electrical busbars, and verifies lift car parking position</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to Section Head</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Vertical Clearance</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 4 · Section Clearance</span>
+            <span class="node-action">Bar Simultaneous Overhead Work</span>
+            <span class="node-detail">Blocks all upper and lower floor access doors into the shaft core</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 5 · Statutory Review</span>
+            <span class="node-action">Audit Full-Body Harnesses &amp; Comms</span>
+            <span class="node-detail">Verifies radio communication check and activates permit</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Shaft Installation Underway</span>
+            <span class="node-detail">Tool lanyards clipped; safety sentry monitors shaft door access</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Surrender Custodian</span>
+          <span class="actor-role-desc">Site Supervisor</span>
+          <span class="actor-badge">Door Lock &amp; Handback</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 6 · Demobilization</span>
+            <span class="node-action">Tools Retracted &amp; Shaft Re-Locked</span>
+            <span class="node-detail">Counts tethered tool inventory out, locks shaft access doors &amp; completes digital surrender</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Approval Chain:</b> Shaft Supervisor &rarr; Site Engineer &rarr; MEP Shaft Specialist &rarr; Tower Incharge &rarr; EHS Safety &rarr; Closure</span>
+      <span class="sig-pill"><i class="fa-solid fa-door-closed"></i> Shaft Doors Kept Locked When Unattended</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW VI · ELECTRICAL WORK (HT / LT) (PTW-006)
+       ======================================================== -->
+  <section class="flow-card" id="f6" data-cat="electrical">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-006</span>
+        <h2>Electrical Work (HT / LT Dual Voltage Standards) Swimlane</h2>
+        <span class="flow-scope-tag">CEA Regulations 2010 · High Tension &amp; Low Tension Lockout/Tagout (LOTO)</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-bolt"></i> Dual Approval Spines</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Covers all electrical installations, modifications, and maintenance. Automatically branches into two statutory pathways: <b>Low Tension (LT &le; 415V)</b> and <b>High Tension (HT &gt; 415V / 11kV / 33kV)</b>, enforcing CEA-certified isolation and zero-energy verification.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> High Tension Gate: <b>CEA 2010 Electrical Competent Person Required</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Physical LOTO: <b>Padlock + Red Warning Tag on Breaker</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Zero-Energy Check: <b>Calibrated Voltage Detector Dead-Test</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Grounding Rule: <b>Portable Discharge Earths Applied for HT</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Certified Electrician</span>
+          <span class="actor-role-desc">Permittee / Initiator</span>
+          <span class="actor-badge">Voltage Selection</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Select Voltage Tier &amp; Panel ID</span>
+            <span class="node-detail">Selects <b>LT (&le; 415V)</b> or <b>HT (&gt; 415V)</b>; specifies circuit breaker ID, load schedule &amp; PPE</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway" style="background:#f0fdfa;border-color:#0d9488;">
+            <span class="decision-title" style="color:#0f766e;"><i class="fa-solid fa-bolt"></i> Voltage Classification Gate</span>
+            <div class="decision-paths">
+              <span class="path-approved" style="color:#0f766e;"><i class="fa-solid fa-arrow-right"></i> Low Tension (LT) &rarr; Standard 5-Step Spine</span>
+              <span class="path-rejected" style="color:#b45309;"><i class="fa-solid fa-arrow-right"></i> High Tension (HT) &rarr; CEA Specialist Spine</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-specialist">
+          <span class="actor-title">Electrical Specialist</span>
+          <span class="actor-role-desc">CEA 2010 Competent Person</span>
+          <span class="actor-badge">Physical LOTO</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 2 · De-energization &amp; LOTO</span>
+            <span class="node-action">Execute Lockout / Tagout</span>
+            <span class="node-detail">Racks out breaker, locks isolator with physical padlock, applies danger tag &amp; tests for zero voltage</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-plug-circle-check"></i> Zero Potential Confirmed?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Zero Volts &rarr; Earths Applied (HT)</span>
+              <span class="path-rejected"><i class="fa-solid fa-triangle-exclamation"></i> Residual Voltage &rarr; Discharge &amp; Retest</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Power Shutdown</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 3 · Operational Review</span>
+            <span class="node-action">Authorize Area Power Outage</span>
+            <span class="node-detail">Confirms emergency generators active for critical services; approves shutdown</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 4 · Statutory Review</span>
+            <span class="node-action">Audit Arc-Flash PPE &amp; Rubber Mats</span>
+            <span class="node-detail">Verifies 11kV insulated tools, rubber mats &amp; signs digital endorsement</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Electrical Maintenance Underway</span>
+            <span class="node-detail">LOTO key retained strictly by authorized permit custodian</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Surrender Custodian</span>
+          <span class="actor-role-desc">Certified Electrician</span>
+          <span class="actor-badge">De-Isolation &amp; Re-energize</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 5 · De-Isolation &amp; Closeout</span>
+            <span class="node-action">Earths Removed &amp; Power Restored</span>
+            <span class="node-detail">Removes portable earths, removes padlocks/tags, closes panel &amp; re-energizes safely under supervision</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Approval Spine:</b> Electrician &rarr; Electrical Engineer (CEA Competent) &rarr; Tower Incharge &rarr; EHS Safety &rarr; De-isolation Closeout</span>
+      <span class="sig-pill"><i class="fa-solid fa-key"></i> LOTO Padlock Key Exclusively With Custodian</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW VII · DRILLING & BLASTING (PTW-007)
+       ======================================================== -->
+  <section class="flow-card" id="f7" data-cat="highrisk">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-007</span>
+        <h2>Drilling &amp; Blasting Process Swimlane</h2>
+        <span class="flow-scope-tag">PESO Rules 2008 · Licensed Blaster Spine &amp; 500m Exclusion Perimeter</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-burst"></i> Explosives Regulatory Governance</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Regulates rock excavation using explosives. Strictly enforces statutory licensed blasters (PESO licensed), blast pattern drill logs, heavy wire-mesh blast mats, 500-meter cleared exclusion perimeter, dual siren warnings, and post-blast misfire inspection.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Blaster Credentials: <b>PESO Competency Certificate Required</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Exclusion Zone: <b>500m Radius Cleared &amp; Guards Stationed</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Flyrock Control: <b>Heavy Blast Mats Anchored Over Holes</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Misfire Vigil: <b>Mandatory 30-Min Wait Before Re-entry</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Licensed Blaster</span>
+          <span class="actor-role-desc">PESO Certificate Holder</span>
+          <span class="actor-badge">Permittee</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Submit Blast Design Plan</span>
+            <span class="node-detail">Enters PESO license number, explosive quantity, delay detonator sequence, and blast pattern layout</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to Mining/Civil Engineer</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Mining / Civil Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Blast Hole Check</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Verification</span>
+            <span class="node-action">Inspect Drill Holes &amp; Stemming</span>
+            <span class="node-detail">Verifies burden, spacing, hole depth, stemming material, and blast mat coverage</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-burst"></i> Drill Pattern &amp; Mats Compliant?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Compliant &rarr; Handoff to Section Head</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Stemming Flaws &rarr; Re-drill &amp; Re-stem</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Project Head</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Perimeter Lockdown</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 3 · Area Clearance</span>
+            <span class="node-action">Enforce 500m Exclusion Zone</span>
+            <span class="node-detail">Deploys road closure sentries, halts all site activities, and activates public warning sirens</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 4 · Statutory Review</span>
+            <span class="node-action">Final Perimeter Check &amp; Firing Authorization</span>
+            <span class="node-detail">Verifies seismograph staging for ground vibration limits &amp; authorizes blast firing</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Firing</span>
+            <span class="node-action">Dual Siren Blast Protocol</span>
+            <span class="node-detail">1st Siren (15 min warning) &rarr; 2nd Siren (5 min final warning) &rarr; Controlled detonation</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Licensed Blaster</span>
+          <span class="actor-role-desc">Surrender Custodian</span>
+          <span class="actor-badge">Misfire Check &amp; Closeout</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 5 · All Clear &amp; Surrender</span>
+            <span class="node-action">Misfire Inspection &amp; Area Reopening</span>
+            <span class="node-detail">Waits 30 mins, inspects blast face for unexploded charges, signs "Zero Misfires" declaration &amp; reopens site</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Approval Chain:</b> Licensed Blaster &rarr; Mining/Civil Engineer &rarr; Project Head &rarr; EHS Safety Officer &rarr; Misfire Inspection Closeout</span>
+      <span class="sig-pill"><i class="fa-solid fa-ban"></i> Weekend &amp; Night Blasting Strictly Barred</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW VIII · GENERAL WORK (PTW-008)
+       ======================================================== -->
+  <section class="flow-card" id="f8" data-cat="civil">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-008</span>
+        <h2>General Construction Work Swimlane</h2>
+        <span class="flow-scope-tag">Masonry, Plastering, Painting &amp; Material Handling</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-trowel"></i> Standard Approval Spine</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Governs baseline civil and finishing works including block masonry, plastering, tile laying, interior painting, and general housekeeping. Focuses on safe access walkways, PPE compliance, and dust/noise mitigation.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Standard PPE: <b>Hard Hat, Steel-Toe Boots, Hi-Vis Vest</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Access Ways: <b>Clear Unobstructed Walkways</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Housekeeping: <b>Debris Segregated in Designate Waste Bins</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Site Supervisor</span>
+          <span class="actor-role-desc">Permittee</span>
+          <span class="actor-badge">Initiator</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Initiation</span>
+            <span class="node-action">Submit General Work Request</span>
+            <span class="node-detail">Identifies work zone, crew count, hand tools, and material delivery routes</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff for Field Check</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Site Inspection</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Verification</span>
+            <span class="node-action">Verify Access &amp; PPE</span>
+            <span class="node-detail">Checks lighting, scaffolding stability (&lt;2m), and personal protective equipment</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-check"></i> Work Area Safe?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Safe &rarr; Advances to Section Head</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Cluttered Area &rarr; Clear Walkway First</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Area Coordination</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 3 · Operations Clearance</span>
+            <span class="node-action">Coordinate Work Area</span>
+            <span class="node-detail">Resolves space allocation between concurrent finishing trades</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 4 · Statutory Review</span>
+            <span class="node-action">Toolbox Talk Audit &amp; Issuance</span>
+            <span class="node-detail">Verifies pre-work safety briefing attendance &amp; activates permit</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">General Work Underway</span>
+            <span class="node-detail">Standard daily work monitoring; housekeeping maintained</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Site Supervisor</span>
+          <span class="actor-role-desc">Surrender Custodian</span>
+          <span class="actor-badge">Housekeeping Handback</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 5 · Area Clean &amp; Surrender</span>
+            <span class="node-action">Housekeeping Verified &amp; Closed</span>
+            <span class="node-detail">Scraps cleared, tools stowed, work area swept &amp; permit digitally surrendered</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Approval Chain:</b> Site Supervisor &rarr; Site Engineer &rarr; Tower Incharge &rarr; EHS Safety Officer &rarr; Housekeeping Closeout</span>
+      <span class="sig-pill"><i class="fa-solid fa-broom"></i> Daily Housekeeping Mandatory Before Sign-Off</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW IX · LIFTING OPERATIONS (PTW-009A / 009B)
+       ======================================================== -->
+  <section class="flow-card" id="f9" data-cat="highrisk">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-009</span>
+        <h2>Lifting Operations &amp; Critical Lift Plan Swimlane</h2>
+        <span class="flow-scope-tag">IS 13367 Standard · Dual Approval Spines (Routine &le;5 MT vs Critical &gt;5 MT)</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-crane"></i> Rigging Governance</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Governs mobile cranes, tower cranes, and heavy rigging. Dynamically bifurcates into: <b>Routine Lifting (PTW-009A, &le;5 MT)</b> with a 5-step approval spine, and <b>Critical Lift Plan (PTW-009B, &gt;5 MT, tandem lifts, or lifts over occupied structures)</b> requiring mandatory Project Manager approval.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Crane TPI: <b>Valid Third-Party Inspection Certificate</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Wind Limit: <b>Strict Cutoff &le; 10 m/s (36 km/h)</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Exclusion Zone: <b>Full 360&deg; Swing Radius Barricaded</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Tag Lines: <b>Mandatory Non-Conductive Tag Lines on All Loads</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Lifting Supervisor</span>
+          <span class="actor-role-desc">Certified Rigging Supervisor</span>
+          <span class="actor-badge">Permittee</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Step 1 · Lift Plan Input</span>
+            <span class="node-action">Enter Weight, Radius &amp; Rigging</span>
+            <span class="node-detail">Enters gross load weight, crane model, boom length, working radius, and selects sling type</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway" style="background:#f0fdfa;border-color:#0d9488;">
+            <span class="decision-title" style="color:#0f766e;"><i class="fa-solid fa-scale-unbalanced"></i> Lift Classification Gate</span>
+            <div class="decision-paths">
+              <span class="path-approved" style="color:#0f766e;"><i class="fa-solid fa-arrow-right"></i> Routine (&le;5 MT) &rarr; 5-Step Spine</span>
+              <span class="path-rejected" style="color:#b91c1c;"><i class="fa-solid fa-arrow-right"></i> Critical (&gt;5 MT) &rarr; Mandatory Project Manager Sign-off</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Physical Verification</span>
+          <span class="actor-badge">Ground &amp; Exclusion</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 2 · Site Verification</span>
+            <span class="node-action">Inspect Outriggers &amp; Swing Path</span>
+            <span class="node-detail">Verifies crane outrigger pads on solid ground, full swing barricade, and tag lines</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to P&amp;M Engineer</span>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-specialist">
+          <span class="actor-title">P&amp;M / Crane Engineer</span>
+          <span class="actor-role-desc">Plant &amp; Machinery Specialist</span>
+          <span class="actor-badge">TPI &amp; Capacity Check</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 3 · Rigging Clearance</span>
+            <span class="node-action">Audit Load Chart &amp; Slings</span>
+            <span class="node-detail">Checks Safe Working Load (SWL), Safe Load Indicator (SLI) calibration, and wire rope condition</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-weight-hanging"></i> Capacity &lt; 75% of SWL?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Approved &rarr; Handoff to Tower Incharge</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Over Capacity &rarr; Reconfigure Rigging</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge / PM</span>
+          <span class="actor-role-desc">Section Head &amp; Project Manager</span>
+          <span class="actor-badge">Operational Clearance</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Step 4 · Area Deconfliction</span>
+            <span class="node-action">Tower Incharge Approval</span>
+            <span class="node-detail">Coordinates airspace with adjacent tower cranes; confirms zero people under load</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-highlight" style="border-color:#b91c1c;background:#fef2f2;">
+            <span class="node-seq" style="color:#b91c1c;">Step 5 · Critical Lift Only</span>
+            <span class="node-action">Project Manager Sign-off</span>
+            <span class="node-detail">Mandatory approval by Senior Project Manager for all lifts &gt;5 MT or tandem crane operations</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Permit Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Step 6 · Statutory Review</span>
+            <span class="node-action">Wind Check &amp; Issuance</span>
+            <span class="node-detail">Verifies anemometer wind speed (&le;10 m/s), rigger competency card &amp; activates permit</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Permit</span>
+            <span class="node-action">Lifting Underway</span>
+            <span class="node-detail">Riggers guide load with tag lines; continuous wind monitoring</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Lifting Supervisor</span>
+          <span class="actor-role-desc">Surrender Custodian</span>
+          <span class="actor-badge">Demobilization &amp; Stow</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Step 7 · Boom Stow &amp; Closeout</span>
+            <span class="node-action">Crane Parked &amp; Permit Closed</span>
+            <span class="node-detail">Crane hook parked, outriggers retracted, rigging slings inspected &amp; digital surrender signed</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Dynamic Approval Spine:</b> Routine Lift: 5 Signatories &nbsp;|&nbsp; Critical Lift (&gt;5 MT): 6 Signatories (with Project Manager)</span>
+      <span class="sig-pill"><i class="fa-solid fa-wind"></i> Wind Cutoff: 10 m/s (36 km/h)</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW X · NIGHT SHIFT / HOLIDAY WORK (PTW-010)
+       ======================================================== -->
+  <section class="flow-card" id="f10" data-cat="weekend">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">PTW-010</span>
+        <h2>Night Shift / Holiday Work Process Swimlane</h2>
+        <span class="flow-scope-tag">Dual-Phase Handover Protocol · Mandatory Daytime Pre-Clearance &amp; 8:30 PM Joint Walkover</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-moon"></i> Night Governance</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Regulates operations between 20:30 and 06:00. Requires a two-phase protocol: <b>Phase 1 (Day Phase 17:00–18:30)</b> where Day Engineer and Tower Incharge pre-clear the planned scope and link the daylight activity permit; and <b>Phase 2 (Night Handover Gate 20:30–21:00)</b> where Day and Night Supervisors conduct a physical joint site walkover with dual-photo lighting verification.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Statutory Prohibitions: <b>Confined Space, Blasting &amp; Critical Lifts Barred</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Lux Levels: <b>Min 50 Lux General, 150 Lux Task Area</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Handover Gate: <b>Strict 20:30–21:00 Window (Auto-Cancel at 21:00)</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Shift End: <b>Mandatory Demobilization by 06:00 AM</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <!-- Lane 1: Day Site Supervisor -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Day Site Supervisor</span>
+          <span class="actor-role-desc">Day Permittee (Phase 1)</span>
+          <span class="actor-badge">Day Initiation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-start">
+            <span class="node-seq">Phase 1 · 17:00 IST</span>
+            <span class="node-action">Submit Night Work Request</span>
+            <span class="node-detail">Declares night scope, night supervisor identity, mobile tower lights, and links active parent permit</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Daytime Approval Spine</span>
+        </div>
+      </div>
+
+      <!-- Lane 2: Day Engineer & Section Head -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Day Engineer &amp; Head</span>
+          <span class="actor-role-desc">Daytime Clearance</span>
+          <span class="actor-badge">Pre-Clearance Gate</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Day Pre-Clearance</span>
+            <span class="node-action">Verify Lighting Equipment</span>
+            <span class="node-detail">Site Engineer &amp; Tower Incharge pre-approve night scope; verify high-risk works are excluded</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-highlight" style="border-color:#0d9488;background:#f0fdfa;">
+            <span class="node-seq" style="color:#0d9488;">Gate Unlocked</span>
+            <span class="node-action">Approved &ndash; Pending Night Handover</span>
+            <span class="node-detail">Both parent permit and night permit synchronized to pending night handover status</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 3: Night Handover Gate (Joint Walkover) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sun">
+          <span class="actor-title">Night Handover Gate</span>
+          <span class="actor-role-desc">Day + Night Supervisors</span>
+          <span class="actor-badge">20:30–21:00 IST Gate</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-sun">
+            <span class="node-seq">Phase 2 · 20:30 IST</span>
+            <span class="node-action">Physical Joint Walkover</span>
+            <span class="node-detail">Day &amp; Night Supervisors walk site together; upload dual photos of tower lights &amp; first aid station</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-clock"></i> Completed Before 21:00 IST?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Walkover Completed &rarr; Advances to P&amp;M</span>
+              <span class="path-rejected"><i class="fa-solid fa-ban"></i> Missed 21:00 &rarr; Auto-Cancel Night Work</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 4: P&M Night Engineer -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-specialist">
+          <span class="actor-title">P&amp;M Night Engineer</span>
+          <span class="actor-role-desc">Night Plant Authority</span>
+          <span class="actor-badge">Power &amp; Light Check</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Night P&amp;M Check</span>
+            <span class="node-action">Verify Tower Lights &amp; Lux</span>
+            <span class="node-detail">Checks DG fuel levels, earthing of mobile light towers, and verifies min 50 lux general illuminance</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to Night EHS</span>
+        </div>
+      </div>
+
+      <!-- Lane 5: Night EHS Safety Officer -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">Night EHS Safety</span>
+          <span class="actor-role-desc">Statutory Night Endorser</span>
+          <span class="actor-badge">Night Activation</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Night EHS Review</span>
+            <span class="node-action">Final Safety Review &amp; Activation</span>
+            <span class="node-detail">Audits night briefing, emergency vehicle on standby &amp; digitally activates both permits</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Active Night Work</span>
+            <span class="node-action">Monitored Night Shift</span>
+            <span class="node-detail">Continuous illumination; roving safety rounds; mandatory hot beverage break</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 6: Night Supervisor Demobilization -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Night Site Supervisor</span>
+          <span class="actor-role-desc">Surrender Custodian</span>
+          <span class="actor-badge">06:00 Demobilization</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">06:00 IST Morning</span>
+            <span class="node-action">Site De-energization &amp; Closeout</span>
+            <span class="node-detail">Powers off tower lights, packs cables, completes housekeeping &amp; formally surrenders permit</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>6-Signatory Dual-Phase Chain:</b> Day Supervisor &rarr; Day Engineer &rarr; Tower Incharge &rarr; Night Supervisor &rarr; P&amp;M Night Engineer &rarr; Night EHS Officer</span>
+      <span class="sig-pill"><i class="fa-solid fa-triangle-exclamation"></i> 21:00 IST Hard Cutoff: Uncompleted Handover Auto-Cancels</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW XI · SUNDAY WORK (SUN) TILE & WEEKEND GOVERNANCE
+       ======================================================== -->
+  <section class="flow-card" id="f11" data-cat="weekend">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge sun-badge">FLOW XI</span>
+        <h2>Sunday Work (SUN) Tile &amp; Weekend Governance Swimlane</h2>
+        <span class="flow-scope-tag">Saturday Advance Preparation · Sunday Zero-Creation Lockout · Scheduled Daylight Closure</span>
+      </div>
+      <span class="sig-pill" style="border-color:var(--sun-border);background:#fff7ed;color:var(--sun-brand);"><i class="fa-solid fa-calendar-check"></i> Weekend Operations Policy</span>
+    </div>
+    <div class="flow-overview" style="background:#fffcf8;">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Governs weekend construction activities when head office teams are off-duty. Operates on a strict three-pillar model: <b>1. Saturday Advance Preparation</b> via a dedicated Sunday Work (SUN) Tile for daylight permits (PTW-001..009 with Night Shift barred); <b>2. Sunday Zero-Creation Lockout</b> where all permit creation is strictly blocked system-wide; and <b>3. Sunday Monitored Execution &amp; Closure</b> where pre-cleared permits can be safely executed and surrendered within their valid window.
+      </div>
+      <div class="safeguards-bar">
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Advance Window: <b>Saturday Only (Zero Creation Allowed on Sunday)</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Permitted Scope: <b>9 Daylight Modules (PTW-001 to PTW-009)</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Night Shift Barred: <b>Night Shift (PTW-010) Strictly Prohibited on Sundays</b></span>
+        <span class="safeguard-pill"><i class="fa-solid fa-shield-check"></i> Sunday Closure: <b>Permitted within Valid Scheduled Window by Certified Supervisor</b></span>
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <!-- Lane 1: Site Supervisor (Saturday Preparation) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sun">
+          <span class="actor-title">Site Supervisor</span>
+          <span class="actor-role-desc">Saturday Preparation</span>
+          <span class="actor-badge" style="background:#ffedd5;color:var(--sun-brand);">Saturday Window</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-sun">
+            <span class="node-seq">Saturday Morning</span>
+            <span class="node-action">Select Sunday Work (SUN) Tile</span>
+            <span class="node-detail">Dashboard renders dedicated Sunday Work Tile alongside standard PTW; selects daylight permit (PTW-001..009)</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-sun">
+            <span class="node-seq">Advance Dossier</span>
+            <span class="node-action">Complete Sunday Risk Assessment</span>
+            <span class="node-detail">Uploads Sunday work crew list, emergency contacts, and risk mitigation plan</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Forwarded for Saturday Pre-Clearance</span>
+        </div>
+      </div>
+
+      <!-- Lane 2: Site Engineer (Saturday Physical Inspection) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-engineer">
+          <span class="actor-title">Site Engineer</span>
+          <span class="actor-role-desc">Saturday Physical Verification</span>
+          <span class="actor-badge">Ground Inspection</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Saturday Afternoon</span>
+            <span class="node-action">Physical Site Inspection</span>
+            <span class="node-detail">Inspects physical barriers, access routes, and equipment readiness for Sunday work</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="decision-gateway">
+            <span class="decision-title"><i class="fa-solid fa-calendar-day"></i> Cleared for Sunday Activity?</span>
+            <div class="decision-paths">
+              <span class="path-approved"><i class="fa-solid fa-check"></i> Approved &rarr; Handoff to Tower Incharge</span>
+              <span class="path-rejected"><i class="fa-solid fa-rotate-left"></i> Unsafe &rarr; Cancel Sunday Work Plan</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 3: Tower Incharge & Section Head (Saturday Clearance) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Tower Incharge</span>
+          <span class="actor-role-desc">Section Head</span>
+          <span class="actor-badge">Weekend Coverage</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Saturday Clearance</span>
+            <span class="node-action">Approve Sunday Staffing Plan</span>
+            <span class="node-detail">Confirms dedicated Sunday certified supervisor and first aider are rostered on duty</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <span class="lane-handoff-tag"><i class="fa-solid fa-arrow-down"></i> Handoff to EHS Safety</span>
+        </div>
+      </div>
+
+      <!-- Lane 4: EHS Safety Officer (Saturday Pre-Authorization) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">EHS Safety Officer</span>
+          <span class="actor-role-desc">Statutory Safety Endorser</span>
+          <span class="actor-badge">Pre-Authorization</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-highlight">
+            <span class="node-seq">Saturday Pre-Auth</span>
+            <span class="node-action">Sign Sunday Pre-Authorization</span>
+            <span class="node-detail">Verifies compliance with weekend governance policy; signs digital pre-authorization</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active" style="border-color:var(--sun-brand);background:#fff7ed;">
+            <span class="node-seq" style="color:var(--sun-brand);">Pre-Authorized State</span>
+            <span class="node-action">Ready for Sunday Execution</span>
+            <span class="node-detail">Tagged with amber SUN badge in register; valid for execution on Sunday</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 5: Sunday Operations & Surveillance (Zero Creation Active) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sun">
+          <span class="actor-title">Sunday Operations</span>
+          <span class="actor-role-desc">Zero Creation Lockout</span>
+          <span class="actor-badge" style="background:#fee2e2;color:#dc2626;">Sunday Lockout Active</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node" style="border-color:#dc2626;background:#fef2f2;">
+            <span class="node-seq" style="color:#dc2626;"><i class="fa-solid fa-lock"></i> Sunday System Lockout</span>
+            <span class="node-action">Zero-Creation Enforced</span>
+            <span class="node-detail">All permit creation buttons disabled system-wide; no unvetted ad-hoc permits permitted</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-sun">
+            <span class="node-seq">Sunday Morning</span>
+            <span class="node-action">Toolbox Talk &amp; Site Briefing</span>
+            <span class="node-detail">Sunday Supervisor conducts pre-work briefing for pre-authorized crew; work commences within daylight hours</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Lane 6: Sunday Closure & Demobilization -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Sunday Closure Custodian</span>
+          <span class="actor-role-desc">Certified Sunday Supervisor</span>
+          <span class="actor-badge">Valid Time Closeout</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Sunday Evening</span>
+            <span class="node-action">Site Restoration &amp; Digital Surrender</span>
+            <span class="node-detail">Verifies site cleanup, equipment de-energization, all workers off-site &amp; signs formal digital closure within valid time</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Weekend Governance Protocol:</b> 100% Pre-cleared on Saturday &rarr; Zero-Creation Lockout on Sunday &rarr; Permitted Daylight Closure</span>
+      <span class="sig-pill" style="color:var(--sun-brand);"><i class="fa-solid fa-sun"></i> Amber SUN Badge Tracking in Audit Register</span>
+    </div>
+  </section>
+
+  <!-- ========================================================
+       FLOW XII · CROSS-CUTTING GOVERNANCE LIFECYCLES
+       ======================================================== -->
+  <section class="flow-card" id="f12" data-cat="governance">
+    <div class="flow-card-head">
+      <div class="flow-title-group">
+        <span class="flow-code-badge">GOV-ALL</span>
+        <h2>Cross-Cutting Safety Governance Lifecycles</h2>
+        <span class="flow-scope-tag">Universal Protocols Applied Across All 10 Permit Types</span>
+      </div>
+      <span class="sig-pill"><i class="fa-solid fa-shield-halved"></i> Universal Safeguards</span>
+    </div>
+    <div class="flow-overview">
+      <div class="flow-desc">
+        <b>Operational Scope:</b> Common enterprise governance protocols ensuring immediate stop-work authority, disciplined extension boundaries, rejection remediation loops, and legal accountability under the Digital Personal Data Protection (DPDP) Act 2023.
+      </div>
+    </div>
+    <div class="swimlane-container">
+      <!-- Protocol A: Return & Rectification (Rejection Flow) -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-supervisor">
+          <span class="actor-title">Protocol A</span>
+          <span class="actor-role-desc">Rejection &amp; Rectification</span>
+          <span class="actor-badge">Remediation Loop</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node" style="border-color:#d97706;background:#fffbeb;">
+            <span class="node-seq" style="color:#d97706;">Reviewer Comments</span>
+            <span class="node-action">Approver Returns Permit</span>
+            <span class="node-detail">Approver records mandatory rejection comment citing specific physical safety hazard</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node">
+            <span class="node-seq">Permittee Remediation</span>
+            <span class="node-action">Supervisor Rectifies Hazard</span>
+            <span class="node-detail">Remediates physical ground deficiency on site and resubmits corrected permit dossier</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-highlight">
+            <span class="node-seq">Targeted Re-Review</span>
+            <span class="node-action">Specific Domain Re-verifies</span>
+            <span class="node-detail">Only the affected domain re-inspects; unaffected domain clearances remain intact</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Protocol B: Immediate Stop-Work Safety Observation -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-ehs">
+          <span class="actor-title">Protocol B</span>
+          <span class="actor-role-desc">Stop-Work Authority</span>
+          <span class="actor-badge" style="background:#fee2e2;color:#dc2626;">EHS Safety Exclusive</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node" style="border-color:#dc2626;background:#fef2f2;">
+            <span class="node-seq" style="color:#dc2626;"><i class="fa-solid fa-hand"></i> Immediate Stop-Work</span>
+            <span class="node-action">EHS Issues Safety Observation</span>
+            <span class="node-detail">Physical work halts immediately; permit status freezes in "Active (Observation Open)"</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node">
+            <span class="node-seq">Hazard Abatement</span>
+            <span class="node-action">Supervisor Rectifies &amp; Uploads Photo</span>
+            <span class="node-detail">Supervisor rectifies unsafe condition and uploads verified corrective photo proof</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Resumption Cleared</span>
+            <span class="node-action">EHS Re-inspects &amp; Unfreezes</span>
+            <span class="node-detail">EHS conducts field verification, closes observation, and restores permit to fully Active</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Protocol C: Operational Shift Extension -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-sectionhead">
+          <span class="actor-title">Protocol C</span>
+          <span class="actor-role-desc">Work Extension</span>
+          <span class="actor-badge">Cutoff Discipline</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node">
+            <span class="node-seq">Before 18:30 IST</span>
+            <span class="node-action">Supervisor Requests Extension</span>
+            <span class="node-detail">Declares legitimate operational rationale; requests extended work up to 20:30 ceiling</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node">
+            <span class="node-seq">3-Party Review</span>
+            <span class="node-action">Engineer &rarr; Head &rarr; EHS Sign-off</span>
+            <span class="node-detail">Site Engineer confirms safety &rarr; Tower Incharge clears &rarr; EHS Safety endorses</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-active">
+            <span class="node-seq">Extended Window</span>
+            <span class="node-action">Active Until 20:30 Hard Ceiling</span>
+            <span class="node-detail">Work permitted until 20:30; past 20:30 strictly requires formal Night Shift handover</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Protocol D: Legal Digital Signature Ledger -->
+      <div class="swimlane-row">
+        <div class="lane-actor-col actor-surrender">
+          <span class="actor-title">Protocol D</span>
+          <span class="actor-role-desc">Digital Governance</span>
+          <span class="actor-badge">DPDP Act 2023</span>
+        </div>
+        <div class="lane-track-col">
+          <div class="step-node node-end">
+            <span class="node-seq">Immutable Ledger</span>
+            <span class="node-action">Timestamped Digital Signatures</span>
+            <span class="node-detail">Records signatory role, timestamp, IP/GPS coordinate attestation, and statutory declaration</span>
+          </div>
+          <span class="flow-arrow">&rarr;</span>
+          <div class="step-node node-end">
+            <span class="node-seq">Audit Archival</span>
+            <span class="node-action">Official Permit Report PDF</span>
+            <span class="node-detail">Generates tamper-evident PDF audit document archived permanently for statutory regulatory inspection</span>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="flow-footer-summary">
+      <span><b>Universal Governance Enforcements:</b> Rejection Remediation &nbsp;|&nbsp; Stop-Work Authority &nbsp;|&nbsp; 20:30 Extension Ceiling &nbsp;|&nbsp; DPDP Digital Signatures</span>
+      <span class="sig-pill"><i class="fa-solid fa-gavel"></i> Legally Binding Under ISO 45001 &amp; National Safety Regulations</span>
+    </div>
+  </section>
+
+  <!-- Global Footer -->
+  <footer>
+    <div>
+      <b>Enterprise Permit-to-Work (PTW) Operational Process Swimlanes</b>
+      <div style="font-size:12px;margin-top:2px;">Standard Operating Procedures across 10 statutory construction permit workflows and weekend governance.</div>
+    </div>
+    <div style="font-family:'IBM Plex Mono', monospace; font-size:11.5px;">
+      ISO 45001:2018 Certified &bull; BOCW Act 1996 &bull; CEA Regulations 2010 &bull; PESO Rules 2008
+    </div>
+  </footer>
+</div>
+
+<script>
+  // Filter workflows by trade category
+  function filterFlows(cat) {
+    const flows = document.querySelectorAll('.flow-card');
+    const buttons = document.querySelectorAll('.filter-btn');
+
+    buttons.forEach(btn => btn.classList.remove('active'));
+    if (event && event.target) {
+      event.target.classList.add('active');
+    }
+
+    flows.forEach(flow => {
+      if (cat === 'all') {
+        flow.style.display = '';
+      } else {
+        const flowCat = flow.getAttribute('data-cat');
+        flow.style.display = (flowCat === cat) ? '' : 'none';
+      }
+    });
+  }
+
+  // Real-time keyword search
+  function handleSearch() {
+    const query = document.getElementById('swimlaneSearch').value.toLowerCase().trim();
+    const flows = document.querySelectorAll('.flow-card');
+
+    flows.forEach(flow => {
+      if (!query) {
+        flow.style.display = '';
+        return;
+      }
+      const text = flow.innerText.toLowerCase();
+      flow.style.display = text.includes(query) ? '' : 'none';
+    });
+  }
+</script>
+
+</body>
+</html>
