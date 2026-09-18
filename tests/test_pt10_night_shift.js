@@ -319,7 +319,7 @@ evalInVM("draft.nightSubcontractorName = 'Apex Foundations Ltd'");
 let step1Valid = evalInVM("validateWizStep(1)");
 assert.strictEqual(step1Valid, false, "Step 1 must fail if night work description is empty");
 
-evalInVM("draft.nightWorkDescription = NIGHT_WORK_DESCRIPTIONS[0].name || NIGHT_WORK_DESCRIPTIONS[0].text || NIGHT_WORK_DESCRIPTIONS[0].label");
+evalInVM("const hwItem = NIGHT_WORK_DESCRIPTIONS.find(d => d.type === 'hotwork') || NIGHT_WORK_DESCRIPTIONS[0]; draft.nightWorkDescription = hwItem.name || hwItem.text || hwItem.label;");
 step1Valid = evalInVM("validateWizStep(1)");
 assert.strictEqual(step1Valid, true, "Step 1 must pass when description and mandatory fields are filled");
 

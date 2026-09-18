@@ -1168,13 +1168,13 @@ Permits cannot be surrendered by general site engineers. Closure is restricted e
 | 13 | Worker fitness / fatigue check completed — no workers on double shift | Occupational Health | Zero double shifts; fatigue screening conducted; all workers logged and verified fit. |
 
 #### 2. Authorized Night Shift Activity Descriptions (`NIGHT_WORK_DESCRIPTIONS`)
+* Excavation Work (PTW-001) — Trenching and spoil haulage outside active structural tower footprint.
 * Hot Work (PTW-002) — Rebar welding, structural tacking, and steel fabrication with dedicated fire watch.
-* Shaft Work (PTW-005) — Lift shaft bracket installation and internal riser MEP piping with staging.
 * Guard Rail Removal (PTW-003) — Temporary edge protection removal for material intake with 100% tie-off.
-* Electrical Work (PTW-006) — Substation switchgear cabling and lighting circuit maintenance.
+* Shaft Work (PTW-005) — Lift shaft bracket installation and internal riser MEP piping with staging.
+* Electrical Work (HT/LT) (PTW-006) — Substation switchgear cabling and lighting circuit maintenance.
 * General Work (PTW-008) — Structural concrete pouring, screeding, and curing operations.
 * Routine Lifting Operations (PTW-009A) — Precast component and rebar bundle hoisting (strictly <= 5.0 MT).
-* Excavation & Earthwork (PTW-001) — Trenching and spoil haulage outside active structural tower footprint.
 
 #### 3. Master Night Supervisor Registry (`NIGHT_SUPERVISORS`)
 * **Venkatesh Rao** (`venkatesh_rao`): Authorized (`pmAuthorised: true`), Training valid (`trainingDays: 45 < 365`). Gating: **Eligible**.
@@ -1882,7 +1882,6 @@ sequenceDiagram
     autonumber
     box "Site Operations Swimlane"
         actor SS as "Site Supervisor (Permittee)"
-        actor FW as "Fire Watcher (Post-Hot-Work)"
         actor SE as "Site Engineer (Acknowledge)"
     end
     box "Approving Authorities Swimlane"
@@ -1928,12 +1927,11 @@ sequenceDiagram
     end
 
     Note over SS,SYS: STEP 5 - Mandatory 1-Hour Fire Watch and Closure
-    Note over SS,FW: Hot work activity completes on site
-    FW->>FW: Mandatory 60-minute continuous fire watch for smoldering embers
-    SS->>SS: Check mandatory Fire Watch declaration box (1 hr prior to close)
+    Note over SS: Hot work activity completes on site; 60-minute continuous fire watch executed
+    SS->>SS: Check mandatory Fire Watch declaration box (1 hr post-work watch confirmed)
     SS->>SS: Attach post-work cold-area clearance photo
     SS->>SYS: surrenderPermit()
-    SYS->>SYS: Status: Closed [PDF generated with fire watch endorsement]
+    SYS->>SYS: Status: Closed [PDF generated with fire watch declaration]
 ```
 
 ---

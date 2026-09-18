@@ -3512,13 +3512,6 @@
                 flex-shrink: 0;
             }
 
-            .landing-permits-bar .ptype-pill:last-child {
-                grid-column: span 2;
-                justify-content: center;
-                max-width: 250px;
-                margin: 0 auto;
-            }
-
             .landing-role-section {
                 order: 2;
                 margin-top: 4px;
@@ -4094,11 +4087,6 @@
                 max-width: 260px;
             }
 
-            .landing-permits-bar .ptype-pill:last-child {
-                grid-column: span 1;
-                max-width: 100%;
-            }
-
             .step-node .circ {
                 width: 24px;
                 height: 24px;
@@ -4579,7 +4567,7 @@
                 <div class="lw-num">1</div>
                 <div class="lw-content">
                     <div class="lw-title">Initiation &amp; Checklist</div>
-                    <div class="lw-desc">Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), Blasting In-charge (PTW-007), or Lifting Supervisor (PTW-009A/B) fills their respective permit form, statutory checklist &amp; uploads photo.</div>
+                    <div class="lw-desc">Site Supervisor (PTW-001 to PTW-005, PTW-008), Electrician (PTW-006), Blasting In-charge (PTW-007), Lifting Supervisor (PTW-009A/B), or Night Site Supervisor (PTW-010 Handover) fills their respective permit form, statutory checklist &amp; uploads photo.</div>
                 </div>
             </div>
             <div class="lw-arrow"><i class="fa-solid fa-angle-right"></i></div>
@@ -4616,10 +4604,10 @@
                     <p>Select an authorized operational role to access the permit governance portal. User permissions, verification gates, and statutory sign-off authority are strictly enforced based on role assignments.</p>
                 </div>
                 <div class="role-filter-tabs" id="roleFilterTabs">
-                    <button class="rf-tab active" onclick="filterRoles('all', this)"><i class="fa-solid fa-border-all"></i> All Roles (13)</button>
-                    <button class="rf-tab" onclick="filterRoles('initiator', this)"><i class="fa-solid fa-user-pen"></i> Initiators (3)</button>
+                    <button class="rf-tab active" onclick="filterRoles('all', this)"><i class="fa-solid fa-border-all"></i> All Roles (16)</button>
+                    <button class="rf-tab" onclick="filterRoles('initiator', this)"><i class="fa-solid fa-user-pen"></i> Initiators (5)</button>
                     <button class="rf-tab" onclick="filterRoles('verification', this)"><i class="fa-solid fa-hard-hat"></i> Field &amp; Clearances (4)</button>
-                    <button class="rf-tab" onclick="filterRoles('approver', this)"><i class="fa-solid fa-user-tie"></i> Domain Approvers (3)</button>
+                    <button class="rf-tab" onclick="filterRoles('approver', this)"><i class="fa-solid fa-user-tie"></i> Domain Approvers (4)</button>
                     <button class="rf-tab" onclick="filterRoles('ehs', this)"><i class="fa-solid fa-shield-halved"></i> EHS Safety (2)</button>
                     <button class="rf-tab" onclick="filterRoles('admin', this)"><i class="fa-solid fa-user-gear"></i> Admin (1)</button>
                 </div>
@@ -4730,15 +4718,46 @@
                 <button class="icon-btn no-print" id="notifBellBtn" onclick="goTo('notifications')"
                     title="Notifications"><i class="fa-solid fa-bell"></i><span class="dot" id="notifDot"
                         style="display:none;">0</span></button>
-                <div class="role-badge no-print"><i class="fa-solid fa-user-shield"></i>
-                    <div>
-                        <div class="role-badge-label">Role</div>
-                        <div class="role-badge-value" id="roleBadgeValue">&mdash;</div>
+                <a href="ptw_swimlanes.html" target="_blank" class="btn btn-sm no-print" title="View Process Swimlanes &amp; Approval Topologies (ptw_swimlanes.html)" style="display:inline-flex;align-items:center;gap:6px;padding:5px 10px;border-radius:6px;border:1px solid #CBD5E1;background:#fff;color:var(--navy);font-size:11.5px;font-weight:700;text-decoration:none;box-shadow:0 1px 2px rgba(0,0,0,0.04);margin-right:2px;">
+                    <i class="fa-solid fa-diagram-project" style="color:var(--orange);"></i> <span class="d-none-sm">Swimlanes</span>
+                </a>
+                <div class="role-badge no-print" style="position:relative;display:inline-flex;align-items:center;gap:8px;padding:4px 10px;border-radius:8px;background:rgba(255,255,255,0.95);border:1.5px solid #CBD5E1;box-shadow:0 1px 3px rgba(0,0,0,0.06);"><i class="fa-solid fa-user-shield" style="color:var(--orange);"></i>
+                    <div style="display:flex;flex-direction:column;line-height:1.15;">
+                        <div class="role-badge-label" style="font-size:9.5px;text-transform:uppercase;font-weight:700;color:var(--text-muted);letter-spacing:0.5px;">Active Persona</div>
+                        <select id="quickPersonaDropdown" onchange="switchRole(this.value)" style="background:transparent;border:none;outline:none;font-size:12px;font-weight:700;color:var(--navy);cursor:pointer;padding:0;margin:0;font-family:inherit;">
+                            <optgroup label="Tier 1 · Permittees &amp; Field Specialists">
+                                <option value="site-supervisor">Site Supervisor (Civil / General Permittee)</option>
+                                <option value="electrician">Electrician (PTW-006 Electrical Specialist)</option>
+                                <option value="blasting-incharge">Blasting In-charge (PTW-007 Specialist)</option>
+                                <option value="lift-supervisor">Lifting Supervisor (PTW-009 Specialist)</option>
+                                <option value="night-supervisor">Night Site Supervisor (PTW-010 Handover)</option>
+                            </optgroup>
+                            <optgroup label="Tier 2 · Field Verification &amp; Clearance">
+                                <option value="site-engineer">Site Engineer (Physical Ground Check)</option>
+                                <option value="mep">MEP Engineer (Power &amp; Utility Clearance)</option>
+                                <option value="pm">P&amp;M Engineer (Plant &amp; Machinery Fitness)</option>
+                                <option value="it">IT Engineer (Telecom &amp; OFC Clearance)</option>
+                            </optgroup>
+                            <optgroup label="Tier 3 · Domain Approvers &amp; Section Heads">
+                                <option value="quality-engineer">Quality Engineer (Batching Plant Clearance)</option>
+                                <option value="excavation-head">Excavation Head (Earthwork Section Head)</option>
+                                <option value="hw-section-head">Tower Incharge (Tower Section Head)</option>
+                                <option value="project-manager">Project Manager (Critical Lift Plan Executive)</option>
+                            </optgroup>
+                            <optgroup label="Tier 4 · Statutory Endorsement">
+                                <option value="ehs-manager">EHS Safety Manager (Statutory Endorsement)</option>
+                                <option value="ehs-officer">EHS Safety Officer (Field Surveillance)</option>
+                            </optgroup>
+                            <optgroup label="Tier 5 · Administration">
+                                <option value="admin">Site Administrator (System &amp; GPS Config)</option>
+                            </optgroup>
+                        </select>
+                        <div class="role-badge-value" id="roleBadgeValue" style="display:none;">&mdash;</div>
                     </div>
                 </div>
-                <button class="btn-switch-user no-print" onclick="doLogout()" title="Switch User / Role"><i
-                        class="fa-solid fa-right-left"></i>
-                    <span class="btn-text">Switch User</span></button>
+                <button class="btn-switch-user no-print" onclick="doLogout()" title="Logout to Landing Portal"><i
+                        class="fa-solid fa-right-from-bracket"></i>
+                    <span class="btn-text">Logout</span></button>
             </div>
             <div class="content" id="contentRoot">
 
@@ -5401,13 +5420,13 @@
 
         /* Night Shift Description of Work Options & Linked Permit Mapping */
         const NIGHT_WORK_DESCRIPTIONS = [
-            { id: 'hw', name: 'Hot Work revised III', label: 'Hot Work revised III', type: 'hotwork', linkedPtype: 'hotwork', permitCode: 'PTW-002', form: 'PTW-002' },
-            { id: 'gr', name: 'Guard Rail Removal std V', label: 'Guard Rail Removal std V', type: 'guardrail', linkedPtype: 'guardrail', permitCode: 'PTW-003', form: 'PTW-003' },
-            { id: 'shaft', name: 'Shaft Work revised VI', label: 'Shaft Work revised VI', type: 'shaft', linkedPtype: 'shaft', permitCode: 'PTW-005', form: 'PTW-005' },
-            { id: 'elec', name: 'Electrical (HT/LT) revised VIII', label: 'Electrical (HT/LT) revised VIII', type: 'electrical', linkedPtype: 'electrical', permitCode: 'PTW-006', form: 'PTW-006' },
-            { id: 'gen', name: 'General Work std IX', label: 'General Work std IX', type: 'general', linkedPtype: 'general', permitCode: 'PTW-008', form: 'PTW-008' },
-            { id: 'lift', name: 'Heavy Lifting (only 9A)', label: 'Heavy Lifting (only 9A)', type: 'lifting', linkedPtype: 'lifting', permitCode: 'PTW-009A', form: 'PTW-009A' },
-            { id: 'exc', name: 'Excavation Work std I', label: 'Excavation Work std I', type: 'excavation', linkedPtype: 'excavation', permitCode: 'PTW-001', form: 'PTW-001' }
+            { id: 'exc', name: 'Excavation Work', label: 'Excavation Work', type: 'excavation', linkedPtype: 'excavation', permitCode: 'PTW-001', form: 'PTW-001' },
+            { id: 'hw', name: 'Hot Work', label: 'Hot Work', type: 'hotwork', linkedPtype: 'hotwork', permitCode: 'PTW-002', form: 'PTW-002' },
+            { id: 'gr', name: 'Guard Rail Removal', label: 'Guard Rail Removal', type: 'guardrail', linkedPtype: 'guardrail', permitCode: 'PTW-003', form: 'PTW-003' },
+            { id: 'shaft', name: 'Shaft Work', label: 'Shaft Work', type: 'shaft', linkedPtype: 'shaft', permitCode: 'PTW-005', form: 'PTW-005' },
+            { id: 'elec', name: 'Electrical Work (HT/LT)', label: 'Electrical Work (HT/LT)', type: 'electrical', linkedPtype: 'electrical', permitCode: 'PTW-006', form: 'PTW-006' },
+            { id: 'gen', name: 'General Work', label: 'General Work', type: 'general', linkedPtype: 'general', permitCode: 'PTW-008', form: 'PTW-008' },
+            { id: 'lift', name: 'Routine Lifting Operations', label: 'Routine Lifting Operations', type: 'lifting', linkedPtype: 'lifting', permitCode: 'PTW-009A', form: 'PTW-009A' }
         ];
 
         const WEATHER_OPTIONS = ['Sunny', 'Partly Cloudy', 'Overcast', 'Windy', 'Light Rain', 'Hazy'];
@@ -7111,6 +7130,7 @@
         let draft = null;            // permit currently being built in the wizard
         let correctionMode = false;  // true while a Returned-for-Correction permit is being edited (master data locked)
         let currentDetailId = null;
+        let currentView = 'dashboard';
         let gpsModalCtx = null;      // {siteCoord, gateEnabled, onConfirm, captured}
         let photoModalCtx = null;    // {onConfirm, captured}
         let actionModalCtx = null;
@@ -8027,7 +8047,7 @@
             }
             const rk = roleKey || (currentUser && currentUser.key);
             if (!rk) return false;
-            if (p && (p.status === 'Night Shift Approved – Awaiting Linked Permit')) return rk === 'site-supervisor';
+            if (p && (p.status === 'Night Shift Approved – Awaiting Linked Permit')) return rk === targetInitiatorForNightLinked(p);
             if (p && (p.status === 'Approved – Pending Night Handover')) return rk === 'night-supervisor';
             if (p && p.status === 'Pending P&M Night Acknowledgment') return rk === 'pm';
             if (p && p.status === 'Returned to Night Supervisor') return rk === 'night-supervisor';
@@ -8623,9 +8643,10 @@
             if (ptypeOf(p) === 'nightshift' && (roleKey === 'section-head' || roleKey === 'hw-section-head' || roleKey === 'sectionHead')) {
                 p.status = 'Night Shift Approved – Awaiting Linked Permit';
                 p.stageEnteredAt = nowTime();
-                p.escalation = { stage1: false, stage2: false };
-                logActivity(p, 'Tower Incharge (' + effectiveSigner + ') approved Night Shift Pre-Fill (Day Phase Stage 1 complete). EHS held back. Permittee (Site Supervisor) must now submit linked activity permit checklists.' + (gps ? (' GPS verified within ' + prjRad + 'm.') : ''));
-                notify(['site-supervisor'], pLabel(p) + ' Day Phase Stage 1 approved by Tower Incharge. Please submit the linked activity permit to complete day approvals.', 'success', p.id);
+                const linkedTarget = targetInitiatorForNightLinked(p);
+                const targetLabel = (roleInfo(linkedTarget) && roleInfo(linkedTarget).label) || 'Permittee';
+                logActivity(p, 'Tower Incharge (' + effectiveSigner + ') approved Night Shift Pre-Fill (Day Phase Stage 1 complete). EHS held back. Permittee (' + targetLabel + ') must now submit linked activity permit checklists.' + (gps ? (' GPS verified within ' + prjRad + 'm.') : ''));
+                notify([linkedTarget], pLabel(p) + ' Day Phase Stage 1 approved by Tower Incharge. Please submit the linked activity permit to complete day approvals.', 'success', p.id);
                 notify(['pm'], pLabel(p) + ' approved by Tower Incharge — Stage 1 Day Approval complete. Awaiting linked activity permit.', 'info', p.id);
                 notify(stakeholdersFor(p), pLabel(p) + ' Day Phase Stage 1 approved by Tower Incharge. Awaiting linked activity permit.', 'info', p.id);
                 showToast('Night Shift Stage 1 approved. Linked activity permit now unlocked.', 'ok');
@@ -8772,25 +8793,45 @@
         /* ================================================================
            PTW-010 NIGHT SHIFT GOVERNANCE & HANDOVER ENGINE
            ================================================================ */
+        function targetInitiatorForNightLinked(parent) {
+            if (!parent) return 'site-supervisor';
+            const item = NIGHT_WORK_DESCRIPTIONS.find(d => d.name === parent.nightWorkDescription || d.type === parent.nightWorkType || d.id === parent.nightWorkType);
+            const type = (item && item.type) || parent.nightWorkType;
+            if (type === 'electrical') return 'electrician';
+            if (type === 'lifting' || type === 'liftplan') return 'lift-supervisor';
+            return 'site-supervisor';
+        }
+
         function openLinkedPermitFromNightShift(parentId) {
             const parent = PERMITS.find(x => x.id === parentId);
             if (!parent) {
                 showToast('Parent Night Shift permit not found.', 'err');
                 return;
             }
-            const desc = parent.nightWorkType || parent.nightWorkDescription || '';
+            const desc = parent.nightWorkDescription || parent.nightWorkType || '';
             const typeMap = {
+                'Excavation Work': 'excavation',
+                'Excavation': 'excavation',
                 'Hot Work': 'hotwork',
                 'Guard Rail / Floor Opening': 'guardrail',
+                'Guard Rail Removal': 'guardrail',
                 'Shaft Work': 'shaft',
                 'Electrical Work (Site)': 'electrical',
+                'Electrical Work (HT/LT)': 'electrical',
                 'General Work': 'general',
-                'Routine Lifting (PTW-009A)': 'lifting',
-                'Excavation': 'excavation'
+                'Routine Lifting Operations': 'lifting',
+                'Routine Lifting (PTW-009A)': 'lifting'
             };
-            const targetType = typeMap[desc] || 'hotwork';
+            const item = NIGHT_WORK_DESCRIPTIONS.find(d => d.name === parent.nightWorkDescription || d.type === parent.nightWorkType || d.id === parent.nightWorkType);
+            const targetType = (item && item.type) || typeMap[desc] || parent.nightWorkType || (PERMIT_TYPES.some(pt => pt.key === desc) ? desc : 'hotwork');
             if (!canLinkToNightShift(targetType)) {
                 showToast('Prohibited: ' + (PTYPE_META[targetType] ? PTYPE_META[targetType].name : targetType) + ' is strictly prohibited for night shift work.', 'err');
+                return;
+            }
+            const requiredInitiator = targetInitiatorForNightLinked(parent);
+            if (currentUser && currentUser.key !== requiredInitiator) {
+                const reqLabel = roleInfo(requiredInitiator) ? roleInfo(requiredInitiator).label : requiredInitiator;
+                showToast('Role Restriction: Filling linked ' + (PTYPE_META[targetType] ? PTYPE_META[targetType].name : targetType) + ' permit is strictly restricted to ' + reqLabel + '.', 'err');
                 return;
             }
             startNewPermit(targetType);
@@ -9545,12 +9586,14 @@
                     by: effectiveSigner,
                     comment: comment
                 };
+                const targetPermittee = ptypeOf(p) === 'electrical' ? 'electrician' : ((ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan') ? 'lift-supervisor' : (ptypeOf(p) === 'blasting' ? 'blasting-incharge' : (ptypeOf(p) === 'nightshift' ? 'night-supervisor' : 'site-supervisor')));
+                const targetPermitteeLabel = (roleInfo(targetPermittee) && roleInfo(targetPermittee).label) || 'Permittee';
                 p.observation.status = 'Open';
                 p.status = 'Active – Observation Open';
-                logActivity(p, approverLabel + ' (' + effectiveSigner + ') REJECTED Observation rectification: ' + comment + '. Returned to Site Supervisor for re-rectification.');
-                notify(['site-supervisor'], pLabel(p) + ' — Observation rectification REJECTED by ' + approverLabel + ': "' + comment + '". Please re-rectify with proper evidence.', 'error', p.id);
-                notify(stakeholdersFor(p), pLabel(p) + ' Observation rectification rejected by ' + approverLabel + '. Returned to Site Supervisor.', 'warn', p.id);
-                showToast('Observation rectification rejected. Returned to Supervisor.', 'err');
+                logActivity(p, approverLabel + ' (' + effectiveSigner + ') REJECTED Observation rectification: ' + comment + '. Returned to ' + targetPermitteeLabel + ' for re-rectification.');
+                notify([targetPermittee], pLabel(p) + ' — Observation rectification REJECTED by ' + approverLabel + ': "' + comment + '". Please re-rectify with proper evidence.', 'error', p.id);
+                notify(stakeholdersFor(p), pLabel(p) + ' Observation rectification rejected by ' + approverLabel + '. Returned to ' + targetPermitteeLabel + '.', 'warn', p.id);
+                showToast('Observation rectification rejected. Returned to ' + targetPermitteeLabel + '.', 'err');
             }
             saveState();
         }
@@ -9571,12 +9614,14 @@
                 by: effectiveSigner,
                 comment: comment
             };
+            const targetPermittee = ptypeOf(p) === 'electrical' ? 'electrician' : ((ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan') ? 'lift-supervisor' : (ptypeOf(p) === 'blasting' ? 'blasting-incharge' : (ptypeOf(p) === 'nightshift' ? 'night-supervisor' : 'site-supervisor')));
+            const targetPermitteeLabel = (roleInfo(targetPermittee) && roleInfo(targetPermittee).label) || 'Permittee';
             p.observation.status = 'Open';
             p.status = 'Active – Observation Open';
-            logActivity(p, 'EHS (' + effectiveSigner + ') REJECTED Observation rectification: ' + comment + '. Returned to Site Supervisor for re-rectification.');
-            notify(['site-supervisor'], pLabel(p) + ' — Observation rectification REJECTED by EHS: "' + comment + '". Please re-rectify with proper evidence.', 'error', p.id);
-            notify(stakeholdersFor(p), pLabel(p) + ' Observation rectification rejected by EHS. Returned to Site Supervisor for re-rectification.', 'warn', p.id);
-            showToast('Observation rectification rejected. Returned to Supervisor.', 'err');
+            logActivity(p, 'EHS (' + effectiveSigner + ') REJECTED Observation rectification: ' + comment + '. Returned to ' + targetPermitteeLabel + ' for re-rectification.');
+            notify([targetPermittee], pLabel(p) + ' — Observation rectification REJECTED by EHS: "' + comment + '". Please re-rectify with proper evidence.', 'error', p.id);
+            notify(stakeholdersFor(p), pLabel(p) + ' Observation rectification rejected by EHS. Returned to ' + targetPermitteeLabel + ' for re-rectification.', 'warn', p.id);
+            showToast('Observation rectification rejected. Returned to ' + targetPermitteeLabel + '.', 'err');
             saveState();
         }
 
@@ -11574,17 +11619,33 @@
 
         function filterRoles(cat, btn) {
             currentRoleFilter = cat || 'all';
-            document.querySelectorAll('.rf-tab').forEach(b => b.classList.remove('active'));
-            if (btn) {
-                btn.classList.add('active');
-            } else {
-                const tab = document.querySelector(`.rf-tab[onclick*="'${cat}'"]`);
-                if (tab) tab.classList.add('active');
-            }
+            updateRoleFilterTabCounts();
             buildRoleCards();
+        }
+        function updateRoleFilterTabCounts() {
+            try {
+                const tabs = document.getElementById('roleFilterTabs');
+                if (!tabs) return;
+                const counts = {
+                    all: ROLES.length,
+                    initiator: ROLES.filter(r => r.cat === 'initiator').length,
+                    verification: ROLES.filter(r => r.cat === 'verification').length,
+                    approver: ROLES.filter(r => r.cat === 'approver').length,
+                    ehs: ROLES.filter(r => r.cat === 'ehs').length,
+                    admin: ROLES.filter(r => r.cat === 'admin').length
+                };
+                tabs.innerHTML =
+                    '<button class="rf-tab ' + ((!currentRoleFilter || currentRoleFilter === 'all') ? 'active' : '') + '" onclick="filterRoles(\'all\', this)"><i class="fa-solid fa-border-all"></i> All Roles (' + counts.all + ')</button>' +
+                    '<button class="rf-tab ' + (currentRoleFilter === 'initiator' ? 'active' : '') + '" onclick="filterRoles(\'initiator\', this)"><i class="fa-solid fa-user-pen"></i> Initiators (' + counts.initiator + ')</button>' +
+                    '<button class="rf-tab ' + (currentRoleFilter === 'verification' ? 'active' : '') + '" onclick="filterRoles(\'verification\', this)"><i class="fa-solid fa-hard-hat"></i> Field &amp; Clearances (' + counts.verification + ')</button>' +
+                    '<button class="rf-tab ' + (currentRoleFilter === 'approver' ? 'active' : '') + '" onclick="filterRoles(\'approver\', this)"><i class="fa-solid fa-user-tie"></i> Domain Approvers (' + counts.approver + ')</button>' +
+                    '<button class="rf-tab ' + (currentRoleFilter === 'ehs' ? 'active' : '') + '" onclick="filterRoles(\'ehs\', this)"><i class="fa-solid fa-shield-halved"></i> EHS Safety (' + counts.ehs + ')</button>' +
+                    '<button class="rf-tab ' + (currentRoleFilter === 'admin' ? 'active' : '') + '" onclick="filterRoles(\'admin\', this)"><i class="fa-solid fa-user-gear"></i> Admin (' + counts.admin + ')</button>';
+            } catch (e) {}
         }
         function buildRoleCards() {
             try {
+                updateRoleFilterTabCounts();
                 const grid = document.getElementById('roleCardsGrid');
                 if (!grid) return;
                 const list = (currentRoleFilter && currentRoleFilter !== 'all')
@@ -11622,7 +11683,10 @@
                 document.getElementById('appRoot').style.display = 'flex';
                 document.getElementById('loadingOverlay').classList.remove('show');
                 buildNav();
-                document.getElementById('roleBadgeValue').textContent = currentUser.label;
+                const rb = document.getElementById('roleBadgeValue');
+                if (rb) rb.textContent = currentUser.label;
+                const personaSelect = document.getElementById('quickPersonaDropdown');
+                if (personaSelect) personaSelect.value = currentUser.key;
                 startEscalationTimer();
                 goTo('dashboard');
                 refreshNotifBell();
@@ -11645,9 +11709,40 @@
             currentUser.name = '';
             const roleBadge = document.getElementById('roleBadgeValue');
             if (roleBadge) roleBadge.textContent = currentUser.label;
+            const personaSelect = document.getElementById('quickPersonaDropdown');
+            if (personaSelect && personaSelect.value !== roleKey) personaSelect.value = roleKey;
             buildNav();
             applyRoleVisibility();
             refreshNotifBell();
+
+            // Dynamic in-app view reactivity across all views
+            const curV = (typeof currentView !== 'undefined' && currentView) ? currentView : 'dashboard';
+            if (curV === 'dashboard') {
+                buildDashboard();
+                if (typeof updateKpis === 'function') updateKpis();
+            } else if (curV === 'ptype') {
+                buildPermitTypeCards();
+            } else if (curV === 'register') {
+                buildRegisterFilters();
+                buildRegisterTable();
+            } else if (curV === 'detail' || (typeof currentDetailId !== 'undefined' && currentDetailId)) {
+                if (currentDetailId) {
+                    const p = PERMITS.find(x => x.id === currentDetailId);
+                    const scope = currentUser ? roleTypeScope(currentUser.key) : null;
+                    if (p && isPermitVisibleToRole(p, currentUser.key) && permitMatchesScope(p, scope)) {
+                        viewDetail(currentDetailId, true);
+                    } else {
+                        showToast('Role switched to ' + currentUser.label + '. Switched away from permit outside scope.', 'info');
+                        goTo('register');
+                    }
+                }
+            } else if (curV === 'create') {
+                if (!INITIATOR_PERMIT_RULES[roleKey]) {
+                    showToast('Role switched to ' + currentUser.label + '. Form creation is reserved for permittees.', 'warn');
+                    goTo('dashboard');
+                }
+            }
+            showToast('Active persona switched to ' + currentUser.label + '.', 'info');
         }
 
         /* ================================================================
@@ -11655,7 +11750,7 @@
            ================================================================ */
         function navItemsFor(roleKey) {
             const items = [{ id: 'dashboard', label: 'Dashboard', icon: 'fa-gauge-high' }];
-            if (['site-supervisor', 'electrician', 'blasting-incharge', 'lift-supervisor'].includes(roleKey)) {
+            if (['site-supervisor', 'electrician', 'blasting-incharge', 'lift-supervisor', 'night-supervisor'].includes(roleKey)) {
                 if (isSunday()) {
                     items.push({ id: 'ptype-locked', label: 'Create (Locked)', icon: 'fa-lock', isLocked: true });
                 } else {
@@ -11668,7 +11763,7 @@
             if (roleKey === 'admin') {
                 items.push({ id: 'admin-config', label: 'Site GPS & Geofence', icon: 'fa-map-location-dot' });
             }
-            items.push({ id: 'register', label: (['site-supervisor', 'electrician', 'blasting-incharge', 'lift-supervisor', 'site-engineer'].includes(roleKey)) ? 'My Permits' : 'Permit Register', icon: 'fa-table-list' });
+            items.push({ id: 'register', label: (['site-supervisor', 'electrician', 'blasting-incharge', 'lift-supervisor', 'night-supervisor', 'site-engineer'].includes(roleKey)) ? 'My Permits' : 'Permit Register', icon: 'fa-table-list' });
             items.push({ id: 'notifications', label: 'Notifications', icon: 'fa-bell', badge: true });
             return items;
         }
@@ -11747,8 +11842,8 @@
                 return;
             }
             // Strict RBAC Route Guards
-            if ((view === 'ptype' || view === 'create') && currentUser && currentUser.key !== 'site-supervisor' && currentUser.key !== 'blasting-incharge' && currentUser.key !== 'electrician' && currentUser.key !== 'lift-supervisor') {
-                showToast('Access Denied: Only Permittees (Site Supervisors, Electricians, Blasting In-charge, Lifting Supervisors) have authority to create permits.', 'warn');
+            if ((view === 'ptype' || view === 'create') && currentUser && !INITIATOR_PERMIT_RULES[currentUser.key]) {
+                showToast('Access Denied: Only Permittees (Site Supervisors, Electricians, Blasting In-charge, Lifting Supervisors, Night Supervisors) have authority to create permits.', 'warn');
                 goTo('dashboard');
                 return;
             }
@@ -11757,6 +11852,9 @@
                 goTo('dashboard');
                 return;
             }
+            currentView = view;
+            if (view !== 'detail') currentDetailId = null;
+
             // Dismiss any open modals or overlays so they never persist across views
             closeModal('actionModal');
             closeModal('gpsModal');
@@ -13169,7 +13267,19 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     '<div class="form-field full" id="ff-night-work-desc"><label>Description of Work at Night <span class="req">*</span></label>' +
                     '<select id="inNightWorkDesc" onchange="onNightWorkDescChange(this.value)"' + disAttr + '>' +
                     '<option value="">Select Description of Work&hellip;</option>' +
-                    NIGHT_WORK_DESCRIPTIONS.map(d => '<option value="' + escapeHtml(d.name) + '" ' + ((draft.nightWorkDescription === d.name || draft.nightWorkType === d.type) ? 'selected' : '') + '>' + escapeHtml(d.name) + ' (' + d.permitCode + ')</option>').join('') +
+                    NIGHT_WORK_DESCRIPTIONS.filter(function(d) {
+                        if (!currentUser) return true;
+                        if (currentUser.key === 'site-supervisor') {
+                            return ['excavation', 'hotwork', 'guardrail', 'shaft', 'general'].includes(d.type);
+                        }
+                        if (currentUser.key === 'electrician') {
+                            return d.type === 'electrical';
+                        }
+                        if (currentUser.key === 'lift-supervisor') {
+                            return d.type === 'lifting';
+                        }
+                        return true;
+                    }).map(d => '<option value="' + escapeHtml(d.name) + '" ' + ((draft.nightWorkDescription === d.name || draft.nightWorkType === d.type) ? 'selected' : '') + '>' + escapeHtml(d.name) + ' (' + d.permitCode + ')</option>').join('') +
                     '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Description of Work is mandatory.</div></div>' +
                     '<div class="form-field full">' +
                     '<label class="toggle-control" style="display:flex;align-items:center;gap:10px;cursor:pointer;font-size:13px;font-weight:600;color:var(--text);">' +
@@ -16410,326 +16520,436 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
            PERMIT DETAIL VIEW — approval tracker, GPS-gated actions,
            extension panel, closure/surrender, activity log
            ================================================================ */
-        function trackerHtml(p) {
-            const isHw = ptypeOf(p) === 'hotwork';
-            const isShaft = ptypeOf(p) === 'shaft';
-            const isGr = ptypeOf(p) === 'guardrail';
-            const isConfined = ptypeOf(p) === 'confined';
-            const isGeneral = ptypeOf(p) === 'general';
-            const isBlasting = ptypeOf(p) === 'blasting';
-            const isElectrical = ptypeOf(p) === 'electrical';
-            const isLifting = ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan';
-            const isBlastingOp = isBlasting && (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
-            const a = p.approvals || newChain(ptypeOf(p));
-            const isEngAckDone = !!(p.siteEngineerAck && p.siteEngineerAck.acknowledged);
-            const isMepActive = p.status === 'Pending MEP Clearance';
+function trackerHtml(p) {
+    const pt = ptypeOf(p);
+    const isExc = pt === 'excavation';
+    const shLabel = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
+    const a = p.approvals || newChain(pt);
+    const isEngAckDone = !!(p.siteEngineerAck && p.siteEngineerAck.acknowledged);
+    const isWorkActive = ['Active', 'Active – Observation Open', 'Observation Pending Site Engineer Acknowledgment', 'Observation Pending Section Head Review', 'Observation Pending EHS Clearance', 'Closed – Pending Surrender', 'Completed (Surrendered)', 'Expired'].includes(p.status);
+
+    function node(label, sub, state, onclickAttr, tooltip) {
+        const click = onclickAttr ? (' onclick="' + onclickAttr + '" style="cursor:pointer;"') : '';
+        const title = tooltip ? (' title="' + escapeHtml(tooltip) + '"') : '';
+        return '<div class="tr-node ' + state + '"' + click + title + '><div class="tr-circ">' + 
+            (state === 'done' ? '<i class="fa-solid fa-check"></i>' : 
+             state === 'rejected' ? '<i class="fa-solid fa-xmark"></i>' : 
+             (state === 'current' ? '<i class="fa-solid fa-hourglass-half"></i>' : '<i class="fa-solid fa-clock"></i>')) + 
+            '</div><div class="tr-label">' + label + '</div><div class="tr-sub">' + sub + '</div></div>';
+    }
+
+    let html = '<div class="tracker">';
+
+    if (pt === 'nightshift') {
+        // =========================================================================
+        // PTW-010: NIGHT SHIFT / HOLIDAY WORK (8-STAGE DUAL-PHASE PROTOCOL)
+        // =========================================================================
+        // Step 1: Day Pre-Fill (Site Supervisor)
+        const isDraft = p.status === 'Draft' || p.status === 'Returned for Correction';
+        html += node('Day Pre-Fill', isDraft ? 'Step 1 · In Progress' : 'Step 1 · Submitted', isDraft ? 'current' : 'done', '', 'Site Supervisor day-shift permit initiation & 13 statutory safety checks');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        // Step 2: Site Engineer Ground Ack
+        const isPendingEng = p.status === 'Pending Site Engineer Acknowledgment';
+        const engDone = isEngAckDone || ['Pending Section Head', 'Night Shift Approved – Awaiting Linked Permit', 'Approved – Pending Night Handover', 'Pending P&M Night Acknowledgment', 'Pending EHS Approval', 'Active', 'Closed – Pending Surrender', 'Completed (Surrendered)'].includes(p.status);
+        html += node('Site Engineer', engDone ? 'Step 2 · Ground Checked' : (isPendingEng ? 'Step 2 · Action Req.' : 'Step 2 · Acknowledge'), engDone ? 'done' : (isPendingEng ? 'current' : ''), '', 'Site Engineer day-shift technical ground verification');
+        html += '<div class="tr-line ' + (engDone ? 'done' : '') + '"></div>';
+
+        // Step 3: Tower Incharge Day Authorization
+        const isPendingTI = p.status === 'Pending Section Head';
+        const tiDone = (a.sectionHead && a.sectionHead.status === 'approved') || ['Night Shift Approved – Awaiting Linked Permit', 'Approved – Pending Night Handover', 'Pending P&M Night Acknowledgment', 'Pending EHS Approval', 'Active', 'Closed – Pending Surrender', 'Completed (Surrendered)'].includes(p.status);
+        html += node('Tower Incharge', tiDone ? 'Step 3 · Pre-Authorized' : (isPendingTI ? 'Step 3 · Action Req.' : 'Step 3 · Review'), tiDone ? 'done' : (isPendingTI ? 'current' : ''), '', 'Tower Incharge day-shift authorization');
+        html += '<div class="tr-line ' + (tiDone ? 'done' : '') + '"></div>';
+
+        // Step 4: Linked Activity Permit Sync
+        const isPendingLinked = p.status === 'Night Shift Approved – Awaiting Linked Permit';
+        const linkedDone = ['Approved – Pending Night Handover', 'Pending P&M Night Acknowledgment', 'Pending EHS Approval', 'Active', 'Closed – Pending Surrender', 'Completed (Surrendered)'].includes(p.status);
+        html += node('Linked Permit', linkedDone ? 'Step 4 · Synchronized' : (isPendingLinked ? 'Step 4 · Awaiting Sync' : 'Step 4 · Sequential Link'), linkedDone ? 'done' : (isPendingLinked ? 'current' : ''), '', 'Sequential linked trade activity permit (Hot Work, Shaft, Lifting, etc.) daytime approval');
+        html += '<div class="tr-line ' + (linkedDone ? 'done' : '') + '"></div>';
+
+        // Step 5: 8:30 PM Night Handover Gate (Night Site Supervisor)
+        const isPendingHandover = p.status === 'Approved – Pending Night Handover';
+        const handoverDone = (a.nightHandover && a.nightHandover.status === 'approved') || ['Pending P&M Night Acknowledgment', 'Pending EHS Approval', 'Active', 'Closed – Pending Surrender', 'Completed (Surrendered)'].includes(p.status);
+        html += node('Night Handover', handoverDone ? 'Step 5 · 20:30 Handover' : (isPendingHandover ? 'Step 5 · Handover Req.' : 'Step 5 · 20:30 Gate'), handoverDone ? 'done' : (isPendingHandover ? 'current' : ''), '', 'Physical transfer to qualified Night Site Supervisor with dual site photos (21:00 cutoff)');
+        html += '<div class="tr-line ' + (handoverDone ? 'done' : '') + '"></div>';
+
+        // Step 6: P&M Night Inspection (P&M Engineer)
+        const isPendingPmNight = p.status === 'Pending P&M Night Acknowledgment';
+        const pmNightDone = (a.pmNight && a.pmNight.status === 'approved') || ['Pending EHS Approval', 'Active', 'Closed – Pending Surrender', 'Completed (Surrendered)'].includes(p.status);
+        html += node('P&M Night Ack', pmNightDone ? 'Step 6 · Plant Certified' : (isPendingPmNight ? 'Step 6 · Action Req.' : 'Step 6 · DG & Lighting'), pmNightDone ? 'done' : (isPendingPmNight ? 'current' : ''), '', 'P&M Engineer night inspection of lighting towers (>150 Lux) and DG sets');
+        html += '<div class="tr-line ' + (pmNightDone ? 'done' : '') + '"></div>';
+
+        // Step 7: EHS Safety Final Endorsement
+        const isPendingEhs = p.status === 'Pending EHS Approval';
+        const ehsDone = (a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved') || isWorkActive;
+        const isEhsRej = p.status === 'Returned to Night Supervisor';
+        html += node('EHS Safety', ehsDone ? 'Step 7 · Activated' : (isEhsRej ? 'Returned to Night Sup' : (isPendingEhs ? 'Step 7 · Action Req.' : 'Step 7 · Endorsement')), ehsDone ? 'done' : (isEhsRej ? 'rejected' : (isPendingEhs ? 'current' : '')), '', 'EHS Safety night-shift endorsement and concurrent permit activation');
+        html += '<div class="tr-line ' + (ehsDone ? 'done' : '') + '"></div>';
+
+        // Step 8: Night Active
+        html += node('Night Active', isWorkActive ? '20:30 – 06:00 IST' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting 20:30'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+        html += '</div>';
+
+    } else if (pt === 'electrical') {
+        // =========================================================================
+        // PTW-006: ELECTRICAL WORK (HT/LT) — DUAL TOPOLOGY GOVERNANCE
+        // =========================================================================
+        const isBatching = p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' || (a && a.kind === 'electrical-batching');
+        const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
+        const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · LOTO Logged');
+        html += node('Permittee Electrician', supSub, supState, '', 'Certified Electrician LOTO parameter logging and pre-work statutory declaration');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        if (isBatching) {
+            // TOPOLOGY A: BATCHING PLANT (4-STAGE SPECIALIST FLOW)
+            // Step 2: P&M Engineer Isolation Ack
+            const isPmAckActive = p.status === 'Pending P&M Acknowledgment';
+            const isPmDone = !!(p.pmAck && p.pmAck.acknowledged) || !!(a.pm && a.pm.status === 'approved');
+            const isPmRejected = !!(p.pmAck && p.pmAck.rejected) || !!(a.pm && (a.pm.status === 'rejected' || a.pm.status === 'cancelled'));
+            const pmState = isPmDone ? 'done' : (isPmRejected ? 'rejected' : (isPmAckActive ? 'current' : ''));
+            html += node('P&M Engineer', isPmDone ? 'Step 2 · Plant Isolated' : (isPmRejected ? 'Rejected' : (isPmAckActive ? 'Step 2 · Action Req.' : 'Step 2 · Isolation Ack')), pmState, '', 'P&M Engineer physical batching plant isolation & LOTO tag verification');
+            html += '<div class="tr-line ' + (isPmDone ? 'done' : '') + '"></div>';
+
+            // Step 3: Quality Engineer Megohm Clearance
+            const isQeActive = p.status === 'Pending Quality Engineer Approval';
+            const isQeDone = !!(a.qualityEngineer && a.qualityEngineer.status === 'approved');
+            const isQeRejected = !!(a.qualityEngineer && (a.qualityEngineer.status === 'rejected' || a.qualityEngineer.status === 'cancelled'));
+            const qeState = isQeDone ? 'done' : (isQeRejected ? 'rejected' : (isQeActive ? 'current' : ''));
+            html += node('Quality Engineer', isQeDone ? 'Step 3 · Megohm Verified' : (isQeRejected ? 'Rejected' : (isQeActive ? 'Step 3 · Action Req.' : 'Step 3 · Megohm Test')), qeState, '', 'Quality Engineer Megohm insulation resistance clearance');
+            html += '<div class="tr-line ' + (isQeDone ? 'done' : '') + '"></div>';
+
+            // Step 4: EHS Safety Endorsement
+            const isEhsActive = p.status === 'Pending EHS Approval';
+            const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+            const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+            const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+            html += node('EHS Safety', isEhsDone ? 'Step 4 · Endorsed' : (isEhsRejected ? 'Cancelled' : (isEhsActive ? 'Step 4 · Action Req.' : 'Step 4 · Endorsement')), ehsState, '', 'EHS Safety statutory endorsement (First-Wins)');
+            html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
+
+            // Final: Active
+            html += node('Active', isWorkActive ? 'Work Authorized' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+            html += '</div>';
+
+        } else {
+            // TOPOLOGY B: SITE ELECTRICAL (5-STAGE DUAL-CLEARANCE FLOW)
+            // Step 2: Site Engineer
+            const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
+            const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
+            html += node('Site Engineer', (isEngAckDone && !isPendingEng) ? 'Step 2 · Ground Checked' : (isPendingEng ? 'Step 2 · Action Req.' : 'Step 2 · Field Ack'), engState, '', 'Site Engineer physical route verification & switchgear inspection');
+            html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
+
+            // Step 3: Dual Clearance Gate (MEP · P&M)
             const isMepDone = !!(a.mep && a.mep.status === 'approved');
-            const isMepRejected = !!(a.mep && (a.mep.status === 'rejected' || a.mep.status === 'cancelled'));
-            const isParallelActive = p.status === 'Pending Parallel Approval';
-            const isParallelDone = !isHw && !isShaft && !isGr && !isConfined && !isGeneral && !isBlasting && !isElectrical && !isLifting && !!(a.mep && a.pm && a.it && a.mep.status === 'approved' && a.pm.status === 'approved' && a.it.status === 'approved');
+            const isPmDone = !!(a.pm && a.pm.status === 'approved');
+            const dualDone = isMepDone && isPmDone;
+            const isDualActive = p.status === 'Pending MEP & P&M Clearance' || p.status === 'Pending MEP or P&M Approval';
+            html += '<div class="tr-parallel-wrap"><div class="tr-parallel-row">' +
+                node('MEP', isMepDone ? 'Approved' : (a.mep && a.mep.status === 'rejected' ? 'Rejected' : (isDualActive ? 'Action Req.' : 'Pending')), isMepDone ? 'done' : (a.mep && a.mep.status === 'rejected' ? 'rejected' : (isDualActive ? 'current' : '')), '', 'MEP utility clearance status') +
+                '<div class="tr-line ' + (isMepDone ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
+                node('P&M', isPmDone ? 'Approved' : (a.pm && a.pm.status === 'rejected' ? 'Rejected' : (isDualActive ? 'Action Req.' : 'Pending')), isPmDone ? 'done' : (a.pm && a.pm.status === 'rejected' ? 'rejected' : (isDualActive ? 'current' : '')), '', 'P&M plant clearance status') +
+                '</div><div class="tr-parallel-label">Step 3 &middot; Dual Domain Clearance Gate (Both Req.)</div></div>';
+            html += '<div class="tr-line ' + (dualDone ? 'done' : '') + '"></div>';
+
+            // Step 4: Tower Incharge
             const isSectionHeadActive = p.status === 'Pending Section Head';
             const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
             const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
+            const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
+            html += node('Tower Incharge', isSectionHeadDone ? 'Step 4 · Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 4 · Action Req.' : 'Step 4 · Review')), shState, '', 'Tower Incharge holistic safety review');
+            html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
+
+            // Step 5: EHS Safety Endorsement
             const isEhsActive = p.status === 'Pending EHS Approval';
-            const isEhsDone = !!(a.ehsManager && a.ehsOfficer && (a.ehsManager.status === 'approved' || a.ehsOfficer.status === 'approved'));
-            const isEhsRejected = !!(a.ehsManager && a.ehsOfficer && (a.ehsManager.status === 'rejected' || a.ehsOfficer.status === 'rejected'));
-            const isWorkActive = ['Active', 'Active – Observation Open', 'Observation Pending Site Engineer Acknowledgment', 'Observation Pending Section Head Review', 'Observation Pending EHS Clearance', 'Closed – Pending Surrender', 'Completed (Surrendered)', 'Expired'].includes(p.status);
+            const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+            const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+            const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+            html += node('EHS Safety', isEhsDone ? 'Step 5 · Endorsed' : (isEhsRejected ? 'Cancelled' : (isEhsActive ? 'Step 5 · Action Req.' : 'Step 5 · Endorsement')), ehsState, '', 'EHS Safety statutory endorsement (First-Wins)');
+            html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
 
-            function node(label, sub, state, onclickAttr, tooltip) {
-                const click = onclickAttr ? (' onclick="' + onclickAttr + '" style="cursor:pointer;"') : '';
-                const title = tooltip ? (' title="' + escapeHtml(tooltip) + '"') : '';
-                return '<div class="tr-node ' + state + '"' + click + title + '><div class="tr-circ">' + (state === 'done' ? '<i class="fa-solid fa-check"></i>' : state === 'rejected' ? '<i class="fa-solid fa-xmark"></i>' : (state === 'current' ? '<i class="fa-solid fa-hourglass-half"></i>' : '<i class="fa-solid fa-clock"></i>')) + '</div><div class="tr-label">' + label + '</div><div class="tr-sub">' + sub + '</div></div>';
-            }
-
-            function pState(field) {
-                if (!a[field]) return '';
-                const st = a[field].status;
-                if (st === 'approved') return 'done';
-                if (st === 'rejected') return 'rejected';
-                if (isParallelActive) return 'current';
-                return '';
-            }
-
-            let html = '<div class="tracker">';
-
-            if (isLifting) {
-                const isCrit = p.liftingClassification === 'critical' || ptypeOf(p) === 'liftplan' || (a && a.kind === 'lifting-critical');
-                // Step 1: Lifting Supervisor
-                const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
-                const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Submitted');
-                html += node('Lifting Supervisor', supSub, supState, '', 'Lifting Supervisor permit origination');
-                html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
-
-                // Step 2: Site Engineer
-                const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
-                const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
-                const engSub = (isEngAckDone && !isPendingEng) ? 'Step 2 · Acknowledged' : (p.status === 'Pending Site Engineer Re-Acknowledgment' ? 'Step 2 · Re-Ack Req.' : (p.status === 'Pending Site Engineer Acknowledgment' ? 'Step 2 · Action Req.' : 'Step 2 · Acknowledge'));
-                const engTip = (isEngAckDone && !isPendingEng) ? 'Site Engineer acknowledgment completed' : 'Pending Site Engineer site verification & acknowledgment';
-                html += node('Site Engineer', engSub, engState, '', engTip);
-                html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
-
-                // Step 3: P&M Engineer
-                const isPmActive = p.status === 'Pending P&M Approval';
-                const isPmDone = !!(a.pm && a.pm.status === 'approved');
-                const isPmRejected = !!(a.pm && (a.pm.status === 'rejected' || a.pm.status === 'cancelled'));
-                const pmState = isPmDone ? 'done' : (isPmRejected ? 'rejected' : (isPmActive ? 'current' : ''));
-                const pmSub = isPmDone ? 'Step 3 · Approved' : (isPmRejected ? 'Rejected' : (isPmActive ? 'Step 3 · Action Req.' : 'Step 3 · Clearance'));
-                const pmTip = isPmDone ? 'P&M technical verification and crane specs approved' : 'Plant & Machinery Engineer technical review and crane inspection';
-                html += node('P&M Engineer', pmSub, pmState, '', pmTip);
-                html += '<div class="tr-line ' + (isPmDone ? 'done' : '') + '"></div>';
-
-                // Step 4: Tower Incharge
-                const shLabel = (pMeta(p) && pMeta(p).shLabel) || 'Tower Incharge';
-                const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
-                const shSub = isSectionHeadDone ? 'Step 4 · Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 4 · Action Req.' : 'Step 4 · Review'));
-                const shTip = isSectionHeadDone ? (shLabel + ' review approved') : (isSectionHeadRejected ? (shLabel + ' cancelled') : ('Pending ' + shLabel + ' review'));
-                html += node(shLabel, shSub, shState, '', shTip);
-                html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
-
-                if (isCrit) {
-                    // Step 5: Project Manager (Critical Lift Plan only)
-                    const isPmExecActive = p.status === 'Pending Project Manager Acknowledgment';
-                    const isPmExecDone = !!(a.projectManager && a.projectManager.status === 'approved');
-                    const isPmExecRejected = !!(a.projectManager && (a.projectManager.status === 'rejected' || a.projectManager.status === 'cancelled'));
-                    const pmExecState = isPmExecDone ? 'done' : (isPmExecRejected ? 'rejected' : (isPmExecActive ? 'current' : ''));
-                    const pmExecSub = isPmExecDone ? 'Step 5 · Acknowledged' : (isPmExecRejected ? 'Rejected' : (isPmExecActive ? 'Step 5 · Action Req.' : 'Step 5 · Executive Ack'));
-                    const pmExecTip = isPmExecDone ? 'Project Manager Critical Lift Plan executive acknowledgment completed' : 'Executive acknowledgment by Project Manager required for critical lift operations';
-                    html += node('Project Manager', pmExecSub, pmExecState, '', pmExecTip);
-                    html += '<div class="tr-line ' + (isPmExecDone ? 'done' : '') + '"></div>';
-                }
-
-                // Step 5 (Routine) or Step 6 (Critical): EHS Safety
-                const ehsStepNum = isCrit ? 'Step 6' : 'Step 5';
-                const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
-                const ehsSub = isEhsDone ? ((a.ehsManager && a.ehsManager.status === 'approved' ? 'Manager' : 'Officer') + ' verified') : (isEhsRejected ? 'EHS Cancelled' : (isEhsActive ? (ehsStepNum + ' · Action Req.') : (ehsStepNum + ' · Verification')));
-                const ehsTip = isEhsDone ? 'EHS safety verification completed' : (isEhsRejected ? 'EHS cancelled' : 'Pending EHS safety verification & activation');
-                html += node('EHS Safety', ehsSub, ehsState, '', ehsTip);
-                html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
-
-                // Final Step: Active / Operational
-                const activeState = p.status === 'Cancelled' ? 'rejected' : (isWorkActive ? 'done' : '');
-                const activeSub = p.status === 'Cancelled' ? 'Cancelled' : (isWorkActive ? 'Work Authorized' : 'Awaiting');
-                html += node('Active', activeSub, activeState);
-                html += '</div>';
-            } else if (isElectrical) {
-                const isBatching = p.electricalSiteType === 'batching_plant' || (a && a.kind === 'electrical-batching');
-                // Step 1: Electrician Permittee
-                const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
-                const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Submitted');
-                html += node('Permittee Electrician', supSub, supState);
-                html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
-
-                if (isBatching) {
-                    // Step 2: P&M Engineer
-                    const isPmAckActive = p.status === 'Pending P&M Acknowledgment';
-                    const isPmDone = !!(p.pmAck && p.pmAck.acknowledged) || !!(a.pm && a.pm.status === 'approved');
-                    const isPmRejected = !!(p.pmAck && p.pmAck.rejected) || !!(a.pm && (a.pm.status === 'rejected' || a.pm.status === 'cancelled'));
-                    const pmState = isPmDone ? 'done' : (isPmRejected ? 'rejected' : (isPmAckActive ? 'current' : ''));
-                    const pmSub = isPmDone ? 'Step 2 · Acknowledged' : (isPmRejected ? 'Rejected' : (isPmAckActive ? 'Step 2 · Action Req.' : 'Step 2 · Acknowledge'));
-                    html += node('P&M Engineer', pmSub, pmState, '', 'Plant & Machinery Engineer acknowledgment and statutory declaration');
-                    html += '<div class="tr-line ' + (isPmDone ? 'done' : '') + '"></div>';
-
-                    // Step 3: Quality Engineer
-                    const isQeActive = p.status === 'Pending Quality Engineer Approval';
-                    const isQeDone = !!(a.qualityEngineer && a.qualityEngineer.status === 'approved');
-                    const isQeRejected = !!(a.qualityEngineer && (a.qualityEngineer.status === 'rejected' || a.qualityEngineer.status === 'cancelled'));
-                    const qeState = isQeDone ? 'done' : (isQeRejected ? 'rejected' : (isQeActive ? 'current' : ''));
-                    const qeSub = isQeDone ? 'Step 3 · Approved' : (isQeRejected ? 'Rejected' : (isQeActive ? 'Step 3 · Action Req.' : 'Step 3 · Review'));
-                    html += node('Quality Engineer', qeSub, qeState, '', 'Quality Engineer review and statutory declaration');
-                    html += '<div class="tr-line ' + (isQeDone ? 'done' : '') + '"></div>';
-
-                    // Step 4: EHS Safety
-                    const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
-                    const ehsSub = isEhsDone ? ((a.ehsManager && a.ehsManager.status === 'approved' ? 'Manager' : 'Officer') + ' verified') : (isEhsRejected ? 'EHS Cancelled' : (isEhsActive ? 'Step 4 · Action Req.' : 'Step 4 · Verification'));
-                    html += node('EHS Safety', ehsSub, ehsState, '', 'Pending EHS safety verification & activation');
-                    html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
-
-                    // Final Step: Active / Operational
-                    const activeState = p.status === 'Cancelled' ? 'rejected' : (isWorkActive ? 'done' : '');
-                    const activeSub = p.status === 'Cancelled' ? 'Cancelled' : (isWorkActive ? 'Work Authorized' : 'Awaiting');
-                    html += node('Active', activeSub, activeState);
-                    html += '</div>';
-                } else {
-                    // Site Flow
-                    // Step 2: Site Engineer
-                    const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
-                    const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
-                    const engSub = (isEngAckDone && !isPendingEng) ? 'Step 2 · Acknowledged' : (p.status === 'Pending Site Engineer Re-Acknowledgment' ? 'Step 2 · Re-Ack Req.' : (p.status === 'Pending Site Engineer Acknowledgment' ? 'Step 2 · Action Req.' : 'Step 2 · Acknowledge'));
-                    const engTip = (isEngAckDone && !isPendingEng) ? 'Site Engineer acknowledgment completed' : 'Pending Site Engineer verification and acknowledgment';
-                    html += node('Site Engineer', engSub, engState, '', engTip);
-                    html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
-
-                    // Step 3: MEP or P&M Review (either can approve)
-                    const isMepPmActive = p.status === 'Pending MEP or P&M Approval';
-                    const isMepDone = !!(a.mep && a.mep.status === 'approved');
-                    const isPmDone = !!(a.pm && a.pm.status === 'approved');
-                    const step3Done = isMepDone || isPmDone;
-                    const isStep3Rejected = !!((a.mep && (a.mep.status === 'rejected' || a.mep.status === 'cancelled')) || (a.pm && (a.pm.status === 'rejected' || a.pm.status === 'cancelled')));
-                    const step3State = step3Done ? 'done' : (isStep3Rejected ? 'rejected' : (isMepPmActive ? 'current' : ''));
-                    const step3Label = isMepDone ? 'MEP Approved' : (isPmDone ? 'P&M Approved' : 'MEP / P&M');
-                    const step3Sub = step3Done ? 'Step 3 · Approved' : (isStep3Rejected ? 'Rejected' : (isMepPmActive ? 'Step 3 · Action Req.' : 'Step 3 · Review'));
-                    html += node(step3Label, step3Sub, step3State, '', 'Review and statutory declaration by MEP or P&M Engineer (either can approve)');
-                    html += '<div class="tr-line ' + (step3Done ? 'done' : '') + '"></div>';
-
-                    // Step 4: Tower Incharge
-                    const shLabel = 'Tower Incharge';
-                    const isSectionHeadActive = p.status === 'Pending Section Head';
-                    const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
-                    const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
-                    const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
-                    const shSub = isSectionHeadDone ? 'Step 4 · Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 4 · Action Req.' : 'Step 4 · Review'));
-                    html += node(shLabel, shSub, shState, '', 'Holistic review by Tower Incharge');
-                    html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
-
-                    // Step 5: EHS Safety
-                    const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
-                    const ehsSub = isEhsDone ? ((a.ehsManager && a.ehsManager.status === 'approved' ? 'Manager' : 'Officer') + ' verified') : (isEhsRejected ? 'EHS Cancelled' : (isEhsActive ? 'Step 5 · Action Req.' : 'Step 5 · Verification'));
-                    html += node('EHS Safety', ehsSub, ehsState, '', 'Pending EHS safety verification & activation');
-                    html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
-
-                    // Final Step: Active / Operational
-                    const activeState = p.status === 'Cancelled' ? 'rejected' : (isWorkActive ? 'done' : '');
-                    const activeSub = p.status === 'Cancelled' ? 'Cancelled' : (isWorkActive ? 'Work Authorized' : 'Awaiting');
-                    html += node('Active', activeSub, activeState);
-                    html += '</div>';
-                }
-            } else if (isBlasting) {
-                // Step 1: Site Supervisor
-                const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
-                const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Submitted');
-                html += node('Site Supervisor', supSub, supState);
-                html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
-
-                let stepNum = 2;
-                if (isBlastingOp) {
-                    const isPendingBlastingAck = (p.status === 'Pending Blasting In-charge Acknowledgment' || p.status === 'Pending Blasting In-charge Re-Acknowledgment');
-                    const isBlastingAckDone = !!(p.blastingInchargeAck && p.blastingInchargeAck.acknowledged);
-                    const blastState = (isBlastingAckDone && !isPendingBlastingAck) ? 'done' : (isPendingBlastingAck ? 'current' : '');
-                    const blastSub = (isBlastingAckDone && !isPendingBlastingAck) ? ('Step ' + stepNum + ' · Statutory Ack') : (p.status === 'Pending Blasting In-charge Re-Acknowledgment' ? ('Step ' + stepNum + ' · Re-Ack Req.') : (p.status === 'Pending Blasting In-charge Acknowledgment' ? ('Step ' + stepNum + ' · Action Req.') : ('Step ' + stepNum + ' · Statutory Ack')));
-                    const blastTip = (isBlastingAckDone && !isPendingBlastingAck) ? 'Blasting / Drilling In-charge statutory acknowledgment & photo completed' : 'Blasting / Drilling In-charge statutory declaration and on-site photo verification';
-                    html += node('Blasting / Drilling In-charge', blastSub, blastState, '', blastTip);
-                    html += '<div class="tr-line ' + ((isBlastingAckDone && !isPendingBlastingAck) ? 'done' : '') + '"></div>';
-                    stepNum++;
-                }
-
-                // Site Engineer
-                const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
-                const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
-                const engSub = (isEngAckDone && !isPendingEng) ? ('Step ' + stepNum + ' · Acknowledged') : (p.status === 'Pending Site Engineer Re-Acknowledgment' ? ('Step ' + stepNum + ' · Re-Ack Req.') : (p.status === 'Pending Site Engineer Acknowledgment' ? ('Step ' + stepNum + ' · Action Req.') : ('Step ' + stepNum + ' · Acknowledge')));
-                const engTip = (isEngAckDone && !isPendingEng) ? 'Site Engineer acknowledgment completed' : 'Pending Site Engineer site verification & acknowledgment';
-                html += node('Site Engineer', engSub, engState, '', engTip);
-                html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
-                stepNum++;
-
-                // EHS Safety
-                const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
-                const ehsSub = isEhsDone ? ((a.ehsManager && a.ehsManager.status === 'approved' ? 'Manager' : 'Officer') + ' verified') : (isEhsRejected ? 'EHS Cancelled' : (isEhsActive ? ('Step ' + stepNum + ' · Action Req.') : ('Step ' + stepNum + ' · Verification')));
-                html += node('EHS Safety', ehsSub, ehsState, '', 'Pending EHS safety verification & activation');
-                html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
-
-                // Final Step: Active / Operational
-                const activeState = p.status === 'Cancelled' ? 'rejected' : (isWorkActive ? 'done' : '');
-                const activeSub = p.status === 'Cancelled' ? 'Cancelled' : (isWorkActive ? 'Work Authorized' : 'Awaiting');
-                html += node('Active', activeSub, activeState);
-                html += '</div>';
-            } else {
-                // Step 1: Site Supervisor
-                const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
-                const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Submitted');
-                html += node('Site Supervisor', supSub, supState);
-                html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
-
-                // Step 2: Site Engineer (Unified across all permits)
-                const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
-                const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
-                const engSub = (isEngAckDone && !isPendingEng) ? 'Step 2 · Acknowledged' : (p.status === 'Pending Site Engineer Re-Acknowledgment' ? 'Step 2 · Re-Ack Req.' : (p.status === 'Pending Site Engineer Acknowledgment' ? 'Step 2 · Action Req.' : 'Step 2 · Acknowledge'));
-                const engTip = (isEngAckDone && !isPendingEng) ? 'Site Engineer acknowledgment completed' : (p.status === 'Pending Site Engineer Re-Acknowledgment' ? 'Pending Site Engineer on-site re-acknowledgment after supervisor correction' : (p.status === 'Pending Site Engineer Acknowledgment' ? 'Pending Site Engineer verification and acknowledgment' : 'Awaiting Step 2 acknowledgment'));
-                html += node('Site Engineer', engSub, engState, '', engTip);
-                html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
-
-                if (isShaft) {
-                    // Step 3: Single MEP Clearance Step for Shaft Work
-                    const mepState = isMepDone ? 'done' : (isMepRejected ? 'rejected' : (isMepActive ? 'current' : ''));
-                    const mepSub = isMepDone ? 'Step 3 · Cleared' : (isMepRejected ? (a.mep && a.mep.status === 'cancelled' ? 'Cancelled' : 'Rejected') : (isMepActive ? 'Step 3 · Action Req.' : 'Step 3 · Clearance'));
-                    const mepTip = isMepDone ? 'MEP clearance completed' : (isMepActive ? 'Pending MEP clearance review' : 'Awaiting MEP clearance');
-                    html += node('MEP Clearance', mepSub, mepState, '', mepTip);
-                    html += '<div class="tr-line ' + (isMepDone ? 'done' : '') + '"></div>';
-                } else if (!isHw && !isGr && !isConfined && !isGeneral) {
-                    // Step 3: Parallel Gate (MEP · P&M · IT) — Excavation only
-                    html += '<div class="tr-parallel-wrap"><div class="tr-parallel-row">' +
-                        node('MEP', a.mep && a.mep.status === 'approved' ? 'Approved' : a.mep && a.mep.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending'), pState('mep'), '', 'MEP utility clearance status') +
-                        '<div class="tr-line ' + (a.mep && a.mep.status === 'approved' ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
-                        node('P&M', a.pm && a.pm.status === 'approved' ? 'Approved' : a.pm && a.pm.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending'), pState('pm'), '', 'Plant & Machinery clearance status') +
-                        '<div class="tr-line ' + (a.pm && a.pm.status === 'approved' ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
-                        node('IT', a.it && a.it.status === 'approved' ? 'Approved' : a.it && a.it.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending'), pState('it'), '', 'IT & telecom clearance status') +
-                        '</div><div class="tr-parallel-label">Step 3 &middot; Parallel Gate (all 3 required)</div></div>';
-                    html += '<div class="tr-line ' + (isParallelDone ? 'done' : '') + '"></div>';
-                }
-
-                // Section Head
-                const isExc = ptypeOf(p) === 'excavation';
-                const shLabel = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
-                const shStepNum = (isHw || isGr || isConfined || isGeneral) ? 'Step 3' : 'Step 4';
-                const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
-                const shSub = isSectionHeadDone ? (shStepNum + ' · Approved') : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? (shStepNum + ' · Action Req.') : (shStepNum + ' · Review')));
-                const shTip = isSectionHeadDone ? (shLabel + ' review approved') : (isSectionHeadRejected ? (shLabel + ' cancelled') : ('Pending ' + shLabel + ' review'));
-                html += node(shLabel, shSub, shState, '', shTip);
-                html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
-
-                // EHS Safety
-                const ehsStepNum = (isHw || isGr || isConfined || isGeneral) ? 'Step 4' : 'Step 5';
-                const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
-                const ehsSub = isEhsDone ? ((a.ehsManager && a.ehsManager.status === 'approved' ? 'Manager' : 'Officer') + ' verified') : (isEhsRejected ? 'EHS Cancelled' : (isEhsActive ? (ehsStepNum + ' · Action Req.') : (ehsStepNum + ' · Verification')));
-                const ehsTip = isEhsDone ? 'EHS safety verification completed' : (isEhsRejected ? 'EHS cancelled' : 'Pending EHS safety verification & activation');
-                html += node('EHS Safety', ehsSub, ehsState, '', ehsTip);
-                html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
-
-                // Final Step: Active / Operational
-                const activeState = p.status === 'Cancelled' ? 'rejected' : (isWorkActive ? 'done' : '');
-                const activeSub = p.status === 'Cancelled' ? 'Cancelled' : (isWorkActive ? 'Work Authorized' : 'Awaiting');
-                html += node('Active', activeSub, activeState);
-                html += '</div>';
-            }
-
-            // Observation Status Banner
-            if (p.observation && p.observation.status !== 'Resolved') {
-                const obsId = p.observation.id || ('OBS-' + p.id);
-                const shApproverTitle = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
-                const hasResp = !!p.observation.response;
-                const hasEng = !!(p.observation.engAck && p.observation.engAck.acknowledged);
-                const hasSh = !!(p.observation.shReview && p.observation.shReview.reviewed);
-
-                const step1State = 'done';
-                const step2State = hasResp ? 'done' : 'current';
-                const step3State = hasEng ? 'done' : (p.status === 'Observation Pending Site Engineer Acknowledgment' ? 'current' : '');
-                const step4State = hasSh ? 'done' : (p.status === 'Observation Pending Section Head Review' ? 'current' : '');
-                const step5State = (p.status === 'Observation Pending EHS Clearance') ? 'current' : '';
-                const obsTrackNodes = node('EHS Raised', 'Deviation', step1State) +
-                    '<div class="tr-line ' + (hasResp ? 'done' : '') + '"></div>' +
-                    node('Supervisor', hasResp ? 'Rectified' : 'Photo + Remarks', step2State) +
-                    '<div class="tr-line ' + (hasEng ? 'done' : '') + '"></div>' +
-                    node('Site Engineer', hasEng ? 'Acknowledged' : (step3State === 'current' ? 'Action Req.' : 'Pending Ack'), step3State) +
-                    '<div class="tr-line ' + (hasSh ? 'done' : '') + '"></div>' +
-                    node(shApproverTitle, hasSh ? 'Approved' : (step4State === 'current' ? 'Review Req.' : 'Pending Review'), step4State) +
-                    '<div class="tr-line ' + (step5State === 'current' ? 'done' : '') + '"></div>' +
-                    node('EHS Clearance', step5State === 'current' ? 'Clearance Req.' : 'Pending Clearance', step5State);
-
-                html += '<div class="obs-card" style="margin-top:14px;border:1px solid #FFCC80;background:#FFF8E1;border-radius:8px;padding:12px 14px;">' +
-                    '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">' +
-                    '<span style="font-weight:700;color:#E65100;font-size:13px;"><i class="fa-solid fa-triangle-exclamation"></i> Active Site Observation &bull; ' + escapeHtml(obsId) + ' (Permit: ' + escapeHtml(p.id) + ')</span>' +
-                    '<span class="dpdp-tag" style="background:#FFF3E0;color:#E65100;border:1px solid #FFE0B2;font-weight:700;">Extension &amp; Closure BLOCKED</span>' +
-                    '</div>' +
-                    '<div style="font-size:12.5px;color:var(--text);margin-bottom:8px;"><b>EHS Deviation:</b> "' + escapeHtml(p.observation.comment) + '" <span style="color:var(--text-muted);font-size:11px;">(' + (p.observation.raisedByRole || 'EHS') + ' &middot; ' + fmtDateTime(p.observation.raisedAt) + ')</span></div>' +
-                    '<div class="tracker" style="margin-top:6px;margin-bottom:8px;">' +
-                    obsTrackNodes +
-                    '</div>' +
-                    (p.observation.shRejection ? ('<div style="font-size:12px;color:#C62828;margin-top:4px;"><i class="fa-solid fa-rotate-left"></i> <b>Previous Rectification Rejected by ' + shApproverTitle + ':</b> "' + escapeHtml(p.observation.shRejection.comment || '') + '" &mdash; please re-rectify and submit fresh evidence.</div>') : '') +
-                    (p.observation.ehsRejection ? ('<div style="font-size:12px;color:#C62828;margin-top:4px;"><i class="fa-solid fa-rotate-left"></i> <b>Previous Rectification Rejected by EHS:</b> "' + escapeHtml(p.observation.ehsRejection.comment || '') + '" &mdash; please re-rectify and submit fresh evidence.</div>') : '') +
-                    '</div>';
-            }
-
-            return html;
+            // Final: Active
+            html += node('Active', isWorkActive ? 'Work Authorized' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+            html += '</div>';
         }
+
+    } else if (pt === 'blasting') {
+        // =========================================================================
+        // PTW-007: DRILLING & BLASTING (3-STAGE DIRECT STATUTORY SPINE TO EHS)
+        // =========================================================================
+        // Step 1: Blasting / Drilling In-charge (PESO Declaration)
+        const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
+        const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · PESO Declared');
+        html += node('Blasting In-charge', supSub, supState, '', 'Certified Blasting In-charge statutory PESO declaration, rig parameters, and misfire verification');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        // Step 2: Site Engineer Technical Acknowledgment
+        const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
+        const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
+        html += node('Site Engineer', (isEngAckDone && !isPendingEng) ? 'Step 2 · Tech Ack' : (isPendingEng ? 'Step 2 · Action Req.' : 'Step 2 · Technical Ack'), engState, '', 'Site Engineer ground check and technical acknowledgment (Cannot Cancel)');
+        html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
+
+        // Step 3: EHS Safety Endorsement (Direct Statutory Bypass of Section Head & Parallel Gates)
+        const isEhsActive = p.status === 'Pending EHS Approval';
+        const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+        const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+        const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+        html += node('EHS Safety', isEhsDone ? 'Step 3 · Direct Bypass' : (isEhsRejected ? 'Cancelled' : (isEhsActive ? 'Step 3 · Action Req.' : 'Step 3 · Endorsement')), ehsState, '', 'EHS Safety statutory endorsement with 500m siren perimeter verification (Direct to EHS)');
+        html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
+
+        // Final Step: Active (with 18:30 Sunset Stop Rule)
+        html += node('Active', isWorkActive ? '18:30 Sunset Stop' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+        html += '</div>';
+
+    } else if (pt === 'lifting' || pt === 'liftplan') {
+        // =========================================================================
+        // PTW-009A & PTW-009B: LIFTING OPERATIONS & CRITICAL LIFT PLAN
+        // =========================================================================
+        const isCrit = p.liftingClassification === 'critical' || pt === 'liftplan' || (a && a.kind === 'lifting-critical');
+        // Step 1: Lifting Supervisor
+        const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
+        const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Rigging Plan');
+        html += node('Lifting Supervisor', supSub, supState, '', 'Certified Lifting Supervisor rigging geometry calculation & pre-location signatures');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        // Step 2: Site Engineer
+        const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
+        const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
+        html += node('Site Engineer', (isEngAckDone && !isPendingEng) ? 'Step 2 · Ground Checked' : (isPendingEng ? 'Step 2 · Action Req.' : 'Step 2 · Field Ack'), engState, '', 'Site Engineer ground stability & drop zone barricade check');
+        html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
+
+        // Step 3: P&M Engineer
+        const isPmActive = p.status === 'Pending P&M Approval';
+        const isPmDone = !!(a.pm && a.pm.status === 'approved');
+        const isPmRejected = !!(a.pm && (a.pm.status === 'rejected' || a.pm.status === 'cancelled'));
+        const pmState = isPmDone ? 'done' : (isPmRejected ? 'rejected' : (isPmActive ? 'current' : ''));
+        html += node('P&M Engineer', isPmDone ? 'Step 3 · Plant Cleared' : (isPmRejected ? 'Rejected' : (isPmActive ? 'Step 3 · Action Req.' : 'Step 3 · Crane Review')), pmState, '', 'P&M technical verification, load charts, and crane fitness certification');
+        html += '<div class="tr-line ' + (isPmDone ? 'done' : '') + '"></div>';
+
+        // Step 4: Tower Incharge
+        const isSectionHeadActive = p.status === 'Pending Section Head';
+        const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
+        const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
+        const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
+        html += node('Tower Incharge', isSectionHeadDone ? 'Step 4 · Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 4 · Action Req.' : 'Step 4 · Review')), shState, '', 'Tower Incharge holistic lift safety review');
+        html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
+
+        if (isCrit) {
+            // Step 5: Project Manager (Critical Lift Plan only)
+            const isPmExecActive = p.status === 'Pending Project Manager Acknowledgment';
+            const isPmExecDone = !!(a.projectManager && a.projectManager.status === 'approved');
+            const isPmExecRejected = !!(a.projectManager && (a.projectManager.status === 'rejected' || a.projectManager.status === 'cancelled'));
+            const pmExecState = isPmExecDone ? 'done' : (isPmExecRejected ? 'rejected' : (isPmExecActive ? 'current' : ''));
+            html += node('Project Manager', isPmExecDone ? 'Step 5 · Executive Ack' : (isPmExecRejected ? 'Rejected' : (isPmExecActive ? 'Step 5 · Action Req.' : 'Step 5 · Exec Review')), pmExecState, '', 'Mandatory Project Manager executive review for loads >5 MT, tandem lifts, or high-risk lifts');
+            html += '<div class="tr-line ' + (isPmExecDone ? 'done' : '') + '"></div>';
+        }
+
+        // Step 5 (Routine) or Step 6 (Critical): EHS Safety
+        const ehsStepNum = isCrit ? 'Step 6' : 'Step 5';
+        const isEhsActive = p.status === 'Pending EHS Approval';
+        const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+        const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+        const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+        html += node('EHS Safety', isEhsDone ? (ehsStepNum + ' · Endorsed') : (isEhsRejected ? 'Cancelled' : (isEhsActive ? (ehsStepNum + ' · Action Req.') : (ehsStepNum + ' · Endorsement'))), ehsState, '', 'EHS Safety statutory endorsement (First-Wins)');
+        html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
+
+        // Final Step: Active
+        html += node('Active', isWorkActive ? 'Lift Authorized' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+        html += '</div>';
+
+    } else if (pt === 'shaft') {
+        // =========================================================================
+        // PTW-005: SHAFT WORK (5-STAGE SEQUENTIAL SPINE WITH MEP CLEARANCE)
+        // =========================================================================
+        // Step 1: Site Supervisor
+        const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
+        const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · 43 Floors');
+        html += node('Site Supervisor', supSub, supState, '', 'Site Supervisor shaft floor range & scaffolding tag declaration');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        // Step 2: Site Engineer
+        const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
+        const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
+        html += node('Site Engineer', (isEngAckDone && !isPendingEng) ? 'Step 2 · Ground Checked' : (isPendingEng ? 'Step 2 · Action Req.' : 'Step 2 · Field Ack'), engState, '', 'Site Engineer physical staging & safety harness verification');
+        html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
+
+        // Step 3: Dedicated MEP Clearance Gate
+        const isMepActive = p.status === 'Pending MEP Clearance';
+        const isMepDone = !!(a.mep && a.mep.status === 'approved');
+        const isMepRejected = !!(a.mep && (a.mep.status === 'rejected' || a.mep.status === 'cancelled'));
+        const mepState = isMepDone ? 'done' : (isMepRejected ? 'rejected' : (isMepActive ? 'current' : ''));
+        html += node('MEP Clearance', isMepDone ? 'Step 3 · Cleared' : (isMepRejected ? 'Rejected' : (isMepActive ? 'Step 3 · Action Req.' : 'Step 3 · Clearance')), mepState, '', 'Dedicated MEP Engineer clearance for vertical shafts & risers');
+        html += '<div class="tr-line ' + (isMepDone ? 'done' : '') + '"></div>';
+
+        // Step 4: Tower Incharge
+        const isSectionHeadActive = p.status === 'Pending Section Head';
+        const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
+        const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
+        const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
+        html += node('Tower Incharge', isSectionHeadDone ? 'Step 4 · Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 4 · Action Req.' : 'Step 4 · Review')), shState, '', 'Tower Incharge shaft access review');
+        html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
+
+        // Step 5: EHS Safety Endorsement
+        const isEhsActive = p.status === 'Pending EHS Approval';
+        const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+        const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+        const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+        html += node('EHS Safety', isEhsDone ? 'Step 5 · Endorsed' : (isEhsRejected ? 'Cancelled' : (isEhsActive ? 'Step 5 · Action Req.' : 'Step 5 · Endorsement')), ehsState, '', 'EHS Safety statutory endorsement (First-Wins)');
+        html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
+
+        // Final: Active
+        html += node('Active', isWorkActive ? 'Work Authorized' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+        html += '</div>';
+
+    } else if (pt === 'excavation') {
+        // =========================================================================
+        // PTW-001: EXCAVATION WORK (5-STAGE 3-WAY PARALLEL CLEARANCE GATE)
+        // =========================================================================
+        // Step 1: Site Supervisor
+        const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
+        const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Drawing Attached');
+        html += node('Site Supervisor', supSub, supState, '', 'Site Supervisor excavation parameter input and mandatory drawing attachment');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        // Step 2: Site Engineer
+        const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
+        const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
+        html += node('Site Engineer', (isEngAckDone && !isPendingEng) ? 'Step 2 · Trench Checked' : (isPendingEng ? 'Step 2 · Action Req.' : 'Step 2 · Field Ack'), engState, '', 'Site Engineer physical trench stability & soil inspection');
+        html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
+
+        // Step 3: 3-Way Parallel Gate (MEP · P&M · IT Concurrency)
+        const isParallelActive = p.status === 'Pending Parallel Approval';
+        const isMepDone = !!(a.mep && a.mep.status === 'approved');
+        const isPmDone = !!(a.pm && a.pm.status === 'approved');
+        const isItDone = !!(a.it && a.it.status === 'approved');
+        const parallelDone = isMepDone && isPmDone && isItDone;
+        html += '<div class="tr-parallel-wrap"><div class="tr-parallel-row">' +
+            node('MEP', isMepDone ? 'Approved' : (a.mep && a.mep.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending')), isMepDone ? 'done' : (a.mep && a.mep.status === 'rejected' ? 'rejected' : (isParallelActive ? 'current' : '')), '', 'Underground piping & utility clearance') +
+            '<div class="tr-line ' + (isMepDone ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
+            node('P&M', isPmDone ? 'Approved' : (a.pm && a.pm.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending')), isPmDone ? 'done' : (a.pm && a.pm.status === 'rejected' ? 'rejected' : (isParallelActive ? 'current' : '')), '', 'Plant, machinery & excavator fitness clearance') +
+            '<div class="tr-line ' + (isPmDone ? 'done' : '') + '" style="min-width:14px;max-width:24px;"></div>' +
+            node('IT', isItDone ? 'Approved' : (a.it && a.it.status === 'rejected' ? 'Rejected' : (isParallelActive ? 'Action Req.' : 'Pending')), isItDone ? 'done' : (a.it && a.it.status === 'rejected' ? 'rejected' : (isParallelActive ? 'current' : '')), '', 'Telecom & optical fibre line clearance') +
+            '</div><div class="tr-parallel-label">Step 3 &middot; 3-Way Parallel Clearance Gate (All 3 Required)</div></div>';
+        html += '<div class="tr-line ' + (parallelDone ? 'done' : '') + '"></div>';
+
+        // Step 4: Excavation Head (NOT Tower Incharge!)
+        const isSectionHeadActive = p.status === 'Pending Section Head';
+        const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
+        const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
+        const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
+        html += node('Excavation Head', isSectionHeadDone ? 'Step 4 · Shoring Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 4 · Action Req.' : 'Step 4 · Review')), shState, '', 'Excavation Head shoring, slope stability & benching safety review');
+        html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
+
+        // Step 5: EHS Safety Endorsement
+        const isEhsActive = p.status === 'Pending EHS Approval';
+        const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+        const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+        const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+        html += node('EHS Safety', isEhsDone ? 'Step 5 · Endorsed' : (isEhsRejected ? 'Cancelled' : (isEhsActive ? 'Step 5 · Action Req.' : 'Step 5 · Endorsement')), ehsState, '', 'EHS Safety statutory endorsement (First-Wins)');
+        html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
+
+        // Final: Active
+        html += node('Active', isWorkActive ? 'Excavation Authorized' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting'), isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+        html += '</div>';
+
+    } else {
+        // =========================================================================
+        // PTW-002 (HOT WORK), PTW-003 (GUARD RAIL), PTW-004 (CONFINED SPACE), PTW-008 (GENERAL WORK)
+        // 4-STAGE DIRECT SPINE: SUPERVISOR -> SITE ENGINEER -> TOWER INCHARGE -> EHS
+        // =========================================================================
+        // Step 1: Site Supervisor
+        const supState = p.status === 'Draft' ? 'current' : (p.status === 'Returned for Correction' ? 'current' : 'done');
+        const supSub = p.status === 'Draft' ? 'Step 1 · In Progress' : (p.status === 'Returned for Correction' ? 'Step 1 · Correcting' : 'Step 1 · Submitted');
+        html += node('Site Supervisor', supSub, supState, '', 'Site Supervisor form initiation and statutory pre-task checks');
+        html += '<div class="tr-line ' + (p.status !== 'Draft' ? 'done' : '') + '"></div>';
+
+        // Step 2: Site Engineer
+        const isPendingEng = (p.status === 'Pending Site Engineer Acknowledgment' || p.status === 'Pending Site Engineer Re-Acknowledgment');
+        const engState = (isEngAckDone && !isPendingEng) ? 'done' : (isPendingEng ? 'current' : '');
+        const engSub = (isEngAckDone && !isPendingEng) ? 'Step 2 · Ground Checked' : (p.status === 'Pending Site Engineer Re-Acknowledgment' ? 'Step 2 · Re-Ack Req.' : (p.status === 'Pending Site Engineer Acknowledgment' ? 'Step 2 · Action Req.' : 'Step 2 · Field Ack'));
+        html += node('Site Engineer', engSub, engState, '', 'Site Engineer on-site technical inspection and acknowledgment');
+        html += '<div class="tr-line ' + ((isEngAckDone && !isPendingEng) ? 'done' : '') + '"></div>';
+
+        // Step 3: Tower Incharge / Section Head
+        const isSectionHeadActive = p.status === 'Pending Section Head';
+        const isSectionHeadDone = !!(a.sectionHead && a.sectionHead.status === 'approved');
+        const isSectionHeadRejected = !!(a.sectionHead && (a.sectionHead.status === 'rejected' || a.sectionHead.status === 'cancelled'));
+        const shState = isSectionHeadDone ? 'done' : (isSectionHeadRejected ? 'rejected' : (isSectionHeadActive ? 'current' : ''));
+        html += node(shLabel, isSectionHeadDone ? 'Step 3 · Approved' : (isSectionHeadRejected ? 'Cancelled' : (isSectionHeadActive ? 'Step 3 · Action Req.' : 'Step 3 · Review')), shState, '', 'Tower Incharge holistic sectional approval');
+        html += '<div class="tr-line ' + (isSectionHeadDone ? 'done' : '') + '"></div>';
+
+        // Step 4: EHS Safety Endorsement
+        const isEhsActive = p.status === 'Pending EHS Approval';
+        const isEhsDone = !!((a.ehsManager && a.ehsManager.status === 'approved') || (a.ehsOfficer && a.ehsOfficer.status === 'approved'));
+        const isEhsRejected = !!((a.ehsManager && a.ehsManager.status === 'rejected') || (a.ehsOfficer && a.ehsOfficer.status === 'rejected'));
+        const ehsState = isEhsDone ? 'done' : (isEhsRejected ? 'rejected' : (isEhsActive ? 'current' : ''));
+        html += node('EHS Safety', isEhsDone ? 'Step 4 · Endorsed' : (isEhsRejected ? 'Cancelled' : (isEhsActive ? 'Step 4 · Action Req.' : 'Step 4 · Endorsement')), ehsState, '', 'EHS Safety statutory endorsement (First-Wins)');
+        html += '<div class="tr-line ' + (isEhsDone ? 'done' : '') + '"></div>';
+
+        // Final Step: Active / Operational
+        let activeSub = isWorkActive ? 'Work Authorized' : (p.status === 'Cancelled' ? 'Cancelled' : 'Awaiting');
+        if (pt === 'hotwork' && isWorkActive) activeSub = '60-min Fire Watch';
+        if (pt === 'guardrail' && isWorkActive) activeSub = 'Re-Fixing Photo Gate';
+        if (pt === 'confined' && isWorkActive) activeSub = '4-Gas Monitored';
+        html += node('Active', activeSub, isWorkActive ? 'done' : (p.status === 'Cancelled' ? 'rejected' : ''));
+        html += '</div>';
+    }
+
+    // =========================================================================
+    // ACTIVE EXTENSION PIPELINE STEPPER (DISPLAYED WHEN EXTENSION IS PENDING)
+    // =========================================================================
+    if (p.extension && p.extension.status && p.extension.status !== 'Approved') {
+        html += '<div style="margin-top:14px;padding-top:10px;border-top:1px dashed var(--border);">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">' +
+            '<span style="font-weight:700;font-size:12px;color:var(--orange);"><i class="fa-solid fa-clock-rotate-left"></i> Active Permit Extension Pipeline (+ ' + fmtExtDur(p.extension) + ' Validity Requested)</span>' +
+            '<span class="badge" style="font-size:10px;background:var(--amber-bg);color:var(--amber);">' + escapeHtml(p.extension.status) + '</span>' +
+            '</div>' +
+            extTrackerHtml(p.extension, p) +
+            '</div>';
+    }
+
+    // =========================================================================
+    // OBSERVATION STOP-WORK RECTIFICATION TRACKER (DYNAMIC PERMITTEE ATTRIBUTION)
+    // =========================================================================
+    if (p.observation && p.observation.status !== 'Resolved') {
+        const obsId = p.observation.id || ('OBS-' + p.id);
+        const shApproverTitle = (pMeta(p) && pMeta(p).shLabel) || (pt === 'excavation' ? 'Excavation Head' : 'Tower Incharge');
+        const permitteeRoleLabel = requestedByLabelFor(p) || 'Permittee';
+        const hasResp = !!p.observation.response;
+        const hasEng = !!(p.observation.engAck && p.observation.engAck.acknowledged);
+        const hasSh = !!(p.observation.shReview && p.observation.shReview.reviewed);
+
+        const step1State = 'done';
+        const step2State = hasResp ? 'done' : 'current';
+        const step3State = hasEng ? 'done' : (p.status === 'Observation Pending Site Engineer Acknowledgment' ? 'current' : '');
+        const step4State = hasSh ? 'done' : (p.status === 'Observation Pending Section Head Review' ? 'current' : '');
+        const step5State = (p.status === 'Observation Pending EHS Clearance') ? 'current' : '';
+        const obsTrackNodes = node('EHS Raised', 'Deviation', step1State) +
+            '<div class="tr-line ' + (hasResp ? 'done' : '') + '"></div>' +
+            node(permitteeRoleLabel, hasResp ? 'Rectified' : 'Photo + Remarks', step2State) +
+            '<div class="tr-line ' + (hasEng ? 'done' : '') + '"></div>' +
+            node('Site Engineer', hasEng ? 'Acknowledged' : (step3State === 'current' ? 'Action Req.' : 'Pending Ack'), step3State) +
+            '<div class="tr-line ' + (hasSh ? 'done' : '') + '"></div>' +
+            node(shApproverTitle, hasSh ? 'Approved' : (step4State === 'current' ? 'Review Req.' : 'Pending Review'), step4State) +
+            '<div class="tr-line ' + (step5State === 'current' ? 'done' : '') + '"></div>' +
+            node('EHS Clearance', step5State === 'current' ? 'Clearance Req.' : 'Pending Clearance', step5State);
+
+        html += '<div class="obs-card" style="margin-top:14px;border:1px solid #FFCC80;background:#FFF8E1;border-radius:8px;padding:12px 14px;">' +
+            '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:6px;">' +
+            '<span style="font-weight:700;color:#E65100;font-size:13px;"><i class="fa-solid fa-triangle-exclamation"></i> Active Site Observation &bull; ' + escapeHtml(obsId) + ' (Permit: ' + escapeHtml(p.id) + ')</span>' +
+            '<span class="dpdp-tag" style="background:#FFF3E0;color:#E65100;border:1px solid #FFE0B2;font-weight:700;">Extension &amp; Closure BLOCKED</span>' +
+            '</div>' +
+            '<div style="font-size:12.5px;color:var(--text);margin-bottom:8px;"><b>EHS Deviation:</b> "' + escapeHtml(p.observation.comment) + '" <span style="color:var(--text-muted);font-size:11px;">(' + (p.observation.raisedByRole || 'EHS') + ' &middot; ' + fmtDateTime(p.observation.raisedAt) + ')</span></div>' +
+            '<div class="tracker" style="margin-top:6px;margin-bottom:8px;">' +
+            obsTrackNodes +
+            '</div>' +
+            (p.observation.shRejection ? ('<div style="font-size:12px;color:#C62828;margin-top:4px;"><i class="fa-solid fa-rotate-left"></i> <b>Previous Rectification Rejected by ' + shApproverTitle + ':</b> "' + escapeHtml(p.observation.shRejection.comment || '') + '" &mdash; please re-rectify and submit fresh evidence.</div>') : '') +
+            (p.observation.ehsRejection ? ('<div style="font-size:12px;color:#C62828;margin-top:4px;"><i class="fa-solid fa-rotate-left"></i> <b>Previous Rectification Rejected by EHS:</b> "' + escapeHtml(p.observation.ehsRejection.comment || '') + '" &mdash; please re-rectify and submit fresh evidence.</div>') : '') +
+            '</div>';
+    }
+
+    return html;
+}
+
+
 
         function extTrackerHtml(ext, p) {
             const a = ext.approvals || {};
@@ -20136,6 +20356,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     return;
                 }
                 currentDetailId = id;
+                currentView = 'detail';
                 if (p.status === 'Draft') {
                     const rk = currentUser ? currentUser.key : null;
                     const pt = ptypeOf(p);
