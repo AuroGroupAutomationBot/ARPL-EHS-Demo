@@ -315,8 +315,27 @@ console.log('--- 5. Night Work (PTW-010) Hard Exclusion (3-Layer Enforcement) --
     assert.strictEqual(evalInVM('draft.ptype'), 'hotwork', 'Hot work draft must be initialized');
     assert.strictEqual(evalInVM('draft.sundayWork'), true, 'Draft must be marked sundayWork: true');
     assert.strictEqual(evalInVM('draft.originTile'), 'SUN', 'Draft must be marked originTile: SUN');
+    assert.strictEqual(evalInVM('draft.validTillDate'), '2026-09-20', 'Draft validTillDate must be Sunday (2026-09-20), not Saturday');
+    assert.strictEqual(evalInVM('draft.scheduledDate'), '2026-09-20', 'Draft scheduledDate must be Sunday (2026-09-20)');
 
-    console.log('  ✓ PASS: 3-Layer hard exclusion strictly blocks Night Shift from Sunday Work tile and tags legitimate Sunday permits\n');
+    // Step 3 UI & Time Engine Assertions
+    const s3Html = evalInVM('step3Html()');
+    const expectedSundayDateFmt = evalInVM("fmtDate('2026-09-20')");
+    assert.ok(s3Html.includes(expectedSundayDateFmt), 'Step 3 HTML must render Sunday date for Sunday Work permit');
+    assert.ok(s3Html.includes('08:30'), 'Step 3 HTML must offer 08:30 start slot for Sunday');
+    assert.ok(!s3Html.includes('(in '), 'Sunday slots must not display relative in-Xm tags during Saturday preparation');
+
+    // Step 3 Validation & Timestamp Computation
+    evalInVM(`
+        draft.startTime = '09:00';
+        draft.validTillTime = '17:30';
+        validateWizStep(3);
+    `);
+    const validTillIso = evalInVM('draft.validTill.toISOString()');
+    assert.ok(validTillIso.includes('2026-09-20'), 'draft.validTill timestamp must be anchored to Sunday (2026-09-20)');
+
+    console.log('  ✓ PASS: 3-Layer hard exclusion strictly blocks Night Shift from Sunday Work tile and tags legitimate Sunday permits');
+    console.log('  ✓ PASS: Sunday Date & Full Sunday Daytime slot selection anchored strictly to Sunday (2026-09-20)\n');
 }
 
 // 6. Sunday Zero-Creation Lockout (System-Wide Lockout)

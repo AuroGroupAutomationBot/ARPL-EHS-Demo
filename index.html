@@ -4634,7 +4634,7 @@
                         <i class="fa-solid fa-calendar-day"></i> 1. Saturday Preparation Window
                     </div>
                     <p style="margin:0;font-size:12px;line-height:1.5;color:#94A3B8;">
-                        Dedicated <b>Sunday Work (SUN) Tile</b> activates side-by-side with standard PTW. Permits for Sunday activities (PTW-001 to PTW-009) must be prepared and pre-authorized in advance on Saturday. <i>Night Shift excluded from SUN tile.</i>
+                        Dedicated <b>Sunday Work (SUN) Tile</b> activates side-by-side with standard PTW. Permits for Sunday activities (PTW-001 to PTW-009) must be prepared in advance on Saturday with valid operational hours strictly scheduled for the <b>immediate next day (Sunday)</b> (08:30&ndash;19:30 IST). <i>Night Shift excluded from SUN tile.</i>
                     </p>
                 </div>
                 <div style="background:rgba(239,68,68,0.06);border:1px solid rgba(239,68,68,0.25);border-radius:8px;padding:14px;">
@@ -4650,7 +4650,7 @@
                         <i class="fa-solid fa-clock-rotate-left"></i> 3. Sunday Execution &amp; Closure
                     </div>
                     <p style="margin:0;font-size:12px;line-height:1.5;color:#CBD5E1;">
-                        Pre-authorized permits <b>can be closed and surrendered on Sunday as per valid time</b>. Certified supervisors execute site restoration, post-work gas tests, de-energization checks, and digital sign-off.
+                        Pre-authorized permits execute and <b>must be closed and surrendered on Sunday only as per valid scheduled time</b>. Closure on Saturday is strictly prohibited. Certified supervisors execute site restoration, post-work safety checks, and digital sign-off.
                     </p>
                 </div>
             </div>
@@ -5216,6 +5216,9 @@
         }
 
         function canClosePermitOnSunday(p) {
+            if (p && p.sundayWork && !isSunday()) {
+                return { allowed: false, reason: 'Sunday Work permits are scheduled for Sunday execution and can only be closed on Sunday.' };
+            }
             if (!isSunday()) return { allowed: true };
             if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.operationalSchedule && !APP_CONFIG.operationalSchedule.sundayPermitClosureAllowed) {
                 return { allowed: false, reason: 'Sunday permit closure is currently disabled in system settings.' };
@@ -5291,11 +5294,27 @@
             const bd = document.getElementById('sidebarBackdrop'); if (bd) bd.classList.toggle('show', open);
         }
 
-        function istDateStr() {
+        function istDateStr(refDate) {
             // 'YYYY-MM-DD' from the IST wall-clock frame — never via toISOString(), which
             // renders UTC getters and can shift the calendar date for non-IST browsers.
-            const n = nowTime();
+            const n = refDate || nowTime();
             return n.getFullYear() + '-' + pad(n.getMonth() + 1) + '-' + pad(n.getDate());
+        }
+
+        function getNextSundayFromSaturday(refDate) {
+            const base = new Date((refDate || nowTime()).getTime());
+            const currentDay = base.getDay();
+            // On Saturday preparation (day 6), work is strictly the immediate next day (Sunday, +1)
+            // On Sunday (day 0), today is that Sunday (+0)
+            // On any other day, resolves to the immediate upcoming Sunday
+            const daysToAdd = (currentDay === 6) ? 1 : (currentDay === 0 ? 0 : (7 - currentDay));
+            base.setDate(base.getDate() + daysToAdd);
+            return base;
+        }
+
+        function getNextSundayDateStr(refDate) {
+            const d = getNextSundayFromSaturday(refDate);
+            return d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate());
         }
 
         const EXTENSION_STEP_MIN = 10;
@@ -10024,6 +10043,10 @@
                     return false;
                 }
             }
+            if (p.sundayWork && !isSunday()) {
+                showToast('Sunday Work Governance: This permit is scheduled for Sunday execution (' + fmtDate(p.validTillDate || p.validTill) + ') and can only be closed and surrendered on Sunday during its valid operational window.', 'err');
+                return false;
+            }
             if (!workStarted(p)) {
                 showToast('This permit cannot be closed before the scheduled work start time (' + p.startTime + ' IST).', 'warn');
                 return false;
@@ -12533,10 +12556,13 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const meta = PTYPE_META[t] || PTYPE_META.excavation;
             const defLocMode = (t === 'blasting') ? 'Manual' : (t === 'excavation') ? 'Basement/Podium' : 'Tower';
             const defWeather = WEATHER_OPTIONS[Math.floor(Math.random() * WEATHER_OPTIONS.length)];
+            const isSundayPermit = !!sundayWorkContext;
+            const targetWorkDate = isSundayPermit ? getNextSundayDateStr() : istDateStr();
             draft = {
                 id: genPermitNumber(t), ptype: t, activity: meta.name + ' (' + meta.code + ')',
-                sundayWork: !!sundayWorkContext,
-                originTile: sundayWorkContext ? 'SUN' : 'PTW',
+                sundayWork: isSundayPermit,
+                originTile: isSundayPermit ? 'SUN' : 'PTW',
+                scheduledDate: targetWorkDate,
                 createdBy: currentUser.name || '',
                 createdRoleKey: currentUser.key,
                 signerName: currentUser.name || '',
@@ -12553,7 +12579,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     subChecks: (t === 'guardrail' && idx === 2) ? { above: false, below: false, workplace: false } : null
                 })),
                 sitePhoto: null, drawing: null,
-                startTime: (t === 'nightshift') ? '20:30' : '', validTillTime: (t === 'nightshift') ? '06:00' : '', validTillDate: istDateStr(),
+                startTime: (t === 'nightshift') ? '20:30' : '', validTillTime: (t === 'nightshift') ? '06:00' : '', validTillDate: targetWorkDate,
                 createdAt: nowTime(), activityLog: [],
                 approvals: newChain(t), extension: null, closure: null, surrender: null, surrenderEscalations: 0,
                 // Night Shift specific (PTW-010):
@@ -15256,6 +15282,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
         /* ---------- STEP 3 — VALIDITY ---------- */
         const START_LATEST_MIN = 18 * 60 + 30;     // latest selectable planned start — 18:30
         function step3Html() {
+            const isSundayPermit = !!draft.sundayWork;
             const isNightShift = ptypeOf(draft) === 'nightshift';
             const nowMin = nowTime().getHours() * 60 + nowTime().getMinutes();
             const isBlastingPermit = ptypeOf(draft) === 'blasting';
@@ -15263,7 +15290,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const maxEndMin = isBlastingOp ? (18 * 60 + 30) : OFFICE_END_MIN;
             const startCap = isBlastingOp ? (18 * 60 + 20) : START_LATEST_MIN;
 
-            let firstStart = Math.max(OFFICE_START_MIN, Math.ceil((nowMin + 1) / 10) * 10);
+            let firstStart = isSundayPermit ? OFFICE_START_MIN : Math.max(OFFICE_START_MIN, Math.ceil((nowMin + 1) / 10) * 10);
             let startOpts = '';
             if (isNightShift) {
                 const nightStarts = ['20:30', '21:00', '21:30', '22:00', '22:30', '23:00'];
@@ -15271,7 +15298,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             } else {
                 for (let m = firstStart; m <= startCap; m += 10) {
                     const v = minutesToHHMM(m);
-                    startOpts += '<option value="' + v + '" ' + (draft.startTime === v ? 'selected' : '') + '>' + v + (m <= nowMin ? '' : ' &nbsp;(in ' + fmtDur(m - nowMin) + ')') + '</option>';
+                    startOpts += '<option value="' + v + '" ' + (draft.startTime === v ? 'selected' : '') + '>' + v + ((isSundayPermit || m <= nowMin) ? '' : ' &nbsp;(in ' + fmtDur(m - nowMin) + ')') + '</option>';
                 }
             }
             const noStartSlots = !isNightShift && !startOpts;
@@ -15286,21 +15313,28 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                     endOpts += '<option value="' + v + '" ' + (draft.validTillTime === v ? 'selected' : '') + '>' + v + ' &nbsp;(' + fmtDur(m - sMin) + ' of work)' + (isBlastingOp && m === maxEndMin ? ' (Sunset Limit)' : '') + '</option>';
                 }
             }
-            const bannerHtml = isNightShift
+            const displayWorkDate = isSundayPermit ? (draft.validTillDate || getNextSundayDateStr()) : draft.validTillDate;
+            const bannerHtml = isSundayPermit
+                ? '<div class="section-banner" style="background:#FEF3C7;border-left:4px solid #D97706;color:#92400E;"><i class="fa-solid fa-calendar-day" style="color:#D97706;"></i> <b>Sunday Work Scheduling (Statutory Flow):</b> This permit is prepared on Saturday for Sunday execution (<b>' + fmtDate(displayWorkDate) + '</b>). Planned working hours are <b>08:30 to 19:30 IST</b>. Select Sunday planned Start Time and End Time. <b>Permit execution, closure, and surrender occur strictly on Sunday as per scheduled validity.</b></div>'
+                : isNightShift
                 ? '<div class="section-banner" style="background:#EFF6FF;border-left:4px solid #2563EB;color:#1E40AF;"><i class="fa-solid fa-moon" style="color:#2563EB;"></i> <b>Night Shift Operating Hours:</b> Scheduled work window is <b>20:30 IST to 06:00 IST (Next Day)</b> under PTW-010 Night Shift Protocol. Work is governed by dual-phase day-to-night approvals.</div>'
                 : isBlastingOp
                 ? '<div class="section-banner" style="background:#FFF3E0;border-left:4px solid #E65100;color:#BF360C;"><i class="fa-solid fa-sun" style="color:#E65100;"></i> <b>Statutory Sunset Hard Stop:</b> Blasting operations must conclude by <b>18:30 IST</b> (Sunset hard stop rule). Select planned Start Time (up to 18:20) and End Time (strictly capped at 18:30 IST).</div>'
                 : '<div class="section-banner"><i class="fa-solid fa-clock"></i> Office working hours are 08:30 to 19:30 IST. Select the <b>planned Start Time</b> (08:30&ndash;18:30, 10-minute steps) and the <b>End Time</b> (up to 19:30). The End Time must always be later than the Start Time. If your work needs more time later, request an Extension once the permit is Active.</div>';
 
+            const startDateLabel = isSundayPermit ? 'Scheduled Work Date (Sunday, IST)' : 'Start Date (auto &mdash; today, IST)';
+            const startDateVal = isSundayPermit ? fmtDate(displayWorkDate) : fmtDate(nowTime());
+            const validDateVal = fmtDate(displayWorkDate) + (isSundayPermit ? ' (Sunday execution & closure only)' : ' (today only)');
+
             return bannerHtml +
                 '<div class="form-grid">' +
-                '<div class="form-field"><label>Start Date (auto &mdash; today, IST)</label><input type="text" value="' + fmtDate(nowTime()) + '" readonly></div>' +
+                '<div class="form-field"><label>' + startDateLabel + '</label><input type="text" value="' + startDateVal + '" readonly></div>' +
                 '<div class="form-field" id="ff-starttime"><label>Planned Start Time <span class="req">*</span></label>' +
                 (noStartSlots
                     ? '<input type="text" value="No start slots available — outside office hours" readonly>'
                     : '<select id="inStartTime" onchange="onStartTimeChange(this.value)"><option value="">Select start time&hellip;</option>' + startOpts + '</select>') +
                 '<div class="form-error" id="startTimeError"><i class="fa-solid fa-circle-exclamation"></i> Invalid start time.</div></div>' +
-                '<div class="form-field"><label>Permit Valid Till &mdash; Date</label><input type="text" value="' + fmtDate(draft.validTillDate) + ' (today only)" readonly></div>' +
+                '<div class="form-field"><label>Permit Valid Till &mdash; Date</label><input type="text" value="' + validDateVal + '" readonly></div>' +
                 '<div class="form-field" id="ff-validtime"><label>Permit Valid Till &mdash; Time (End) <span class="req">*</span></label>' +
                 (draft.startTime
                     ? '<select id="inValidTime" onchange="onValidTimeChange(this.value)"><option value="">Select end time&hellip;</option>' + endOpts + '</select>'
@@ -16293,6 +16327,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 }
             }
             if (step === 3) {
+                const isSundayPermit = !!draft.sundayWork;
                 const isNightShift = ptypeOf(draft) === 'nightshift' || !!draft.isNightShiftLinked;
                 const isBlasting = ptypeOf(draft) === 'blasting';
                 const isOpBlasting = isBlasting && draft.drillingBlastingType === 'blasting';
@@ -16323,7 +16358,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         const sp = draft.startTime.split(':').map(Number); sMin = sp[0] * 60 + sp[1];
                         if (sMin < OFFICE_START_MIN || sMin > START_LATEST_MIN) {
                             ok = false; if (sErr) { sErr.style.display = 'flex'; sErr.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Planned Start Time must be between 08:30 and 18:30 IST.'; } markField('ff-starttime', false);
-                        } else if (sMin < nowMin) {
+                        } else if (!isSundayPermit && sMin < nowMin) {
                             ok = false; if (sErr) { sErr.style.display = 'flex'; sErr.innerHTML = '<i class="fa-solid fa-circle-exclamation"></i> Planned Start Time cannot be in the past (current time ' + minutesToHHMM(nowMin) + ' IST).'; } markField('ff-starttime', false);
                         } else { startOk = true; if (sErr) sErr.style.display = 'none'; markField('ff-starttime', true); }
                     }
@@ -16345,9 +16380,17 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                         else if (!startOk) { ok = false; }
                         else {
                             if (errEl) errEl.style.display = 'none'; markField('ff-validtime', true);
-                            draft.startAt = new Date(nowTime()); draft.startAt.setHours(Math.floor(sMin / 60), sMin % 60, 0, 0);
-                            draft.validTill = new Date(nowTime()); draft.validTill.setHours(h, m, 0, 0);
-                            if (hintEl) hintEl.innerHTML = '<div class="countdown-strip"><i class="fa-solid fa-circle-check"></i><div><b>Planned Permit Duration: ' + fmtDur(mins - sMin) + '</b> &mdash; from <b>' + draft.startTime + '</b> to <b>' + draft.validTillTime + '</b> today (IST).</div></div>';
+                            if (isSundayPermit) {
+                                draft.validTillDate = draft.validTillDate || getNextSundayDateStr();
+                                draft.scheduledDate = draft.validTillDate;
+                                draft.startAt = new Date(draft.validTillDate + 'T' + String(Math.floor(sMin / 60)).padStart(2, '0') + ':' + String(sMin % 60).padStart(2, '0') + ':00+05:30');
+                                draft.validTill = new Date(draft.validTillDate + 'T' + String(h).padStart(2, '0') + ':' + String(m).padStart(2, '0') + ':00+05:30');
+                                if (hintEl) hintEl.innerHTML = '<div class="countdown-strip" style="background:#FEF3C7;border-color:#F59E0B;color:#92400E;"><i class="fa-solid fa-calendar-day"></i><div><b>Sunday Work Planned Duration: ' + fmtDur(mins - sMin) + '</b> &mdash; on <b>' + fmtDate(draft.validTillDate) + '</b> from <b>' + draft.startTime + '</b> to <b>' + draft.validTillTime + ' IST</b>. Scheduled permit executes and closes strictly on Sunday.</div></div>';
+                            } else {
+                                draft.startAt = new Date(nowTime()); draft.startAt.setHours(Math.floor(sMin / 60), sMin % 60, 0, 0);
+                                draft.validTill = new Date(nowTime()); draft.validTill.setHours(h, m, 0, 0);
+                                if (hintEl) hintEl.innerHTML = '<div class="countdown-strip"><i class="fa-solid fa-circle-check"></i><div><b>Planned Permit Duration: ' + fmtDur(mins - sMin) + '</b> &mdash; from <b>' + draft.startTime + '</b> to <b>' + draft.validTillTime + '</b> today (IST).</div></div>';
+                            }
                         }
                     }
                 }
