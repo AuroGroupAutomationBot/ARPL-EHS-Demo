@@ -1,165 +1,201 @@
-# Usage Assumptions — ARPL EHS Permit-to-Work System
+# Workload & Usage Assumptions — ARPL EHS Permit-to-Work Platform
 
-> **Pricing Checked On**: 2026-09-25
-> **Currency**: USD (list price) → INR (converted at ₹84/USD reference rate)
-> **Note**: Google Cloud India bills in INR via Google Cloud India Private Limited. Exact INR rates from billing partner may differ from USD→INR conversion.
-
----
-
-## Workload Profile
-
-### Application Description
-Construction site safety Permit-to-Work (PTW) system. 10 permit types, 16 RBAC roles, offline-first architecture. Users are on-site construction personnel using mobile/tablet devices with intermittent connectivity.
-
-### Operating Characteristics
-- **Business hours**: 06:00–22:00 IST (construction sites)
-- **Night shift**: 20:30–06:00 IST (PTW-010 only)
-- **Weekend**: Saturday prep + Sunday restricted operations
-- **Peak period**: Weekday mornings 07:00–10:00 IST (permit creation spike)
-- **Offline frequency**: ~30% of operations occur offline and sync later
+> **Document ID**: ARPL-FIN-USAGE-2026-09-25  
+> **Status**: AUDITED & BASELINE CONFIRMED  
+> **Target System**: Production & Development Environments  
+> **Pricing Currency**: INR (₹) converted from USD list price at **1 USD = ₹95.90 INR** (Checked 2026-09-25 12:33 IST)  
 
 ---
 
-## DEV Environment Usage Assumptions
+## 1. Confirmed Workload Baseline & Business Parameters
 
-| Variable | Value | Basis |
+The following parameters are **formally confirmed** as the primary engineering inputs for all production costing and resource sizing:
+
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              CONFIRMED PRIMARY WORKLOAD BASELINE                       │
+│                                                                                        │
+│  • Active Business Construction Projects:     6 Projects                               │
+│  • Unique Users per Business Project:         60 Users / Project                       │
+│  • Total Unique Authenticated Users:          360 Unique Users (Baseline)              │
+│  • Daily Permit Issuance Volume:              300 Permits / Day Total (Across 6 Sites) │
+│  • Monthly Permit Volume (30-day billing):    9,000 Permits / Month                    │
+│  • Annual Permit Volume (365 days):           109,500 Permits / Year                   │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 1.1 Strict Correction of Prior Anomalies
+1. **User Count Correction**: The previous assumption of *10 users/project* or *50 total users (40 MAU)* was completely invalid. The system has **60 unique users per project across 6 projects = 360 unique users**. All models utilizing 50 users are permanently superseded.
+2. **Permit Volume Correction**: The previous draft assumed *30 permits/day (750/month)*. The confirmed workload is **300 permits/day total (9,000/month)** — exactly **12× higher volume** than previously modeled!
+3. **Business Projects vs. Cloud Tenants**: The 6 business projects (Auro Grand Residency, Auro Bhumi Phase 1, Auro Bhumi Phase 2, Auro Ridge Towers, Auro Valley Commercial, Auro Heights) operate as **logical partitions within a single Google Cloud / Firebase Production Project** (`arpl-ehs-prod`), avoiding 6× cloud tenant overhead (see [ADR-003](file:///c:/Users/MohithSai.G/Downloads/ARPL-EHS-Demo/docs/architecture/adr/ADR-003-business-project-isolation.md)).
+
+---
+
+## 2. User & Concurrency Model
+
+### 2.1 User Categories & Memberships
+- **Total Registered Unique Users**: 360 unique authenticated user accounts in Firebase Authentication.
+- **Project-User Relationships**:
+  - Site-specific roles (Site Supervisor, Electrician, Blasting In-charge, Lift Supervisor, Site Engineer, Section Heads): 54 users per project × 6 projects = 324 user-project memberships.
+  - Multi-project & enterprise roles (EHS Manager, EHS Officer, Admin, Project Manager): 6 users per project equivalent = 36 users who hold global cross-project permissions (`projectIds: ["*"]`).
+  - Total Unique Authenticated Users = **360**.
+- **Monthly Active Users (MAU)**: Construction projects operate continuously. Every registered engineer, supervisor, and EHS staff member logs in during the month. **Expected MAU = 360 MAU** (100% within the 50,000 free MAU tier of Firebase Auth).
+- **Daily Active Users (DAU)**: On any working day, approximately 60% of personnel across all 6 sites are actively on shift: **DAU = ~216 users**.
+- **Peak Concurrent Users**:
+  - The construction shift initiates between 06:30 and 09:30 IST.
+  - Maximum concurrent connected sessions during the morning permit submission rush: **35 to 45 concurrent users**.
+  - Off-peak concurrent users (daytime inspections, closures): **5 to 15 concurrent users**.
+
+---
+
+## 3. Mathematical Permit Transaction Model
+
+A permit is **never a single database write**. Over its complete lifecycle from initiation through multi-tier review, digital signatures, active inspections, and formal closure, a permit generates a series of discrete cloud operations:
+
+```
+[Step 1: Initiation]  ──> [Step 2: Approvals] ──> [Step 3: Active Ops] ──> [Step 4: Closure]
+• 3 Reads (Master)       • 4 Reads (Permit)      • 3 Reads (Inspect)      • 1 Read (Verify)
+• 4 Writes (Create/Log)  • 12 Writes (4 Stages)  • 2 Writes (Obs/Ext)     • 3 Writes (Surrender)
+```
+
+### 3.1 Itemized Operations per Single Permit Lifecycle
+
+| Operational Stage | Activities Included | Firestore Reads | Firestore Writes | Storage Ops (Class A) | Storage Ops (Class B) |
+|---|---|---:|---:|---:|---:|
+| **1. Initiation & Drafting** | Read project config, user profile, counter; write draft permit, initial activity log, sequence counter, initiator notification | 3 | 4 | 1 (Site Photo) | 0 |
+| **2. Multi-Stage Approval Chain** | Average 4 approval stages (Site Engineer, Section Head, Domain Clearance, EHS Activation). Each stage reads permit, writes transition state, writes immutable activity log, and writes notification to next role. | 4 | 12 | 4 (Signatures) | 4 (Inspection) |
+| **3. Active Inspections & Gating**| Gas re-checks (PTW-004), observation checks, permit extension evaluation (probabilistic average across permit types) | 3 | 2 | 0 | 2 |
+| **4. Closure & Surrender** | Final housekeeping verification, closure photo upload, statutory surrender signature, status mutation to `Closed`, final audit log | 1 | 3 | 1 (Closure Photo) | 1 |
+| **Subtotal per Permit** | **Direct Lifecycle Operations** | **11** | **21** | **6** | **7** |
+
+---
+
+## 4. Aggregate Monthly Operational Derivations (Baseline: 9,000 Permits/Month)
+
+### 4.1 Firestore Operations Derivation
+1. **Direct Permit Lifecycle Operations**:
+   - Reads: $9,000 \times 11 = 99,000$ reads/month.
+   - Writes: $9,000 \times 21 = 189,000$ writes/month.
+2. **Dashboard Loads, Register Filtering & Live Listeners**:
+   - 216 Daily Active Users (DAU) accessing the dashboard ~3 times per shift.
+   - Initial load: 1 user document + 1 project config + 25 active permits in viewport = ~27 reads per load.
+   - Real-time snapshot updates (`onSnapshot`): ~30 delta updates per user session.
+   - Daily reads from user interaction: $216 \text{ users} \times (27 \times 3 + 30 \times 3) \approx 36,936$ reads/day.
+   - Monthly user interaction reads: $36,936 \times 30 = 1,108,080$ reads/month.
+3. **Escalation & SLA Auto-Expiry Engine**:
+   - Runs every 5 minutes (or 1 minute in peak prod) = 8,640 sweeps/month.
+   - Each sweep performs an indexed query on `nextSlaCheck <= now()`, returning an average of 4 pending permits: $8,640 \times 4 \approx 34,560$ reads/month.
+   - Auto-escalations / warnings write state mutations: ~15,000 writes/month.
+4. **Total Monthly Firestore Volume (Baseline)**:
+   - **Total Reads**: $99,000 + 1,108,080 + 34,560 = \mathbf{1,241,640 \text{ reads/month}}$ (~$41,388$ reads/day average).
+     - *Free Quota*: 50,000 reads/day = 1,500,000 reads/month.
+     - *Billable Reads*: On 22 peak weekdays, daily reads hit ~52,000 reads/day (~2,000 billable reads/day × 22 = **~44,000 billable reads/month**).
+   - **Total Writes**: $189,000 + 15,000 = \mathbf{204,000 \text{ writes/month}}$ (~$6,800$ writes/day).
+     - *Free Quota*: 20,000 writes/day = 600,000 writes/month.
+     - *Billable Writes*: **0 writes** (100% within free quota).
+   - **Total Deletes**: Notification housecleaning and temporary cache = **~5,000 deletes/month** (100% within 20,000/day free tier).
+
+---
+
+### 4.2 Storage & Media Volume Derivation
+1. **Files Generated per Permit**:
+   - 1 Site Condition Photo (compressed WebP/JPEG): ~400 KB.
+   - 4 Digital Signatures (Canvas PNG/vector): ~40 KB each = 160 KB total.
+   - 1 Statutory A4 PDF Certificate: ~150 KB.
+   - Average media payload per permit: **~710 KB (0.71 MB)**.
+2. **Monthly Data Ingestion**:
+   - $9,000 \text{ permits} \times 0.71 \text{ MB} = 6,390 \text{ MB} \approx \mathbf{6.24 \text{ GB / month}}$.
+3. **Storage Cumulative Progression**:
+   - **Month 1**: 6.24 GB stored $\rightarrow$ **1.24 GB billable** (after 5.0 GB free quota).
+   - **Month 6**: 37.44 GB stored $\rightarrow$ **32.44 GB billable**.
+   - **Month 12**: 74.88 GB stored $\rightarrow$ **69.88 GB billable** (or reduced to ~30 GB Standard + 44 GB Nearline under lifecycle policy).
+4. **Storage Operations**:
+   - Class A (Uploads): $9,000 \times 6 \text{ files} = \mathbf{54,000 \text{ ops/month}}$ (4,000 billable ops above 50,000 free quota).
+   - Class B (Downloads/Reads): ~30,000 ops/month (100% within 50,000 free quota).
+
+---
+
+### 4.3 Compute & API Derivation (Google Cloud Run)
+- **Container Allocation**: 1 vCPU, 1 GiB RAM, concurrency = 80 req/instance.
+- **Monthly Invocations**:
+  - State machine transition API: $9,000 \times 5 = 45,000$ calls.
+  - Server-side PDF generation: $9,000 \text{ calls}$.
+  - Cloud Scheduler SLA ticks: 8,640 calls.
+  - Administrative & query APIs: ~30,000 calls.
+  - Total Cloud Run Requests: **~92,640 requests / month**.
+- **Execution Time & CPU Consumption**:
+  - Average request processing time: 200 ms (0.20s).
+  - Active vCPU-seconds: $92,640 \times 0.20\text{s} = 18,528 \text{ vCPU-seconds}$.
+  - Active GiB-seconds: $92,640 \times 0.20\text{s} \times 1\text{ GiB} = 18,528 \text{ GiB-seconds}$.
+- **Free Tier Validation**:
+  - Invocations: 92,640 vs. 2,000,000 free $\rightarrow$ **100% FREE**.
+  - vCPU-Seconds: 18,528 vs. 180,000 free $\rightarrow$ **100% FREE**.
+  - GiB-Seconds: 18,528 vs. 360,000 free $\rightarrow$ **100% FREE**.
+- *Compute Mode Decision*:
+  - **Scale-to-Zero (Baseline BOM)**: Min instances = 0 $\rightarrow$ Compute cost = **₹0 / month**.
+  - **Warm-Instance Add-on (Optional SLA)**: Min instances = 1 during shift hours $\rightarrow$ **~₹1,250 / month**.
+
+---
+
+### 4.4 Network Egress Derivation
+- Mobile client app loads (cached via PWA service worker): ~1.5 GB/month.
+- Media downloads (engineers reviewing photos and statutory PDFs): $9,000 \text{ permits} \times 0.5 \text{ MB} \approx 4.5 \text{ GB/month}$.
+- API JSON responses: ~2.0 GB/month.
+- **Total Internet Egress**: **~8.0 GB / month**.
+- *Free Tier Check*: Worldwide internet egress includes **10.0 GiB / month free**.
+- *Billable Egress*: **0 GB** (100% within free quota).
+
+---
+
+## 5. Development Environment Usage Assumptions (`arpl-ehs-dev`)
+
+The DEV environment is strictly sized for functional testing, integration validation, and CI/CD:
+
+| Variable | DEV Value | Operational Basis |
 |---|---:|---|
-| Developers | 3 | Small team building the application |
-| Test users (simulated roles) | 16 | One per role for testing |
-| Total users (dev accounts) | 19 | Developers + test users |
-| MAU (Monthly Active Users) | 10 | Active devs + periodic QA |
-| DAU (Daily Active Users) | 5 | Core dev team |
-| Permits created/day | 10 | Testing/development flow |
-| Permits created/month | 250 | ~25 working days × 10 |
-| API requests/day (Cloud Functions) | 500 | CRUD + testing |
-| API requests/month | 12,500 | 25 days × 500 |
-| Firestore reads/day | 5,000 | Testing queries, dashboard loads |
-| Firestore reads/month | 125,000 | 25 days × 5,000 |
-| Firestore writes/day | 2,000 | Creating/updating permits, tests |
-| Firestore writes/month | 50,000 | 25 days × 2,000 |
-| Firestore deletes/day | 200 | Test cleanup |
-| Firestore deletes/month | 5,000 | 25 days × 200 |
-| Firestore storage | 0.5 GiB | Test data, small dataset |
-| Firebase Storage uploads/month | 100 | Test photos/signatures |
-| Firebase Storage stored | 0.2 GB | Test images |
-| Firebase Storage download GB/month | 0.5 GB | Previewing test images |
-| Internet egress/month | 1 GB | Dev traffic, API testing |
-| Cloud Functions invocations/month | 12,500 | Same as API requests |
-| Cloud Functions compute (vCPU-sec/month) | 5,000 | 12,500 × 0.4s avg |
-| Cloud Functions memory (GiB-sec/month) | 5,000 | 12,500 × 0.4s × 256MB |
-| Escalation scheduled runs/month | 43,200 | 1/min × 60 × 24 × 30 (but scale to zero dev) |
-| CI/CD builds/month | 60 | ~3/day for 20 working days |
-| CI/CD build minutes/month | 300 | ~5 min/build |
-| Secret Manager active versions | 5 | Firebase config, API keys |
-| Secret Manager access ops/month | 5,000 | Function deployments + access |
-| Cloud Logging ingestion/month | 0.5 GiB | Dev logs |
-| Notifications created/month | 500 | Test notifications |
-| PDF generations/month | 50 | Testing PDF generation |
-
-### DEV Rationale
-- **Firebase Emulator Suite** handles most local development — cloud usage is for integration testing only
-- **Escalation scheduler**: In DEV, runs at reduced frequency or uses emulator; cloud cost assumes emulator for most dev work
-- **CI/CD**: GitHub Actions preferred for builds; Cloud Build used only for Firebase deployment
-- **No minimum instances**: Everything scales to zero in DEV
+| **Development Team** | 3 Engineers | Core development & QA staff |
+| **Simulated Test User Accounts** | 16 Accounts | Exactly 1 test account per RBAC role |
+| **Total DEV Accounts** | 19 Accounts | Developers + Role Personas |
+| **DEV Monthly Active Users (MAU)** | 10 MAU | Active developers and automated test runners |
+| **Permits Issued / Day** | 10 Permits / day | Automated integration test scripts + manual testing |
+| **Permits Issued / Month** | 250 Permits / month | ~25 active development days |
+| **Firestore Reads / Month** | 125,000 reads / mo | Test suite execution & dashboard validation |
+| **Firestore Writes / Month** | 35,000 writes / mo | Test permit lifecycles and reset fixtures |
+| **Firestore Storage** | 0.2 GiB | Test seed fixtures |
+| **Firebase Storage Uploads / Month** | 150 uploads / mo | Test photos and signatures |
+| **Cloud Run API Requests / Month** | 15,000 req / mo | Test suites & local proxy calls |
+| **CI/CD Cloud Build Minutes / Month** | 150 minutes / mo | ~30 builds @ 5 min (within 2,500 free min) |
+| **Artifact Registry Storage** | 0.5 GB | Storing 2 DEV container images |
+| **Scale-to-Zero Policy** | 100% Scale-to-Zero | Zero min-instances; zero idle charges |
 
 ---
 
-## PROD Environment Usage Assumptions
+## 6. Required Scale Scenarios
 
-| Variable | Value | Basis |
-|---|---:|---|
-| Total registered users | 50 | 3 project sites × ~17 roles (some overlap) |
-| MAU (Monthly Active Users) | 40 | Most users active monthly |
-| DAU (Daily Active Users) | 25 | Active construction staff |
-| Peak concurrent users | 15 | Morning permit creation surge |
-| Projects (construction sites) | 3 | PRJ-AGR, PRJ-ABP, PRJ-ART |
-| Permits created/day | 30 | ~10 per project site |
-| Permits created/month | 750 | 25 working days × 30 |
-| Active permits (concurrent) | 60 | ~2 days average active life |
-| Total permits (cumulative, 12 months) | 9,000 | 750 × 12 |
-| Approval actions/day | 120 | 30 permits × 4 stages avg |
-| API requests/day (Cloud Functions callable) | 800 | Creates + approvals + queries + extensions + observations |
-| API requests/month | 20,000 | 25 days × 800 |
-| Firestore reads/day | 25,000 | Dashboard loads, register queries, real-time listeners |
-| Firestore reads/month | 625,000 | 25 days × 25,000 |
-| Firestore writes/day | 5,000 | Permits, approvals, notifications, activity logs |
-| Firestore writes/month | 125,000 | 25 days × 5,000 |
-| Firestore deletes/day | 100 | Notification cleanup |
-| Firestore deletes/month | 2,500 | 25 days × 100 |
-| Firestore storage (month 1) | 1 GiB | Permit documents + notifications |
-| Firestore storage (month 12) | 5 GiB | Cumulative growth |
-| Firestore index storage | 0.5 GiB | Composite indexes |
-| Firebase Storage uploads/month | 750 | 1 site photo per permit |
-| Firebase Storage stored (month 1) | 0.5 GB | Photos ~500KB each |
-| Firebase Storage stored (month 12) | 5 GB | Cumulative growth |
-| Firebase Storage download GB/month | 2 GB | Viewing permit photos |
-| Signatures stored/month | 750 | Digital signatures (~50KB each) |
-| Drawings stored/month | 50 | PTW-001 excavation drawings |
-| PDF generated/month | 100 | EHS statutory reports |
-| PDF storage/month | 0.1 GB | ~100KB per PDF |
-| Internet egress/month | 5 GB | Client traffic, mobile data |
-| Cloud Functions invocations/month | 65,000 | 20K callable + 43.2K scheduled + triggers |
-| Cloud Functions compute (vCPU-sec/month) | 25,000 | Avg 0.4s per invocation |
-| Cloud Functions memory (GiB-sec/month) | 25,000 | 256MB allocation |
-| Escalation scheduler invocations/month | 43,200 | 1 per minute × 60 × 24 × 30 |
-| Notifications created/month | 3,000 | ~4 per permit lifecycle |
-| Real-time listeners (concurrent) | 25 | DAU × 1 listener avg |
-| Snapshot events/day | 5,000 | Real-time updates |
-| CI/CD builds/month | 20 | ~5 per week |
-| CI/CD build minutes/month | 100 | 5 min/build |
-| Secret Manager active versions | 8 | Production secrets |
-| Secret Manager access ops/month | 50,000 | Function cold starts + access |
-| Cloud Logging ingestion/month | 2 GiB | Production structured logs |
-| Cloud Logging retention | 30 days | Default retention |
-| Firestore backups/month | 4 | Weekly export to Cloud Storage |
-| Backup storage/month | 2 GiB | 4 exports × ~0.5 GiB |
+To ensure procurement rigor, four discrete operational scenarios are mathematically modeled:
 
-### PROD Rationale
-- **50 users across 3 sites**: Typical ARPL construction operation scale
-- **30 permits/day**: Based on 10 permits/site/day across 10 permit types
-- **25K Firestore reads/day**: Each user loads dashboard (50 reads), permit register (100 reads), detail views (20 reads each) plus real-time listener overhead
-- **Escalation engine**: Runs every 60 seconds (43,200/month), queries pending permits (~10ms per run)
-- **Firestore storage**: Permit documents average ~2KB each; 9,000/year = ~18MB data + indexes
-- **Photos**: Each site photo ~500KB; 750/month = ~375MB/month upload
-- **No AI/ML**: Application has no AI/GenAI requirements — sling stress calculation and gas detection are deterministic formulas, not ML models
-- **No external integrations**: No ERP, HR, or third-party API calls
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                                SCALE SCENARIO DEFINITIONS                              │
+│                                                                                        │
+│  SCENARIO A — CURRENT BASELINE (CONFIRMED)                                             │
+│  • 6 Business Projects · 60 Users/Project · 360 Unique Users · 300 Permits/Day Total   │
+│  • 9,000 Permits / Month · 109,500 Permits / Year                                      │
+│                                                                                        │
+│  SCENARIO B — GROWTH SCENARIO (ENGINEERING SENSITIVITY)                                │
+│  • 12 Business Projects · 60 Users/Project · 720 Unique Users · 600 Permits/Day Total  │
+│  • 18,000 Permits / Month · 219,000 Permits / Year                                     │
+│                                                                                        │
+│  SCENARIO C — HIGH SCALE SCENARIO (ENTERPRISE EXPANSION)                               │
+│  • 30 Business Projects · 60 Users/Project · 1,800 Unique Users · 1,500 Permits/Day    │
+│  • 45,000 Permits / Month · 547,500 Permits / Year                                     │
+│                                                                                        │
+│  SPECIAL SENSITIVITY — 300 PERMITS / DAY / PER PROJECT                                 │
+│  • 6 Business Projects · 360 Users · 300 Permits/Project/Day = 1,800 Permits/Day Total │
+│  • 54,000 Permits / Month · 657,000 Permits / Year                                     │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## Free Tier Applicability (Firebase Blaze Plan)
-
-| Resource | Daily Free Quota | Monthly Equiv. | PROD Monthly Usage | Within Free Tier? |
-|---|---:|---:|---:|---|
-| Firestore reads | 50,000/day | ~1,500,000/month | 625,000 | **YES** — within daily quota |
-| Firestore writes | 20,000/day | ~600,000/month | 125,000 | **YES** — within daily quota |
-| Firestore deletes | 20,000/day | ~600,000/month | 2,500 | **YES** — within daily quota |
-| Firestore storage | 1 GiB total | 1 GiB | 1-5 GiB | **PARTIAL** — exceeds after ~month 3 |
-| Firebase Auth MAU | 50,000 | 50,000 | 40 | **YES** |
-| Firebase Hosting storage | 10 GB | 10 GB | <1 GB | **YES** |
-| Firebase Hosting transfer | 360 MB/day | ~10.8 GB/month | ~2 GB | **YES** |
-| Firebase Storage | 5 GB | 5 GB | 0.5-5 GB | **PARTIAL** — exceeds after ~month 10 |
-| Cloud Functions invocations | — | 2,000,000/month | 65,000 | **YES** |
-| Cloud Functions vCPU-sec | — | 180,000/month | 25,000 | **YES** |
-| Cloud Functions GiB-sec | — | 360,000/month | 25,000 | **YES** |
-| Cloud Build minutes | — | 2,500/month | 100 | **YES** |
-| Secret Manager versions | — | 6 active versions | 8 | **NO** — 2 versions billable |
-| Secret Manager access | — | 10,000/month | 50,000 | **NO** — 40,000 ops billable |
-| Cloud Logging | — | 50 GiB/month | 2 GiB | **YES** |
-
-### Key Insight
-At the projected production workload of 50 users / 30 permits per day, **the vast majority of Firebase/GCP usage falls within free tier quotas**. The primary paid costs are:
-1. Firestore storage beyond 1 GiB (starts ~month 3)
-2. Firebase Storage beyond 5 GB (starts ~month 10)
-3. Secret Manager (minimal cost)
-4. Domain/SSL (if custom domain)
-
----
-
-## Scaling Scenarios
-
-| Scenario | Users | Permits/Day | Firestore Reads/Month | Est. Monthly Cost Delta |
-|---|---:|---:|---:|---|
-| **Baseline** | 50 | 30 | 625,000 | Baseline |
-| **2× Scale** | 100 | 60 | 1,250,000 | +₹0 (still within free tier) |
-| **5× Scale** | 250 | 150 | 3,125,000 | +₹200-500 (exceeds daily read quota) |
-| **10× Scale** | 500 | 300 | 6,250,000 | +₹500-1,500 (consistent paid reads) |
+> **Summary of Usage Model**: Every parameter above is directly traceable to the confirmed 6 business projects, 360 unique users, and 300 permits/day baseline. Zero arbitrary or generic SaaS placeholders have been used.

@@ -260,17 +260,37 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 18
-      - run: cd functions && npm ci
+      - run: npm ci
+      
+      # 1. Build and Deploy Cloud Run Core Backend API
+      - id: auth
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}
+      - uses: google-github-actions/setup-gcloud@v2
+      - run: |
+          gcloud builds submit --tag asia-south1-docker.pkg.dev/arpl-ehs-production/containers/arpl-ehs-api:${{ github.sha }} ./api
+          gcloud run deploy arpl-ehs-api \
+            --image asia-south1-docker.pkg.dev/arpl-ehs-production/containers/arpl-ehs-api:${{ github.sha }} \
+            --region asia-south1 \
+            --platform managed \
+            --allow-unauthenticated \
+            --concurrency 80 \
+            --min-instances 0 \
+            --max-instances 10 \
+            --set-secrets="FIREBASE_ADMIN_KEY=projects/arpl-ehs-production/secrets/firebase-admin-key:latest"
+
+      # 2. Deploy Firebase Hosting, Firestore Rules & Storage Rules
       - uses: w9jds/firebase-action@master
         with:
-          args: deploy
+          args: deploy --only hosting,firestore,storage,functions
         env:
           FIREBASE_TOKEN: ${{ secrets.FIREBASE_TOKEN }}
 ```
 
 ---
 
-## 8. Multi-Environment Setup
+## 8. Multi-Environment Setup (DEV vs. PROD)
 
 ### 8.1 Create Multiple Firebase Projects
 ```bash

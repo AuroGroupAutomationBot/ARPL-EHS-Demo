@@ -1,30 +1,41 @@
 # API Design — ARPL EHS Permit-to-Work System
 
-> **Architecture**: Firebase-First (CONFIRMED) | **Auth**: Email/Password | **Transport**: Firebase Cloud Functions Callable | **Scope**: All 10 Permit Types + Sunday Work Tile
+> **Architecture**: Hybrid Firebase Client Data Layer + Google Cloud Run Core API (`asia-south1`)  
+> **Auth**: Firebase Auth (Email/Password with Custom Claims)  
+> **Transport**: Cloud Run REST API (`/api/v1/...`) for Authoritative FSM Transitions & PDFs + Cloud Functions for Reactive Triggers  
+> **Scope**: All 10 Permit Types + Sunday Work Tile | 6 Business Projects · 360 Unique Users · 300 Permits/Day  
 
 ---
 
-## 1. Authentication (Email/Password — Confirmed)
+## 1. Authentication & Security Context
 
-All API calls require a valid Firebase Auth ID token obtained via `signInWithEmailAndPassword()`.
+All API calls require a valid Firebase Auth Bearer JWT token obtained via `signInWithEmailAndPassword()`.
 
-Users are pre-assigned to projects by the Administrator — self-registration is not supported.
+Users are pre-assigned to projects by the Administrator — self-registration is disabled.
 
-**Client-side call pattern** (Firebase Cloud Functions Callable):
+**Client-side call pattern** (Cloud Run REST API via standard Fetch / Axios):
 ```javascript
-import { httpsCallable } from 'firebase/functions';
+// Retrieve current Firebase Auth JWT with custom claims
+const idToken = await firebase.auth().currentUser.getIdToken();
 
-// Firebase SDK automatically attaches the current user's ID token
-const submitPermit = httpsCallable(functions, 'submitPermit');
-const result = await submitPermit({ permitId, data });
+// Invoke authoritative Cloud Run Core Backend API
+const response = await fetch('https://api.arpl-ehs.internal/api/v1/permits/' + permitId + '/transition', {
+  method: 'POST',
+  headers: {
+    'Content-Type': 'application/json',
+    'Authorization': `Bearer ${idToken}`
+  },
+  body: JSON.stringify({ action: 'approve_stage', stage: currentStage, signatureUrl, gpsCoords })
+});
+const result = await response.json();
 ```
 
-**Server-side validation** (inside every Cloud Function):
+**Server-side validation** (inside Cloud Run Express/Fastify Middleware):
 ```typescript
-// Verify auth and extract role + project assignment
-if (!context.auth) throw new HttpsError('unauthenticated', 'Login required');
-const role = context.auth.token.role;
-const projectIds = context.auth.token.projectIds || [];
+// Verify Firebase Auth ID token and extract cryptographically signed claims
+const decodedToken = await admin.auth().verifyIdToken(bearerToken);
+const role = decodedToken.role; // e.g. "site-engineer"
+const projectIds = decodedToken.projectIds || []; // e.g. ["PRJ-AGR"]
 ```
 
 ### Admin User Management Functions

@@ -80,21 +80,21 @@ Saturday advance preparation tile plus Sunday zero-creation lockout engine. PTW-
 
 ## 2. Non-Functional Requirements
 
-| Category | Requirement | Implementation (Firebase-First) |
+| Category | Requirement | Implementation (Hybrid Firebase + Cloud Run Architecture) |
 |---|---|---|
-| **Performance** | Sub-second render for dashboards and register | Firestore real-time listeners + client-side rendering |
-| **Scalability** | Support 100s of concurrent permits across multiple users | Firestore auto-scaling; Cloud Functions auto-scaling |
+| **Performance** | Sub-second render for dashboards and register | Firestore real-time listeners + client-side rendering; Cloud Run <250ms warm API |
+| **Scalability** | Baseline: 6 projects, 360 unique users, 300 permits/day (9,000/mo, 109.5k/yr) | Cloud Run container auto-scaling (80 req/instance); Firestore multi-tenant partitioning |
 | **Availability** | Offline-capable with automatic sync on reconnect | CONFIRMED: Firestore offline persistence via `enableIndexedDbPersistence(db)` |
-| **Reliability** | Zero data loss on connectivity loss | Firestore queues writes offline and syncs automatically |
-| **Security** | XSS prevention | `escapeHtml()` on all dynamic content + Firestore Security Rules |
-| **Authentication** | CONFIRMED: Email/Password login via Firebase Auth | `signInWithEmailAndPassword()` with custom claims for role and project assignment |
-| **Authorization** | 16-role RBAC with server-side enforcement | Firestore Security Rules (read) + Cloud Functions (state transitions) |
-| **User-Project Binding** | CONFIRMED: Users pre-assigned to projects by Administrator | Admin Cloud Function sets `projectIds[]` on user document and custom claims |
-| **Auditability** | Immutable activity log per permit | Append-only `activityLog[]`; IST timestamps; GPS; Cloud Functions enforce immutability |
+| **Reliability** | Zero data loss on connectivity loss; 1-min RPO | Firestore offline queue + Point-in-Time Recovery (PITR 7-day continuous) + weekly GCS export |
+| **Security** | XSS prevention & Device Attestation | `escapeHtml()` + Firestore Security Rules + Firebase App Check + Secret Manager |
+| **Authentication** | CONFIRMED: Closed-registration Email/Password login | Firebase Auth `signInWithEmailAndPassword()` with custom claims (`role`, `projectIds[]`) |
+| **Authorization** | 16-role RBAC with authoritative server-side gating | Cloud Run transition API (`roleCanActOnChain`) + Firestore Security Rules |
+| **User-Project Binding** | CONFIRMED: 60 users/site pre-assigned by Admin | Admin Cloud Run API sets `projectIds[]` on user document and Firebase custom claims |
+| **Auditability** | Immutable activity log per permit; DPDP Act 2023 | Append-only subcollection (`permits/{id}/activity_log/{logId}`); tamper-proof rules |
 | **Accessibility** | WCAG 2.1 AA tap targets | 44px minimum; focus-visible outlines |
 | **Mobile Responsiveness** | 6-tier responsive breakpoints | 360px to 4K; bottom-sheet modals; safe-area insets |
-| **Compliance** | DPDP Act 2023 | Explicit consent; dynamic identity binding; purpose limitation |
-| **Timezone** | IST strict enforcement (server-side validated) | `Asia/Kolkata` in both client and Cloud Functions |
+| **Compliance** | DPDP Act 2023 & Indian DGFASLI Statutory Standards | Explicit consent; dynamic identity binding; continuous 7-day PITR; statutory A4 PDFs |
+| **Timezone** | IST strict enforcement (server-side validated) | `Asia/Kolkata` enforced in client and Cloud Run backend |
 | **Implementation Scope** | CONFIRMED: All 10 permit types + Sunday Work Tile | PTW-001 through PTW-010 + Weekend Governance simultaneously |
 
 ---
@@ -125,15 +125,18 @@ Saturday advance preparation tile plus Sunday zero-creation lockout engine. PTW-
 ## 4. Core Data Entities
 
 ### Entity: Permit
-Key fields: id, ptype, project, status (27 states), locationMode, location, contractor, supervisor, workerCount, validFrom, validTill, startTime, submittedAt, activatedAt, approvals (chain object per type), signatories, checklist (array), observation (nullable), extension (nullable), activityLog (append-only), sitePhoto, drawing (PTW-001 only), sundayWork flag, type-specific parameters (depth/slope for excavation, gas readings for confined space, LOTO fields for electrical, blast parameters for blasting, rigging specs for lifting, etc.)
+Key fields: id, ptype, project, projectId (logical partition), status (27 states), locationMode, location, contractor, supervisor, workerCount, validFrom, validTill, startTime, submittedAt, activatedAt, approvals (chain object per type), signatories, checklist (array), observation (nullable), extension (nullable), mediaPaths (photos, signatures, drawings), sundayWork flag, type-specific parameters.
+
+### Entity: ActivityLogEntry (Subcollection: `permits/{permitId}/activity_log/{logId}`)
+Key fields: id, permitId, action, actorRole, actorUid, actorName, stage, timestamp (IST), gps, details. Append-only, immutable.
 
 ### Entity: Notification
-Key fields: id, roles (array), message, severity (info/warn/error), permitId, createdAt, readBy (array)
+Key fields: id, roles (array), message, severity (info/warn/error), permitId, projectId, createdAt, readBy (array)
 
 ### Entity: Project
 Key fields: id, name, towers (array), site.lat, site.lng, radius (meters), configured (boolean), tagMethod
 
-### Entity: User (NEW — for Firebase Auth integration)
+### Entity: User
 Key fields: uid (Firebase Auth UID), displayName, email, role (primary role key), projectIds (array — admin-assigned), org, createdAt, lastLogin
 
 ---
@@ -142,10 +145,12 @@ Key fields: uid (Firebase Auth UID), displayName, email, role (primary role key)
 
 | Decision | Confirmed Choice | Impact |
 |---|---|---|
-| **Architecture** | Firebase-First | Firestore + Cloud Functions + Firebase Auth + Firebase Storage + Firebase Hosting |
-| **Authentication** | Email/Password | Firebase Auth `signInWithEmailAndPassword()`; custom claims for role and projects |
-| **User-Project Assignment** | Admin pre-assigns | Admin Cloud Function manages `projectIds[]` on user documents and custom claims |
-| **Offline Support** | Enabled | Firestore `enableIndexedDbPersistence(db)` for full offline CRUD |
+| **Architecture** | Hybrid Firebase + Cloud Run | Firebase Client Data Layer + Cloud Run Core Backend API & Statutory Compute |
+| **Authentication** | Email/Password + Custom Claims | Firebase Auth `signInWithEmailAndPassword()`; custom claims for role and project isolation |
+| **User-Project Assignment** | Admin pre-assigns (60 users/site)| Cloud Run Admin API manages `projectIds[]` on user documents and custom claims |
+| **Offline Support** | Enabled | Firestore `enableIndexedDbPersistence(db)` for full offline CRUD and background queue |
+| **Compute Backbone** | Google Cloud Run (`asia-south1`)| Authoritative 27-state FSM transitions, statutory A4 PDF rendering, SLA escalation engine |
+| **Async Architecture** | Cloud Tasks + Cloud Scheduler | Rate-limited background task queues and 5-min cron SLA sweeps |
 | **Implementation Scope** | All 10 permits + Sunday Work | PTW-001 to PTW-010, Weekend Governance, Night Shift — simultaneous |
 
 ---
@@ -156,21 +161,21 @@ Key fields: uid (Firebase Auth UID), displayName, email, role (primary role key)
 
 | # | Original Gap | Resolution |
 |---|---|---|
-| 1 | ASSUMPTION: Multi-user concurrent access | RESOLVED: Firestore with real-time listeners provides multi-user state management |
-| 2 | ASSUMPTION: Data persistence beyond LocalStorage | RESOLVED: Firestore as primary database with automatic backup/recovery |
-| 3 | ASSUMPTION: Real-time notifications | RESOLVED: Firestore `onSnapshot` listeners for live notification updates |
-| 4 | ASSUMPTION: File storage for photos/signatures | RESOLVED: Firebase Storage with client SDK direct upload |
-| 5 | ASSUMPTION: Audit log immutability | RESOLVED: Cloud Functions enforce append-only writes; Firestore Security Rules block direct updates |
-| 6 | CLARIFICATION: Authentication mechanism | RESOLVED: Email/password via Firebase Auth |
-| 7 | CLARIFICATION: Multi-project user assignment | RESOLVED: Admin pre-assigns users; `projectIds[]` in user document and custom claims |
-| 8 | CLARIFICATION: Mobile app vs PWA | RESOLVED: Responsive web with Firestore offline persistence (PWA-ready) |
-| 9 | CLARIFICATION: Data migration | RESOLVED: Seed data generation via `seedPermits()` already exists; migration script for LocalStorage to Firestore documented in database schema |
-| 10 | CLARIFICATION: External system integration | RESOLVED: No external ERP/HR integration required for initial deployment |
+| 1 | Workload baseline scale | RESOLVED: 6 business projects, 360 unique users (60/proj), 300 permits/day (9,000/mo, 109.5k/yr) |
+| 2 | Cloud Run necessity | RESOLVED: Cloud Run required for Core API, statutory PDF generation, and SLA escalation worker |
+| 3 | Multi-project isolation | RESOLVED: 1 GCP/Firebase project with logical `projectId` partitioning and security rules |
+| 4 | Offline data loss risk | RESOLVED: Activity log decoupled into append-only subcollection (`permits/{id}/activity_log`) |
+| 5 | Media storage architecture | RESOLVED: Direct client uploads to Firebase Storage (wrapping GCS); URLs only in Firestore |
+| 6 | Currency & pricing standard | RESOLVED: Direct INR and live FX rate 1 USD = ₹95.90 INR (Mumbai `asia-south1` catalog) |
+| 7 | Regulatory disaster recovery | RESOLVED: Firestore 7-day continuous PITR + automated weekly GCS bucket snapshots |
+| 8 | Asynchronous queueing | RESOLVED: Cloud Tasks for background PDF rendering; Cloud Scheduler for SLA escalation |
+| 9 | Tax & commercial quoting | RESOLVED: Google Cloud India Pvt Ltd (SAC 998315), 18% GST with full B2B ITC creditability |
+| 10 | AI integration scope | RESOLVED: Deterministic safety rules for core; optional Vertex AI Gemini 1.5 Flash for hazard OCR |
 
 ### Technical Decisions (Finalized)
-1. Production system will maintain all business logic in Cloud Functions as source of truth
-2. IST timezone enforcement will be both client-side and server-side (Cloud Functions) validated
-3. GPS verification will remain advisory (not cryptographically enforced) in the initial deployment
-4. Existing 23 test suites (920+ assertions) will be adapted for Firebase architecture
-5. Firestore document model accommodates all 10 permit type schemas without migrations
+1. Production system maintains authoritative state transitions in Cloud Run (`arpl-ehs-api`)
+2. IST timezone enforcement is both client-side and server-side validated
+3. GPS proximity verification utilizes Haversine formula against configured site coordinates
+4. All 10 permit types and Sunday Work Tile operate simultaneously within the unified data model
+5. Primary region is Google Cloud `asia-south1` (Mumbai, Maharashtra, India)
 

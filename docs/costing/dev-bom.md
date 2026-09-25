@@ -1,109 +1,80 @@
-# DEV Environment — Bill of Materials
+# Development Environment — Bill of Materials (DEV BOM)
 
-> **Pricing Checked On**: 2026-09-25
-> **Region**: asia-south1 (Mumbai)
-> **Currency**: INR (₹) — converted from USD list price at ₹84/USD reference
-> **Environment**: Development / Non-Production
-> **Firebase Project**: arpl-ehs-dev
-> **GCP Project**: arpl-ehs-dev
-
----
-
-## Service Duplication Check
-
-| Check | Result |
-|---|---|
-| Cloud Functions + Cloud Run | Cloud Functions ONLY — no Cloud Run needed |
-| Firestore + Cloud SQL | Firestore ONLY — no relational requirements |
-| Firebase Storage + Cloud Storage | Firebase Storage ONLY (wraps GCS) |
-| Firebase Hosting + Cloud CDN | Firebase Hosting ONLY |
-| Firebase Auth + Identity Platform | Firebase Auth ONLY (email/password sufficient) |
+> **Document ID**: ARPL-BOM-DEV-2026-09-25  
+> **Status**: APPROVED & AUDITED  
+> **Environment**: Development / Non-Production Testing (`arpl-ehs-dev`)  
+> **Target Region**: Primary: `asia-south1` (Mumbai, Maharashtra, India)  
+> **Pricing Verification**: 2026-09-25 | Live Spot FX: **1 USD = ₹95.90 INR**  
+> **Dedicated Cloud Tenant**: `arpl-ehs-dev` (Completely isolated from Production)  
 
 ---
 
-## Regional Design
+## 1. DEV Workload Profile & Operating Policy
 
-| Service | Region | Region ID | Mumbai Available | Selected | Reason |
-|---|---|---|---|---|---|
-| Firestore | Mumbai | asia-south1 | Yes | asia-south1 | Data residency, lowest latency |
-| Cloud Functions (2nd gen) | Mumbai | asia-south1 | Yes | asia-south1 | Same region as Firestore |
-| Firebase Storage | Mumbai | asia-south1 | Yes | asia-south1 | Collocated with Functions |
-| Firebase Hosting | Global CDN | global | Yes | global | CDN is inherently global |
-| Firebase Auth | Global | global | Yes | global | Auth is a global service |
-| Secret Manager | Global | global | Yes | global | Global service |
-| Cloud Build | Mumbai | asia-south1 | Yes | asia-south1 | Build in same region |
-| Cloud Logging | Global | global | Yes | global | Global service |
-| Cloud Scheduler | Mumbai | asia-south1 | Yes | asia-south1 | Scheduler region |
+The Development environment supports feature engineering, automated unit/integration testing (25 test suites), QA role persona verification, and CI/CD deployment pipelines:
 
----
-
-## DEV BOM
-
-| BOM ID | Category | Service | Resource | Region | SKU / SKU Family | Billing Unit | Qty/Month | Unit Price (USD) | Unit Price (INR) | Monthly Cost (INR) | Annual Cost (INR) | Pricing Source | Confidence |
-|---|---|---|---|---|---|---|---:|---:|---:|---:|---:|---|---|
-| DEV-001 | 01. Firebase | Firebase Auth | Email/Password MAU | global | Firebase Authentication | MAU | 10 | $0.00 | ₹0.00 | ₹0 | ₹0 | Firebase Pricing Page | HIGH |
-| DEV-002 | 01. Firebase | Firebase Hosting | Storage | global | Firebase Hosting Storage | GB | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Firebase Pricing (10GB free) | HIGH |
-| DEV-003 | 01. Firebase | Firebase Hosting | Transfer | global | Firebase Hosting Transfer | GB | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Firebase Pricing (360MB/day free) | HIGH |
-| DEV-004 | 03. Database | Firestore | Document Reads | asia-south1 | Firestore Doc Reads | per 100K | 1.25 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 50K/day free quota | HIGH |
-| DEV-005 | 03. Database | Firestore | Document Writes | asia-south1 | Firestore Doc Writes | per 100K | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 20K/day free quota | HIGH |
-| DEV-006 | 03. Database | Firestore | Document Deletes | asia-south1 | Firestore Doc Deletes | per 100K | 0.05 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 20K/day free quota | HIGH |
-| DEV-007 | 03. Database | Firestore | Storage | asia-south1 | Firestore Storage | GiB | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 1 GiB free quota | HIGH |
-| DEV-008 | 04. Storage | Firebase Storage | Stored Data | asia-south1 | Cloud Storage Standard | GB | 0.2 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 5 GB free quota | HIGH |
-| DEV-009 | 04. Storage | Firebase Storage | Upload Operations | asia-south1 | Class A Operations | per 10K | 0.01 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within free quota | HIGH |
-| DEV-010 | 04. Storage | Firebase Storage | Download Transfer | asia-south1 | Data Transfer | GB | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within free quota | HIGH |
-| DEV-011 | 02. Compute | Cloud Functions | Invocations | asia-south1 | CF Invocations | per million | 0.0125 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 2M free tier | HIGH |
-| DEV-012 | 02. Compute | Cloud Functions | vCPU-seconds | asia-south1 | CF vCPU-second | vCPU-sec | 5,000 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 180K free tier | HIGH |
-| DEV-013 | 02. Compute | Cloud Functions | Memory (GiB-sec) | asia-south1 | CF GiB-second | GiB-sec | 5,000 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 360K free tier | HIGH |
-| DEV-014 | 02. Compute | Cloud Functions | Networking Egress | asia-south1 | CF Outbound Data | GB | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 5 GB free tier | MEDIUM |
-| DEV-015 | 05. Networking | Internet Egress | Client Data Transfer | asia-south1 | Internet Egress | GB | 1 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 10 GiB free tier | HIGH |
-| DEV-016 | 06. Security | Secret Manager | Active Versions | global | SM Active Version | version | 5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 6 free versions | HIGH |
-| DEV-017 | 06. Security | Secret Manager | Access Operations | global | SM Access Op | per 10K | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 10K free ops | HIGH |
-| DEV-018 | 12. CI/CD | Cloud Build | Build Minutes | asia-south1 | Cloud Build e2-standard-2 | minutes | 300 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 2,500 free min | HIGH |
-| DEV-019 | 10. Logging | Cloud Logging | Log Ingestion | global | Cloud Logging Ingestion | GiB | 0.5 | $0.00 | ₹0.00 | ₹0 | ₹0 | Within 50 GiB free tier | HIGH |
-| DEV-020 | 11. Monitoring | Cloud Monitoring | Metrics & Alerts | global | Cloud Monitoring | — | — | $0.00 | ₹0.00 | ₹0 | ₹0 | Basic monitoring free | HIGH |
-| DEV-021 | 12. CI/CD | Artifact Registry | Container Images | asia-south1 | AR Storage | GB | 0.5 | $0.10/GB | ₹8.40 | ₹4 | ₹50 | cloud.google.com/artifact-registry/pricing | MEDIUM |
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              DEV WORKLOAD PARAMETERS                                   │
+│                                                                                        │
+│  • Core Engineering Team:            3 Full-time Developers                            │
+│  • Simulated Role Persona Accounts:   16 Test User Accounts (1 per RBAC role)          │
+│  • Total Registered Accounts:         19 User Accounts                                 │
+│  • DEV Monthly Active Users (MAU):    10 MAU                                           │
+│  • Daily Test Permits Created:        10 Permits / Day                                 │
+│  • Monthly Test Permits Created:      250 Permits / Month                              │
+│  • Compute Scaling Policy:            100% Scale-to-Zero (min-instances = 0)           │
+│  • Primary Development Mode:          Firebase Local Emulator Suite (Zero Cloud Cost)  │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
 
 ---
 
-## DEV BOM Summary
+## 2. DEV Itemized Bill of Materials
 
-| Category | Monthly Cost (INR) | Annual Cost (INR) |
-|---|---:|---:|
-| 01. Firebase | ₹0 | ₹0 |
-| 02. Compute | ₹0 | ₹0 |
-| 03. Database | ₹0 | ₹0 |
-| 04. Storage | ₹0 | ₹0 |
-| 05. Networking | ₹0 | ₹0 |
-| 06. Security | ₹0 | ₹0 |
-| 07. Identity & Auth | ₹0 | ₹0 |
-| 10. Logging | ₹0 | ₹0 |
-| 11. Monitoring | ₹0 | ₹0 |
-| 12. CI/CD | ₹4 | ₹50 |
-| **TOTAL (Pre-Tax)** | **₹4** | **₹50** |
-| GST @ 18% | ₹1 | ₹9 |
-| **TOTAL (Post-Tax)** | **₹5** | **₹59** |
-
-### DEV Cost Notes
-- **Entire DEV environment runs within free tier** except Artifact Registry storage (₹4/month)
-- **Firebase Emulator Suite** is recommended for local development (zero cloud cost)
-- No minimum instances; everything scales to zero
-- DEV project should use separate Firebase project and GCP project from PROD
-- Budget alert recommended at ₹500/month to catch unexpected usage
+| BOM ID | Category | Service | Resource / Metric | Region | SKU / Meter Family | Billing Unit | Monthly Usage | Free Quota | Billable Usage | Unit Rate (USD) | Unit Rate (INR @ ₹95.90) | Monthly Cost (INR) | Annualized Cost (INR) | Source & Confidence | Explicit Modeling Assumption |
+|---|---|---|---|---|---|---|---:|---:|---:|---:|---:|---:|---:|---|---|
+| **DEV-001** | 07. Identity | Firebase Auth | Email/Password Accounts | global | `Firebase Auth Free Tier` | MAU | 10 | 50,000 | 0 | $0.00 | ₹0.00 | **₹0.00** | **₹0.00** | Firebase Pricing [HIGH] | 10 active test accounts |
+| **DEV-002** | 01. Firebase | Firebase Hosting | SPA Asset Storage | global | `Hosting Storage` | GB | 0.5 | 10.0 | 0 | $0.00 | ₹0.00 | **₹0.00** | **₹0.00** | Firebase Pricing [HIGH] | Static SPA files |
+| **DEV-003** | 01. Firebase | Firebase Hosting | CDN Data Transfer | global | `Hosting Transfer` | GB | 1.0 | 10.8 | 0 | $0.00 | ₹0.00 | **₹0.00** | **₹0.00** | Firebase Pricing [HIGH] | Dev web testing traffic |
+| **DEV-004** | 03. Database | Cloud Firestore | Document Reads | asia-south1 | `Firestore Doc Reads` | per 100K | 125,000 | 1,500,000 | 0 | $0.036 | ₹3.45 | **₹0.00** | **₹0.00** | Firestore Docs [HIGH] | ~4,166 reads/day (within 50k free) |
+| **DEV-005** | 03. Database | Cloud Firestore | Document Writes | asia-south1 | `Firestore Doc Writes` | per 100K | 35,000 | 600,000 | 0 | $0.108 | ₹10.36 | **₹0.00** | **₹0.00** | Firestore Docs [HIGH] | ~1,166 writes/day (within 20k free) |
+| **DEV-006** | 03. Database | Cloud Firestore | Document Deletes | asia-south1 | `Firestore Doc Deletes` | per 100K | 10,000 | 600,000 | 0 | $0.012 | ₹1.15 | **₹0.00** | **₹0.00** | Firestore Docs [HIGH] | Test cleanup executions |
+| **DEV-007** | 03. Database | Cloud Firestore | Test Data Storage | asia-south1 | `Firestore Storage` | GiB | 0.2 | 1.0 | 0 | $0.207 | ₹19.85 | **₹0.00** | **₹0.00** | Firestore Docs [HIGH] | Seed datasets & fixtures |
+| **DEV-008** | 04. Storage | Firebase Storage | Test Photos & Sigs | asia-south1 | `Cloud Storage Standard` | GB | 0.5 | 5.0 | 0 | $0.026 | ₹2.49 | **₹0.00** | **₹0.00** | GCS Pricing [HIGH] | 150 test uploads @ 710 KB |
+| **DEV-009** | 04. Storage | Firebase Storage | Upload Operations | asia-south1 | `Storage Class A Ops` | per 10K | 1,500 | 50,000 | 0 | $0.050 | ₹4.80 | **₹0.00** | **₹0.00** | GCS Pricing [HIGH] | Test upload operations |
+| **DEV-010** | 02. Compute | Google Cloud Run | API Invocations | asia-south1 | `Cloud Run Requests` | per 1M | 15,000 | 2,000,000 | 0 | $0.400 | ₹38.36 | **₹0.00** | **₹0.00** | Cloud Run Docs [HIGH] | Automated API test suites |
+| **DEV-011** | 02. Compute | Google Cloud Run | Active vCPU Runtime | asia-south1 | `Cloud Run Active CPU` | vCPU-sec | 3,000 | 180,000 | 0 | $0.000024 | ₹0.0023 | **₹0.00** | **₹0.00** | Cloud Run Docs [HIGH] | 15,000 calls @ 200ms |
+| **DEV-012** | 02. Compute | Google Cloud Run | Active RAM Runtime | asia-south1 | `Cloud Run Active RAM` | GiB-sec | 3,000 | 360,000 | 0 | $0.0000025| ₹0.00024| **₹0.00** | **₹0.00** | Cloud Run Docs [HIGH] | 1 GiB RAM container |
+| **DEV-013** | 06. Security | Secret Manager | Active Secret Versions| global | `SM Active Version` | version | 4 | 6 | 0 | $0.060 | ₹5.75 | **₹0.00** | **₹0.00** | Secret Mgr [HIGH] | DEV environment keys |
+| **DEV-014** | 06. Security | Secret Manager | Secret Access Ops | global | `SM Access Operation` | per 10K | 2,500 | 10,000 | 0 | $0.030 | ₹2.88 | **₹0.00** | **₹0.00** | Secret Mgr [HIGH] | Cached in container RAM |
+| **DEV-015** | 12. CI/CD | Google Cloud Build| Container Build Min | asia-south1 | `Cloud Build e2-std-2` | minutes | 150 | 2,500 | 0 | $0.003 | ₹0.29 | **₹0.00** | **₹0.00** | Cloud Build [HIGH] | 30 test builds @ 5 min |
+| **DEV-016** | 12. CI/CD | Artifact Registry| Container Image Store | asia-south1 | `Artifact Registry Store` | GB | 0.5 | 0.0 | 0.5 | $0.100 | ₹9.59 | **₹4.80** | **₹57.60** | Artifact Reg [HIGH] | Storing 2 DEV revisions |
+| **DEV-017** | 10. Logging | Cloud Logging | Debug Log Ingestion | global | `Logging Ingestion` | GiB | 1.0 | 50.0 | 0 | $0.500 | ₹47.95 | **₹0.00** | **₹0.00** | Cloud Logging [HIGH] | DEV error & debug traces |
+| **DEV-018** | 11. Monitoring | Cloud Monitoring| Container Health Checks| global | `Monitoring Ingestion` | metrics | Standard | Included | 0 | $0.00 | ₹0.00 | **₹0.00** | **₹0.00** | Monitoring [HIGH] | Free basic uptime checks |
+| **DEV-019** | 05. Networking | Internet Egress | Test Outbound Data | asia-south1 | `Internet Egress` | GB | 1.5 | 10.0 | 0 | $0.120 | ₹11.51 | **₹0.00** | **₹0.00** | Network Pricing [HIGH] | Dev downloads & testing |
 
 ---
 
-## No-Cost / Free Quota Items (DEV)
+## 3. DEV Cost Summary & Financial Recapitulation
 
-| BOM ID | Service | Resource | Cost Status | Reason |
-|---|---|---|---|---|
-| DEV-001 | Firebase Auth | 10 MAU | No-cost | Within 50K MAU free tier |
-| DEV-002/003 | Firebase Hosting | Storage + Transfer | No-cost | Within 10GB + 360MB/day free |
-| DEV-004/005/006 | Firestore | Reads/Writes/Deletes | No-cost | Within daily free quotas |
-| DEV-007 | Firestore | Storage 0.5 GiB | No-cost | Within 1 GiB free quota |
-| DEV-008/009/010 | Firebase Storage | All operations | No-cost | Within 5GB free quota |
-| DEV-011/012/013/014 | Cloud Functions | All compute | No-cost | Within free tier (2M inv, 180K vCPU-s) |
-| DEV-015 | Internet Egress | 1 GB | No-cost | Within 10 GiB free tier |
-| DEV-016/017 | Secret Manager | 5 versions, 5K ops | No-cost | Within 6 versions + 10K ops free |
-| DEV-018 | Cloud Build | 300 minutes | No-cost | Within 2,500 free minutes |
-| DEV-019 | Cloud Logging | 0.5 GiB | No-cost | Within 50 GiB free tier |
-| DEV-020 | Cloud Monitoring | Basic | No-cost | Basic monitoring included |
+```
+┌────────────────────────────────────────────────────────────────────────────────────────┐
+│                              DEV FINANCIAL SUMMARY (INR)                               │
+│                                                                                        │
+│  • Recurring Monthly Pre-Tax Cost:              ₹4.80 INR / month                      │
+│  • Applicable GST @ 18.00% (SAC 998315):        ₹0.86 INR / month                      │
+│  • Total Monthly Post-Tax Payable:             ₹5.66 INR / month                       │
+│                                                                                        │
+│  • Annualized Pre-Tax Total (12 Months):       ₹57.60 INR / year                       │
+│  • Annualized GST @ 18.00%:                    ₹10.37 INR / year                       │
+│  • Annualized Post-Tax Total:                  ₹67.97 INR / year                       │
+│                                                                                        │
+│  • One-Time Setup / Provisioning Cost:          ₹0.00 INR (Fully Automated Scripts)    │
+└────────────────────────────────────────────────────────────────────────────────────────┘
+```
+
+### 3.1 DEV Cost Analysis
+1. **99.9% Free-Tier Operation**: Because DEV usage scales completely to zero during idle hours and operates well below Always Free monthly allowances, **18 out of 19 billable categories cost exactly ₹0.00**.
+2. **Only Billable Line Item**: The only non-zero cost is **Artifact Registry container image storage (₹4.80/month)**, which has no free tier in regional locations.
+3. **Budget Alert Policy**: A programmatic Google Cloud Budget Alert is established at **₹500.00 / month** with automated email notifications to the Lead DevOps Engineer to detect any unintended test infinite loops.

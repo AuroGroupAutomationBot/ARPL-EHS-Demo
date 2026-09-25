@@ -159,7 +159,11 @@ The **ARPL EHS Permit-to-Work (PTW) Management System** digitises the entire hig
 
 ## 2. System Architecture
 
-> **Cost Validated**: See the comprehensive [Cost Validation Audit & Bill of Materials](docs/costing/cost-validation.md) for detailed scale-to-zero Firebase-First cost models.
+> **Production Architecture, Implementation Plan & Cost Audit (2026-09-25)**:  
+> • **Architecture**: [Final Architecture Blueprint](docs/architecture/final-architecture.md) & [Architectural Decision Records (ADRs)](docs/architecture/adr/)  
+> • **Implementation**: [Enterprise Implementation Plan (16-Week Roadmap)](docs/implementation-plan.md)  
+> • **Costing & Procurement**: [Procurement-Grade Final BOM](docs/costing/final-bom.md) & [Executive Cost Summary](docs/costing/final-cost-summary.md)  
+> *(Confirmed Baseline: 6 Business Projects · 360 Unique Users · 300 Permits/Day Total)*
 
 ### 2.1 High-Level Architecture Diagram
 
