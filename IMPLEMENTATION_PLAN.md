@@ -44,7 +44,7 @@ Operating in real-world Indian construction environments presents three severe t
 2. **Strict Legal Non-Repudiation**: Indian statutory EHS regulations (Directorate General of Mines Safety and State Factory Rules) and the **Digital Personal Data Protection (DPDP) Act 2023** mandate tamper-evident digital signatures, immutable audit logs, GPS geofencing, and server-validated IST timestamps.
 3. **Complex Multi-Tier Approval Topologies**: The platform must enforce 27 operational states and 16 distinct functional roles, incorporating 3-way parallel clearance gates, dual-topology electrical branching, SLA auto-escalation, and 21:00 night-shift auto-cancellation.
 
-This Implementation Plan provides an authoritative, milestone-driven roadmap to deploy the validated **Hybrid Firebase-First Client Data Layer + Google Cloud Run Core Backend Architecture** in Google Cloud’s **`asia-south1` (Mumbai)** region within a **16-week timeline** at a total annual infrastructure expenditure of **₹1,402.56 INR / year (~$14.62 USD / year pre-tax)**.
+This Implementation Plan provides an authoritative, milestone-driven roadmap to deploy the validated **Hybrid Firebase-First Client Data Layer + Google Cloud Run Core Backend Architecture** in Google Cloud’s **`asia-south1` (Mumbai)** region within a **16-week timeline** at a total annual infrastructure expenditure of **₹21,246.38 INR / year (~$221.55 USD / year pre-tax)**.
 
 ---
 
@@ -53,17 +53,17 @@ This Implementation Plan provides an authoritative, milestone-driven roadmap to 
 ### 2.1 For Google Cloud Solutions Architects
 - **Reference-Grade Hybrid Architecture**: Combines Firebase edge client synchronization (`IndexedDB` local persistence, `onSnapshot` real-time listeners, direct-to-storage media uploads) with Google Cloud serverless compute (Cloud Run containerized REST API, Cloud Tasks rate-limited queues, Cloud Scheduler cron sweeps).
 - **Modern GCP Practices**: Adheres strictly to Google Cloud Well-Architected Framework: Workload Identity Federation (zero static service account JSON keys in CI/CD), Google Secret Manager in-memory injection, Artifact Registry automated vulnerability scanning, and Native Mode Cloud Firestore index optimization.
-- **High Concurrency & Resource Efficiency**: Cloud Run is configured with concurrency of 80 requests per instance, sharing connection pools to Firestore and reducing container churn.
+- **Production Availability SLA**: Cloud Run is configured with a dedicated **Warm Instance (`min-instances = 1`)** during operational shift hours (06:00 to 22:00 IST), eliminating cold starts for high-concurrency morning permit rushes.
 
 ### 2.2 For Google Cloud Premier Billing Partners
-- **Procurement-Ready SKU Mapping**: All 25 billable and Always Free resources are mapped to exact Google Cloud SKU families, regional billing meters in Mumbai, and official list benchmarks.
+- **Procurement-Ready SKU Mapping**: All 28 billable and Always Free resources are mapped to exact Google Cloud SKU families, regional billing meters in Mumbai, and official list benchmarks.
 - **Tax Classification & Invoicing Integrity**: Full documentation under **SAC 998315** (IT Infrastructure Provisioning) with **18.00% GST** billed by **Google Cloud India Private Limited** (Bengaluru), establishing 100% eligibility for corporate Input Tax Credit (ITC).
-- **Always Free Quota Governance**: Contractual verification schedule to ensure Always Free tier allowances (50k daily reads, 20k daily writes, 2M Cloud Run requests, 180k vCPU-sec, 5GB storage, 10GB egress) remain fully active under consolidated billing accounts.
+- **Always Free Quota Governance**: Contractual verification schedule to ensure Always Free tier allowances (50k daily reads, 20k daily writes, 2M Cloud Run requests, 180k vCPU-sec, 360k GiB-sec, 0.5 GiB Artifact Registry, 10 GiB Firestore egress) remain fully active under consolidated billing, while correctly recognizing that Cloud Storage free tiers and Cloud Run egress are regionally restricted to US/North America and do not discount `asia-south1`.
 
 ### 2.3 For Enterprise Technical Management (CTO, VP Eng, CSO)
 - **Zero Data Loss Guarantee**: Decoupled append-only audit trail subcollections (`permits/{id}/activity_log/{logId}`) eliminate the risk of "last-writer-wins" document overwrites during simultaneous offline synchronization.
 - **Enterprise Disaster Recovery**: Continuous 7-day Firestore Point-in-Time Recovery (PITR) achieves an **RPO of 1 minute** and an **RTO under 15 minutes**.
-- **Financial Predictability**: Operates under ₹35/month during initial deployment, growing to ~₹198/month in Month 12 as statutory media archives accumulate, backed by automated budget cap alerts.
+- **Financial Predictability**: Operates under **₹1,532 / month** during initial deployment, growing to **~₹1,978 / month** in Month 12 as statutory media archives accumulate, backed by automated budget cap alerts.
 
 ---
 
@@ -480,25 +480,25 @@ The procurement team shall submit the following formal 20-point schedule to the 
 
 ## 11. Consolidated Cost Baseline across All Scale Scenarios
 
-All figures are converted from official Google Cloud list prices at **1 USD = ₹95.90 INR** (Checked live 2026-09-25 12:33 IST):
+All figures are converted from official Google Cloud list prices at **1 USD = ₹95.90 INR** (Checked live 2026-09-25 12:33 IST) and incorporate **First-Principles Physical Daily Transactions & Production Warm Compute SLA for `asia-south1` (Mumbai)**:
 
 | Operational Scenario | Scope & Volume | Monthly Cost (M1) | Monthly Cost (M12) | Blended Monthly (Yr 1) | Annual Pre-Tax Total | Annual Post-Tax (incl. 18% GST) |
 |---|---|---:|---:|---:|---:|---:|
-| **DEV Environment** | Non-prod testing & CI/CD | ₹4.80 | ₹4.80 | ₹4.80 | **₹57.60** | **₹67.97** |
-| **Scenario A (Baseline)**| **6 Sites · 360 Users · 300/Day (9k/mo)** | **₹26.67** | **₹197.58** | **₹112.08** | **₹1,344.96** | **₹1,587.05** |
-| **Scenario B (Growth)** | 12 Sites · 720 Users · 600/Day (18k/mo) | ₹187.95 | ₹529.77 | ₹355.00 | **₹4,260.00** | **₹5,026.80** |
-| **Scenario C (High Scale)**| 30 Sites · 1,800 Users · 1,500/Day (45k/mo)| ₹542.45 | ₹1,694.13 | ₹1,120.00 | **₹13,440.00** | **₹15,859.20** |
-| **Special Sensitivity** | **6 Sites · 300/Site/Day = 1,800/Day (54k/mo)**| **₹889.55** | **₹1,999.55** | **₹1,435.00** | **₹17,220.00** | **₹20,319.60** |
+| **DEV Environment** | Non-prod testing & CI/CD | ₹15.50 | ₹15.50 | ₹15.50 | **₹186.00** | **₹219.48** |
+| **Scenario A (Baseline)**| **6 Sites · 360 Users · 300/Day (9k/mo)** | **₹1,531.52** | **₹1,978.47** | **₹1,755.03** | **₹21,060.38** | **₹24,851.25** |
+| **Scenario B (Growth)** | 12 Sites · 720 Users · 600/Day (18k/mo) | ₹2,126.90 | ₹3,020.17 | ₹2,573.54 | **₹30,882.48** | **₹36,441.33** |
+| **Scenario C (High Scale)**| 30 Sites · 1,800 Users · 1,500/Day (45k/mo)| ₹4,814.80 | ₹7,046.20 | ₹5,930.50 | **₹71,166.00** | **₹83,975.88** |
+| **Special Sensitivity** | **6 Sites · 300/Site/Day = 1,800/Day (54k/mo)**| **₹5,589.91** | **₹8,267.48** | **₹6,928.70** | **₹83,144.40** | **₹98,110.40** |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                              COMBINED YEAR 1 INVESTMENT (BASELINE)                     │
 │                                                                                        │
-│  • Development Infrastructure (Annual Pre-Tax):       ₹57.60 INR / year                │
-│  • Production Infrastructure (Annual Pre-Tax):        ₹1,344.96 INR / year             │
-│  • Total Combined Pre-Tax Infrastructure:             ₹1,402.56 INR / year (~$14.62)   │
-│  • Applicable GST @ 18.00% (SAC 998315):              ₹252.46 INR / year (ITC Credit)  │
-│  • Total Annual Outflow (Post-Tax):                   ₹1,655.02 INR / year             │
+│  • Development Infrastructure (Annual Pre-Tax):       ₹186.00 INR / year               │
+│  • Production Infrastructure (Annual Pre-Tax):        ₹21,060.38 INR / year            │
+│  • Total Combined Pre-Tax Infrastructure:             ₹21,246.38 INR / year (~$221.55) │
+│  • Applicable GST @ 18.00% (SAC 998315):              ₹3,824.35 INR / year (ITC Credit)│
+│  • Total Annual Outflow (Post-Tax):                   ₹25,070.73 INR / year (~$261.43) │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 

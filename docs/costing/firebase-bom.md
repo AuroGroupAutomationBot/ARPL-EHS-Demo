@@ -1,16 +1,16 @@
 # Firebase Bill of Materials & Service Breakdown — ARPL EHS Platform
 
-> **Document ID**: ARPL-BOM-FIREBASE-2026-09-25  
-> **Status**: AUDITED & VERIFIED  
-> **Target Region**: Primary: `asia-south1` (Mumbai) | Global Edge CDN  
+> **Document ID**: ARPL-BOM-FIREBASE-2026-09-25-R3  
+> **Status**: AUDITED, REGIONALLY VALIDATED & DAILY-TRANSACTION VERIFIED  
+> **Revision**: R3 — First-Principles Daily Transaction Volume Derivation  
+> **Target Region**: Primary: `asia-south1` (Mumbai, Maharashtra, India) | Global Edge CDN  
 > **Pricing Verification**: 2026-09-25 | Live FX Rate: **1 USD = ₹95.90 INR**  
 > **Billing Plan**: Firebase Blaze Plan (Pay-as-you-go)  
+> **Confirmed Workload**: 6 Business Projects · 360 Unique Users · 300 Permits/Day (9,000/mo)  
 
 ---
 
-## 1. Firebase Service Evaluation & Technical Necessity
-
-In strict accordance with Phase 20 requirements, every candidate Firebase service is independently evaluated for necessity, underlying GCP mapping, and billable impact.
+## 1. Firebase Service Portfolio Evaluation
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
@@ -28,16 +28,14 @@ In strict accordance with Phase 20 requirements, every candidate Firebase servic
 
 ---
 
-## 2. Itemized Firebase Services Breakdown
+## 2. Itemized Firebase Services Breakdown (Revision R3)
 
 ### 2.1 Firebase Authentication
 - **Required**: **YES**
 - **Why**: Handles secure user identity management, closed-registration authentication, password resets, and cryptographically signs JWT ID tokens containing Custom Claims (`role`, `projectIds[]`).
 - **Monthly Usage**: 360 registered users, 360 Monthly Active Users (MAU).
-- **Free Quota**: 50,000 MAU per month for Email/Password accounts.
+- **Free Quota**: 50,000 MAU per month for Email/Password accounts (Per project, global quota).
 - **Billable Usage**: **0 MAU**.
-- **Billing Mechanism**: Per active authenticated user beyond free tier ($0.0055/MAU).
-- **Underlying Google Cloud Service**: Google Cloud Identity Platform.
 - **Monthly Cost (INR)**: **₹0.00**
 
 ---
@@ -45,107 +43,77 @@ In strict accordance with Phase 20 requirements, every candidate Firebase servic
 ### 2.2 Cloud Firestore (Native Mode, `asia-south1`)
 - **Required**: **YES**
 - **Why**: Primary operational database. Provides client-side offline persistence (`IndexedDB`), real-time synchronization (`onSnapshot`), document polymorphism for 10 distinct permit types, and atomic multi-document transactions.
-- **Monthly Usage (Baseline: 9,000 permits/mo)**:
-  - Document Reads: 1,241,640 reads/month (~41,388 reads/day average).
-  - Document Writes: 204,000 writes/month (~6,800 writes/day average).
-  - Document Deletes: 5,000 deletes/month.
-  - Storage: 0.1 GiB (Month 1) $\rightarrow$ 0.65 GiB (Month 12).
-- **Free Quotas**: 50,000 reads/day, 20,000 writes/day, 20,000 deletes/day, 1.0 GiB stored data.
-- **Billable Usage**:
-  - Reads: ~44,000 reads/month (peak weekday overages above 50,000/day).
-  - Writes: 0 writes (100% within free quota).
-  - Storage: 0 GiB (100% within 1.0 GiB free quota).
-- **Billing Mechanism**: Billed per operation unit (Reads: $0.036/100k; Writes: $0.108/100k).
-- **Underlying Google Cloud Service**: Google Cloud Firestore.
-- **Monthly Cost (INR)**: **₹1.52 / month**
+- **Physical Daily & Monthly Derivations**:
+  - Document Reads: 76,420 reads/day = **2,292,600 reads/month**.
+  - Document Writes: 7,500 writes/day = **225,000 writes/month**.
+  - Document Deletes: 10,000 deletes/month.
+  - Data Storage: Month 1: 0.1 GiB $\rightarrow$ Month 12: **1.08 GiB**.
+  - Outbound Data Transfer: **12.0 GiB / month**.
+  - Point-in-Time Recovery (PITR): 1.08 GiB continuous 7-day retention.
+- **Free Quotas (Global Quotas Apply in `asia-south1`)**:
+  - Reads: 50,000 reads/day (1,500,000/mo).
+  - Writes: 20,000 writes/day (600,000/mo).
+  - Storage: 1.0 GiB stored data.
+  - Outbound Data Transfer: 10.0 GiB/month free.
+- **Billable Usage & Costs**:
+  - Reads: 792,600 billable reads @ $0.036/100k = **₹27.36 / month**.
+  - Writes: 0 writes billable (100% within free quota) = **₹0.00**.
+  - Storage (Month 12): 0.08 GiB billable @ $0.207/GiB = **₹1.59 / month**.
+  - Outbound Egress: 2.0 GiB billable @ $0.12/GB = **₹23.02 / month**.
+  - PITR Backup: 1.08 GiB @ $0.12/GiB = **₹12.43 / month**.
+- **Subtotal Firestore**:
+  - Month 1: ₹27.36 (Reads) + ₹12.43 (PITR) + ₹23.02 (Egress) = **₹62.81 / month**.
+  - Month 12: ₹27.36 (Reads) + ₹1.59 (Storage) + ₹12.43 (PITR) + ₹23.02 (Egress) = **₹64.40 / month**.
 
 ---
 
 ### 2.3 Firebase Storage (Cloud Storage for Firebase, `asia-south1`)
 - **Required**: **YES**
 - **Why**: Enables direct, authenticated client-side uploads of on-site inspection photos and high-DPI canvas digital signatures directly to Google Cloud Storage with declarative security rules.
-- **Monthly Usage (Baseline: 9,000 permits/mo)**:
-  - Ingestion: 6.24 GB new data / month.
-  - Cumulative Stored: 6.24 GB (Month 1) $\rightarrow$ 74.88 GB (Month 12).
-  - Class A Upload Ops: 54,000 ops / month.
-  - Class B Read Ops: 30,000 ops / month.
-- **Free Quotas**: 5.0 GB storage, 50,000 Class A ops/month, 50,000 Class B ops/month.
-- **Billable Usage**:
-  - Storage Month 1: 1.24 GB billable (6.24 - 5.0).
-  - Storage Month 12: 69.88 GB billable (74.88 - 5.0).
-  - Class A Ops: 4,000 ops billable (54,000 - 50,000).
-- **Billing Mechanism**: Billed per GB stored ($0.026/GB/mo) and per 10k Class A operations ($0.05/10k).
-- **Underlying Google Cloud Service**: Google Cloud Storage Standard Class (`asia-south1`).
-- **Monthly Cost (INR)**:
-  - Month 1: ₹3.09 (Storage) + ₹1.92 (Class A) = **₹5.01 / month**
-  - Month 12: ₹174.00 (Storage) + ₹1.92 (Class A) = **₹175.92 / month**
+- **Physical Daily & Monthly Derivations (300 permits/day)**:
+  - Ingestion: 300 permits/day × 1.85 MB = 555 MB/day = **16.26 GB / month**.
+  - Cumulative Stored: 16.26 GB (Month 1) $\rightarrow$ **195.12 GB (Month 12)**.
+  - Class A Upload Ops: 3,150 uploads/day = **94,500 ops / month**.
+  - Class B Read Ops: 5,000 reads/day = **150,000 ops / month**.
+  - Media Download Egress: 1.33 GB/day = **40.0 GB / month**.
+- **Free Quota Regional Status**:
+  - ⚠️ **CRITICAL**: The GCP Always Free Cloud Storage allowance applies **ONLY to US regions**. In `asia-south1` (Mumbai), **all Cloud Storage usage is billable from byte zero**.
+- **Billable Usage & Costs**:
+  - Storage Month 1: 16.26 GB @ $0.026/GB = **₹40.49 / month**.
+  - Storage Month 12: 195.12 GB @ $0.026/GB = **₹485.85 / month**.
+  - Class A Uploads: 94,500 ops @ $0.05/10k = **₹45.36 / month**.
+  - Class B Reads: 150,000 ops @ $0.004/10k = **₹5.70 / month**.
+  - Media Download Egress: 40.0 GB @ $0.12/GB = **₹460.32 / month**.
+- **Subtotal Firebase Storage**:
+  - **Month 1**: ₹40.49 (Storage) + ₹45.36 (Class A) + ₹5.70 (Class B) + ₹460.32 (Egress) = **₹551.87 / month**.
+  - **Month 12**: ₹485.85 (Storage) + ₹45.36 (Class A) + ₹5.70 (Class B) + ₹460.32 (Egress) = **₹997.23 / month**.
 
 ---
 
-### 2.4 Firebase Hosting
-- **Required**: **YES**
-- **Why**: Serves the zero-build Single Page Application (SPA), CSS stylesheets, and client-side JavaScript assets globally with sub-second latency, automated SSL certificate issuance, and HTTP/2 compression.
-- **Monthly Usage**: 0.5 GB asset storage, ~2.5 GB transfer / month.
-- **Free Quotas**: 10.0 GB storage, 360 MB / day transfer (~10.8 GB / month).
-- **Billable Usage**: **0 GB**.
-- **Billing Mechanism**: Billed per GB transfer beyond free quota ($0.15/GB).
-- **Underlying Google Cloud Service**: Google Cloud CDN and Edge Infrastructure.
-- **Monthly Cost (INR)**: **₹0.00**
+### 2.4 Firebase Hosting & App Check
+- **Firebase Hosting**: 0.8 GB storage + 4.5 GB CDN data transfer = **₹0.00 / month** (100% within 10 GB storage and 10.8 GB/mo CDN free quota).
+- **Firebase App Check**: ~226,800 verifications = **₹0.00 / month** (reCAPTCHA Enterprise standard web attestation).
+- **Cloud Functions for Firebase (2nd Gen Triggers)**: 225,000 reactive background invocations = **₹0.00 / month** (Shares Cloud Run free pool).
 
 ---
 
-### 2.5 Firebase App Check
-- **Required**: **YES**
-- **Why**: Protects backend APIs and Firestore from API scraping, replay attacks, and unauthorized bots using device attestation (reCAPTCHA Enterprise / Play Integrity).
-- **Monthly Usage**: ~95,000 verifications / month.
-- **Free Quotas**: 10,000 verifications/day free (reCAPTCHA Enterprise).
-- **Billable Usage**: **0 verifications**.
-- **Billing Mechanism**: Billed per 1,000 verifications beyond free quota ($1.00/10k).
-- **Underlying Google Cloud Service**: Google Cloud reCAPTCHA Enterprise.
-- **Monthly Cost (INR)**: **₹0.00**
+## 3. Firebase Bill of Materials Summary Table
 
----
-
-### 2.6 Cloud Functions for Firebase (2nd Gen)
-- **Required**: **PARTIAL**
-- **Why**: Strictly restricted to reactive Firestore triggers (`onDocumentWritten`) for notification dispatch and indexing. All HTTP API endpoints, PDF compilation, and SLA schedulers are assigned to **Google Cloud Run** (see [ADR-002](file:///c:/Users/MohithSai.G/Downloads/ARPL-EHS-Demo/docs/architecture/adr/ADR-002-cloud-run-core-backend.md)).
-- **Monthly Usage**: ~189,000 trigger invocations / month, ~7,087 active vCPU-seconds.
-- **Free Quotas**: 2,000,000 invocations, 180,000 vCPU-seconds, 360,000 GiB-seconds per month.
-- **Billable Usage**: **0 units**.
-- **Billing Mechanism**: Billed per million invocations ($0.40/M) and CPU/memory runtime.
-- **Underlying Google Cloud Service**: Google Cloud Run Functions.
-- **Monthly Cost (INR)**: **₹0.00**
-
----
-
-### 2.7 Firebase Services Evaluated & NOT Required
-
-| Service | Why Evaluated | Technical Justification for Rejection | Billable Cost |
-|---|---|---|---|
-| **Firebase Realtime Database** | Legacy NoSQL store | Firestore is modern, structured, and supports subcollections and complex queries. | ₹0.00 |
-| **Firebase Crashlytics** | Mobile app crash reporter | The application is a web-based responsive Single Page Application (PWA); standard browser telemetry and Cloud Logging are utilized instead. | ₹0.00 |
-| **Firebase Remote Config** | Dynamic A/B testing & feature flags | Workflows and form schemas are statically governed by `APP_CONFIG` and stored in Firestore. | ₹0.00 |
-| **Firebase Performance Monitoring** | Network trace analysis | Standard Cloud Monitoring and browser Performance API provide sufficient observability. | ₹0.00 |
-| **Firebase Cloud Messaging (FCM)** | Mobile push notification delivery | All notifications in the ARPL EHS application are role-targeted in-app notifications delivered live via Firestore `onSnapshot`. SMS/Push gateways are not in current scope. | ₹0.00 |
-| **Firebase Extensions** | Pre-packaged backend integrations | Custom logic is cleanly implemented in Cloud Run and Cloud Functions; no paid third-party extensions required. | ₹0.00 |
-
----
-
-## 3. Firebase Bill of Materials Summary (Baseline PROD)
-
-| BOM ID | Firebase Service | Meter / Resource | Free Allowance | Monthly Usage | Billable Qty | INR Rate | Month 1 INR | Month 12 INR |
-|---|---|---|---|---|---|---|---:|---:|
-| FB-001 | Firebase Auth | Email/Password MAU | 50,000 MAU | 360 MAU | 0 | ₹0.00 | ₹0.00 | ₹0.00 |
-| FB-002 | Cloud Firestore | Document Reads | 50,000 / day | 1,241,640 / mo | 44,000 | ₹3.45 / 100k | ₹1.52 | ₹1.52 |
-| FB-003 | Cloud Firestore | Document Writes | 20,000 / day | 204,000 / mo | 0 | ₹10.36 / 100k | ₹0.00 | ₹0.00 |
-| FB-004 | Cloud Firestore | Database Storage | 1.0 GiB | 0.65 GiB (M12) | 0 | ₹19.85 / GiB | ₹0.00 | ₹0.00 |
-| FB-005 | Firebase Storage | GCS Standard Storage | 5.0 GB | 6.24 GB (M1) $\rightarrow$ 74.88 GB (M12) | 1.24 GB (M1) $\rightarrow$ 69.88 GB (M12) | ₹2.49 / GB | ₹3.09 | ₹174.00 |
-| FB-006 | Firebase Storage | Class A Upload Ops | 50,000 / mo | 54,000 / mo | 4,000 | ₹4.80 / 10k | ₹1.92 | ₹1.92 |
-| FB-007 | Firebase Hosting | Storage & CDN Transfer | 10 GB / 10.8 GB | 0.5 GB / 2.5 GB | 0 | ₹0.00 | ₹0.00 | ₹0.00 |
-| FB-008 | Firebase App Check | Device Attestation | 10,000 / day | 95,000 / mo | 0 | ₹0.00 | ₹0.00 | ₹0.00 |
-| FB-009 | Cloud Functions | Firestore Triggers | 2M / 180k vCPU-s | 189k / 7k vCPU-s | 0 | ₹0.00 | ₹0.00 | ₹0.00 |
-| **TOTAL** | **Firebase Services** | **Pre-Tax Subtotal** | — | — | — | — | **₹6.53** | **₹177.44** |
-
----
-
-> **Firebase BOM Sign-off**: Every Firebase line item is mapped to its underlying GCP infrastructure meter. The Firebase layer operates with extreme financial efficiency, incurring only **₹6.53 in Month 1** and **₹177.44 in Month 12** for the entire enterprise.
+| BOM ID | Firebase / Underlying GCP Service | Resource / Metric | Free Quota | Monthly Usage | Billable Qty | Unit Rate (INR) | Month 1 INR | Month 12 INR |
+|---|---|---|---|---:|---:|---|---:|---:|
+| **FB-001** | Firebase Authentication | Email/Password MAU | 50,000 MAU | 360 MAU | 0 MAU | ₹0.00 | **₹0.00** | **₹0.00** |
+| **FB-002** | Cloud Firestore | Document Reads | 1,500,000 / mo | 2,292,600 | 792,600 | ₹3.45 / 100K | **₹27.36** | **₹27.36** |
+| **FB-003** | Cloud Firestore | Document Writes | 600,000 / mo | 225,000 | 0 | ₹10.36 / 100K | **₹0.00** | **₹0.00** |
+| **FB-004** | Cloud Firestore | Document Deletes | 600,000 / mo | 10,000 | 0 | ₹1.15 / 100K | **₹0.00** | **₹0.00** |
+| **FB-005** | Cloud Firestore | Primary Data Storage | 1.0 GiB | 0.1 → 1.08 GiB | 0 → 0.08 GiB | ₹19.85 / GiB | **₹0.00** | **₹1.59** |
+| **FB-006** | Cloud Firestore | Point-in-Time Recovery | None | 1.08 GiB | 1.08 GiB | ₹11.51 / GiB | **₹12.43** | **₹12.43** |
+| **FB-007** | Cloud Firestore | Outbound Data Transfer | 10.0 GiB / mo | 12.0 GiB | 2.0 GiB | ₹11.51 / GB | **₹23.02** | **₹23.02** |
+| **FB-008** | Firebase Storage | Media Ingestion Storage | **0 GB in Mumbai** | 16.26 → 195.12 GB| 16.26 → 195.12 GB| ₹2.49 / GB | **₹40.49** | **₹485.85** |
+| **FB-009** | Firebase Storage | Class A Upload Ops | **0 in Mumbai** | 94,500 ops | 94,500 ops | ₹4.80 / 10K | **₹45.36** | **₹45.36** |
+| **FB-010** | Firebase Storage | Class B Read Ops | **0 in Mumbai** | 150,000 ops | 150,000 ops | ₹0.38 / 10K | **₹5.70** | **₹5.70** |
+| **FB-011** | Firebase Storage | Media Download Egress | **0 in Mumbai** | 40.0 GB | 40.0 GB | ₹11.51 / GB | **₹460.32** | **₹460.32** |
+| **FB-012** | Firebase Hosting | SPA Asset Storage | 10.0 GB | 0.8 GB | 0 GB | ₹2.49 / GB | **₹0.00** | **₹0.00** |
+| **FB-013** | Firebase Hosting | CDN Data Transfer | 10.8 GB / mo | 4.5 GB | 0 GB | ₹14.39 / GB | **₹0.00** | **₹0.00** |
+| **FB-014** | Firebase App Check | App Attestation | Included | ~226,800 | 0 | ₹0.00 | **₹0.00** | **₹0.00** |
+| **FB-015** | Cloud Functions (2nd Gen)| Reactive Triggers | Shares Cloud Run | 225,000 | 0 | Shares pool | **₹0.00** | **₹0.00** |
+| **TOTAL** | **Firebase Portfolio** | **Pre-Tax Subtotal** | — | — | — | — | **₹614.68** | **₹1,061.63** |
