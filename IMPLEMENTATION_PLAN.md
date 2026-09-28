@@ -44,7 +44,7 @@ Operating in real-world Indian construction environments presents three severe t
 2. **Strict Legal Non-Repudiation**: Indian statutory EHS regulations (Directorate General of Mines Safety and State Factory Rules) and the **Digital Personal Data Protection (DPDP) Act 2023** mandate tamper-evident digital signatures, immutable audit logs, GPS geofencing, and server-validated IST timestamps.
 3. **Complex Multi-Tier Approval Topologies**: The platform must enforce 27 operational states and 16 distinct functional roles, incorporating 3-way parallel clearance gates, dual-topology electrical branching, SLA auto-escalation, and 21:00 night-shift auto-cancellation.
 
-This Implementation Plan provides an authoritative, milestone-driven roadmap to deploy the validated **Hybrid Firebase-First Client Data Layer + Google Cloud Run Core Backend Architecture** in Google Cloud’s **`asia-south1` (Mumbai)** region within a **16-week timeline** at a total annual infrastructure expenditure of **₹21,246.38 INR / year (~$221.55 USD / year pre-tax)**.
+This Implementation Plan provides an authoritative, milestone-driven roadmap to deploy the validated **Hybrid Firebase-First Client Data Layer + Google Cloud Run Core Backend Architecture** in Google Cloud’s **`asia-south1` (Mumbai)** region within a **16-week timeline** at a total annual infrastructure expenditure of **₹60,478.49 INR / year (~$630.64 USD / year pre-tax)** (Combined DEV + PROD under 10.0 MB media standard).
 
 ---
 
@@ -480,25 +480,25 @@ The procurement team shall submit the following formal 20-point schedule to the 
 
 ## 11. Consolidated Cost Baseline across All Scale Scenarios
 
-All figures are converted from official Google Cloud list prices at **1 USD = ₹95.90 INR** (Checked live 2026-09-25 12:33 IST) and incorporate **First-Principles Physical Daily Transactions & Production Warm Compute SLA for `asia-south1` (Mumbai)**:
+All figures are converted from official Google Cloud list prices at **1 USD = ₹95.90 INR** (Checked live 2026-09-28 12:33 IST) and incorporate **First-Principles Physical Daily Transactions, 10.0 MB Media Standard & Production Warm Compute SLA for `asia-south1` (Mumbai)**:
 
 | Operational Scenario | Scope & Volume | Monthly Cost (M1) | Monthly Cost (M12) | Blended Monthly (Yr 1) | Annual Pre-Tax Total | Annual Post-Tax (incl. 18% GST) |
 |---|---|---:|---:|---:|---:|---:|
-| **DEV Environment** | Non-prod testing & CI/CD | ₹15.50 | ₹15.50 | ₹15.50 | **₹186.00** | **₹219.48** |
-| **Scenario A (Baseline)**| **6 Sites · 360 Users · 300/Day (9k/mo)** | **₹1,531.52** | **₹1,978.47** | **₹1,755.03** | **₹21,060.38** | **₹24,851.25** |
-| **Scenario B (Growth)** | 12 Sites · 720 Users · 600/Day (18k/mo) | ₹2,126.90 | ₹3,020.17 | ₹2,573.54 | **₹30,882.48** | **₹36,441.33** |
-| **Scenario C (High Scale)**| 30 Sites · 1,800 Users · 1,500/Day (45k/mo)| ₹4,814.80 | ₹7,046.20 | ₹5,930.50 | **₹71,166.00** | **₹83,975.88** |
-| **Special Sensitivity** | **6 Sites · 300/Site/Day = 1,800/Day (54k/mo)**| **₹5,589.91** | **₹8,267.48** | **₹6,928.70** | **₹83,144.40** | **₹98,110.40** |
+| **DEV Environment** | Non-prod testing & CI/CD | ₹65.18 | ₹65.18 | ₹65.18 | **₹782.16** | **₹922.95** |
+| **Scenario A (Baseline)**| **6 Sites · 360 Users · 300/Day (9k/mo)** | **₹3,768.45** | **₹6,180.66** | **₹4,974.69** | **₹59,696.33** | **₹70,441.67** |
+| **Scenario B (Growth)** | 12 Sites · 720 Users · 600/Day (18k/mo) | ₹6,807.16 | ₹11,651.43 | ₹9,127.60 | **₹109,531.20** | **₹129,246.82** |
+| **Scenario C (High Scale)**| 30 Sites · 1,800 Users · 1,500/Day (45k/mo)| ₹16,848.55 | ₹28,988.96 | ₹22,642.80 | **₹271,713.60** | **₹320,622.05** |
+| **Special Sensitivity** | **6 Sites · 300/Site/Day = 1,800/Day (54k/mo)**| **₹19,879.35** | **₹34,440.67** | **₹26,892.00** | **₹322,704.00** | **₹380,790.72** |
 
 ```
 ┌────────────────────────────────────────────────────────────────────────────────────────┐
 │                              COMBINED YEAR 1 INVESTMENT (BASELINE)                     │
 │                                                                                        │
-│  • Development Infrastructure (Annual Pre-Tax):       ₹186.00 INR / year               │
-│  • Production Infrastructure (Annual Pre-Tax):        ₹21,060.38 INR / year            │
-│  • Total Combined Pre-Tax Infrastructure:             ₹21,246.38 INR / year (~$221.55) │
-│  • Applicable GST @ 18.00% (SAC 998315):              ₹3,824.35 INR / year (ITC Credit)│
-│  • Total Annual Outflow (Post-Tax):                   ₹25,070.73 INR / year (~$261.43) │
+│  • Development Infrastructure (Annual Pre-Tax):       ₹782.16 INR / year               │
+│  • Production Infrastructure (Annual Pre-Tax):        ₹59,696.33 INR / year            │
+│  • Total Combined Pre-Tax Infrastructure:             ₹60,478.49 INR / year (~$630.64) │
+│  • Applicable GST @ 18.00% (SAC 998315):              ₹10,886.13 INR / year (ITC Credit)│
+│  • Total Annual Outflow (Post-Tax):                   ₹71,364.62 INR / year (~$744.16) │
 └────────────────────────────────────────────────────────────────────────────────────────┘
 ```
 

@@ -1,8 +1,8 @@
 # Google Cloud Platform Bill of Materials & Service Justification
 
-> **Document ID**: ARPL-BOM-GCP-2026-09-25-R3  
+> **Document ID**: ARPL-BOM-GCP-2026-09-28-R4  
 > **Status**: AUDITED, REGIONALLY VALIDATED & DAILY-TRANSACTION VERIFIED  
-> **Revision**: R3 — First-Principles Daily Sizing with Production Warm Compute SLA  
+> **Revision**: R4 — High-Resolution 10.0 MB Media Standard Breakdown  
 > **Target Region**: Primary: `asia-south1` (Mumbai, Maharashtra, India)  
 > **Pricing Standard**: Google Cloud India List Catalog | Live FX Rate: **1 USD = ₹95.90 INR**  
 > **Target Workload**: 6 Business Projects · 360 Unique Users · 300 Permits/Day Total (9,000/mo)  
@@ -45,10 +45,10 @@ Every candidate Google Cloud service is independently audited to eliminate bloat
   - 1,140 background and scheduler dispatches / day.
   - **Total API Requests**: 7,560 requests/day = **226,800 requests / month**.
 - **Active vCPU & RAM Consumption Math**:
-  - PDF Compilation (Chromium/Puppeteer): 300 PDFs/day × 2.0s = 600 vCPU-sec/day = **18,000 vCPU-sec / month**.
+  - PDF Compilation (Chromium/Puppeteer): 300 PDFs/day × 2.5s = 750 vCPU-sec/day = **22,500 vCPU-sec / month**.
   - State Transitions & REST APIs: 226,800 calls @ 150 ms = **34,020 vCPU-sec / month**.
   - SLA Escalation Engine: 8,640 sweeps @ 100 ms = **864 vCPU-sec / month**.
-  - **Total Active Compute**: **52,884 vCPU-seconds** and **52,884 GiB-seconds / month**.
+  - **Total Active Compute**: **57,384 vCPU-seconds** and **57,384 GiB-seconds / month**.
   - *Always Free Tier Allowance*: 180,000 vCPU-sec and 360,000 GiB-sec free.
   - *Active Compute Cost*: **₹0.00 / month** (100% within free quota).
 - **Production Warm Instance SLA (`min-instances = 1`)**:
@@ -64,9 +64,9 @@ Every candidate Google Cloud service is independently audited to eliminate bloat
 ### 2.2 Google Cloud Storage (Private Disaster Recovery Bucket)
 - **Required**: **YES**
 - **Requirement**: Dedicated, private storage bucket (`arpl-ehs-backups-prod`) in `asia-south1` for weekly scheduled Firestore database exports and compliance audit bundles.
-- **Monthly Usage**: 4 weekly snapshots × 1.0 GB = 4.0 GB stored.
-- **Regional Free Tier Rule**: GCS free tier is US-only. All 4.0 GB is billable in `asia-south1`.
-- **Cost (INR)**: 4.0 GB × ₹2.49/GB = **₹9.96 / month**.
+- **Monthly Usage**: 4 weekly snapshots × 2.0 GB = 8.0 GB stored.
+- **Regional Free Tier Rule**: GCS free tier is US-only. All 8.0 GB is billable in `asia-south1`.
+- **Cost (INR)**: 8.0 GB × ₹2.4934/GB = **₹19.95 / month**.
 
 ---
 
@@ -99,11 +99,11 @@ Every candidate Google Cloud service is independently audited to eliminate bloat
 | BOM ID | GCP Service | Resource / Meter | Monthly Usage | Free Quota | Applies to `asia-south1`? | Billable Qty | Unit Rate (INR) | Monthly INR |
 |---|---|---|---|---|:---:|---|---|---:|
 | **GCP-001** | Cloud Run | Requests | 226,800 req | 2,000,000 req | ✅ YES | 0 | ₹38.36 / M | **₹0.00** |
-| **GCP-002** | Cloud Run | Active vCPU-sec | 52,884 sec | 180,000 sec | ✅ YES | 0 | ₹0.0023 / sec | **₹0.00** |
-| **GCP-003** | Cloud Run | Active GiB-sec | 52,884 sec | 360,000 sec | ✅ YES | 0 | ₹0.0002 / sec | **₹0.00** |
+| **GCP-002** | Cloud Run | Active vCPU-sec | 57,384 sec | 180,000 sec | ✅ YES | 0 | ₹0.0023 / sec | **₹0.00** |
+| **GCP-003** | Cloud Run | Active GiB-sec | 57,384 sec | 360,000 sec | ✅ YES | 0 | ₹0.0002 / sec | **₹0.00** |
 | **GCP-004** | Cloud Run | **Warm Instance SLA** | 480 hours | None | — | 480 hrs | Idle rates | **₹894.86** |
 | **GCP-005** | Cloud Run Egress | Internet Egress | 0.79 GB | 1 GB (N. America) | ❌ NO | 0.79 GB | ₹11.51 / GB | **₹9.09** |
-| **GCP-006** | Cloud Storage | Disaster Recovery Bucket| 4.0 GB | 5 GB (US only) | ❌ NO | 4.0 GB | ₹2.49 / GB | **₹9.96** |
+| **GCP-006** | Cloud Storage | Disaster Recovery Bucket| 8.0 GB | 5 GB (US only) | ❌ NO | 8.0 GB | ₹2.49 / GB | **₹19.95** |
 | **GCP-007** | Cloud Tasks | Dispatched Operations | 20,000 ops | 1,000,000 ops | ✅ YES | 0 | ₹38.36 / M | **₹0.00** |
 | **GCP-008** | Cloud Scheduler | Active Job | 1 job | 3 jobs | ✅ YES | 0 | ₹9.59 / job | **₹0.00** |
 | **GCP-009** | Secret Manager | Active Secret Versions | 4 versions | 6 versions | ✅ YES | 0 | ₹5.75 / ver | **₹0.00** |
@@ -112,8 +112,9 @@ Every candidate Google Cloud service is independently audited to eliminate bloat
 | **GCP-012** | Artifact Registry | Container Image Storage | 0.5 GB | 0.5 GiB | ✅ YES | 0 | ₹9.59 / GB | **₹0.00** |
 | **GCP-013** | Cloud Logging | Log Ingestion | 3.0 GiB | 50.0 GiB | ✅ YES | 0 | ₹47.95 / GiB | **₹0.00** |
 | **GCP-014** | Cloud Monitoring | Metrics & Uptime | Standard | Included | ✅ YES | 0 | ₹0.00 | **₹0.00** |
-| **TOTAL** | **GCP Services** | **Pre-Tax Subtotal** | — | — | — | — | — | **₹916.79** |
+| **TOTAL** | **GCP Services** | **Pre-Tax Subtotal** | — | — | — | — | — | **₹926.78** |
 
 ---
 
-> **GCP BOM Sign-off**: With Cloud Run Warm Instance compute provisioned to eliminate cold starts, GCP native infrastructure delivers an enterprise-grade backend for **₹916.79 / month (~$9.56 USD/month)**.
+> **GCP BOM Sign-off**: With Cloud Run Warm Instance compute provisioned to eliminate cold starts, GCP native infrastructure delivers an enterprise-grade backend for **₹926.78 / month (~$9.66 USD/month)**.
+
