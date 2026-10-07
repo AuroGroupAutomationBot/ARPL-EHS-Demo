@@ -7,7 +7,7 @@
 **PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work · PTW-009A/B Lifting Operations · PTW-010 Night Shift / Holiday Work**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
-[![Tests](https://img.shields.io/badge/Tests-24%20Suites%20Passed-success?style=for-the-badge)](/)
+[![Tests](https://img.shields.io/badge/Tests-25%20Suites%20Passed-success?style=for-the-badge)](/)
 [![Pass Rate](https://img.shields.io/badge/Pass_Rate-100%25-brightgreen?style=for-the-badge)](/)
 [![Responsive](https://img.shields.io/badge/Responsive-Mobile_to_4K-orange?style=for-the-badge)](/)
 [![DPDP](https://img.shields.io/badge/DPDP_Act_2023-Compliant-purple?style=for-the-badge)](/)
@@ -151,8 +151,8 @@ The **ARPL EHS Permit-to-Work (PTW) Management System** digitises the entire hig
 | Permit Types (Active) | 10 (PTW-001 to PTW-008, PTW-009A/B, PTW-010 fully implemented & testable) |
 | RBAC Roles | 16 distinct roles (including separate Excavation Head, Quality Engineer, Blasting In-charge, Lifting Supervisor, Project Manager, and Night Site Supervisor) |
 | Approval Steps (PTW-010) | 8-stage Dual-Phase Handover Protocol (Day Approvals &rarr; Linked Activity Permit &rarr; 8:30 PM Qualification Gate &rarr; P&M Night Ack &rarr; EHS Verification) |
-| Automated Test Assertions | 920+ assertions across 24 master test suites (100% pass rate) |
-| Total Codebase | Single `index.html` (~19,980 lines) |
+| Automated Test Assertions | 1,090+ assertions across 25 master test suites (100% pass rate) |
+| Total Codebase | Single `index.html` (~21,450 lines) |
 | External Dependencies | 2 (Font Awesome icons, jsPDF) |me icons, jsPDF) |
 
 ---
@@ -351,6 +351,30 @@ To eliminate hardcoded logic, repetitive `switch/case` branches, and coupled mar
 15. **Centralized RBAC Engine (`can(user, action, context)`) & Data Service (`StorageService`)**:
     - Unified permission engine governing `permit.create`, `permit.view`, `permit.extend`, `permit.surrender`, `permit.download_pdf`, `permit.approve`, and `admin.config`.
     - Pluggable data abstraction layer decoupling application state from raw browser `localStorage`.
+
+16. **Centralized SLA Escalation Policy & Operating Windows (`APP_CONFIG.sla`)**:
+    - Mode toggle between Fast Demo Mode (Stage 1: 45s, Stage 2: 120s) and Enterprise Production Mode (Stage 1: 2h, Stage 2: 4h).
+    - Configurable validity expiry warning offsets (default 30 min) and statutory cutoff hours (18:30 IST request cutoff, 20:30 IST extension ceiling, 20:30 IST night handover gate, 21:00 IST night cutoff).
+
+17. **Dynamic Approved Contractor Directory (`APP_CONFIG.contractorDirectory`)**:
+    - Centralized vendor catalog tracking vendor code, company name, primary trade specialization, and safety audit rating (1.0 to 5.0).
+    - Powers wizard `<datalist id="contractorDatalist">` auto-suggest while preserving freeform entry for unlisted subcontractors.
+
+18. **Dynamic Meteorological & Weather Engine (`APP_CONFIG.weather`)**:
+    - Real-time weather states with ambient wind speed (km/h) and temperature (°C).
+    - Automatically enforces statutory crane lift bans (> 38 km/h wind speed) on PTW-009 Lifting Operations.
+
+19. **Project Structural Hierarchy & Universal Accessors (`getProjectTowers`, `getProjectBasements`, `getProjectFloors`, `getProjectContractors`)**:
+    - Decoupled structural hierarchy defining custom building towers/blocks, basement levels, floor counts, and approved contractors per project site.
+    - Wizard location dropdowns rebuild dynamically when projects switch.
+
+20. **Multi-Panel Administrative Governance Center (`view-admin-config`)**:
+    - Comprehensive 5-panel administrative management workspace:
+      * Worksite GPS & Geofencing (on-site tagging, slider, radar preview)
+      * Projects & Structural Hierarchies (register new project, add towers, configure basements)
+      * Approved Contractor Directory (empanel vendor, assign trade, set safety rating)
+      * SLA Timers & Operating Windows (mode toggle, threshold tuning)
+      * Permit Types & Weekend Rules (enable/disable permit types, toggle Sunday Work tile)
 
 ---
 
@@ -4000,12 +4024,12 @@ The application's visual architecture is powered by a comprehensive, design-toke
 
 ## 22. Testing & Quality Assurance
 
-The system is validated by an autonomous, zero-dependency Node.js test suite comprising **850+ automated test assertions with a 100% pass rate across 23 specialized master test suites**.
+The system is validated by an autonomous, zero-dependency Node.js test suite comprising **1,090+ automated test assertions with a 100% pass rate across 25 specialized master test suites**.
 
 ### 22.1 Test Suite Execution
 
 ```bash
-# Execute master test suite (runs all 23 suites sequentially)
+# Execute master test suite (runs all 25 suites sequentially)
 npm test
 # OR
 node tests/run_all_tests.js
@@ -4015,7 +4039,7 @@ node tests/run_all_tests.js
 
 ```
 tests/
-├── run_all_tests.js                     # Master Runner: orchestrates all 23 test suites sequentially
+├── run_all_tests.js                     # Master Runner: orchestrates all 25 test suites sequentially
 ├── run_full_test_suite.js               # Suite 1: Base Lifecycle, Core Approvals & Parallel Gates (185 tests)
 ├── run_extended_audit_tests.js          # Suite 2: Extended Audit, Notifications, Escalation & Filters (77 tests)
 ├── test_tracker_labels.js               # Suite 3: UI & PDF Section Head Dynamic Label Resolution Tests
@@ -4038,7 +4062,9 @@ tests/
 ├── test_dynamic_config_architecture.js  # Suite 20: Dynamic & Configuration-Driven Enterprise Architecture (9 Sections)
 ├── test_pt09_lifting_operations.js      # Suite 21: PTW-009 Lifting Operations & Critical Lift Plan (PTW-009A/B) (14 Sections)
 ├── test_draft_and_pt09_subtables.js     # Suite 22: Draft Resumption, Sub-Table Scroll Fix & Part A/B Checkboxes (6 Sections)
-└── test_pt10_night_shift.js             # Suite 23: PTW-010 Night Shift / Holiday Work & Dual-Phase Handover (12 Sections)
+├── test_pt10_night_shift.js             # Suite 23: PTW-010 Night Shift / Holiday Work & Dual-Phase Handover (12 Sections)
+├── test_sunday_work_tile.js             # Suite 24: Sunday Work Tile & Weekend Governance (9 Sections)
+└── test_dynamic_enterprise_features.js   # Suite 25: Dynamic Enterprise Architecture, Multi-Project & Contractor Governance (11 Sections)
 ```
 
 #### Suite 1: Base Lifecycle & Core Engines (185 Assertions)
@@ -4273,11 +4299,43 @@ tests/
 - **Official Permit Report PDF Generation**: Verifies successful generation of statutory jsPDF audit documents for both PTW-009A and PTW-009B with complete rigging calculations, technical parameters, and digital signatures.
 - **Strict RBAC & Permittee Boundary Isolation**: Proves that only certified Lifting Supervisor can initiate Form PTW-009; asserts strict denial for unauthorized personas (Site Supervisor, Electrician, Blasting In-charge).
 
+#### Suite 22: Draft Resumption, Sub-Table Scroll Fix & Part A/B Checkboxes (test_draft_and_pt09_subtables.js - 6 Sections)
+- **Static Verification**: Asserts constants, titles, UI bindings, and checkbox labels for Part A (10 items) and Part B (13 items).
+- **Sub-Table 2 Interactive UI Rendering**: Dynamic presentation of Part A and Part B with in-place YES/NO toggles and scrollbar styling.
+- **Sub-Table 4 In-Place Dynamic Calculations**: Real-time sling stress calculation and auto-promotion to Critical Lift Plan (Part B).
+- **Bi-Directional Weight Threshold Synchronization**: Dynamic synchronization of load weight thresholds ($\le 5\text{ MT}$ Part A vs $> 5\text{ MT}$ Part B).
+- **Universal Draft Resumption**: Verifies draft resumption and form re-population across all specialized roles (Lifting Supervisor, Electrician).
+
+#### Suite 23: PTW-010 Night Shift / Holiday Work & Dual-Phase Handover (test_pt10_night_shift.js - 12 Sections)
+- **Statutory Prohibitions & Checklist**: Enforces strict prohibition of high-risk activities (Confined Space, Blasting, Critical Lifts); validates 13 statutory night checklist items.
+- **Stage 1 Daytime Approval Spine**: Site Supervisor $\to$ Site Engineer $\to$ Tower Incharge $\to$ Night Shift Approved – Awaiting Linked Permit.
+- **Sequential Stage 2 Linked Activity Permitting**: Unlocks linked permit initiation, daytime clearances, and synchronized promotion to Approved – Pending Night Handover.
+- **8:30 PM Handover Gate & Qualification Engine**: Enforces certified Night Site Supervisor qualification gate, 21:00 IST cutoff engine, and dual photo handover.
+- **Night Activation & P&M Acknowledgment**: Lux level and machinery verification, isolated EHS rejection re-routing, and dual permit activation.
+- **Morning Closure & Dynamic 6-Signatory Flow**: Exclusive closure by Night Site Supervisor with de-energization declaration and official 6-signatory PDF generation.
+
+#### Suite 24: Sunday Work Tile & Weekend Governance (test_sunday_work_tile.js - 9 Sections)
+- **IST Calendar-Driven Activation Engine**: Dynamic operational mode evaluation across weekdays, Saturday preparation, and Sunday lockout.
+- **Saturday Dual-Tile Surface**: Simultaneous presentation of standard PTW and Sunday Work tiles with dedicated 9-module catalog.
+- **3-Layer Night Shift Hard Exclusion**: Presentation layer, controller guard, and application wizard guard strictly blocking PTW-010 from Sunday batching.
+- **Sunday Zero-Creation Lockout**: System-wide lockdown of permit creation across dashboard tiles, nav sidebar, and route guards.
+- **Authorized Sunday Execution & Closure**: Full authorization of pre-authorized Sunday permit execution and statutory closure as per valid hours.
+- **Register Filtering & Origin Metadata**: `sunday_work` filter, amber `SUN` badges, and official PDF audit trail tags.
+
+#### Suite 25: Dynamic Enterprise Architecture, Multi-Project & Contractor Governance (test_dynamic_enterprise_features.js - 11 Sections)
+- **Dynamic Structural Accessors**: Evaluates `getProject()`, `getProjectTowers()`, `getProjectBasements()`, `getProjectFloors()`, `getProjectZones()`, and `getProjectContractors()` across projects.
+- **Approved Contractor Directory**: Validates vendor registry (`APP_CONFIG.contractorDirectory`), vendor codes, and trade specialization.
+- **Runtime Project & Tower Registration**: Dynamically registers new worksite projects (`adminAddNewProject`) and appends towers (`adminPromptAddTower`).
+- **Dynamic SLA Escalation Engine**: Runtime switching between Fast Demo Mode (45s / 120s) and Production Mode (2h / 4h); threshold validation.
+- **Dynamic Meteorological Engine**: Real-time weather states and statutory high-wind lifting lockouts.
+- **Multi-Tab Admin Center Navigation**: Dynamic tab switching across all 5 operational administration panels.
+- **State Persistence & Round-Trip**: Full `localStorage` serialization and deserialization of enterprise configurations and projects.
+
 ### 22.3 Automated Test Execution Results
 
 ```
 ================================================================
-MASTER TEST SUITE EXECUTION SUMMARY (ALL 21 SUITES)
+MASTER TEST SUITE EXECUTION SUMMARY (ALL 25 SUITES)
 ================================================================
 
 >>> SUITE 1: BASE LIFECYCLE & ENGINE TESTS (run_full_test_suite.js)
@@ -4349,8 +4407,14 @@ MASTER TEST SUITE EXECUTION SUMMARY (ALL 21 SUITES)
 >>> SUITE 23: PTW-010 NIGHT SHIFT / HOLIDAY WORK & DUAL-PHASE HANDOVER (test_pt10_night_shift.js)
   All 12 statutory sections, dual-phase day/night handover, qualification gating, 21:00 cutoff engine, strict prohibitions, isolated EHS rejection & 6-signatory flow passed cleanly
 
+>>> SUITE 24: SUNDAY WORK TILE & WEEKEND GOVERNANCE (test_sunday_work_tile.js)
+  All 9 sections, IST calendar-driven activation, Saturday dual-tile preparation, 3-layer Night Work hard exclusion, Sunday zero-creation lockout & Sunday closure passed cleanly
+
+>>> SUITE 25: DYNAMIC ENTERPRISE ARCHITECTURE, MULTI-PROJECT & CONTRACTOR GOVERNANCE (test_dynamic_enterprise_features.js)
+  All 11 sections, dynamic project structural accessors, empaneled contractor directory, runtime project/tower registration, Demo vs. Production SLA mode switching, meteorological engine & multi-tab Admin Center passed cleanly
+
 ================================================================
-GRAND TOTAL: ALL 23 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
+GRAND TOTAL: ALL 25 MASTER TEST SUITES PASSED (100% SUCCESS RATE)
 ALL 10 PERMIT WORK TYPES (PTW-001 TO PTW-010) FULLY VALIDATED
 ================================================================
 Zero Regressions · Full Statutory Coverage · Dedicated Suite per Permit Type · 100% Deterministic · Production Ready

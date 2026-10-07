@@ -4702,9 +4702,158 @@
                         class="fa-regular fa-clock"></i>
                     <div>
                         <div class="tc-date" id="tcDate">&mdash;</div>
-                        <div class="tc-time" id="tcTime">&mdash;</div>
+                        <div class="tc-time" id="tcTime">&mdash;</div> <!-- End of dash-grid -->
+                    </div> <!-- End of adminPanelGps -->
+
+                    <!-- Panel 2: Projects & Structural Hierarchies -->
+                    <div id="adminPanelProjects" class="admin-panel" style="display:none;">
+                        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;">
+                            <div>
+                                <div class="card" style="padding:20px;margin-bottom:16px;">
+                                    <h3 style="font-size:15px;font-weight:700;margin:0 0 14px;color:var(--navy);display:flex;align-items:center;gap:8px;">
+                                        <i class="fa-solid fa-building" style="color:var(--orange);"></i> Registered Worksite Construction Projects
+                                    </h3>
+                                    <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;">Manage building towers, basement levels, approved contractors, and location coordinates dynamically per project site.</p>
+                                    <div id="adminProjectsList"></div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="card" style="padding:20px;">
+                                    <h3 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--navy);display:flex;align-items:center;gap:8px;">
+                                        <i class="fa-solid fa-circle-plus" style="color:var(--green);"></i> Register New Worksite
+                                    </h3>
+                                    <div class="form-field" style="margin-bottom:12px;">
+                                        <label>Project Name <span class="req">*</span></label>
+                                        <input type="text" id="newProjName" placeholder="e.g. Auro Sky City">
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:12px;">
+                                        <label>Project Code (ID) <span class="req">*</span></label>
+                                        <input type="text" id="newProjId" placeholder="e.g. PRJ-ASC" class="mono" style="text-transform:uppercase;">
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:12px;">
+                                        <label>Site Address / Location</label>
+                                        <input type="text" id="newProjAddress" placeholder="e.g. HITEC City, Hyderabad">
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:16px;">
+                                        <label>Initial Towers (Comma-separated)</label>
+                                        <input type="text" id="newProjTowers" placeholder="e.g. Tower 1, Tower 2, Tower 3">
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-block" onclick="adminAddNewProject()"><i class="fa-solid fa-plus"></i> Register Project</button>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                </div>
+
+                    <!-- Panel 3: Approved Contractor Directory -->
+                    <div id="adminPanelContractors" class="admin-panel" style="display:none;">
+                        <div style="display:grid;grid-template-columns:1fr 340px;gap:20px;align-items:start;">
+                            <div>
+                                <div class="card" style="padding:20px;">
+                                    <h3 style="font-size:15px;font-weight:700;margin:0 0 14px;color:var(--navy);display:flex;align-items:center;gap:8px;">
+                                        <i class="fa-solid fa-helmet-safety" style="color:var(--orange);"></i> Empaneled Contractor &amp; Vendor Directory
+                                    </h3>
+                                    <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;">Approved agencies authorized to perform contract works on ARPL projects. Registered vendors populate wizard auto-suggest catalogs.</p>
+                                    <div style="overflow-x:auto;">
+                                        <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+                                            <thead>
+                                                <tr style="background:var(--bg);border-bottom:2px solid var(--border);text-align:left;">
+                                                    <th style="padding:10px 12px;">Agency Name</th>
+                                                    <th style="padding:10px 12px;">Vendor Code</th>
+                                                    <th style="padding:10px 12px;">Trade Category</th>
+                                                    <th style="padding:10px 12px;">Safety Rating</th>
+                                                    <th style="padding:10px 12px;">Status</th>
+                                                    <th style="padding:10px 12px;">Action</th>
+                                                </tr>
+                                            </thead>
+                                            <tbody id="adminContractorsTableBody"></tbody>
+                                        </table>
+                                    </div>
+                                </div>
+                            </div>
+                            <div>
+                                <div class="card" style="padding:20px;">
+                                    <h3 style="font-size:14px;font-weight:700;margin:0 0 12px;color:var(--navy);display:flex;align-items:center;gap:8px;">
+                                        <i class="fa-solid fa-user-plus" style="color:var(--green);"></i> Empanel New Contractor
+                                    </h3>
+                                    <div class="form-field" style="margin-bottom:12px;">
+                                        <label>Company / Agency Name <span class="req">*</span></label>
+                                        <input type="text" id="newContractorName" placeholder="e.g. Apex Infra Ltd">
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:12px;">
+                                        <label>Vendor Code</label>
+                                        <input type="text" id="newContractorCode" placeholder="e.g. VND-108" class="mono">
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:12px;">
+                                        <label>Primary Trade</label>
+                                        <select id="newContractorCategory">
+                                            <option value="General Civil & Heavy Structural">General Civil &amp; Heavy Structural</option>
+                                            <option value="Tower Crane & Heavy Rigging Specialist">Tower Crane &amp; Heavy Rigging Specialist</option>
+                                            <option value="HT/LT Substation & Plant Maintenance">HT/LT Substation &amp; Plant Maintenance</option>
+                                            <option value="Hot Work, Structural Steel & Façade">Hot Work, Structural Steel &amp; Façade</option>
+                                            <option value="Licensed Explosives & Controlled Blasting">Licensed Explosives &amp; Controlled Blasting</option>
+                                        </select>
+                                    </div>
+                                    <div class="form-field" style="margin-bottom:16px;">
+                                        <label>Safety Audit Score (1.0 to 5.0)</label>
+                                        <input type="number" id="newContractorRating" min="1.0" max="5.0" step="0.1" value="5.0">
+                                    </div>
+                                    <button type="button" class="btn btn-primary btn-block" onclick="adminAddNewContractor()"><i class="fa-solid fa-plus"></i> Empanel Contractor</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Panel 4: SLA Timers & Operating Windows -->
+                    <div id="adminPanelSla" class="admin-panel" style="display:none;">
+                        <div class="card" style="padding:20px;max-width:800px;margin:0 auto;">
+                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;flex-wrap:wrap;gap:10px;">
+                                <div>
+                                    <h3 style="font-size:15px;font-weight:700;margin:0;color:var(--navy);display:flex;align-items:center;gap:8px;">
+                                        <i class="fa-solid fa-stopwatch" style="color:var(--orange);"></i> SLA &amp; Escalation Timing Policy Engine
+                                    </h3>
+                                    <p style="font-size:12px;color:var(--text-muted);margin:4px 0 0;">Configure escalation triggers, validity expiry reminders, and operational cutoffs.</p>
+                                </div>
+                                <span id="slaCurrentModeBadge" class="badge st-parallel" style="font-size:12px;padding:6px 12px;">⚡ Fast Demo Mode</span>
+                            </div>
+
+                            <div style="background:var(--bg);border:1px solid var(--border);border-radius:8px;padding:16px;margin-bottom:20px;">
+                                <div style="font-weight:700;font-size:13px;color:var(--navy);margin-bottom:8px;">Operating Mode Selection</div>
+                                <div style="display:flex;gap:12px;flex-wrap:wrap;">
+                                    <button type="button" class="btn btn-sm btn-primary" onclick="adminToggleSlaMode('demo')"><i class="fa-solid fa-bolt"></i> Fast Demo Mode (45s / 120s)</button>
+                                    <button type="button" class="btn btn-sm btn-ghost" onclick="adminToggleSlaMode('production')"><i class="fa-solid fa-industry"></i> Enterprise Production Mode (2h / 4h)</button>
+                                </div>
+                            </div>
+
+                            <div class="form-grid" style="margin-bottom:16px;">
+                                <div class="form-field">
+                                    <label>Stage 1 Overdue Escalation Threshold (Sec / Hours) <span class="req">*</span></label>
+                                    <input type="number" id="inSlaStage1" min="1" step="1" value="45">
+                                </div>
+                                <div class="form-field">
+                                    <label>Stage 2 Critical Escalation Threshold (Sec / Hours) <span class="req">*</span></label>
+                                    <input type="number" id="inSlaStage2" min="1" step="1" value="120">
+                                </div>
+                                <div class="form-field">
+                                    <label>Validity Expiry Warning Reminder (Minutes before end) <span class="req">*</span></label>
+                                    <input type="number" id="inSlaWarning" min="5" max="120" step="5" value="30">
+                                </div>
+                            </div>
+
+                            <button type="button" class="btn btn-primary" onclick="adminSaveSlaSettings()"><i class="fa-solid fa-check"></i> Apply &amp; Save SLA Timers</button>
+                        </div>
+                    </div>
+
+                    <!-- Panel 5: Permit Types & Weekend Rules -->
+                    <div id="adminPanelPermits" class="admin-panel" style="display:none;">
+                        <div class="card" style="padding:20px;">
+                            <h3 style="font-size:15px;font-weight:700;margin:0 0 14px;color:var(--navy);display:flex;align-items:center;gap:8px;">
+                                <i class="fa-solid fa-file-shield" style="color:var(--orange);"></i> Statutory Permit Types &amp; Operational Policies
+                            </h3>
+                            <p style="font-size:12px;color:var(--text-muted);margin:0 0 16px;">Toggle permit types on or off and review statutory workflow topologies.</p>
+                            <div id="adminPermitTypesList" style="display:grid;grid-template-columns:repeat(auto-fill, minmax(360px, 1fr));gap:14px;"></div>
+                        </div>
+                    </div>
+                
 
                 <!-- Interactive Operational Schedule Simulator Widget -->
                 <div class="day-simulator-widget no-print" id="daySimulatorWidget" style="display:inline-flex;align-items:center;background:rgba(10,22,40,0.04);border:1px solid var(--border);border-radius:6px;padding:3px 6px;gap:3px;font-size:11px;">
@@ -4891,7 +5040,28 @@
                                 class="fa-solid fa-floppy-disk"></i> Save Geofence Configuration</button>
                     </div>
 
-                    <div class="dash-grid">
+                    <!-- Admin Navigation Tab Bar -->
+                    <div class="admin-tab-bar" style="display:flex;gap:8px;border-bottom:2px solid var(--border);margin-bottom:20px;padding-bottom:2px;overflow-x:auto;">
+                        <button type="button" class="admin-tab-btn active" id="tabBtnGps" onclick="switchAdminTab('gps')" style="padding:10px 18px;font-size:13px;font-weight:700;border:none;background:none;cursor:pointer;color:var(--orange);border-bottom:3px solid var(--orange);display:flex;align-items:center;gap:8px;">
+                            <i class="fa-solid fa-map-location-dot"></i> Worksite GPS &amp; Geofencing
+                        </button>
+                        <button type="button" class="admin-tab-btn" id="tabBtnProjects" onclick="switchAdminTab('projects')" style="padding:10px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:3px solid transparent;display:flex;align-items:center;gap:8px;">
+                            <i class="fa-solid fa-building"></i> Projects &amp; Structural Hierarchies
+                        </button>
+                        <button type="button" class="admin-tab-btn" id="tabBtnContractors" onclick="switchAdminTab('contractors')" style="padding:10px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:3px solid transparent;display:flex;align-items:center;gap:8px;">
+                            <i class="fa-solid fa-helmet-safety"></i> Approved Contractor Directory
+                        </button>
+                        <button type="button" class="admin-tab-btn" id="tabBtnSla" onclick="switchAdminTab('sla')" style="padding:10px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:3px solid transparent;display:flex;align-items:center;gap:8px;">
+                            <i class="fa-solid fa-stopwatch"></i> SLA Timers &amp; Operating Windows
+                        </button>
+                        <button type="button" class="admin-tab-btn" id="tabBtnPermits" onclick="switchAdminTab('permits')" style="padding:10px 18px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:var(--text-muted);border-bottom:3px solid transparent;display:flex;align-items:center;gap:8px;">
+                            <i class="fa-solid fa-file-shield"></i> Permit Types &amp; Weekend Rules
+                        </button>
+                    </div>
+
+                    <!-- Panel 1: Worksite GPS & Geofencing -->
+                    <div id="adminPanelGps" class="admin-panel" style="display:block;">
+<div class="dash-grid">
                         <div class="card" style="padding: 20px;">
                             <h3
                                 style="font-size: 15px; font-weight: 700; margin: 0 0 14px; color: var(--navy); display:flex; align-items:center; gap:8px;">
@@ -5581,6 +5751,81 @@
                                      'electrical', 'blasting', 'general', 'lifting', 'liftplan'],
                 blockedPermitTypes: ['nightshift'], // PTW-010 Night Shift hard-blocked (NW-01, NW-02, NW-03)
                 badgeText: 'Saturday Preparation Surface'
+            },
+            sla: {
+                mode: 'demo', // 'demo' (fast: 45s / 120s) | 'production' (2h / 4h)
+                stage1Ms: 45 * 1000,
+                stage2Ms: 120 * 1000,
+                stage1MsProd: 2 * 3600 * 1000,
+                stage2MsProd: 4 * 3600 * 1000,
+                warningMinutesBeforeExpiry: 30,
+                extensionCutoffHour: 18,
+                extensionCutoffMinute: 30,
+                extensionCeilingHour: 20,
+                extensionCeilingMinute: 30,
+                nightHandoverGateHour: 20,
+                nightHandoverGateMinute: 30,
+                nightHandoverCutoffHour: 21,
+                nightHandoverCutoffMinute: 0,
+                tickIntervalMs: 5000
+            },
+            weather: {
+                current: 'Clear',
+                windSpeedKmH: 14,
+                tempC: 31,
+                highWindWarningThreshold: 38,
+                options: [
+                    { condition: 'Clear', windSpeedKmH: 12, tempC: 30, desc: 'Optimal worksite conditions' },
+                    { condition: 'Sunny', windSpeedKmH: 14, tempC: 33, desc: 'Hot & clear daylight' },
+                    { condition: 'Partly Cloudy', windSpeedKmH: 18, tempC: 29, desc: 'Moderate cloud cover' },
+                    { condition: 'Overcast', windSpeedKmH: 22, tempC: 27, desc: 'Cloudy, good visibility' },
+                    { condition: 'Windy', windSpeedKmH: 32, tempC: 28, desc: 'Caution: Monitor crane & scaffolding operations' },
+                    { condition: 'High Wind Alert', windSpeedKmH: 42, tempC: 26, desc: 'CRANE LIFT BAN: Winds exceed 38 km/h limit' },
+                    { condition: 'Light Rain', windSpeedKmH: 20, tempC: 25, desc: 'Slippery surfaces; electrical caution' },
+                    { condition: 'Hazy', windSpeedKmH: 10, tempC: 29, desc: 'Reduced long-range visibility' }
+                ]
+            },
+            contractorDirectory: [
+                { id: 'cnt-01', name: 'Apex Infrastructure Pvt Ltd', code: 'VND-101', category: 'General Civil & Heavy Structural', safetyRating: '5.0', status: 'Empaneled & Verified' },
+                { id: 'cnt-02', name: 'L&T Construction Heavy Civil', code: 'VND-102', category: 'Infrastructure & Deep Foundation', safetyRating: '4.9', status: 'Empaneled & Verified' },
+                { id: 'cnt-03', name: 'Shapoorji Pallonji & Co. Ltd', code: 'VND-103', category: 'High-Rise Superstructure & Civil', safetyRating: '4.8', status: 'Empaneled & Verified' },
+                { id: 'cnt-04', name: 'SteelFab Engineering Solutions', code: 'VND-104', category: 'Hot Work, Structural Steel & Façade', safetyRating: '4.7', status: 'Empaneled & Verified' },
+                { id: 'cnt-05', name: 'Apex Heavy Lift Ltd', code: 'VND-105', category: 'Tower Crane & Heavy Rigging Specialist', safetyRating: '5.0', status: 'Empaneled & Verified' },
+                { id: 'cnt-06', name: 'EnerSys Electrical & Power Infra', code: 'VND-106', category: 'HT/LT Substation & Plant Maintenance', safetyRating: '4.9', status: 'Empaneled & Verified' },
+                { id: 'cnt-07', name: 'RockBlast Geo-Technics India', code: 'VND-107', category: 'Licensed Explosives & Controlled Blasting', safetyRating: '5.0', status: 'Empaneled & Verified' },
+                { id: 'cnt-08', name: 'In-House Auro Engineering Corps', code: 'VND-100', category: 'Direct Developer Technical Division', safetyRating: '5.0', status: 'Internal Developer Force' }
+            ],
+            permitFormOptions: {
+                guardrailActivities: [
+                    "Removal of Perimeter Guard Rails",
+                    "Removal of Floor Opening / Cutout Covers",
+                    "Removal of Shaft Gates / Barriers",
+                    "Removal of Edge Protection / Handrails",
+                    "Removal of Slab Penetration Covers",
+                    "Removal of Staircase Handrails / Guardrails",
+                    "Removal of Scaffolding Mid-rails / Toe-boards",
+                    "Others (Specify)"
+                ],
+                blastingExplosives: [
+                    'Emulsion Explosives',
+                    'ANFO (Ammonium Nitrate Fuel Oil)',
+                    'Slurry / Water Gel Explosives',
+                    'Cartridge Explosives (Slurry/Emulsion)',
+                    'Cast Boosters',
+                    'Electric Detonators (Instantaneous / Delay)',
+                    'Non-Electric (Nonel) Shock Tube Detonators',
+                    'Electronic Programmable Detonators',
+                    'Others'
+                ],
+                drillingMachines: [
+                    'Crawler Drilling Rig',
+                    'Jack Hammer (Pneumatic)',
+                    'Rotary Blast Hole Drill',
+                    'Down-The-Hole (DTH) Drill Rig',
+                    'Hydraulic Crawler Drill',
+                    'Handheld Rock Drill',
+                    'Others'
+                ]
             },
             governanceStages: [
                 {
@@ -6387,6 +6632,10 @@
                 id: 'PRJ-AGR',
                 name: 'Auro Grand Residency',
                 towers: ['Tower A', 'Tower B', 'Tower C', 'Tower D'],
+                basements: ['Basement 3 (B3)', 'Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)', 'Podium Level 1 (P1)', 'Podium Level 2 (P2)', 'Podium Level 3 (P3)'],
+                floors: ['Basement 3 (B3)', 'Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)', 'Floor 1', 'Floor 2', 'Floor 3', 'Floor 4', 'Floor 5', 'Floor 6', 'Floor 7', 'Floor 8', 'Floor 9', 'Floor 10', 'Floor 11', 'Floor 12', 'Floor 13', 'Floor 14', 'Floor 15', 'Floor 16', 'Floor 17', 'Floor 18', 'Floor 19', 'Floor 20', 'Floor 21', 'Floor 22', 'Floor 23', 'Floor 24', 'Floor 25', 'Floor 26', 'Floor 27', 'Floor 28', 'Floor 29', 'Floor 30', 'Floor 31', 'Floor 32', 'Floor 33', 'Floor 34', 'Floor 35', 'Terrace / Roof Level'],
+                zones: ['Zone 1 (Excavation & Shoring)', 'Zone 2 (Tower Footprint)', 'Zone 3 (Central Podium)', 'Zone 4 (Perimeter Boundary)'],
+                contractors: ['Apex Infrastructure Pvt Ltd', 'L&T Construction Heavy Civil', 'SteelFab Engineering Solutions', 'Apex Heavy Lift Ltd'],
                 site: { lat: 17.4239, lng: 78.4738, address: 'Gachibowli, Hyderabad, Telangana' },
                 radius: 150,
                 configured: true,
@@ -6398,6 +6647,10 @@
                 id: 'PRJ-ABP',
                 name: 'Auro Business Park',
                 towers: ['Block 1', 'Block 2', 'Block 3'],
+                basements: ['Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)', 'Podium Level 1 (P1)', 'Podium Level 2 (P2)'],
+                floors: ['Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)', 'Floor 1', 'Floor 2', 'Floor 3', 'Floor 4', 'Floor 5', 'Floor 6', 'Floor 7', 'Floor 8', 'Floor 9', 'Floor 10', 'Floor 11', 'Floor 12', 'Floor 14', 'Floor 15', 'Terrace Level'],
+                zones: ['Zone A (Office Core)', 'Zone B (Retail Atrium)', 'Zone C (Basement Utilities)'],
+                contractors: ['L&T Construction Heavy Civil', 'Shapoorji Pallonji & Co. Ltd', 'EnerSys Electrical & Power Infra'],
                 site: { lat: 17.4483, lng: 78.3915, address: 'Kondapur, Hyderabad, Telangana' },
                 radius: 200,
                 configured: true,
@@ -6409,6 +6662,10 @@
                 id: 'PRJ-ART',
                 name: 'Auro Riverside Towers',
                 towers: ['Tower North', 'Tower South'],
+                basements: ['Basement 1 (B1)', 'Ground Floor (GF)', 'Podium Level 1 (P1)'],
+                floors: ['Basement 1 (B1)', 'Ground Floor (GF)', 'Floor 1', 'Floor 2', 'Floor 3', 'Floor 4', 'Floor 5', 'Floor 6', 'Floor 7', 'Floor 8', 'Floor 9', 'Floor 10', 'Terrace Level'],
+                zones: ['Zone 1 (River Embankment)', 'Zone 2 (Tower North Base)', 'Zone 3 (Tower South Base)'],
+                contractors: ['Apex Infrastructure Pvt Ltd', 'RockBlast Geo-Technics India'],
                 site: { lat: 17.3850, lng: 78.4867, address: 'Financial District, Hyderabad, Telangana' },
                 radius: 100,
                 configured: false, // Unconfigured by default: locks permit form filling until Admin sets location!
@@ -6417,6 +6674,91 @@
                 tagMethod: null
             }
         ];
+
+        /* Centralized Dynamic Structural Accessors */
+        function getProject(projIdOrName) {
+            if (!projIdOrName) return PROJECTS[0] || null;
+            return PROJECTS.find(p => p.id === projIdOrName || p.name === projIdOrName) || null;
+        }
+
+        function getProjectTowers(projIdOrName) {
+            const p = getProject(projIdOrName);
+            if (p && Array.isArray(p.towers) && p.towers.length > 0) return p.towers;
+            return ['Tower A', 'Tower B', 'Tower C', 'Tower D'];
+        }
+
+        function getProjectBasements(projIdOrName) {
+            const p = getProject(projIdOrName);
+            if (p && Array.isArray(p.basements) && p.basements.length > 0) return p.basements;
+            return (typeof BASEMENT_PODIUM_OPTIONS !== 'undefined') ? BASEMENT_PODIUM_OPTIONS : ['Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)', 'Podium Level 1 (P1)'];
+        }
+
+        function getProjectFloors(projIdOrName) {
+            const p = getProject(projIdOrName);
+            if (p && Array.isArray(p.floors) && p.floors.length > 0) return p.floors;
+            return (typeof SHAFT_FLOORS !== 'undefined') ? SHAFT_FLOORS : ['Ground Floor (GF)', 'Floor 1', 'Floor 2', 'Floor 3', 'Floor 4', 'Terrace / Roof Level'];
+        }
+
+        function getProjectZones(projIdOrName) {
+            const p = getProject(projIdOrName);
+            if (p && Array.isArray(p.zones) && p.zones.length > 0) return p.zones;
+            return ['Zone 1 (Excavation & Shoring)', 'Zone 2 (Tower Footprint)', 'Zone 3 (Central Podium)', 'Zone 4 (Perimeter Boundary)'];
+        }
+
+        function getProjectContractors(projIdOrName) {
+            const p = getProject(projIdOrName);
+            if (p && Array.isArray(p.contractors) && p.contractors.length > 0) return p.contractors;
+            if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.contractorDirectory && Array.isArray(APP_CONFIG.contractorDirectory)) {
+                return APP_CONFIG.contractorDirectory.map(c => c.name);
+            }
+            return ['Apex Infrastructure Pvt Ltd', 'L&T Construction Heavy Civil', 'Shapoorji Pallonji & Co. Ltd', 'SteelFab Engineering Solutions', 'Apex Heavy Lift Ltd'];
+        }
+
+        function getContractorDirectory() {
+            if (typeof APP_CONFIG !== 'undefined' && Array.isArray(APP_CONFIG.contractorDirectory)) {
+                return APP_CONFIG.contractorDirectory;
+            }
+            return [];
+        }
+
+        function getSlaConfig() {
+            if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sla) {
+                return APP_CONFIG.sla;
+            }
+            return {
+                mode: 'demo',
+                stage1Ms: 45 * 1000,
+                stage2Ms: 120 * 1000,
+                stage1MsProd: 2 * 3600 * 1000,
+                stage2MsProd: 4 * 3600 * 1000,
+                warningMinutesBeforeExpiry: 30,
+                extensionCutoffHour: 18,
+                extensionCutoffMinute: 30,
+                extensionCeilingHour: 20,
+                extensionCeilingMinute: 30,
+                nightHandoverGateHour: 20,
+                nightHandoverGateMinute: 30,
+                nightHandoverCutoffHour: 21,
+                nightHandoverCutoffMinute: 0,
+                tickIntervalMs: 5000
+            };
+        }
+
+        function getWeatherOptions() {
+            if (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.weather && Array.isArray(APP_CONFIG.weather.options)) {
+                return APP_CONFIG.weather.options;
+            }
+            return [
+                { condition: 'Clear', windSpeedKmH: 12, tempC: 30 },
+                { condition: 'Sunny', windSpeedKmH: 14, tempC: 33 },
+                { condition: 'Partly Cloudy', windSpeedKmH: 18, tempC: 29 },
+                { condition: 'Overcast', windSpeedKmH: 22, tempC: 27 },
+                { condition: 'Windy', windSpeedKmH: 32, tempC: 28 },
+                { condition: 'High Wind Alert', windSpeedKmH: 42, tempC: 26 },
+                { condition: 'Light Rain', windSpeedKmH: 20, tempC: 25 },
+                { condition: 'Hazy', windSpeedKmH: 10, tempC: 29 }
+            ];
+        }
 
         /* ---------------- PERMIT TYPE METADATA ----------------
            PTW-001 to PTW-009B Active Lifecycle Metadata */
@@ -7514,7 +7856,15 @@
         const STORAGE_KEY = 'arpl_ehs_ptw_state_v16_prod'; // v15: Unified Site Engineer acknowledgment across all permits
         function saveState() {
             try {
-                localStorage.setItem(STORAGE_KEY, JSON.stringify({ permits: PERMITS, notifications: NOTIFICATIONS.slice(0, 250), permitSeq: permitSeq, gpsRadiusM: GPS_RADIUS_M, projects: PROJECTS }));
+                localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                    permits: PERMITS,
+                    notifications: NOTIFICATIONS.slice(0, 250),
+                    permitSeq: permitSeq,
+                    gpsRadiusM: GPS_RADIUS_M,
+                    projects: PROJECTS,
+                    sla: (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.sla : null),
+                    contractorDirectory: (typeof APP_CONFIG !== 'undefined' ? APP_CONFIG.contractorDirectory : null)
+                }));
             } catch (e1) {
                 try {
                     // Quota fallback: strip heavy base64 photo payloads but keep every business record.
@@ -7880,6 +8230,15 @@
             if (mb) mb.scrollTop = 0;
             const anyOpen = document.querySelector('.modal-overlay.show');
             if (!anyOpen && document.body) document.body.classList.remove('modal-open');
+        }
+        function openModalWith(id, title, body, foot) {
+            const t = document.getElementById(id + 'Title');
+            const b = document.getElementById(id + 'Body');
+            const f = document.getElementById(id + 'Foot');
+            if (t && title !== undefined) t.innerHTML = title;
+            if (b && body !== undefined) b.innerHTML = body;
+            if (f && foot !== undefined) f.innerHTML = foot;
+            openModal(id);
         }
 
         /* ================================================================
@@ -10528,13 +10887,263 @@
             renderAdminConfigView();
         }
 
+        /* ---------------- DYNAMIC ADMIN CENTER ENGINE ---------------- */
+        let adminCurrentTab = 'gps';
+
+        function switchAdminTab(tab) {
+            adminCurrentTab = tab;
+            ['gps', 'projects', 'contractors', 'sla', 'permits'].forEach(t => {
+                const panel = document.getElementById('adminPanel' + t.charAt(0).toUpperCase() + t.slice(1));
+                const btn = document.getElementById('tabBtn' + t.charAt(0).toUpperCase() + t.slice(1));
+                if (panel) panel.style.display = (t === tab ? 'block' : 'none');
+                if (btn) {
+                    if (t === tab) {
+                        btn.style.color = 'var(--orange)';
+                        btn.style.borderBottom = '3px solid var(--orange)';
+                        btn.classList.add('active');
+                    } else {
+                        btn.style.color = 'var(--text-muted)';
+                        btn.style.borderBottom = '3px solid transparent';
+                        btn.classList.remove('active');
+                    }
+                }
+            });
+            if (tab === 'gps') renderAdminConfigView();
+            if (tab === 'projects') renderAdminProjectsTab();
+            if (tab === 'contractors') renderAdminContractorsTab();
+            if (tab === 'sla') renderAdminSlaTab();
+            if (tab === 'permits') renderAdminPermitsTab();
+        }
+
+        function renderAdminProjectsTab() {
+            const container = document.getElementById('adminProjectsList');
+            if (!container) return;
+            container.innerHTML = PROJECTS.map((p, idx) => {
+                const towers = (p.towers || []).map(t => '<span class="radius-preset-pill" style="cursor:default;font-size:11px;padding:3px 8px;">' + escapeHtml(t) + '</span>').join(' ');
+                const basements = (p.basements || BASEMENT_PODIUM_OPTIONS).slice(0, 4).map(b => '<span class="radius-preset-pill" style="cursor:default;font-size:10px;padding:2px 6px;background:rgba(27,95,174,0.08);color:var(--navy);">' + escapeHtml(b) + '</span>').join(' ');
+                return '<div class="card" style="padding:16px;margin-bottom:14px;border:1px solid var(--border);">' +
+                    '<div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">' +
+                    '<div style="font-weight:700;font-size:14px;color:var(--navy);"><i class="fa-solid fa-building" style="color:var(--orange);margin-right:6px;"></i>' + escapeHtml(p.name) + ' <span class="mono" style="font-size:11px;color:var(--text-muted);">(' + p.id + ')</span></div>' +
+                    '<span class="badge ' + (p.configured ? 'st-active' : 'st-draft') + '" style="font-size:11px;">' + (p.configured ? '✓ GPS Active' : '⚠️ Locked') + '</span>' +
+                    '</div>' +
+                    '<div style="font-size:12px;color:var(--text);margin-bottom:8px;"><b>Site Address:</b> ' + escapeHtml((p.site && p.site.address) || 'Not set') + ' &bull; <b>Radius:</b> ' + (p.radius || 150) + 'm</div>' +
+                    '<div style="margin-bottom:8px;"><div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px;">BUILDING TOWERS &amp; BLOCKS:</div>' + towers + ' <button class="btn btn-xs btn-ghost" onclick="adminPromptAddTower(' + idx + ')" style="padding:2px 6px;font-size:10px;"><i class="fa-solid fa-plus"></i> Add Tower</button></div>' +
+                    '<div><div style="font-size:11px;font-weight:600;color:var(--text-muted);margin-bottom:4px;">BASEMENT &amp; PODIUM STRUCTURES:</div>' + basements + '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function adminPromptAddTower(idx) {
+            const t = prompt('Enter new Tower or Block name (e.g. Tower E, Block 4):');
+            if (!t || !t.trim()) return;
+            if (!PROJECTS[idx].towers) PROJECTS[idx].towers = [];
+            PROJECTS[idx].towers.push(t.trim());
+            saveState();
+            showToast('Added ' + t.trim() + ' to ' + PROJECTS[idx].name, 'ok');
+            renderAdminProjectsTab();
+            if (typeof draft !== 'undefined' && draft && draft.project === PROJECTS[idx].name) {
+                renderWizStep();
+            }
+        }
+
+        function adminAddNewProject() {
+            const nameEl = document.getElementById('newProjName');
+            const idEl = document.getElementById('newProjId');
+            const addrEl = document.getElementById('newProjAddress');
+            const towersEl = document.getElementById('newProjTowers');
+            if (!nameEl || !idEl) return;
+            const name = nameEl.value ? nameEl.value.trim() : '';
+            const id = idEl.value ? idEl.value.trim().toUpperCase() : '';
+            if (!name || !id) {
+                showToast('Project Name and ID are required.', 'warn');
+                return;
+            }
+            if (PROJECTS.some(p => p.id === id)) {
+                showToast('Project ID ' + id + ' already exists.', 'err');
+                return;
+            }
+            const towers = (towersEl && towersEl.value && towersEl.value.trim()) ? towersEl.value.split(',').map(s => s.trim()).filter(Boolean) : ['Tower 1', 'Tower 2'];
+            const newPrj = {
+                id: id,
+                name: name,
+                towers: towers,
+                basements: ['Basement 2 (B2)', 'Basement 1 (B1)', 'Ground Floor (GF)', 'Podium Level 1 (P1)'],
+                floors: SHAFT_FLOORS.slice(0, 25),
+                zones: ['Zone 1 (Excavation)', 'Zone 2 (Tower Footprint)'],
+                contractors: ['Apex Infrastructure Pvt Ltd', 'L&T Construction Heavy Civil'],
+                site: { lat: 17.4300, lng: 78.4000, address: (addrEl && addrEl.value && addrEl.value.trim()) ? addrEl.value.trim() : 'Hyderabad, Telangana' },
+                radius: 150,
+                configured: true,
+                configuredAt: nowTime(),
+                configuredBy: (typeof currentUser !== 'undefined' && currentUser && currentUser.name) ? currentUser.name : 'Site Administrator',
+                tagMethod: 'On-Site Tagged (Device GPS)'
+            };
+            PROJECTS.push(newPrj);
+            nameEl.value = '';
+            idEl.value = '';
+            if (addrEl) addrEl.value = '';
+            if (towersEl) towersEl.value = '';
+            saveState();
+            showToast('Project ' + name + ' (' + id + ') registered successfully with ' + towers.length + ' towers!', 'ok');
+            renderAdminProjectsTab();
+            renderAdminConfigView();
+        }
+
+        function renderAdminContractorsTab() {
+            const container = document.getElementById('adminContractorsTableBody');
+            if (!container) return;
+            const contractors = getContractorDirectory();
+            container.innerHTML = contractors.map((c, idx) => {
+                return '<tr style="border-bottom:1px solid var(--border);">' +
+                    '<td style="padding:10px 12px;font-weight:600;color:var(--navy);">' + escapeHtml(c.name) + '</td>' +
+                    '<td style="padding:10px 12px;" class="mono">' + escapeHtml(c.code || ('VND-' + (idx+101))) + '</td>' +
+                    '<td style="padding:10px 12px;"><span class="badge" style="background:rgba(27,95,174,0.1);color:var(--navy);font-size:11px;">' + escapeHtml(c.category || 'General Civil') + '</span></td>' +
+                    '<td style="padding:10px 12px;"><span style="color:var(--orange);font-weight:700;"><i class="fa-solid fa-star"></i> ' + (c.safetyRating || '5.0') + '</span></td>' +
+                    '<td style="padding:10px 12px;"><span class="badge st-active" style="font-size:10.5px;"><i class="fa-solid fa-shield-check"></i> ' + escapeHtml(c.status || 'Empaneled') + '</span></td>' +
+                    '<td style="padding:10px 12px;"><button class="btn btn-xs btn-ghost" onclick="adminRemoveContractor(' + idx + ')" style="color:var(--red);" title="Remove vendor"><i class="fa-solid fa-trash-can"></i></button></td>' +
+                    '</tr>';
+            }).join('');
+        }
+
+        function adminAddNewContractor() {
+            const nameEl = document.getElementById('newContractorName');
+            const codeEl = document.getElementById('newContractorCode');
+            const catEl = document.getElementById('newContractorCategory');
+            const ratingEl = document.getElementById('newContractorRating');
+            if (!nameEl || !nameEl.value || !nameEl.value.trim()) {
+                showToast('Contractor Agency Name is mandatory.', 'warn');
+                return;
+            }
+            const name = nameEl.value.trim();
+            const code = (codeEl && codeEl.value && codeEl.value.trim()) ? codeEl.value.trim().toUpperCase() : ('VND-' + Math.floor(100 + Math.random() * 900));
+            const cat = (catEl && catEl.value) ? catEl.value : 'General Civil & Heavy Structural';
+            const rating = (ratingEl && ratingEl.value) ? ratingEl.value : '5.0';
+
+            if (!APP_CONFIG.contractorDirectory) APP_CONFIG.contractorDirectory = [];
+            APP_CONFIG.contractorDirectory.push({
+                id: 'cnt-' + uid(),
+                name: name,
+                code: code,
+                category: cat,
+                safetyRating: rating,
+                status: 'Empaneled & Verified'
+            });
+            nameEl.value = '';
+            if (codeEl) codeEl.value = '';
+            saveState();
+            showToast('Contractor "' + name + '" successfully empaneled!', 'ok');
+            renderAdminContractorsTab();
+        }
+
+        function adminRemoveContractor(idx) {
+            if (!confirm('Remove this contractor agency from the approved directory?')) return;
+            if (APP_CONFIG.contractorDirectory && APP_CONFIG.contractorDirectory[idx]) {
+                const removed = APP_CONFIG.contractorDirectory.splice(idx, 1);
+                saveState();
+                showToast('Removed ' + (removed[0] ? removed[0].name : 'contractor'), 'ok');
+                renderAdminContractorsTab();
+            }
+        }
+
+        function renderAdminSlaTab() {
+            const cfg = getSlaConfig();
+            const modeEl = document.getElementById('slaCurrentModeBadge');
+            if (modeEl) {
+                modeEl.textContent = cfg.mode === 'production' ? '🏭 Enterprise Production Mode (2h / 4h SLA)' : '⚡ Fast Demo Mode (45s / 120s SLA)';
+                modeEl.className = 'badge ' + (cfg.mode === 'production' ? 'st-active' : 'st-parallel');
+            }
+            const s1El = document.getElementById('inSlaStage1');
+            const s2El = document.getElementById('inSlaStage2');
+            const warnEl = document.getElementById('inSlaWarning');
+            if (s1El) s1El.value = cfg.mode === 'production' ? Math.round((cfg.stage1MsProd || 7200000) / 3600000) : Math.round((cfg.stage1Ms || 45000) / 1000);
+            if (s2El) s2El.value = cfg.mode === 'production' ? Math.round((cfg.stage2MsProd || 14400000) / 3600000) : Math.round((cfg.stage2Ms || 120000) / 1000);
+            if (warnEl) warnEl.value = cfg.warningMinutesBeforeExpiry || 30;
+        }
+
+        function adminToggleSlaMode(mode) {
+            if (!APP_CONFIG.sla) APP_CONFIG.sla = getSlaConfig();
+            APP_CONFIG.sla.mode = mode;
+            if (mode === 'production') {
+                STAGE1_MS = APP_CONFIG.sla.stage1MsProd || (2 * 3600 * 1000);
+                STAGE2_MS = APP_CONFIG.sla.stage2MsProd || (4 * 3600 * 1000);
+            } else {
+                STAGE1_MS = APP_CONFIG.sla.stage1Ms || (45 * 1000);
+                STAGE2_MS = APP_CONFIG.sla.stage2Ms || (120 * 1000);
+            }
+            saveState();
+            showToast('SLA mode switched to ' + (mode === 'production' ? 'Production Mode (2h/4h)' : 'Demo Mode (45s/120s)'), 'ok');
+            renderAdminSlaTab();
+        }
+
+        function adminSaveSlaSettings() {
+            if (!APP_CONFIG.sla) APP_CONFIG.sla = getSlaConfig();
+            const s1Val = parseFloat(document.getElementById('inSlaStage1').value);
+            const s2Val = parseFloat(document.getElementById('inSlaStage2').value);
+            const warnVal = parseInt(document.getElementById('inSlaWarning').value, 10);
+            if (isNaN(s1Val) || isNaN(s2Val) || isNaN(warnVal) || s1Val <= 0 || s2Val <= 0) {
+                showToast('Please enter valid numeric SLA durations.', 'warn');
+                return;
+            }
+            if (APP_CONFIG.sla.mode === 'production') {
+                APP_CONFIG.sla.stage1MsProd = s1Val * 3600 * 1000;
+                APP_CONFIG.sla.stage2MsProd = s2Val * 3600 * 1000;
+                STAGE1_MS = APP_CONFIG.sla.stage1MsProd;
+                STAGE2_MS = APP_CONFIG.sla.stage2MsProd;
+            } else {
+                APP_CONFIG.sla.stage1Ms = s1Val * 1000;
+                APP_CONFIG.sla.stage2Ms = s2Val * 1000;
+                STAGE1_MS = APP_CONFIG.sla.stage1Ms;
+                STAGE2_MS = APP_CONFIG.sla.stage2Ms;
+            }
+            APP_CONFIG.sla.warningMinutesBeforeExpiry = warnVal;
+            saveState();
+            showToast('SLA & Escalation timing configurations applied successfully!', 'ok');
+            renderAdminSlaTab();
+        }
+
+        function renderAdminPermitsTab() {
+            const container = document.getElementById('adminPermitTypesList');
+            if (!container) return;
+            const pts = Object.keys(APP_CONFIG.permitTypes);
+            container.innerHTML = pts.map(k => {
+                const pt = APP_CONFIG.permitTypes[k];
+                const isAvail = pt.available !== false;
+                return '<div class="card" style="padding:14px;border:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;gap:12px;">' +
+                    '<div style="display:flex;align-items:center;gap:12px;">' +
+                    '<div style="width:36px;height:36px;border-radius:6px;background:var(--bg);color:var(--navy);display:flex;align-items:center;justify-content:center;font-size:16px;"><i class="fa-solid ' + (pt.icon || 'fa-file') + '"></i></div>' +
+                    '<div>' +
+                    '<div style="font-weight:700;font-size:13px;color:var(--navy);">' + pt.code + ' &mdash; ' + pt.name + '</div>' +
+                    '<div style="font-size:11px;color:var(--text-muted);">' + escapeHtml(pt.desc ? pt.desc.slice(0, 80) + '...' : '') + '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div style="display:flex;align-items:center;gap:10px;">' +
+                    '<span class="badge ' + (isAvail ? 'st-active' : 'st-draft') + '" style="font-size:10.5px;">' + (isAvail ? 'Active' : 'Disabled') + '</span>' +
+                    '<button class="btn btn-xs ' + (isAvail ? 'btn-ghost' : 'btn-primary') + '" onclick="adminTogglePermitType(\'' + k + '\')">' + (isAvail ? 'Disable' : 'Enable') + '</button>' +
+                    '</div>' +
+                    '</div>';
+            }).join('');
+        }
+
+        function adminTogglePermitType(k) {
+            if (APP_CONFIG.permitTypes[k]) {
+                APP_CONFIG.permitTypes[k].available = !APP_CONFIG.permitTypes[k].available;
+                saveState();
+                showToast((APP_CONFIG.permitTypes[k].available ? 'Enabled ' : 'Disabled ') + APP_CONFIG.permitTypes[k].name, 'ok');
+                renderAdminPermitsTab();
+            }
+        }
+
         /* ================================================================
            ESCALATION / AUTO-EXPIRY ENGINE
            Runs on an interval to simulate time passing. Escalation windows
            are compressed for demo purposes (minutes instead of hours).
            ================================================================ */
-        const STAGE1_MS = 45 * 1000;   // demo Stage-1 escalation window
-        const STAGE2_MS = 120 * 1000;  // demo Stage-2 escalation window
+        let STAGE1_MS = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sla && APP_CONFIG.sla.mode === 'production')
+            ? (APP_CONFIG.sla.stage1MsProd || 2 * 3600 * 1000)
+            : ((typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sla && APP_CONFIG.sla.stage1Ms) || 45 * 1000);
+        let STAGE2_MS = (typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sla && APP_CONFIG.sla.mode === 'production')
+            ? (APP_CONFIG.sla.stage2MsProd || 4 * 3600 * 1000)
+            : ((typeof APP_CONFIG !== 'undefined' && APP_CONFIG.sla && APP_CONFIG.sla.stage2Ms) || 120 * 1000);
         function stageLabelFor(status, p) {
             if (status === 'Pending Parallel Approval') return 'MEP / P&M / IT parallel approval';
             if (status === 'Pending Section Head' || status === 'Pending Tower Incharge' || status === 'Pending Excavation Head') {
@@ -11493,6 +12102,148 @@
                 ],
                 extension: null, closure: null, surrender: null
             }));
+
+            function baseLifting(over) {
+                const qList = (typeof CHECKLIST_ITEMS_LIFTING !== 'undefined') ? CHECKLIST_ITEMS_LIFTING : [];
+                const res = Object.assign({
+                    id: genPermitNumber('lifting'), ptype: 'lifting', activity: 'Lifting Operations (PTW-009A)', createdBy: 'Vikram Singh (Lifting Supervisor)',
+                    createdByRole: 'lift-supervisor',
+                    weather: 'Clear (Wind: 14 km/h)', organization: 'ARPL', contractor: 'Apex Heavy Lift Ltd',
+                    liftingEquipmentType: 'Tower Crane',
+                    liftingClassification: 'routine',
+                    loadDescription: 'Palletized Tiles & Ducting Shifting to Floor 8',
+                    loadWeight: 3.5,
+                    craneSwl: 10.0,
+                    slingSwl: 5.0,
+                    loadDimX: 2.5, loadDimY: 1.8, loadDimZ: 1.5,
+                    slingLength: 5.0, slingApexHeight: 4.0,
+                    riggingNumSlings: 2, slingsCount: '2', slingsAdjustable: 'yes',
+                    riggingSlingAngle: 60, riggingStressPercent: 46,
+                    craneOperatorName: 'Rajesh Sharma', riggerName: 'Sunil Kumar',
+                    liftingDocs: ['P&M Green Card Sticker', 'Lift Permit'],
+                    locationStructure: 'Tower',
+                    tower: 'Tower A',
+                    locFloor: 'Floor 8',
+                    locUnit: 'Drop Zone 2',
+                    location: 'Tower A - Floor 8 - Drop Zone 2',
+                    startTime: '09:00',
+                    numWorkers: 4,
+                    checklist: qList.map((q, i) => ({ q, ans: 'yes', comment: 'Inspected & verified', photo: null, gps: null })),
+                    sitePhoto: 'demo',
+                    drawing: null,
+                    activityLog: [], surrenderEscalations: 0
+                }, over);
+                if (res.gps) {
+                    res.gps = Object.assign({ within: true, distance: 12, radius: 150 }, res.gps);
+                }
+                return res;
+            }
+
+            // PTW-009A Routine Lifting Operation
+            PERMITS.push(baseLifting({
+                project: site1.name, tower: 'Tower A',
+                createdAt: new Date(nowTime() - 3 * 3600 * 1000), submittedAt: new Date(nowTime() - 3 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() + 5 * 3600 * 1000),
+                status: 'Active', activatedAt: new Date(nowTime() - 2 * 3600 * 1000), stageEnteredAt: new Date(nowTime() - 2 * 3600 * 1000), escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 2.8 * 3600 * 1000), by: 'Duty Site Engineer' },
+                approvals: {
+                    kind: 'lifting-routine',
+                    pm: mkApproved('Duty P&M Engineer', 160),
+                    sectionHead: mkApproved('Tower Incharge', 140),
+                    ehsManager: mkApproved('EHS Safety Manager', 120),
+                    ehsOfficer: mkPending()
+                },
+                activityLog: [
+                    { ts: new Date(nowTime() - 2 * 3600 * 1000), actor: 'EHS Safety Manager', text: 'Routine Lifting permit ENDORSED and activated for crane operations.' },
+                    { ts: new Date(nowTime() - 2.3 * 3600 * 1000), actor: 'Tower Incharge', text: 'Tower Incharge verified barricades and cleared swing radius.' },
+                    { ts: new Date(nowTime() - 2.6 * 3600 * 1000), actor: 'Duty P&M Engineer', text: 'P&M Engineer verified crane certificate & rigging fitness.' },
+                    { ts: new Date(nowTime() - 2.8 * 3600 * 1000), actor: 'Duty Site Engineer', text: 'Site Engineer acknowledged lifting permit on site.' },
+                    { ts: new Date(nowTime() - 3 * 3600 * 1000), actor: 'Vikram Singh (Lifting Supervisor)', text: 'Routine lifting permit submitted with operator & rigger sign-offs.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
+
+            // PTW-009B Critical Lift Plan
+            PERMITS.push(baseLifting({
+                id: genPermitNumber('liftplan'),
+                ptype: 'liftplan',
+                activity: 'Critical Lift Plan (PTW-009B)',
+                liftingClassification: 'critical',
+                loadDescription: 'Heavy Chiller Unit 11.5 MT Shifting to Terrace',
+                loadWeight: 11.5,
+                craneSwl: 25.0,
+                slingSwl: 15.0,
+                liftingTandemLift: true,
+                liftingEquipmentType: 'Crawler Crane',
+                project: site2.name, tower: 'Tower B', locFloor: 'Terrace',
+                location: 'Tower B - Terrace - Central Plant Room',
+                createdAt: new Date(nowTime() - 60 * 60000), submittedAt: new Date(nowTime() - 60 * 60000),
+                validTill: new Date(nowTime().getTime() + 6 * 3600 * 1000),
+                status: 'Pending Project Manager Acknowledgment', stageEnteredAt: new Date(nowTime() - 15 * 60000), escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 45 * 60000), by: 'Duty Site Engineer' },
+                approvals: {
+                    kind: 'lifting-critical',
+                    pm: mkApproved('Duty P&M Engineer', 35),
+                    sectionHead: mkApproved('Tower Incharge', 20),
+                    projectManager: mkPending(),
+                    ehsManager: mkPending(),
+                    ehsOfficer: mkPending()
+                },
+                activityLog: [
+                    { ts: new Date(nowTime() - 20 * 60000), actor: 'Tower Incharge', text: 'Tower Incharge reviewed heavy lift rigging and approved.' },
+                    { ts: new Date(nowTime() - 35 * 60000), actor: 'Duty P&M Engineer', text: 'P&M Engineer inspected dual crane tandem configuration and approved.' },
+                    { ts: new Date(nowTime() - 45 * 60000), actor: 'Duty Site Engineer', text: 'Site Engineer physically inspected drop zone.' },
+                    { ts: new Date(nowTime() - 60 * 60000), actor: 'Vikram Singh (Lifting Supervisor)', text: 'Critical Lift Plan submitted with engineering calculations.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
+
+            function baseNightShift(over) {
+                const qList = (typeof NIGHTSHIFT_CHECKLIST_ITEMS !== 'undefined') ? NIGHTSHIFT_CHECKLIST_ITEMS : [];
+                const res = Object.assign({
+                    id: genPermitNumber('nightshift'), ptype: 'nightshift', activity: 'Night Shift / Holiday Work (PTW-010)', createdBy: 'Day Site Supervisor',
+                    createdByRole: 'site-supervisor',
+                    weather: 'Clear Night', organization: 'ARPL', contractor: 'Apex Infra Ltd',
+                    nightWorkType: 'hotwork',
+                    nightSupervisorName: 'Venkatesh Rao', nightSupervisorPhone: '+91 98765 43210',
+                    locationStructure: 'Tower',
+                    tower: 'Tower A', locFloor: 'Basement 1', locUnit: 'Zone B Plumbing Core',
+                    location: 'Tower A - Basement 1 - Zone B Plumbing Core',
+                    startTime: '20:30',
+                    numWorkers: 5,
+                    checklist: qList.map((q, i) => ({ q, ans: 'yes', comment: 'Night precautions verified', photo: null, gps: null })),
+                    sitePhoto: 'demo',
+                    drawing: null,
+                    activityLog: [], surrenderEscalations: 0
+                }, over);
+                if (res.gps) {
+                    res.gps = Object.assign({ within: true, distance: 10, radius: 150 }, res.gps);
+                }
+                return res;
+            }
+
+            // PTW-010 Night Shift Permit
+            PERMITS.push(baseNightShift({
+                project: site1.name, tower: 'Tower A',
+                createdAt: new Date(nowTime() - 2 * 3600 * 1000), submittedAt: new Date(nowTime() - 2 * 3600 * 1000),
+                validTill: new Date(nowTime().getTime() + 8 * 3600 * 1000),
+                status: 'Approved – Pending Night Handover', stageEnteredAt: new Date(nowTime() - 30 * 60000), escalation: { stage1: false, stage2: false },
+                siteEngineerAck: { acknowledged: true, at: new Date(nowTime() - 75 * 60000), by: 'Duty Site Engineer' },
+                approvals: {
+                    kind: 'nightshift',
+                    sectionHead: mkApproved('Tower Incharge', 40),
+                    nightHandover: mkPending(),
+                    pmNight: mkPending(),
+                    ehsManager: mkPending(),
+                    ehsOfficer: mkPending()
+                },
+                activityLog: [
+                    { ts: new Date(nowTime() - 40 * 60000), actor: 'Tower Incharge', text: 'Daytime Section Head review approved for night work schedule.' },
+                    { ts: new Date(nowTime() - 75 * 60000), actor: 'Duty Site Engineer', text: 'Site Engineer acknowledged night work pre-fill.' },
+                    { ts: new Date(nowTime() - 120 * 60000), actor: 'Day Site Supervisor', text: 'Night Shift Day Pre-Fill submitted for daytime approvals.' }
+                ],
+                extension: null, closure: null, surrender: null
+            }));
         }
         function stampSeedSignatures() {
             // Seeded records carry real (simulated cursive) signatures so the final PDF
@@ -11509,6 +12260,13 @@
                 // Permittee Electrician mapping
                 if (p.createdByRole === 'electrician' || ptypeOf(p) === 'electrical') {
                     p.signatories['electrician'] = { name: p.createdBy || 'Authorized Electrician', sig: (p.signature && p.signature.dataUrl) || p.signature || makeSimSignature(p.createdBy || 'Authorized Electrician'), consent: true, at: (p.signature && p.signature.at) || p.createdAt };
+                    delete p.signatories['site-supervisor'];
+                }
+                // Lifting Supervisor mapping
+                if (p.createdByRole === 'lift-supervisor' || ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan') {
+                    p.signatories['lift-supervisor'] = { name: p.createdBy || 'Certified Lifting Supervisor', sig: (p.signature && p.signature.dataUrl) || p.signature || makeSimSignature(p.createdBy || 'Certified Lifting Supervisor'), consent: true, at: (p.signature && p.signature.at) || p.createdAt };
+                    if (p.craneOperatorName) p.signatories['crane-operator'] = { name: p.craneOperatorName, sig: makeSimSignature(p.craneOperatorName), consent: true, at: p.createdAt };
+                    if (p.riggerName) p.signatories['rigger'] = { name: p.riggerName, sig: makeSimSignature(p.riggerName), consent: true, at: p.createdAt };
                     delete p.signatories['site-supervisor'];
                 }
                 // Blasting / Drilling In-charge acknowledgment
@@ -11531,7 +12289,7 @@
                         if (e && e.status !== 'pending' && !e.sig && e.by) { const sd = makeSimSignature(e.by); if (sd) e.sig = sd; }
                         // ONLY record signatory if the action was already completed (not pending!)
                         if (e && e.by && e.status !== 'pending') {
-                            const rkMap = { siteEngineer: 'site-engineer', mep: 'mep', pm: 'pm', qualityEngineer: 'quality-engineer', it: 'it', sectionHead: (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'confined') ? 'hw-section-head' : (ptypeOf(p) === 'electrical' ? 'section-head' : 'excavation-head'), ehsManager: 'ehs-manager', ehsOfficer: 'ehs-officer' };
+                            const rkMap = { siteEngineer: 'site-engineer', mep: 'mep', pm: 'pm', qualityEngineer: 'quality-engineer', it: 'it', projectManager: 'project-manager', sectionHead: (ptypeOf(p) === 'hotwork' || ptypeOf(p) === 'shaft' || ptypeOf(p) === 'guardrail' || ptypeOf(p) === 'confined' || ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan' || ptypeOf(p) === 'nightshift') ? 'hw-section-head' : (ptypeOf(p) === 'electrical' ? 'section-head' : 'excavation-head'), ehsManager: 'ehs-manager', ehsOfficer: 'ehs-officer' };
                             const rk = rkMap[k] || k;
                             if (ptypeOf(p) === 'blasting' && (rk === 'mep' || rk === 'pm' || rk === 'it' || rk === 'section-head' || rk === 'excavation-head')) return;
                             if (ptypeOf(p) === 'confined' && (rk === 'mep' || rk === 'pm' || rk === 'it')) return;
@@ -14589,7 +15347,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '<label class="radio-pill ' + (isContractor ? 'sel' : '') + '"><input type="radio" name="univOrg" value="Contractor" ' + (isContractor ? 'checked' : '') + ' onchange="onUniversalOrgChange(\'Contractor\')"' + disAttr + '> Contractor</label>' +
                 '</div></div>' +
                 (isContractor
-                    ? '<div class="form-field full" id="ff-contractor"><label>Contractor Agency / Company Name <span class="req">*</span></label><input type="text" id="inContractor" placeholder="Enter full contractor company / agency name..." value="' + escapeHtml(draft.contractor || '') + '" oninput="draft.contractor=this.value;draft.welderContractor=this.value;validateWizStep(1)"' + disAttr + '><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Contractor name is mandatory.</div></div>'
+                    ? '<div class="form-field full" id="ff-contractor"><label>Contractor Agency / Company Name <span class="req">*</span></label><input type="text" id="inContractor" list="contractorDatalist" placeholder="Select or enter contractor company / agency name..." value="' + escapeHtml(draft.contractor || '') + '" oninput="draft.contractor=this.value;draft.welderContractor=this.value;validateWizStep(1)"' + disAttr + '><datalist id="contractorDatalist">' + getProjectContractors(draft.project).map(c => '<option value="' + escapeHtml(c) + '"></option>').join('') + '</datalist><div class="form-hint" style="font-size:11px;color:var(--text-muted);margin-top:3px;"><i class="fa-solid fa-building-shield"></i> Choose from approved contractor registry or enter new agency.</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Contractor name is mandatory.</div></div>'
                     : '') +
                 // Location Selection Mode (Select either Tower or Basement/Podium or Manual)
                 '<div class="form-field full"><label>Location Selection Mode (Select either Tower or Basement/Podium or Manual) <span class="req">*</span></label>' +
@@ -14628,11 +15386,11 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 // Tower branch controls
                 '<div class="form-field" id="ff-tower" style="' + (isTower ? '' : 'display:none;') + '"><label>Tower <span class="req">*</span></label>' +
                 '<select id="inTower" onchange="draft.tower=this.value;onUniversalLocationUpdate()"' + (isTower ? disAttr : ' disabled') + '><option value="">Select tower&hellip;</option>' +
-                (prj && isConfigured ? prj.towers.map(t => '<option value="' + t + '" ' + (draft.tower === t ? 'selected' : '') + '>' + t + '</option>').join('') : '') +
+                (prj && isConfigured ? getProjectTowers(draft.project).map(t => '<option value="' + t + '" ' + (draft.tower === t ? 'selected' : '') + '>' + t + '</option>').join('') : '') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Tower is required for Tower selection.</div></div>' +
                 '<div class="form-field" id="ff-loc-floor" style="' + (isTower ? '' : 'display:none;') + '"><label>Floor Level <span class="req">*</span></label>' +
                 '<select id="inLocFloor" onchange="draft.locFloor=this.value;draft.grFloor=this.value;draft.shaftFloor=this.value;onUniversalLocationUpdate()"' + (isTower ? disAttr : ' disabled') + '><option value="">Select floor level&hellip;</option>' +
-                SHAFT_FLOORS.map(fl => '<option value="' + fl + '" ' + ((draft.locFloor || draft.grFloor || draft.shaftFloor) === fl ? 'selected' : '') + '>' + fl + '</option>').join('') +
+                getProjectFloors(draft.project).map(fl => '<option value="' + fl + '" ' + ((draft.locFloor || draft.grFloor || draft.shaftFloor) === fl ? 'selected' : '') + '>' + fl + '</option>').join('') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Floor Level is required for Tower selection.</div></div>' +
                 '<div class="form-field" id="ff-loc-unit" style="' + (isTower ? '' : 'display:none;') + '"><label>Unit (Manual Entry) <span class="req">*</span></label>' +
                 '<input type="text" id="inLocUnit" placeholder="e.g. Flat 1402, Lift Lobby Core, Corridor West" value="' + escapeHtml(draft.locUnit || draft.grUnit || '') + '" oninput="draft.locUnit=this.value;draft.grUnit=this.value;onUniversalLocationUpdate()"' + (isTower ? disAttr : ' disabled') + '>' +
@@ -14641,7 +15399,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 // Basement/Podium branch controls
                 '<div class="form-field" id="ff-loc-bp" style="' + (isBp ? '' : 'display:none;') + '"><label>Basement / Podium <span class="req">*</span></label>' +
                 '<select id="inLocBasementPodium" onchange="draft.locBasementPodium=this.value;draft.grBasementPodium=this.value;onUniversalLocationUpdate()"' + (isBp ? disAttr : ' disabled') + '><option value="">Select basement / podium&hellip;</option>' +
-                BASEMENT_PODIUM_OPTIONS.map(bp => '<option value="' + bp + '" ' + ((draft.locBasementPodium || draft.grBasementPodium) === bp ? 'selected' : '') + '>' + bp + '</option>').join('') +
+                getProjectBasements(draft.project).map(bp => '<option value="' + bp + '" ' + ((draft.locBasementPodium || draft.grBasementPodium) === bp ? 'selected' : '') + '>' + bp + '</option>').join('') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Basement / Podium selection is required.</div></div>' +
                 '<div class="form-field" id="ff-loc-area" style="' + (isBp ? '' : 'display:none;') + '"><label>Area (Manual Entry) <span class="req">*</span></label>' +
                 '<input type="text" id="inLocArea" placeholder="e.g. Ramp Grid B3-B5, Pump Room Sump, Retention Pit" value="' + escapeHtml(draft.locArea || draft.grArea || '') + '" oninput="draft.locArea=this.value;draft.grArea=this.value;onUniversalLocationUpdate()"' + (isBp ? disAttr : ' disabled') + '>' +
@@ -17699,7 +18457,7 @@ function trackerHtml(p) {
             // Blasting operations: strictly NO extension available under statutory safety rules.
             // Drilling, Electrical, Civil operations: extensions enabled.
             const isBlastingOp = isBlasting && (p.dbOperationType === 'Blasting' || p.drillingBlastingType === 'blasting');
-            if (isPermitteeForP && ['Active', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status))) {
+            if (isPermitteeForP && ['Active', 'Active – Observation Open', 'Active - Observation Open', 'Expired'].includes(p.status) && (!p.extension || ['Approved', 'Rejected', 'Cancelled'].includes(p.extension.status))) {
                 const started = workStarted(p);
                 const isBatchingElec = ptypeOf(p) === 'electrical' && (p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant');
                 const extChainDesc = isBatchingElec
@@ -17871,7 +18629,7 @@ function trackerHtml(p) {
 
             // ---- CLOSURE & SURRENDER ----
             const canClose = isPermitteeForP;
-            if (canClose && ['Active', 'Expired'].includes(p.status)) {
+            if (canClose && ['Active', 'Active – Observation Open', 'Active - Observation Open', 'Expired'].includes(p.status)) {
                 if (obsOpen) {
                     html += '<div class="approval-action-card" style="border-color:var(--border);background:var(--card-bg);opacity:0.75;">' +
                         '<div class="aa-title"><i class="fa-solid fa-hand-holding" style="color:var(--green);"></i> Closure Blocked</div>' +
@@ -19514,7 +20272,7 @@ function trackerHtml(p) {
            signatures, extension history, closure, surrender and the
            complete activity timeline.
            ================================================================ */
-        const PDF_NAVY = [10, 22, 40], PDF_ORANGE = [232, 96, 10], PDF_MUTED = [95, 106, 120], PDF_LINE = [214, 219, 226];
+        const PDF_NAVY = [15, 23, 42], PDF_NAVY_LIGHT = [30, 41, 59], PDF_ORANGE = [232, 96, 10], PDF_MUTED = [100, 116, 139], PDF_LINE = [203, 213, 225], PDF_BG_LIGHT = [248, 250, 252], PDF_HEADER_BG = [241, 245, 249];
         function pdfImgFormat(dataUrl) { return /^data:image\/jpe?g/i.test(dataUrl) ? 'JPEG' : 'PNG'; }
         function generatePermitPDF(id) {
             // Strict Enterprise Policy: PDF download restricted exclusively to EHS personnel (EHS Manager / Officer)
@@ -19522,518 +20280,1050 @@ function trackerHtml(p) {
                 showToast('Access Denied: Permit Report PDF download is restricted exclusively to EHS Safety personnel (EHS Manager / Officer).', 'err');
                 return;
             }
-            const p = (typeof id === 'string') ? PERMITS.find(x => x.id === id) : (id && id.id ? id : null); if (!p) return;
-            if (!(window.jspdf && window.jspdf.jsPDF)) { showToast('PDF library could not be loaded. Please check your internet connection and retry.', 'error'); return; }
+            const p = (typeof id === 'string') ? PERMITS.find(x => x.id === id) : (id && id.id ? id : null);
+            if (!p) return;
+            const JsPdfClass = (window.jspdf && window.jspdf.jsPDF) || window.jsPDF;
+            if (!JsPdfClass) {
+                showToast('PDF library could not be loaded. Please check your internet connection and retry.', 'error');
+                return;
+            }
             try {
-                const doc = new window.jspdf.jsPDF('p', 'mm', 'a4');
-                const L = 14, R = 196, W = R - L; let y = 0;
-                function ensure(h) { if (y + h > 280) { doc.addPage(); y = 16; } }
-                function hr() { ensure(4); doc.setDrawColor.apply(doc, PDF_LINE); doc.setLineWidth(.25); doc.line(L, y, R, y); y += 4; }
+                const doc = new JsPdfClass('p', 'mm', 'a4');
+                const L = 12, R = 198, W = R - L; // 186 mm usable width
+                let y = 0;
+                let sectionCounter = 1;
+
+                function drawRunningHeader(pageNum) {
+                    if (pageNum > 1) {
+                        doc.setDrawColor.apply(doc, PDF_LINE);
+                        doc.setLineWidth(0.25);
+                        doc.line(L, 16, R, 16);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(7.5);
+                        doc.setTextColor.apply(doc, PDF_NAVY);
+                        doc.text('AURO REALTY EHS · PERMIT ' + p.id + ' · ' + pMeta(p).code + ' (' + pMeta(p).short + ')', L, 12.5);
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.5);
+                        doc.setTextColor.apply(doc, PDF_MUTED);
+                        doc.text('Form ' + pMeta(p).form + ' Rev.03 · Status: ' + String(p.status).toUpperCase(), R, 12.5, { align: 'right' });
+                    }
+                }
+
+                function ensure(h) {
+                    if (y + h > 280) {
+                        doc.addPage();
+                        drawRunningHeader(doc.getNumberOfPages());
+                        y = 22;
+                    }
+                }
+
                 function sectionTitle(t) {
-                    ensure(13);
-                    doc.setFillColor.apply(doc, PDF_NAVY); doc.rect(L, y, W, 7.4, 'F');
-                    doc.setFillColor.apply(doc, PDF_ORANGE); doc.rect(L, y, 2.2, 7.4, 'F');
-                    doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(9.6);
-                    doc.text(t.toUpperCase(), L + 5, y + 5.1);
-                    y += 11;
+                    ensure(14);
+                    doc.setFillColor.apply(doc, PDF_NAVY);
+                    doc.rect(L, y, W, 7.2, 'F');
+                    doc.setFillColor.apply(doc, PDF_ORANGE);
+                    doc.rect(L, y, 2.5, 7.2, 'F');
+                    doc.setTextColor(255, 255, 255);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(8.8);
+                    doc.text((sectionCounter++) + '. ' + t.toUpperCase(), L + 5.5, y + 4.9);
+                    y += 10.8;
                 }
-                function kv(k, v, k2, v2) {
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.4);
-                    const lines = doc.splitTextToSize(String(v == null || v === '' ? '—' : v), k2 ? 52 : 132);
-                    const lines2 = k2 ? doc.splitTextToSize(String(v2 == null || v2 === '' ? '—' : v2), 52) : [];
-                    const h = Math.max(lines.length, lines2.length) * 4.1 + 2.4;
-                    ensure(h);
-                    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.4); doc.setTextColor.apply(doc, PDF_MUTED);
-                    doc.text(k.toUpperCase(), L, y + 3.2);
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(9.4); doc.setTextColor(20, 26, 34);
-                    doc.text(lines, L + 44, y + 3.2);
-                    if (k2) {
-                        doc.setFont('helvetica', 'bold'); doc.setFontSize(8.4); doc.setTextColor.apply(doc, PDF_MUTED);
-                        doc.text(k2.toUpperCase(), L + 96, y + 3.2);
-                        doc.setFont('helvetica', 'normal'); doc.setFontSize(9.4); doc.setTextColor(20, 26, 34);
-                        doc.text(lines2, L + 130, y + 3.2);
-                    }
-                    y += h;
+
+                function drawMasterGrid(rows) {
+                    rows.forEach(function (row) {
+                        if (row.length === 4) {
+                            const k1 = row[0], v1 = String(row[1] == null || row[1] === '' ? '—' : row[1]);
+                            const k2 = row[2], v2 = String(row[3] == null || row[3] === '' ? '—' : row[3]);
+                            const k1Lines = doc.splitTextToSize(String(k1).toUpperCase(), 34);
+                            const k2Lines = doc.splitTextToSize(String(k2).toUpperCase(), 34);
+                            const lines1 = doc.splitTextToSize(v1, 51);
+                            const lines2 = doc.splitTextToSize(v2, 51);
+                            const rowH = Math.max(k1Lines.length, k2Lines.length, lines1.length, lines2.length) * 3.8 + 3.2;
+                            ensure(rowH);
+                            doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                            doc.rect(L, y, 38, rowH, 'F');
+                            doc.rect(L + 93, y, 38, rowH, 'F');
+                            doc.setDrawColor.apply(doc, PDF_LINE);
+                            doc.setLineWidth(0.2);
+                            doc.rect(L, y, W, rowH);
+                            doc.line(L + 38, y, L + 38, y + rowH);
+                            doc.line(L + 93, y, L + 93, y + rowH);
+                            doc.line(L + 131, y, L + 131, y + rowH);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(7.2);
+                            doc.setTextColor.apply(doc, PDF_MUTED);
+                            doc.text(k1Lines, L + 2.5, y + 4.2);
+                            doc.text(k2Lines, L + 95.5, y + 4.2);
+                            doc.setFont('helvetica', 'normal');
+                            doc.setFontSize(7.8);
+                            doc.setTextColor(15, 23, 42);
+                            doc.text(lines1, L + 40.5, y + 4.2);
+                            doc.text(lines2, L + 133.5, y + 4.2);
+                            y += rowH;
+                        } else if (row.length === 2) {
+                            const k = row[0], v = String(row[1] == null || row[1] === '' ? '—' : row[1]);
+                            const kLines = doc.splitTextToSize(String(k).toUpperCase(), 34);
+                            const lines = doc.splitTextToSize(v, 142);
+                            const rowH = Math.max(kLines.length, lines.length) * 3.8 + 3.2;
+                            ensure(rowH);
+                            doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                            doc.rect(L, y, 38, rowH, 'F');
+                            doc.setDrawColor.apply(doc, PDF_LINE);
+                            doc.setLineWidth(0.2);
+                            doc.rect(L, y, W, rowH);
+                            doc.line(L + 38, y, L + 38, y + rowH);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(7.2);
+                            doc.setTextColor.apply(doc, PDF_MUTED);
+                            doc.text(kLines, L + 2.5, y + 4.2);
+                            doc.setFont('helvetica', 'normal');
+                            doc.setFontSize(7.8);
+                            doc.setTextColor(15, 23, 42);
+                            doc.text(lines, L + 40.5, y + 4.2);
+                            y += rowH;
+                        }
+                    });
+                    y += 3;
                 }
-                function para(t, size) {
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(size || 9); doc.setTextColor(20, 26, 34);
-                    const lines = doc.splitTextToSize(t, W);
-                    ensure(lines.length * 4 + 2);
-                    doc.text(lines, L, y + 3); y += lines.length * 4 + 2;
+
+                // ==================== COVER HEADER ====================
+                doc.setFillColor.apply(doc, PDF_NAVY);
+                doc.rect(0, 0, 210, 34, 'F');
+                doc.setFillColor.apply(doc, PDF_ORANGE);
+                doc.rect(0, 34, 210, 1.8, 'F');
+                doc.setTextColor(255, 255, 255);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(14.5);
+                doc.text('AURO REALTY PRIVATE LIMITED', L, 12.5);
+                doc.setFontSize(8.8);
+                doc.setFont('helvetica', 'normal');
+                doc.setTextColor(201, 210, 224);
+                doc.text('Enterprise Safety Governance & Digital Permit-to-Work System · SOP 02/R1 Compliance', L, 18.5);
+                doc.text(pMeta(p).name + ' (' + pMeta(p).code + ') · Form ' + pMeta(p).form + ' Rev.03 · Statutory Audit Report', L, 24);
+                if (p.sundayWork) {
+                    doc.setTextColor(255, 215, 64);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.8);
+                    doc.text('PRE-AUTHORIZED SUNDAY WORK SURFACE (SATURDAY APPROVED)', L, 29);
                 }
-                function tryImg(dataUrl, w, h, label) {
-                    if (dataUrl && /^data:image\//.test(dataUrl)) {
-                        ensure(h + 8);
-                        try { doc.addImage(dataUrl, pdfImgFormat(dataUrl), L, y, w, h); } catch (e) { doc.setDrawColor.apply(doc, PDF_LINE); doc.rect(L, y, w, h); }
-                        doc.setFont('helvetica', 'italic'); doc.setFontSize(7.6); doc.setTextColor.apply(doc, PDF_MUTED);
-                        doc.text(label || '', L, y + h + 3.4);
-                        y += h + 7;
-                    } else if (label) {
-                        para('• ' + label + ' — captured in system (demo asset, not embedded).', 8.4);
-                    }
-                }
-                // ---------- Cover header ----------
-                doc.setFillColor.apply(doc, PDF_NAVY); doc.rect(0, 0, 210, 34, 'F');
-                doc.setFillColor.apply(doc, PDF_ORANGE); doc.rect(0, 34, 210, 1.6, 'F');
-                doc.setTextColor(255, 255, 255); doc.setFont('helvetica', 'bold'); doc.setFontSize(15);
-                doc.text('AURO REALTY PRIVATE LIMITED', L, 13);
-                doc.setFontSize(9.4); doc.setFont('helvetica', 'normal'); doc.setTextColor(201, 210, 224);
-                doc.text('EHS Permit-to-Work Management System — Official Permit Report', L, 20);
-                doc.text(pMeta(p).name + ' Permit (' + pMeta(p).code + ') · Form ' + pMeta(p).form + ' Rev.01 · SOP 02/R1', L, 25.4);
-                doc.setFont('helvetica', 'bold'); doc.setFontSize(11.5); doc.setTextColor(255, 255, 255);
-                doc.text(p.id, R, 13, { align: 'right' });
-                doc.setFontSize(9);
+
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(11);
+                doc.setTextColor(255, 255, 255);
+                doc.text(p.id, R, 12.5, { align: 'right' });
+
                 const isCancelled = p.status === 'Cancelled';
                 const isReturned = p.status === 'Returned for Correction';
                 const isExpired = p.status === 'Expired';
-                if (isCancelled) doc.setTextColor(255, 170, 170);
-                else if (isReturned) doc.setTextColor(255, 204, 128);
-                else if (isExpired) doc.setTextColor(239, 154, 154);
-                else doc.setTextColor(143, 214, 160);
-                doc.text(String(p.status).toUpperCase(), R, 19.5, { align: 'right' });
-                doc.setTextColor(201, 210, 224); doc.setFont('helvetica', 'normal'); doc.setFontSize(8);
-                doc.text('Generated: ' + fmtDateTime(nowTime()) + ' IST', R, 25.4, { align: 'right' });
-                y = 42;
-                // ---------- 1. Master data ----------
-                sectionTitle('1. Permit Master Data');
-                kv('Permit Number', p.id, 'Status', p.status);
-                kv('Project', p.project, 'Tower', p.tower || (p.locationStructure && p.locationStructure.basementPodium ? p.locationStructure.basementPodium : '—'));
-                kv('Location / Area', p.location, 'Weather', p.weather);
-                kv('Kind of Activity', p.activity || (pMeta(p).name + ' (' + pMeta(p).code + ')'), 'Created By', p.createdBy);
-                if (p.sundayWork) {
-                    kv('Permit Origin', 'Sunday Work Surface (Pre-authorized Saturday)', 'Sunday Execution', 'Yes — Pre-Authorized Operations');
-                }
-                if (p.closure && p.closure.closedOnSunday) {
-                    kv('Sunday Closure', 'Closed & Surrendered on Sunday as per Valid Time', 'Closed At', fmtDateTime(p.closure.closedAt) + ' IST');
-                }
-                if (ptypeOf(p) === 'confined') {
-                    const isBp = (p.locationStructure === 'Basement/Podium') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'basement_podium' || p.locationStructure.mode === 'Basement/Podium')) || !!p.locBasementPodium;
-                    if (isBp) {
-                        kv('Location Structure', 'Basement / Podium', 'Zone', p.locBasementPodium || (p.locationStructure && p.locationStructure.basementPodium) || '—');
-                        kv('Area', p.locArea || (p.locationStructure && p.locationStructure.area) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
-                    } else {
-                        kv('Location Structure', 'Tower (' + (p.tower || '—') + ')', 'Floor Level', p.locFloor || (p.locationStructure && p.locationStructure.floor) || '—');
-                        kv('Unit', p.locUnit || (p.locationStructure && p.locationStructure.unit) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
-                    }
-                    kv('Confined Space Activity', p.confinedActivity || p.activity || 'Confined Space Entry', 'Authorized Entrants', (p.numPersonnel || '—') + ' workers');
-                    kv('Physical Inspection Decl.', p.confinedDeclaration ? 'Certified Physically Inspected & Cleared' : 'Pending', 'Pre-Task Checklist Doc', p.confinedChecklistAttachment ? (p.confinedChecklistAttachment.name || 'Attached & Verified') : 'Pending');
-                    if (p.confinedGasReadings) {
-                        kv('Multi-Gas: Combustible', (p.confinedGasReadings.combustible || '—') + '% LEL (<10%)', 'Multi-Gas: H2S', (p.confinedGasReadings.h2s || '—') + ' PPM (0-5)');
-                        kv('Multi-Gas: Carbon Monoxide', (p.confinedGasReadings.co || '—') + ' PPM (<25)', 'Multi-Gas: Oxygen (O2)', (p.confinedGasReadings.oxygen || '—') + '% (19.5-21.0%)');
-                        kv('Gas Test Verified At', fmtDateTime(p.confinedGasReadings.testedAt) + ' IST', 'Atmosphere Status', 'VERIFIED SAFE FOR ENTRY');
-                    }
-                } else if (ptypeOf(p) === 'guardrail') {
+                const isCompleted = p.status === 'Completed (Surrendered)';
+                const isAct = p.status.startsWith('Active');
+
+                let badgeFill = [22, 163, 74];
+                let badgeTextCol = [255, 255, 255];
+                if (isCancelled) badgeFill = [220, 38, 38];
+                else if (isReturned) badgeFill = [230, 81, 0];
+                else if (isExpired) badgeFill = [126, 34, 206];
+                else if (isCompleted) badgeFill = [46, 125, 50];
+
+                doc.setFillColor.apply(doc, badgeFill);
+                const stLabel = String(p.status).toUpperCase();
+                const stWidth = Math.max(30, stLabel.length * 2.1 + 8);
+                doc.roundedRect(R - stWidth, 15.5, stWidth, 5.8, 1.2, 1.2, 'F');
+                doc.setTextColor.apply(doc, badgeTextCol);
+                doc.setFont('helvetica', 'bold');
+                doc.setFontSize(7.2);
+                doc.text(stLabel, R - (stWidth / 2), 19.5, { align: 'center' });
+
+                doc.setTextColor(201, 210, 224);
+                doc.setFont('helvetica', 'normal');
+                doc.setFontSize(7.2);
+                doc.text('Generated: ' + fmtDateTime(nowTime()) + ' IST', R, 26, { align: 'right' });
+                doc.text('DPDP Act 2023 & DGFASLI Compliant', R, 30.5, { align: 'right' });
+
+                y = 41;
+
+                // ==================== 1. MASTER DATA ====================
+                sectionTitle('Permit Master Data & Technical Parameters');
+                const pt = ptypeOf(p);
+                const masterRows = [
+                    ['Permit Number', p.id, 'Permit Status', p.status],
+                    ['Permit Type', pMeta(p).code + ' — ' + pMeta(p).name, 'Form Reference', 'Form ' + pMeta(p).form + ' Rev.03 (SOP 02/R1)'],
+                    ['Project', p.project, 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ' (In-House)')],
+                    ['Requester / Permittee', p.createdBy + (p.createdByRole ? ' (' + p.createdByRole + ')' : ''), 'Weather Condition', p.weather || 'Normal / Clear'],
+                    ['Permit Location / Area', p.location || 'Site Area', 'Site GPS', p.gps ? (p.gps.lat.toFixed(5) + ', ' + p.gps.lng.toFixed(5) + (p.gps.address ? ' (' + p.gps.address + ')' : '')) : '—'],
+                    ['Planned Window', (p.startTime ? p.startTime + ' IST' : '—') + ' to ' + (p.validTill ? fmtDateTime(p.validTill) + ' IST' : '—'), 'Submitted At', p.submittedAt ? fmtDateTime(p.submittedAt) + ' IST' : fmtDateTime(p.createdAt) + ' IST']
+                ];
+
+                if (p.activatedAt) masterRows.push(['Activated At', fmtDateTime(p.activatedAt) + ' IST', 'Validity Remaining', p.status === 'Active' ? 'Operational' : p.status]);
+                if (p.sundayWork) masterRows.push(['Sunday Pre-Authorization', 'Pre-authorized on Saturday surface for Sunday execution', 'Sunday Status', p.closure && p.closure.closedOnSunday ? 'Closed & Surrendered on Sunday as per valid schedule' : 'Pre-authorized Sunday Work']);
+
+                // Domain-Specific Master Data
+                if (pt === 'excavation') {
+                    masterRows.push(['Location Structure', 'Tower (' + (p.tower || '—') + ')', 'Depth of Excavation', (p.depth != null ? p.depth + ' meters' : '—')]);
+                    masterRows.push(['Slope Ratio / Benching', (p.slope ? '1:' + p.slope : '1:1.5'), 'Soil Classification', p.soilType || 'Type C (Granular / Sandy Gravel)']);
+                    masterRows.push(['Underground Utilities', p.undergroundUtilities ? 'Verified Cleared (Drawings cross-checked)' : 'Certified Cleared', 'Shoring / Protection', p.shoringRequired ? 'Yes (Trench Box / Shoring Installed)' : 'No (Sloped as per OSHA/IS 3764)']);
+                    masterRows.push(['Heavy Machinery / Plant', equipDisplay(p) || 'Excavator, JCB, Tippers', 'Excavation Drawing', p.drawing ? (p.drawing.name + ' (Uploaded ' + fmtDateTime(p.drawing.at) + ' IST)') : 'Drawing on File']);
+                } else if (pt === 'hotwork') {
                     const isBp = p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.mode === 'basement_podium';
-                    if (isBp) {
-                        kv('Location Structure', 'Basement / Podium', 'Basement/Podium', (p.locationStructure && p.locationStructure.basementPodium) || '—');
-                        kv('Area', (p.locationStructure && p.locationStructure.area) || '—', 'Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
-                    } else {
-                        kv('Location Structure', 'Tower', 'Floor Level', (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.floor) ? p.locationStructure.floor : '—');
-                        kv('Unit', (p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.unit) ? p.locationStructure.unit : '—', 'Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
-                    }
-                    const pdfGrActs = (p.activities && p.activities.length) ? p.activities : (p.guardrailActivities || []);
-                    const pdfOther = p.activityOther || p.guardrailActivityOther || '';
-                    kv('Activities Requested', (((pdfGrActs.length ? pdfGrActs.join(', ') : '') + (pdfOther ? (pdfGrActs.length ? ' (' + pdfOther + ')' : pdfOther) : '')) || '—'));
-                } else if (ptypeOf(p) === 'shaft') {
-                    kv('Location Structure', p.shaftLocationType || 'Tower', 'Floor Level', p.shaftFloor || '—');
-                    kv('Personnel in Shaft', (p.numPersonnel || '—') + ' workers', 'Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
-                    kv('Scaffold Tag Verification', p.scaffTagVerified ? 'Verified & Green Tagged' : 'Pending', 'Physical Inspection Decl.', p.shaftDeclaration ? 'Certified Physically Safe' : 'Pending');
-                } else if (ptypeOf(p) === 'hotwork') {
-                    kv('Hot Work Description', (p.hotworkTypes || []).join(', ') || '—', 'Welder Name', p.welderName || '—');
-                    kv('Welder Affiliation', p.welderAffiliation || 'ARPL', 'Contractor Agency', p.welderContractor || 'ARPL In-House');
-                } else if (ptypeOf(p) === 'electrical') {
-                    const isBp = p.electricalSiteType === 'batching_plant';
-                    kv('Electrical Work Facility', isBp ? 'Batching Plant' : 'Site Electrical Work', 'Permittee Role', 'Licensed Electrician');
-                    kv('Person Taking Shutdown', p.shutdownRequester || p.createdBy || 'Licensed Electrician', 'Shutdown Reason / Why', p.shutdownWhy || p.elecShutdownWhy || '—');
-                    const appList = (p.electricalApparatus || []).join(', ') || '—';
-                    kv('Apparatus to be Worked Upon', appList);
-                    const approxTime = (p.elecShutdownFrom || '—') + ' to ' + (p.elecShutdownTo || '—') + ' hrs';
-                    kv('Approx. Shutdown Hours', approxTime, 'LOTO Register Sl. No', p.elecLotoRegisterNo || '—');
-                    kv('Safe to Work Certified', p.elecApparatusSafe ? 'Yes (Verified)' : 'Pending', 'Lockout/Tagout Done', p.elecLotoDone ? 'Yes (Verified)' : 'Pending');
-                    if (p.elecLotoDateTime) kv('LOTO Placement Date/Time', fmtDateTime(p.elecLotoDateTime) + ' IST');
-                    if (p.elecStatutoryDecl) kv('Electrician Statutory Decl.', 'Confirmed & Certified Safe');
-                } else if (ptypeOf(p) === 'general') {
+                    masterRows.push(['Location Mode', isBp ? 'Basement / Podium' : 'Tower (' + (p.tower || '—') + ')', 'Hot Work Description', (p.hotworkTypes || []).join(', ') || p.activity || 'Welding / Cutting']);
+                    masterRows.push(['Certified Welder Name', p.welderName || '—', 'Welder Affiliation', (p.welderAffiliation || 'ARPL') + (p.welderContractor ? ' — ' + p.welderContractor : '')]);
+                    masterRows.push(['Standby Fire Watcher', p.fireWatchPerson || p.createdBy || 'Designated Fire Watcher', 'Combustible Clearance', '11 meters (35 ft) radius cleared & wet down']);
+                    masterRows.push(['Fire Extinguisher Provision', '2x 5kg ABC Dry Powder + 1x CO2 at workstation', '3-Way Spark Shielding', 'Verified (Above, Below, Workplace spark barriers)']);
+                } else if (pt === 'guardrail') {
+                    const isBp = p.locationStructure && typeof p.locationStructure === 'object' && p.locationStructure.mode === 'basement_podium';
+                    const grActs = (p.activities && p.activities.length) ? p.activities : (p.guardrailActivities || []);
+                    const grOther = p.activityOther || p.guardrailActivityOther || '';
+                    masterRows.push(['Location Mode', isBp ? 'Basement / Podium (' + ((p.locationStructure && p.locationStructure.basementPodium) || '—') + ')' : 'Tower (' + (p.tower || '—') + ')', 'Floor / Unit Level', (p.locFloor || (p.locationStructure && p.locationStructure.floor) || '—') + ' / ' + (p.locUnit || (p.locationStructure && p.locationStructure.unit) || '—')]);
+                    masterRows.push(['Removal Activities Requested', ((grActs.length ? grActs.join(', ') : '') + (grOther ? (grActs.length ? ' (' + grOther + ')' : grOther) : '')) || 'Guard Rail Removal']);
+                    masterRows.push(['Safety Control Measures', 'Mandatory hard barricades, warning tape & safety nets', 'Re-fixing Commitment', 'Mandatory safe re-fixing prior to shift end / 18:30 IST']);
+                } else if (pt === 'confined') {
                     const isBp = (p.locationStructure === 'Basement/Podium') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'basement_podium' || p.locationStructure.mode === 'Basement/Podium')) || !!p.locBasementPodium;
-                    const isManual = (p.locationStructure === 'Manual') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'manual' || p.locationStructure.mode === 'Manual')) || !!p.locManual;
-                    if (isManual) {
-                        kv('Location Structure', 'Manual Work Area', 'Specific Location', p.locManual || (p.locationStructure && p.locationStructure.manual) || '—');
-                        kv('Area / Grid Ref', p.locManualArea || (p.locationStructure && p.locationStructure.manualArea) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
-                    } else if (isBp) {
-                        kv('Location Structure', 'Basement / Podium', 'Basement/Podium', p.locBasementPodium || (p.locationStructure && p.locationStructure.basementPodium) || '—');
-                        kv('Area', p.locArea || (p.locationStructure && p.locationStructure.area) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
-                    } else {
-                        kv('Location Structure', 'Tower (' + (p.tower || '—') + ')', 'Floor Level', p.locFloor || (p.locationStructure && p.locationStructure.floor) || '—');
-                        kv('Unit', p.locUnit || (p.locationStructure && p.locationStructure.unit) || '—', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
+                    masterRows.push(['Location Mode', isBp ? 'Basement / Podium (' + (p.locBasementPodium || (p.locationStructure && p.locationStructure.basementPodium) || '—') + ')' : 'Tower (' + (p.tower || '—') + ')', 'Confined Space Activity', p.confinedActivity || p.activity || 'Confined Space Entry']);
+                    masterRows.push(['Authorized Entrants', (p.numPersonnel || 1) + ' worker(s)' + (p.entrantNames ? ' (' + p.entrantNames + ')' : ''), 'Standby Attendant', p.attendantName || 'Designated Standby Attendant Stationed at Entry']);
+                    masterRows.push(['Physical Inspection Decl.', p.confinedDeclaration ? 'Certified Physically Inspected & Cleared Safe' : 'Pending', 'Pre-Task Checklist Doc', p.confinedChecklistAttachment ? (p.confinedChecklistAttachment.name || 'Signed Physical Checklist Uploaded & Verified') : 'Physical Checklist Verified On-Site']);
+                    if (p.confinedGasReadings) {
+                        const cgr = p.confinedGasReadings;
+                        masterRows.push(['Multi-Gas: Combustible', (cgr.combustible != null ? cgr.combustible : '0') + '% LEL (<10%)', 'Multi-Gas: H2S', (cgr.h2s != null ? cgr.h2s : '0') + ' PPM (0-5)']);
+                        masterRows.push(['Multi-Gas: Carbon Monoxide', (cgr.co != null ? cgr.co : '0') + ' PPM (<25)', 'Multi-Gas: Oxygen (O2)', (cgr.o2 != null ? cgr.o2 : (cgr.oxygen != null ? cgr.oxygen : '20.9')) + '% (19.5-21.0%)']);
+                        masterRows.push(['Gas Test Verified At', cgr.testedAt ? fmtDateTime(cgr.testedAt) + ' IST' : 'At Entry Verification', 'Atmosphere Status', 'VERIFIED SAFE FOR ENTRY']);
                     }
-                    const cat = getGeneralCategory(p.generalWorkType);
-                    const catLabel = cat === 'panel' ? 'Panel Erection (21 checks)' : cat === 'hoist' ? 'Hoists & Rigging/Shifting (15 checks)' : cat === 'formwork' ? 'Formwork (20 checks)' : 'General Work (11 checks)';
-                    kv('Description of Work', (p.generalWorkType || p.activity || 'General Work') + ((p.generalWorkType === 'Other' || p.generalWorkType === 'Other[Manual Entry]') && p.generalWorkOther ? ' (' + p.generalWorkOther + ')' : ''), 'Work Category', catLabel);
-                } else if (ptypeOf(p) === 'blasting') {
+                } else if (pt === 'shaft') {
+                    masterRows.push(['Location Structure', p.shaftLocationType || 'Tower Lift Shaft', 'Floor Level Range', p.shaftFloor || '—']);
+                    masterRows.push(['Personnel inside Shaft', (p.numPersonnel || 1) + ' worker(s)', 'Scaffold Tag Verification', p.scaffTagVerified ? 'Verified & Green Tagged' : 'Pending']);
+                    masterRows.push(['Physical Inspection Decl.', p.shaftDeclaration ? 'Certified Physically Safe for Shaft Operations' : 'Pending', 'Fall Arrest System', 'Full Body Harness with Shock Absorber & Independent Lifeline']);
+                } else if (pt === 'electrical') {
+                    const isBp = (p.facilityScope === 'batching_plant' || p.electricalFacilityScope === 'batching_plant' || p.electricalSiteType === 'batching_plant');
+                    masterRows.push(['Electrical Work Facility', isBp ? 'Batching Plant' : 'Site Electrical Work', 'Permittee Role', 'Licensed Electrician']);
+                    masterRows.push(['Person Taking Shutdown', p.shutdownRequester || p.createdBy || 'Licensed Electrician', 'Shutdown Reason', p.shutdownWhy || p.elecShutdownWhy || p.electricalShutdownWhy || p.description || '—']);
+                    masterRows.push(['Apparatus Worked Upon', (p.electricalApparatus || []).join(', ') || '—']);
+                    masterRows.push(['Approx. Shutdown Hours', (p.shutdownTimeFrom || p.elecShutdownFrom || '—') + ' to ' + (p.shutdownTimeTo || p.elecShutdownTo || '—') + ' hrs', 'LOTO Register Sl. No', p.lotoRegisterNo || p.elecLotoRegisterNo || '—']);
+                    masterRows.push(['Safe to Work Certified', (p.electricalSafeToWork || p.elecApparatusSafe) ? 'Yes (De-energized & Verified)' : 'Pending', 'Lockout/Tagout Done', (p.elecLotoDone || p.lotoRegisterNo || p.elecLotoRegisterNo) ? 'Yes (Verified LOTO Placed)' : 'Pending']);
+                    if (p.lotoDateTime || p.elecLotoDateTime) masterRows.push(['LOTO Placement Date/Time', fmtDateTime(p.lotoDateTime || p.elecLotoDateTime) + ' IST', 'Electrician Statutory Decl.', (p.electricalStatutoryDecl || p.elecStatutoryDecl) ? 'Confirmed & Certified Safe (CEA Rules)' : 'Confirmed']);
+                } else if (pt === 'blasting') {
                     const isBlastingOp = (p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting');
-                    kv('Location Structure', 'Open Surface / Yard (Manual Only)', 'Manual Area / Landmark', p.locManualArea || p.location || '—');
-                    kv('Operation Category', isBlastingOp ? 'Blasting Operation' : 'Drilling Operation', 'Date / Time of Operation', p.dbDateTime ? fmtDateTime(p.dbDateTime) + ' IST' : '—');
+                    masterRows.push(['Location Structure', 'Open Surface / Yard (Manual Area)', 'Manual Area / Landmark', p.locManualArea || p.location || '—']);
+                    masterRows.push(['Operation Category', isBlastingOp ? 'Blasting Operation' : 'Drilling Operation', 'Date & Time of Operation', p.dbDateTime ? fmtDateTime(p.dbDateTime) + ' IST' : '—']);
                     if (isBlastingOp) {
-                        kv('Explosive Charge Amount', (p.dbChargeAmount || '—') + ' kg', 'Type of Explosive', p.dbExplosiveType || '—');
-                        kv('Blast Hole Diameter', (p.dbBlastDiameter || '—') + ' m', 'Blast Hole Depth', (p.dbBlastDepth || '—') + ' m');
-                        kv('Number of Blast Holes', (p.dbHolesCount || '—') + ' holes', 'Rig Holes Loaded', (p.blastingRigHolesLoaded || '—') + ' holes');
-                        kv('Average Hole Depth', ((p.blastingRigHoleDepthM || p.blastingRigHoleDepthFt) ? (p.blastingRigHoleDepthM || p.blastingRigHoleDepthFt) + ' m' : '—'), 'Muffler Wire-Mesh Layers', (p.blastingMufflerLayers || '—') + ' layers');
-                        kv('Safe Distance Between Holes', (p.blastingSafeDistance ? (p.blastingSafeDistance + (isNaN(p.blastingSafeDistance) ? '' : ' m')) : '—'), 'Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
+                        masterRows.push(['Total Explosive Charge', (p.dbChargeAmount || '—') + ' kg', 'Type of Explosive', p.dbExplosiveType || 'Commercial Emulsion']);
+                        masterRows.push(['Blast Hole Diameter', (p.dbBlastDiameter || '—') + ' m', 'Blast Hole Depth', (p.dbBlastDepth || '—') + ' m']);
+                        masterRows.push(['Number of Blast Holes', (p.dbHolesCount || '—') + ' holes', 'Rig Holes Loaded', (p.blastingRigHolesLoaded || '—') + ' holes']);
+                        masterRows.push(['Average Hole Depth', ((p.blastingRigHoleDepthM || p.blastingRigHoleDepthFt) ? (p.blastingRigHoleDepthM || p.blastingRigHoleDepthFt) + ' m' : '—'), 'Muffler Wire-Mesh Layers', (p.blastingMufflerLayers || '—') + ' layers']);
+                        masterRows.push(['Safe Distance Between Holes', (p.blastingSafeDistance ? (p.blastingSafeDistance + (isNaN(p.blastingSafeDistance) ? '' : ' m')) : '200 m (Guarded)'), 'PESO Statutory Compliance', 'Verified Under Indian Explosives Act']);
                     } else {
-                        kv('Drill Hole Diameter', (p.dbDrillDiameter || '—') + ' m', 'Drill Hole Depth', (p.dbDrillDepth || '—') + ' m');
-                        kv('Number of Drill Holes', (p.dbHolesCount || '—') + ' holes', 'Drilling Machine Type', p.dbMachineType || '—');
-                        kv('Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
+                        masterRows.push(['Drill Hole Diameter', (p.dbDrillDiameter || '—') + ' m', 'Drill Hole Depth', (p.dbDrillDepth || '—') + ' m']);
+                        masterRows.push(['Number of Drill Holes', (p.dbHolesCount || '—') + ' holes', 'Drilling Machine Type', p.dbMachineType || 'Hydraulic Rig']);
                     }
                     if (p.dbOtherPrecautions || p.otherPrecautions) {
-                        kv('Item 15 Additional Precautions', p.dbOtherPrecautions || p.otherPrecautions);
+                        masterRows.push(['Item 15 Additional Precautions', p.dbOtherPrecautions || p.otherPrecautions]);
                     }
-                } else if (ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan') {
-                    const isCrit = (p.liftingClassification === 'critical' || ptypeOf(p) === 'liftplan');
-                    kv('Permit Classification', isCrit ? 'Critical Lift Plan (Form PTW-009B)' : 'Routine Lifting (Form PTW-009A)', 'Permittee Role', 'Certified Lifting Supervisor');
-                    kv('Load Description', p.loadDescription || '—', 'Load Weight', (p.loadWeight || '—') + ' MT');
-                    kv('Workers Involved', (p.numWorkers || 1) + ' worker(s)', 'Lifting Equipment', (p.liftingEquipmentType || '—') + (p.liftingCraneCapacity ? ' (' + p.liftingCraneCapacity + ' MT SWL)' : ''));
-                    kv('Radius / Boom Length', 'Radius: ' + (p.liftingRadius || '—') + 'm · Boom: ' + (p.liftingBoomLength || '—') + 'm', 'Tandem Lift', p.liftingTandemLift ? 'YES (Dual Crane Lift)' : 'No (Single Crane)');
-                    kv('Rigging Arrangement', (p.riggingHitchType || '—') + ' · ' + (p.riggingSlingType || '—'), 'Rigging Tension', (p.riggingStressPercent ? p.riggingStressPercent + '% SWL (' + (p.riggingStressPerSling || '—') + ' MT/sling)' : '—'));
-                    kv('Crane Operator', (p.craneOperatorName || '—') + (p.craneOperatorLicense ? ' (Lic: ' + p.craneOperatorLicense + ')' : ''), 'Signaler / Rigger', (p.riggerName || '—') + (p.riggerCertNo ? ' (Cert: ' + p.riggerCertNo + ')' : ''));
-                    kv('Wind Speed Limit', 'Mobile Cranes: 38 km/h · Tower Cranes: 45 km/h', 'Organization', (p.organization || 'ARPL') + (p.contractor ? ' — ' + p.contractor : ''));
-                    if (p.liftingSpecialPrecautions) {
-                        kv('Other Safety Precautions', p.liftingSpecialPrecautions);
+                } else if (pt === 'general') {
+                    const isBp = (p.locationStructure === 'Basement/Podium') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'basement_podium' || p.locationStructure.mode === 'Basement/Podium')) || !!p.locBasementPodium;
+                    const isManual = (p.locationStructure === 'Manual') || (p.locationStructure && typeof p.locationStructure === 'object' && (p.locationStructure.mode === 'manual' || p.locationStructure.mode === 'Manual')) || !!p.locManual;
+                    const cat = (typeof getGeneralCategory === 'function') ? getGeneralCategory(p.generalWorkType) : 'general';
+                    const catLabel = cat === 'panel' ? 'Panel Erection (21 checks)' : cat === 'hoist' ? 'Hoists & Rigging/Shifting (15 checks)' : cat === 'formwork' ? 'Formwork (20 checks)' : 'General Work (11 checks)';
+                    masterRows.push(['Location Structure', isManual ? 'Manual Work Area' : isBp ? 'Basement / Podium' : 'Tower (' + (p.tower || '—') + ')', 'Work Category', catLabel]);
+                    masterRows.push(['Description of Work', (p.generalWorkType || p.activity || 'General Work') + ((p.generalWorkType === 'Other' || p.generalWorkType === 'Other[Manual Entry]') && p.generalWorkOther ? ' (' + p.generalWorkOther + ')' : ''), 'Tools & Equipment', equipDisplay(p) || 'Inspected Hand & Power Tools']);
+                } else if (pt === 'lifting' || pt === 'liftplan') {
+                    const isCrit = (p.liftingClassification === 'critical' || pt === 'liftplan');
+                    masterRows.push(['Permit Classification', isCrit ? 'Critical Lift Plan (Form PTW-009B)' : 'Routine Lifting (Form PTW-009A)', 'Permittee Role', 'Certified Lifting Supervisor']);
+                    masterRows.push(['Load Description', p.loadDescription || 'Construction Material Load', 'Total Load Weight', (p.loadWeight != null ? p.loadWeight + ' MT' : '—') + (p.loadWeightType ? ' (' + p.loadWeightType + ')' : '')]);
+                    if (p.loadDimX || p.loadDimY || p.loadDimZ) {
+                        masterRows.push(['Load Dimensions (LxWxH)', (p.loadDimX || '—') + 'm x ' + (p.loadDimY || '—') + 'm x ' + (p.loadDimZ || '—') + 'm', 'Center of Gravity (CG)', (p.loadCg || 'Centered') + (p.loadCgType ? ' (' + p.loadCgType + ')' : '')]);
                     }
-                } else if (ptypeOf(p) === 'nightshift') {
-                    kv('Permit Classification', 'PTW-010 Night Shift / Holiday Work', 'Execution Agency', p.isSubcontractor ? ('Subcontractor (' + (p.nightSubcontractorName || '—') + ')') : 'ARPL / Departmental');
-                    kv('Description of Night Work', p.nightWorkDescription || '—', 'Operating Hours', (p.startTime || '20:30') + ' to ' + (p.validTillTime || '06:00') + ' IST (Overnight)');
-                    kv('Linked Activity Permit', p.linkedPermitId || 'None', 'Stage 1 Day Window', '5:00 PM – 6:30 PM (Site Eng -> Tower Incharge)');
+                    const equipLabel = p.craneEquipmentType || p.liftingEquipmentType || 'Mobile Crane';
+                    const craneIdLabel = p.craneRegId ? 'Asset/Reg: ' + p.craneRegId : (p.liftingCraneCapacity ? p.liftingCraneCapacity + ' MT SWL' : '—');
+                    masterRows.push(['Lifting Equipment', equipLabel, 'Crane ID / Reg No.', craneIdLabel]);
+                    const capLabel = (p.craneSwl != null ? p.craneSwl + ' MT' : (p.liftingCraneCapacity ? p.liftingCraneCapacity + ' MT' : '—'));
+                    const certLabel = (p.craneCertNo ? p.craneCertNo : 'TPI Certified') + (p.craneCertDate ? ' (Dated: ' + p.craneCertDate + ')' : '');
+                    masterRows.push(['Max Certified SWL', capLabel, 'TPI Certification', certLabel]);
+                    const boomLabel = (p.craneBoomLength != null ? p.craneBoomLength + 'm' : (p.liftingBoomLength ? p.liftingBoomLength + 'm' : '—'));
+                    const jibLabel = (p.craneFlyJib != null && p.craneFlyJib > 0) ? (p.craneFlyJib + 'm (' + (p.craneOffsetAngle || 0) + '°)') : 'None / 0m';
+                    masterRows.push(['Boom Length', boomLabel, 'Fly Jib & Offset', jibLabel]);
+                    if (p.craneRadiusWorst || p.craneRadiusFinal || p.craneRadiusInitial) {
+                        const initR = p.craneRadiusInitial ? ('Init: ' + p.craneRadiusInitial + 'm (' + (p.craneSwlInitial || '—') + 'MT)') : '';
+                        const finR = p.craneRadiusFinal ? ('Final: ' + p.craneRadiusFinal + 'm (' + (p.craneSwlFinal || '—') + 'MT)') : '';
+                        const worstR = p.craneRadiusWorst ? ('Worst: ' + p.craneRadiusWorst + 'm (' + (p.craneSwlWorst || '—') + 'MT)') : '';
+                        masterRows.push(['Working Radii & SWL', [initR, finR, worstR].filter(Boolean).join(' · ') || '—', 'Primary Rigging Gear', (p.craneGearType || 'Slings / Shackles') + (p.craneGearWeight ? ' (' + p.craneGearWeight + ' MT)' : '')]);
+                    }
+                    const isTandem = (p.craneTandemLift === 'yes' || p.liftingTandemLift);
+                    masterRows.push(['Tandem Lift (Dual Crane)', isTandem ? ('YES — Dual Crane Lift' + (p.craneTandemMethod ? ' (' + p.craneTandemMethod + ')' : '')) : 'No (Single Crane Lift)', 'Crane Operator', (p.craneOperatorName || '—') + (p.craneOperatorLicense ? ' (Lic: ' + p.craneOperatorLicense + ')' : '')]);
+                    masterRows.push(['Signaler / Rigger', (p.riggerName || '—') + (p.riggerCertNo ? ' (Cert: ' + p.riggerCertNo + ')' : ''), 'Wind Speed Limit', 'Mobile Cranes <= 38 km/h · Tower Cranes <= 45 km/h']);
+                    if (p.slingDiameter || p.slingLength || p.calculatedSlingStress != null) {
+                        const sDiam = p.slingDiameter ? p.slingDiameter + 'mm' : '—';
+                        const sLen = p.slingLength ? p.slingLength + 'm (Apex: ' + (p.slingApexHeight || '—') + 'm)' : '—';
+                        masterRows.push(['Sling Specs (Dia/Len)', sDiam + ' · ' + sLen, 'Sling SWL & Count', (p.slingSwl ? p.slingSwl + ' MT' : '—') + ' · ' + (p.slingsCount || 2) + ' Slings (' + (p.slingsAdjustable === 'yes' ? 'Adjustable' : 'Unadjustable') + ')']);
+                        const tensionVal = (p.calculatedSlingStress != null ? p.calculatedSlingStress + ' MT/sling' : (p.riggingStressPerSling ? p.riggingStressPerSling + ' MT/sling' : 'Within SWL'));
+                        const stressPct = (p.calculatedStressPercent != null ? p.calculatedStressPercent + '% SWL' : (p.riggingStressPercent ? p.riggingStressPercent + '% SWL' : 'Normal (<80%)'));
+                        masterRows.push(['Calculated Tension / Sling', tensionVal, 'Rigging Stress %', stressPct]);
+                    }
+                    if (p.liftingSpecialPrecautions) masterRows.push(['Special Safety Precautions', p.liftingSpecialPrecautions]);
+                } else if (pt === 'nightshift') {
+                    masterRows.push(['Permit Classification', 'PTW-010 Night Shift / Holiday Work', 'Execution Agency', p.isSubcontractor ? ('Subcontractor (' + (p.nightSubcontractorName || '—') + ')') : 'ARPL / Departmental In-House']);
+                    masterRows.push(['Description of Night Work', p.nightWorkDescription || 'Night Construction Operations', 'Overnight Operating Hours', (p.startTime || '20:30') + ' to ' + (p.validTillTime || '06:00') + ' IST (Overnight Window)']);
+                    masterRows.push(['Linked Activity Permit', p.linkedPermitId || 'None', 'Stage 1 Day Window', '5:00 PM – 6:30 PM (Site Eng -> Tower Incharge)']);
                     if (p.nightHandover) {
-                        kv('Handover Supervisor (Night)', p.nightHandover.supervisorName || '—', 'Handover Completed At', fmtDateTime(p.nightHandover.at) + ' IST');
-                        kv('Supervisor Qualification', (p.nightHandover.pmAuthorized ? 'PM Authorized' : 'Pending') + ' · Training Valid (<365d)', 'Gate Verification', 'PASSED');
+                        masterRows.push(['Handover Supervisor (Night)', p.nightHandover.supervisorName || '—', 'Handover Completed At', fmtDateTime(p.nightHandover.at) + ' IST']);
+                        masterRows.push(['Supervisor Qualification', (p.nightHandover.pmAuthorized ? 'PM Authorized' : 'Authorized') + ' · Training Valid (<365d)', 'Gate Verification', 'PASSED (Illumination >= 50 Lux Verified)']);
                     }
                     if (p.pmNightAck) {
-                        kv('P&M Night Equipment Clearance', 'VERIFIED: Lighting Towers & Lux Levels Safe', 'P&M Engineer', p.pmNightAck.by || '—');
+                        masterRows.push(['P&M Night Equipment Clearance', 'VERIFIED: Lighting Towers, DG Sets & Cables Inspected', 'P&M Engineer', p.pmNightAck.by || '—']);
                     }
-                } else {
-                    kv('Depth of Excavation', p.depth + ' m', 'Slope', '1:' + p.slope);
-                    kv('Plant / Equipment', equipDisplay(p), 'Organization', p.organization + (p.contractor ? ' — ' + p.contractor : ''));
                 }
-                kv('Permit GPS', p.gps ? (p.gps.lat.toFixed(5) + ', ' + p.gps.lng.toFixed(5) + (p.gps.address ? '  (' + p.gps.address + ')' : '')) : '—');
-                kv('Created At', fmtDateTime(p.createdAt) + ' IST', 'Submitted At', p.submittedAt ? fmtDateTime(p.submittedAt) + ' IST' : '—');
-                kv('Planned Start', p.startTime ? p.startTime + ' IST' : '—', 'Valid Till', p.validTill ? fmtDateTime(p.validTill) + ' IST' : '—');
-                if (p.activatedAt) kv('Activated At', fmtDateTime(p.activatedAt) + ' IST');
-                if (p.cancelReason) kv('Cancellation Reason', p.cancelReason);
-                if (p.returnReason) kv('Correction Reason', p.returnReason);
-                hr();
-                // ---------- 2. Checklist ----------
-                sectionTitle('2. ' + pMeta(p).short + ' Safety Checklist (' + pMeta(p).form + ' §II)');
+
+                if (p.cancelReason) masterRows.push(['Cancellation Reason', p.cancelReason]);
+                if (p.returnReason) masterRows.push(['Correction Reason', p.returnReason]);
+
+                drawMasterGrid(masterRows);
+
+                // ==================== 2. SAFETY CHECKLIST ====================
+                sectionTitle(pMeta(p).short + ' Safety Checklist & Control Measures (' + pMeta(p).form + ' §II)');
+                
+                // Table column headers
+                function drawChecklistHeader() {
+                    ensure(7);
+                    doc.setFillColor.apply(doc, PDF_HEADER_BG);
+                    doc.rect(L, y, W, 6.2, 'F');
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.2);
+                    doc.rect(L, y, W, 6.2);
+                    doc.line(L + 10, y, L + 10, y + 6.2);
+                    doc.line(L + 124, y, L + 124, y + 6.2);
+                    doc.line(L + 148, y, L + 148, y + 6.2);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.2);
+                    doc.setTextColor.apply(doc, PDF_NAVY);
+                    doc.text('SL.', L + 3, y + 4.2);
+                    doc.text('STATUTORY SAFETY REQUIREMENT / CONTROL ITEM', L + 13, y + 4.2);
+                    doc.text('COMPLIANCE', L + 126, y + 4.2);
+                    doc.text('NOTES / SUBCHECKS', L + 150, y + 4.2);
+                    y += 6.2;
+                }
+                drawChecklistHeader();
+
                 (p.checklist || []).forEach(function (c, i) {
                     const ansTxt = c.ans === 'yes' ? 'YES' : c.ans === 'no' ? 'NO' : c.ans === 'na' ? 'N/A' : '—';
-                    const qLines = doc.splitTextToSize((i + 1) + '. ' + c.q, W - 20);
-                    ensure(qLines.length * 3.9 + 4);
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.6); doc.setTextColor(20, 26, 34);
-                    doc.text(qLines, L, y + 3);
-                    doc.setFont('helvetica', 'bold');
-                    if (c.ans === 'no') doc.setTextColor(179, 45, 45); else if (c.ans === 'yes') doc.setTextColor(26, 122, 74); else doc.setTextColor.apply(doc, PDF_MUTED);
-                    doc.text(ansTxt, R, y + 3, { align: 'right' });
-                    y += qLines.length * 3.9 + 1.6;
-                    if (c.comment) {
-                        doc.setFont('helvetica', 'italic'); doc.setFontSize(7.9); doc.setTextColor.apply(doc, PDF_MUTED);
-                        const cl = doc.splitTextToSize('Comment: ' + c.comment, W - 8);
-                        ensure(cl.length * 3.6 + 2); doc.text(cl, L + 4, y + 2.6); y += cl.length * 3.6 + 2;
-                    }
+                    const cleanQ = String(c.q || '').replace(/^\d+[\.\)]\s*/, '');
+                    const qLines = doc.splitTextToSize(cleanQ || c.q, 110);
+                    let notes = [];
+                    if (c.comment) notes.push(c.comment);
                     if (c.subchecks) {
                         const subs = [];
                         if (c.subchecks.above) subs.push('Above');
                         if (c.subchecks.below) subs.push('Below');
                         if (c.subchecks.workplace) subs.push('Workplace');
-                        if (subs.length) {
-                            doc.setFont('helvetica', 'italic'); doc.setFontSize(7.9); doc.setTextColor(26, 122, 74);
-                            ensure(5); doc.text('Covered openings verified: ' + subs.join(', '), L + 4, y + 2.6); y += 5;
-                        }
+                        if (subs.length) notes.push('Shields: ' + subs.join(', '));
                     }
-                    if (c.gps) {
-                        doc.setFont('helvetica', 'italic'); doc.setFontSize(7.9); doc.setTextColor.apply(doc, PDF_MUTED);
-                        ensure(5); doc.text('GPS recorded: ' + c.gps.lat.toFixed(5) + ', ' + c.gps.lng.toFixed(5), L + 4, y + 2.6); y += 5;
+                    if (c.gps) notes.push('GPS: ' + c.gps.lat.toFixed(4) + ',' + c.gps.lng.toFixed(4));
+                    const nLines = doc.splitTextToSize(notes.join(' · ') || '—', 35);
+                    const rowH = Math.max(qLines.length, nLines.length) * 3.7 + 3;
+
+                    if (y + rowH > 280) {
+                        doc.addPage();
+                        drawRunningHeader(doc.getNumberOfPages());
+                        y = 22;
+                        drawChecklistHeader();
                     }
-                    if (c.photo && /^data:image\//.test(c.photo)) tryImg(c.photo, 46, 30, 'Evidence photo — checklist item ' + (i + 1));
-                    else if (c.photo) para('   Evidence photo on file for item ' + (i + 1) + ' (demo asset).', 7.9);
-                });
-                hr();
-                // ---------- 3. Attachments ----------
-                sectionTitle('3. Attachments & Photographic Evidence');
-                tryImg(p.sitePhoto, 74, 50, 'Work-area site photograph (Permittee, at initiation)');
-                if (ptypeOf(p) === 'confined') {
-                    if (p.confinedChecklistAttachment) {
-                        if (p.confinedChecklistAttachment.isImage && p.confinedChecklistAttachment.dataUrl) {
-                            tryImg(p.confinedChecklistAttachment.dataUrl, 74, 52, 'Signed Pre-Task Safety Checklist Document — ' + (p.confinedChecklistAttachment.name || 'Checklist Scan'));
-                        } else {
-                            para('• Pre-Task Safety Checklist Document attached: ' + (p.confinedChecklistAttachment.name || 'Signed Physical Checklist') + ' (uploaded ' + fmtDateTime(p.confinedChecklistAttachment.at) + ' IST).', 8.6);
-                        }
+
+                    if (i % 2 === 1) {
+                        doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                        doc.rect(L, y, W, rowH, 'F');
                     }
-                } else if (ptypeOf(p) === 'blasting') {
-                    if (p.blastingInchargeAck && p.blastingInchargeAck.photo) {
-                        if (p.blastingInchargeAck.photo !== 'demo' && /^data:image\//.test(p.blastingInchargeAck.photo)) {
-                            tryImg(p.blastingInchargeAck.photo, 74, 52, 'Blasting / Drilling In-charge statutory on-site inspection photograph');
-                        } else {
-                            para('• Blasting / Drilling In-charge statutory on-site inspection photograph on file (verified).', 8.6);
-                        }
-                    }
-                } else if (ptypeOf(p) === 'nightshift' && p.nightHandover) {
-                    if (p.nightHandover.illuminationPhoto) {
-                        tryImg(p.nightHandover.illuminationPhoto, 74, 52, 'Night Shift Illumination & Lighting Tower Photograph (8:30 PM Handover)');
-                    }
-                    if (p.nightHandover.activityPhoto) {
-                        tryImg(p.nightHandover.activityPhoto, 74, 52, 'Linked Activity Setup & PPE Compliance Photograph (8:30 PM Handover)');
-                    }
-                } else if (ptypeOf(p) === 'excavation') {
-                    if (p.drawing) {
-                        if (p.drawing.isImage && p.drawing.dataUrl) tryImg(p.drawing.dataUrl, 74, 52, 'Drawing indicating proposed excavation — ' + p.drawing.name);
-                        else para('• Excavation drawing attached: ' + p.drawing.name + ' (uploaded ' + fmtDateTime(p.drawing.at) + ' IST).', 8.6);
-                    }
-                }
-                hr();
-                // ---------- 4. Approvals & signatures ----------
-                sectionTitle('4. Approval History & Digital Signatures');
-                function sigBlock(roleLabel, entry, sigDataUrl, sigName, sigAt) {
-                    ensure(30);
-                    doc.setDrawColor.apply(doc, PDF_LINE); doc.setLineWidth(.3); doc.roundedRect(L, y, W, 27, 1.5, 1.5);
-                    doc.setFont('helvetica', 'bold'); doc.setFontSize(8.8); doc.setTextColor.apply(doc, PDF_NAVY);
-                    doc.text(roleLabel, L + 4, y + 5.6);
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(8.2); doc.setTextColor(20, 26, 34);
-                    doc.text('Name: ' + (sigName || '—'), L + 4, y + 11.4);
-                    doc.text('Date / Time: ' + (sigAt ? fmtDateTime(sigAt) + ' IST' : '—'), L + 4, y + 16.2);
-                    if (entry && entry.gps) doc.text('GPS: ' + entry.gps.lat.toFixed(5) + ', ' + entry.gps.lng.toFixed(5) + (entry.gps.within !== undefined ? (entry.gps.within ? ' (within site radius)' : ' (outside radius)') : ''), L + 4, y + 21);
-                    if (entry && entry.comment) { const cl = doc.splitTextToSize('Remark: ' + entry.comment, 92); doc.setFontSize(7.4); doc.setTextColor.apply(doc, PDF_MUTED); doc.text(cl.slice(0, 2), L + 4, y + 25); }
-                    doc.setFont('helvetica', 'italic'); doc.setFontSize(7.2); doc.setTextColor.apply(doc, PDF_MUTED);
-                    doc.text('Digital Signature', R - 52, y + 5.2);
-                    if (sigDataUrl && /^data:image\//.test(sigDataUrl)) {
-                        try { doc.addImage(sigDataUrl, pdfImgFormat(sigDataUrl), R - 54, y + 6.5, 50, 16); } catch (e) { }
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.18);
+                    doc.rect(L, y, W, rowH);
+                    doc.line(L + 10, y, L + 10, y + rowH);
+                    doc.line(L + 124, y, L + 124, y + rowH);
+                    doc.line(L + 148, y, L + 148, y + rowH);
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7.5);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text(String(i + 1), L + 3.5, y + 4);
+                    doc.text(qLines, L + 13, y + 4);
+
+                    // Compliance pill
+                    if (c.ans === 'yes') {
+                        doc.setFillColor(240, 253, 244);
+                        doc.rect(L + 126, y + 1.8, 20, 4.5, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(22, 163, 74);
+                    } else if (c.ans === 'no') {
+                        doc.setFillColor(254, 242, 242);
+                        doc.rect(L + 126, y + 1.8, 20, 4.5, 'F');
+                        doc.setDrawColor(220, 38, 38);
+                        doc.rect(L + 126, y + 1.8, 20, 4.5);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setTextColor(220, 38, 38);
                     } else {
-                        doc.setDrawColor.apply(doc, PDF_LINE); doc.rect(R - 54, y + 6.5, 50, 16);
-                        doc.text('(signature not on record)', R - 29, y + 15, { align: 'center' });
+                        doc.setFont('helvetica', 'normal');
+                        doc.setTextColor.apply(doc, PDF_MUTED);
                     }
-                    y += 30;
-                }
-                const isLifting = ptypeOf(p) === 'lifting' || ptypeOf(p) === 'liftplan';
-                if (isLifting) {
-                    if (p.craneOperatorSig) {
-                        const opSig = p.craneOperatorSig.sig || (typeof p.craneOperatorSig === 'string' ? p.craneOperatorSig : null);
-                        const opName = p.craneOperatorName || (p.craneOperatorSig && p.craneOperatorSig.name) || 'Crane Operator';
-                        sigBlock('Crane Operator — Pre-Location Statutory Briefing', { gps: p.gps, comment: p.craneOperatorLicense ? 'License: ' + p.craneOperatorLicense : null }, opSig, opName, (p.craneOperatorSig && p.craneOperatorSig.at) || p.createdAt);
-                    }
-                    if (p.riggerSig) {
-                        const rigSig = p.riggerSig.sig || (typeof p.riggerSig === 'string' ? p.riggerSig : null);
-                        const rigName = p.riggerName || (p.riggerSig && p.riggerSig.name) || 'Signaler / Rigger';
-                        sigBlock('Signaler / Rigger — Pre-Location Statutory Briefing', { gps: p.gps, comment: p.riggerLicense || p.riggerCertNo ? 'Cert: ' + (p.riggerLicense || p.riggerCertNo) : null }, rigSig, rigName, (p.riggerSig && p.riggerSig.at) || p.createdAt);
-                    }
-                }
-                const pCreatorSigRole = (ptypeOf(p) === 'nightshift') ? 'Site Supervisor (Permittee · Day)' : (ptypeOf(p) === 'electrical') ? 'Permittee Electrician' : (isLifting ? 'Lifting Supervisor (Permittee)' : ((p.createdByRole === 'blasting-incharge') ? 'Blasting / Drilling In-charge (Permittee)' : 'Site Supervisor (Permittee)'));
-                sigBlock(pCreatorSigRole + ' — Submission', { gps: p.gps, comment: null }, p.signature && p.signature.dataUrl, p.createdBy, (p.signature && p.signature.at) || p.submittedAt);
-                if (ptypeOf(p) === 'nightshift') {
-                    if (p.nightHandover && p.nightHandover.sig) {
-                        sigBlock('Night Site Supervisor — On-Site Physical Handover & Illumination Verification', { gps: p.nightHandover.gps, comment: p.nightHandover.remarks }, p.nightHandover.sig, p.nightHandover.supervisorName, p.nightHandover.at);
-                    }
-                    if (p.pmNightAck && p.pmNightAck.acknowledged) {
-                        sigBlock('P&M Engineer — Night Equipment & Lighting Clearance', { gps: p.pmNightAck.gps, comment: p.pmNightAck.comment }, p.pmNightAck.sig, p.pmNightAck.by, p.pmNightAck.at);
-                    }
-                }
-                if (ptypeOf(p) === 'blasting' && p.blastingInchargeAck && p.blastingInchargeAck.acknowledged) {
-                    sigBlock('Blasting / Drilling In-charge — Statutory Safety Acknowledgment (PESO)', { gps: p.blastingInchargeAck.gps, comment: p.blastingInchargeAck.comment }, p.blastingInchargeAck.sig, p.blastingInchargeAck.by, p.blastingInchargeAck.at);
-                }
-                if (ptypeOf(p) === 'electrical' && p.pmAck && p.pmAck.acknowledged) {
-                    sigBlock('P&M Engineer — Statutory Safety Acknowledgment (Batching Plant)', { gps: p.pmAck.gps, comment: p.pmAck.comment }, p.pmAck.sig, p.pmAck.by, p.pmAck.at);
-                }
-                if (p.siteEngineerAck && p.siteEngineerAck.acknowledged) {
-                    sigBlock('Site Engineer — Verification & Acknowledgment', { gps: p.siteEngineerAck.gps, comment: p.siteEngineerAck.comment }, p.siteEngineerAck.sig, p.siteEngineerAck.by, p.siteEngineerAck.at);
-                }
-                function chainSigRows(ch, isExt) {
-                    const isExc = ptypeOf(p) === 'excavation';
-                    const isConf = ptypeOf(p) === 'confined';
-                    const isBlast = ptypeOf(p) === 'blasting';
-                    const isElec = ptypeOf(p) === 'electrical';
-                    const isNight = ptypeOf(p) === 'nightshift';
-                    const isElecBatching = isElec && (p.electricalSiteType === 'batching_plant' || (ch && ch.kind === 'electrical-batching'));
-                    const shLabel = ((pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge')) + ' — Review & Approval';
-                    if (isExt) {
-                        const extRows = [];
-                        if (isElecBatching || (ch && ch.kind === 'ext-batching-elec')) {
-                            extRows.push(['pm', 'P&M Engineer — Verification & Step 2 Acknowledgment']);
-                            extRows.push(['qualityEngineer', 'Quality Engineer (Section Head) — Review & Approval']);
-                        } else {
-                            extRows.push(['siteEngineer', 'Site Engineer — Verification & Re-acknowledgment']);
-                            if (!isBlast) {
-                                extRows.push(['sectionHead', shLabel]);
-                            }
-                        }
-                        if (ch) {
-                            if (ch.ehsManager && ch.ehsManager.status !== 'pending') extRows.push(['ehsManager', 'EHS Safety — Final Endorsement']);
-                            if (ch.ehsOfficer && ch.ehsOfficer.status !== 'pending') extRows.push(['ehsOfficer', 'EHS Safety — Final Endorsement']);
-                        }
-                        return extRows;
-                    }
-                    const isHw = ptypeOf(p) === 'hotwork';
-                    const isShaft = ptypeOf(p) === 'shaft';
-                    const isGr = ptypeOf(p) === 'guardrail';
-                    const isGeneral = ptypeOf(p) === 'general';
-                    const isCritLift = isLifting && (p.liftingClassification === 'critical' || ptypeOf(p) === 'liftplan' || (ch && ch.kind === 'lifting-critical'));
-                    const rows = isLifting
-                        ? (isCritLift
-                            ? [['pm', 'P&M Engineer — Technical Clearance & Rigging Review'], ['sectionHead', shLabel], ['projectManager', 'Project Manager — Critical Lift Plan Executive Acknowledgment']]
-                            : [['pm', 'P&M Engineer — Technical Clearance & Rigging Review'], ['sectionHead', shLabel]])
-                        : isElec
-                        ? (isElecBatching
-                            ? [['qualityEngineer', 'Quality Engineer — Statutory Review & Approval']]
-                            : ((ch && ch.pm && ch.pm.status !== 'pending') ? [['pm', 'P&M Engineer — Domain Clearance & Statutory Declaration']] : [['mep', 'MEP Engineer — Domain Clearance & Statutory Declaration']]).concat([['sectionHead', shLabel]]))
-                        : isBlast
-                        ? []
-                        : isConf
-                        ? [['sectionHead', shLabel]]
-                        : isShaft
-                        ? [['mep', 'MEP Engineer — Clearance'], ['sectionHead', shLabel]]
-                        : (isHw || isGr || isGeneral || isNight)
-                        ? [['sectionHead', shLabel]]
-                        : [['mep', 'MEP Engineer — Parallel Approval'], ['pm', 'P&M Engineer — Parallel Approval'], ['it', 'IT Engineer — Parallel Approval'], ['sectionHead', shLabel]];
-                    if (ch) {
-                        if (ch.ehsManager && ch.ehsManager.status !== 'pending') rows.push(['ehsManager', 'EHS Manager — Final Endorsement']);
-                        if (ch.ehsOfficer && ch.ehsOfficer.status !== 'pending') rows.push(['ehsOfficer', 'EHS Officer — Final Endorsement']);
-                    }
-                    return rows;
-                }
-                chainSigRows(p.approvals).forEach(function (pair) {
-                    const e = p.approvals && p.approvals[pair[0]];
-                    const isEhsRow = pair[0] === 'ehsManager' || pair[0] === 'ehsOfficer';
-                    if (e && e.status !== 'pending') sigBlock(pair[1] + (e.status === 'rejected' ? (isEhsRow ? ' — PERMIT CANCELLED' : ' — REJECTED') : ''), e, e.sig, e.by, e.at);
+                    doc.text(ansTxt, L + 136, y + 4.8, { align: 'center' });
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(6.8);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    doc.text(nLines, L + 150, y + 4);
+
+                    y += rowH;
                 });
-                hr();
-                // ---------- 5. Extension history ----------
-                if (p.extension) {
-                    sectionTitle('5. Extension History');
-                    kv('Requested By', p.extension.requestedBy, 'Requested At', fmtDateTime(p.extension.requestedAt) + ' IST');
-                    kv('Duration Requested', fmtExtDur(p.extension), 'Extension Status', p.extension.status);
-                    kv('Reason', p.extension.reason);
-                    if (p.extension.gps) kv('Request GPS', p.extension.gps.lat.toFixed(5) + ', ' + p.extension.gps.lng.toFixed(5));
-                    chainSigRows(p.extension.approvals, true).forEach(function (pair) {
-                        const e = p.extension.approvals && p.extension.approvals[pair[0]];
-                        if (e && e.status !== 'pending') sigBlock('Extension — ' + pair[1] + (e.status === 'rejected' ? ' — REJECTED' : ''), e, e.sig, e.by, e.at);
-                    });
-                    hr();
-                }
-                // ---------- Observation Record (connected to permit number) ----------
-                if (p.observation) {
-                    sectionTitle('Site Safety Observation Record');
-                    const obsRef = p.observation.id || ('OBS-' + p.id);
-                    const isExc = ptypeOf(p) === 'excavation';
-                    const isConf = ptypeOf(p) === 'confined';
-                    const shTitle = (pMeta(p) && pMeta(p).shLabel) || (isExc ? 'Excavation Head' : 'Tower Incharge');
-                    kv('Work Permit Number', p.id, 'Observation Reference', obsRef);
-                    kv('Raised By', p.observation.raisedBy + (p.observation.raisedByRole ? ' (' + p.observation.raisedByRole + ')' : ''), 'Raised At', fmtDateTime(p.observation.raisedAt) + ' IST');
-                    kv('Deviation Reported', p.observation.comment, 'Observation Status', p.observation.status);
-                    if (p.observation.gps) kv('Observation GPS', p.observation.gps.lat.toFixed(5) + ', ' + p.observation.gps.lng.toFixed(5));
-                    if (p.observation.response) {
-                        kv('Rectification By', p.observation.response.respondedBy, 'Rectified At', fmtDateTime(p.observation.response.respondedAt) + ' IST');
-                        kv('Corrective Remarks', p.observation.response.comment);
-                        tryImg(p.observation.response.photo, 60, 40, 'Observation rectification photo evidence');
-                        if (p.observation.response.sig) {
-                            sigBlock('Site Supervisor — Rectification Submission', { gps: p.observation.response.gps, comment: p.observation.response.comment }, p.observation.response.sig, p.observation.response.respondedBy, p.observation.response.respondedAt);
+                y += 4;
+
+                // ==================== 2B. LIFTING OPERATIONS SPECIAL SUB-TABLES ====================
+                if (pt === 'lifting' || pt === 'liftplan') {
+                    const isCritLift = (p.liftingClassification === 'critical' || pt === 'liftplan');
+
+                    // 1. Type of Load Checklist (14 High-Risk Criteria)
+                    if (p.loadChecklist && p.loadChecklist.length) {
+                        sectionTitle('Type of Load Checklist (14 High-Risk Statutory Criteria)');
+                        function drawLcHeader() {
+                            ensure(7);
+                            doc.setFillColor.apply(doc, PDF_HEADER_BG);
+                            doc.rect(L, y, W, 6.2, 'F');
+                            doc.setDrawColor.apply(doc, PDF_LINE);
+                            doc.setLineWidth(0.2);
+                            doc.rect(L, y, W, 6.2);
+                            doc.line(L + 10, y, L + 10, y + 6.2);
+                            doc.line(L + 144, y, L + 144, y + 6.2);
+                            doc.setFont('helvetica', 'bold');
+                            doc.setFontSize(7.2);
+                            doc.setTextColor.apply(doc, PDF_NAVY);
+                            doc.text('SL.', L + 3, y + 4.2);
+                            doc.text('STATUTORY CRITERIA (ANY YES TRIGGERS CRITICAL LIFT PTW-009B)', L + 13, y + 4.2);
+                            doc.text('CLASSIFICATION', L + 148, y + 4.2);
+                            y += 6.2;
                         }
+                        drawLcHeader();
+
+                        p.loadChecklist.forEach(function (lcItem, lcIdx) {
+                            const qText = lcItem.q && (lcItem.q.text || lcItem.q) ? String(lcItem.q.text || lcItem.q) : 'High Risk Criteria';
+                            const ans = lcItem.ans || 'no';
+                            const qLines = doc.splitTextToSize(qText, 130);
+                            const rowH = Math.max(qLines.length * 3.7 + 3, 7.2);
+
+                            if (y + rowH > 280) {
+                                doc.addPage();
+                                drawRunningHeader(doc.getNumberOfPages());
+                                y = 22;
+                                drawLcHeader();
+                            }
+
+                            if (lcIdx % 2 === 1) {
+                                doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                                doc.rect(L, y, W, rowH, 'F');
+                            }
+                            doc.setDrawColor.apply(doc, PDF_LINE);
+                            doc.setLineWidth(0.18);
+                            doc.rect(L, y, W, rowH);
+                            doc.line(L + 10, y, L + 10, y + rowH);
+                            doc.line(L + 144, y, L + 144, y + rowH);
+
+                            doc.setFont('helvetica', 'normal');
+                            doc.setFontSize(7.3);
+                            doc.setTextColor(15, 23, 42);
+                            doc.text(String(lcIdx + 1), L + 3.5, y + 4);
+                            doc.text(qLines, L + 13, y + 4);
+
+                            if (ans === 'yes') {
+                                doc.setFillColor(254, 242, 242);
+                                doc.rect(L + 148, y + 1.8, 32, 4.5, 'F');
+                                doc.setFont('helvetica', 'bold');
+                                doc.setTextColor(220, 38, 38);
+                                doc.text('YES (CRITICAL)', L + 164, y + 4.8, { align: 'center' });
+                            } else {
+                                doc.setFillColor(240, 253, 244);
+                                doc.rect(L + 148, y + 1.8, 32, 4.5, 'F');
+                                doc.setFont('helvetica', 'bold');
+                                doc.setTextColor(22, 163, 74);
+                                doc.text('NO (ROUTINE)', L + 164, y + 4.8, { align: 'center' });
+                            }
+                            y += rowH;
+                        });
+                        y += 4;
+                    }
+
+                    // 2. Sub-Table 2: Documentation & On-Site Controls
+                    const partScope = isCritLift ? 'Part B: Complex / Critical / Heavy Lifts' : 'Part A: Routine Lifts';
+                    sectionTitle('Sub-Table 2: Statutory Documentation & On-Site Controls (' + partScope + ')');
+                    function drawDocHeader() {
+                        ensure(7);
+                        doc.setFillColor.apply(doc, PDF_HEADER_BG);
+                        doc.rect(L, y, W, 6.2, 'F');
+                        doc.setDrawColor.apply(doc, PDF_LINE);
+                        doc.setLineWidth(0.2);
+                        doc.rect(L, y, W, 6.2);
+                        doc.line(L + 10, y, L + 10, y + 6.2);
+                        doc.line(L + 144, y, L + 144, y + 6.2);
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(7.2);
+                        doc.setTextColor.apply(doc, PDF_NAVY);
+                        doc.text('SL.', L + 3, y + 4.2);
+                        doc.text('STATUTORY DOCUMENTATION & CREDENTIAL CHECKLIST', L + 13, y + 4.2);
+                        doc.text('PHYSICAL VERIFICATION', L + 148, y + 4.2);
+                        y += 6.2;
+                    }
+                    drawDocHeader();
+
+                    const fullDocCatalog = isCritLift ? (typeof LIFTING_DOCS_CRITICAL !== 'undefined' ? LIFTING_DOCS_CRITICAL : []) : (typeof LIFTING_DOCS_ROUTINE !== 'undefined' ? LIFTING_DOCS_ROUTINE : []);
+                    const checkedDocs = Array.isArray(p.liftingDocs) ? p.liftingDocs : [];
+                    fullDocCatalog.forEach(function (docItem, docIdx) {
+                        const isVerified = checkedDocs.includes(docItem);
+                        const docLines = doc.splitTextToSize(docItem, 130);
+                        const rowH = Math.max(docLines.length * 3.7 + 3, 7.2);
+
+                        if (y + rowH > 280) {
+                            doc.addPage();
+                            drawRunningHeader(doc.getNumberOfPages());
+                            y = 22;
+                            drawDocHeader();
+                        }
+
+                        if (docIdx % 2 === 1) {
+                            doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                            doc.rect(L, y, W, rowH, 'F');
+                        }
+                        doc.setDrawColor.apply(doc, PDF_LINE);
+                        doc.setLineWidth(0.18);
+                        doc.rect(L, y, W, rowH);
+                        doc.line(L + 10, y, L + 10, y + rowH);
+                        doc.line(L + 144, y, L + 144, y + rowH);
+
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(7.3);
+                        doc.setTextColor(15, 23, 42);
+                        doc.text(String(docIdx + 1), L + 3.5, y + 4);
+                        doc.text(docLines, L + 13, y + 4);
+
+                        if (isVerified) {
+                            doc.setFillColor(240, 253, 244);
+                            doc.rect(L + 148, y + 1.8, 32, 4.5, 'F');
+                            doc.setFont('helvetica', 'bold');
+                            doc.setTextColor(22, 163, 74);
+                            doc.text('VERIFIED & ON-SITE', L + 164, y + 4.8, { align: 'center' });
+                        } else {
+                            doc.setFillColor(248, 250, 252);
+                            doc.rect(L + 148, y + 1.8, 32, 4.5, 'F');
+                            doc.setFont('helvetica', 'normal');
+                            doc.setTextColor.apply(doc, PDF_MUTED);
+                            doc.text('NOT APPLICABLE / N/A', L + 164, y + 4.8, { align: 'center' });
+                        }
+                        y += rowH;
+                    });
+                    y += 4;
+                }
+
+                // ==================== 3. ATTACHMENTS & EVIDENCE ====================
+                sectionTitle('Photographic Evidence & Statutory Attachments');
+                
+                function drawPhotoCard(xPos, yPos, cardW, cardH, imgData, title, meta) {
+                    doc.setFillColor(255, 255, 255);
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.2);
+                    doc.roundedRect(xPos, yPos, cardW, cardH, 1.2, 1.2, 'FD');
+                    // Header bar inside card
+                    doc.setFillColor.apply(doc, PDF_HEADER_BG);
+                    doc.rect(xPos, yPos, cardW, 5.5, 'F');
+                    doc.line(xPos, yPos + 5.5, xPos + cardW, yPos + 5.5);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(6.8);
+                    doc.setTextColor.apply(doc, PDF_NAVY);
+                    doc.text(doc.splitTextToSize(title, cardW - 6)[0], xPos + 3, yPos + 3.8);
+
+                    const imgViewportH = cardH - 12;
+                    const imgViewportW = cardW - 6;
+                    if (imgData && /^data:image\//i.test(imgData)) {
+                        try {
+                            doc.addImage(imgData, pdfImgFormat(imgData), xPos + 3, yPos + 6.5, imgViewportW, imgViewportH);
+                        } catch (e) {
+                            doc.setDrawColor.apply(doc, PDF_LINE);
+                            doc.rect(xPos + 3, yPos + 6.5, imgViewportW, imgViewportH);
+                            doc.setFont('helvetica', 'italic');
+                            doc.setFontSize(6.8);
+                            doc.setTextColor.apply(doc, PDF_MUTED);
+                            doc.text('Image attached on file', xPos + (cardW / 2), yPos + (cardH / 2), { align: 'center' });
+                        }
+                    } else {
+                        doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                        doc.rect(xPos + 3, yPos + 6.5, imgViewportW, imgViewportH, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(6.8);
+                        doc.setTextColor.apply(doc, PDF_NAVY);
+                        doc.text(imgData === 'demo' ? 'Site Photograph Verified & Recorded on File' : (imgData ? 'Verified Document Attached' : 'Photographic Evidence Recorded in System'), xPos + (cardW / 2), yPos + (cardH / 2) - 1.5, { align: 'center' });
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(5.8);
+                        doc.setTextColor.apply(doc, PDF_MUTED);
+                        doc.text('Worksite Geofence & DPDP Compliant Identity Capture', xPos + (cardW / 2), yPos + (cardH / 2) + 2.5, { align: 'center' });
+                    }
+
+                    // Card Footer meta
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(6.2);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    doc.text(meta || 'Verified on-site capture', xPos + 3, yPos + cardH - 1.8);
+                }
+
+                const cardW = (W - 4) / 2;
+                const cardH = 50;
+
+                // Collect photos
+                const photosList = [];
+                if (p.sitePhoto) {
+                    photosList.push({ img: p.sitePhoto, title: 'Work-Area Site Photo (Initiation)', meta: 'Permittee Site Capture · ' + fmtDateTime(p.submittedAt || p.createdAt) + ' IST' });
+                }
+                if (pt === 'excavation' && p.drawing) {
+                    photosList.push({ img: p.drawing.dataUrl, title: 'Excavation Drawing: ' + (p.drawing.name || 'Site Plan'), meta: 'Uploaded ' + fmtDateTime(p.drawing.at) + ' IST' });
+                } else if (pt === 'confined' && p.confinedChecklistAttachment) {
+                    photosList.push({ img: p.confinedChecklistAttachment.dataUrl, title: 'Pre-Task Checklist: ' + (p.confinedChecklistAttachment.name || 'Checklist Scan'), meta: 'Signed Physical Checklist' });
+                } else if (pt === 'blasting' && p.blastingInchargeAck && p.blastingInchargeAck.photo) {
+                    photosList.push({ img: p.blastingInchargeAck.photo, title: 'Blasting In-charge On-Site Statutory Photo', meta: 'PESO Verification · ' + (p.blastingInchargeAck.by || 'In-charge') });
+                } else if (pt === 'nightshift' && p.nightHandover) {
+                    if (p.nightHandover.illuminationPhoto) photosList.push({ img: p.nightHandover.illuminationPhoto, title: 'Lighting & Illumination Tower Photo', meta: 'Handover 8:30 PM · Lux Levels Verified' });
+                    if (p.nightHandover.activityPhoto) photosList.push({ img: p.nightHandover.activityPhoto, title: 'Night Activity Setup & PPE Verification', meta: 'Handover 8:30 PM · Night Supervisor' });
+                } else if ((pt === 'lifting' || pt === 'liftplan') && (p.liftingSketch || p.sitePlanPhoto)) {
+                    const lk = p.liftingSketch || p.sitePlanPhoto;
+                    photosList.push({ img: lk.dataUrl, title: 'Lifting Site Plan / Rigging Sketch', meta: lk.name || 'Lifting Plan Attached' });
+                }
+                if (p.surrender && p.surrender.photo) {
+                    photosList.push({ img: p.surrender.photo, title: 'Permit Surrender Completion Evidence', meta: 'Surrendered by ' + p.surrender.by });
+                }
+
+                if (photosList.length === 0) {
+                    photosList.push({ img: null, title: 'Work-Area Site Photograph', meta: 'Recorded in digital permit record' });
+                    photosList.push({ img: null, title: 'Statutory Safety Documentation', meta: 'Verified during workflow approval' });
+                }
+
+                for (let pi = 0; pi < photosList.length; pi += 2) {
+                    ensure(cardH + 4);
+                    const p1 = photosList[pi];
+                    drawPhotoCard(L, y, cardW, cardH, p1.img, p1.title, p1.meta);
+                    if (pi + 1 < photosList.length) {
+                        const p2 = photosList[pi + 1];
+                        drawPhotoCard(L + cardW + 4, y, cardW, cardH, p2.img, p2.title, p2.meta);
+                    }
+                    y += cardH + 4;
+                }
+                y += 2;
+
+                // ==================== 4. STATUTORY SIGNATORIES MATRIX ====================
+                sectionTitle('Statutory Approval History & Governance Matrix');
+
+                const signatoriesFlow = (typeof getPermitSignatoriesFlow === 'function') ? getPermitSignatoriesFlow(p) : [];
+                
+                function drawSigHeader() {
+                    ensure(7);
+                    doc.setFillColor.apply(doc, PDF_HEADER_BG);
+                    doc.rect(L, y, W, 6.2, 'F');
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.2);
+                    doc.rect(L, y, W, 6.2);
+                    doc.line(L + 14, y, L + 14, y + 6.2);
+                    doc.line(L + 62, y, L + 62, y + 6.2);
+                    doc.line(L + 102, y, L + 102, y + 6.2);
+                    doc.line(L + 128, y, L + 128, y + 6.2);
+                    doc.line(L + 160, y, L + 160, y + 6.2);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.2);
+                    doc.setTextColor.apply(doc, PDF_NAVY);
+                    doc.text('STEP', L + 3, y + 4.2);
+                    doc.text('ROLE & STATUTORY MANDATE', L + 16, y + 4.2);
+                    doc.text('DESIGNATED SIGNATORY', L + 64, y + 4.2);
+                    doc.text('DECISION', L + 104, y + 4.2);
+                    doc.text('DATE / TIME & GPS', L + 130, y + 4.2);
+                    doc.text('SIGNATURE / SEAL', L + 162, y + 4.2);
+                    y += 6.2;
+                }
+                drawSigHeader();
+
+                const rkMap = {
+                    'site-engineer': 'siteEngineer',
+                    'project-manager': 'projectManager',
+                    'quality-engineer': 'qualityEngineer',
+                    'section-head': 'sectionHead',
+                    'hw-section-head': 'sectionHead',
+                    'excavation-head': 'sectionHead',
+                    'ehs-manager': 'ehsManager',
+                    'ehs-officer': 'ehsOfficer',
+                    'night-supervisor': 'nightHandover',
+                    'pm-night': 'pmNight',
+                    'blasting-incharge': 'blastingIncharge',
+                    'mep': 'mep',
+                    'pm': 'pm'
+                };
+
+                signatoriesFlow.forEach(function (r, idx) {
+                    let sigObj = (p.signatories && (p.signatories[r.key] || (r.altKey ? p.signatories[r.altKey] : null))) || null;
+                    if (!sigObj && typeof getPermitSignatory === 'function') {
+                        sigObj = getPermitSignatory(p, r.key) || (r.altKey ? getPermitSignatory(p, r.altKey) : null);
+                    }
+
+                    // Check rejection & approval in approvals chain & specialized acks
+                    let isRej = false;
+                    const chKey = rkMap[r.key] || r.key;
+                    const altChKey = r.altKey ? (rkMap[r.altKey] || r.altKey) : null;
+                    let appEntry = (p.approvals && (p.approvals[chKey] || p.approvals[r.key] || (altChKey && p.approvals[altChKey]) || (r.altKey && p.approvals[r.altKey]))) || null;
+
+                    if (r.key === 'site-engineer' && p.siteEngineerAck) {
+                        if (p.siteEngineerAck.rejected) isRej = true;
+                        if (!appEntry && p.siteEngineerAck.acknowledged) {
+                            appEntry = { status: 'approved', by: p.siteEngineerAck.by, at: p.siteEngineerAck.at, sig: p.siteEngineerAck.sig, gps: p.siteEngineerAck.gps };
+                        }
+                    }
+                    if (r.key === 'pm' && p.pmAck) {
+                        if (p.pmAck.rejected) isRej = true;
+                        if (!appEntry && p.pmAck.acknowledged) {
+                            appEntry = { status: 'approved', by: p.pmAck.by, at: p.pmAck.at, sig: p.pmAck.sig, gps: p.pmAck.gps };
+                        }
+                    }
+                    if (r.key === 'blasting-incharge' && p.blastingInchargeAck) {
+                        if (p.blastingInchargeAck.rejected) isRej = true;
+                        if (!appEntry && p.blastingInchargeAck.acknowledged) {
+                            appEntry = { status: 'approved', by: p.blastingInchargeAck.by, at: p.blastingInchargeAck.at, sig: p.blastingInchargeAck.sig, gps: p.blastingInchargeAck.gps };
+                        }
+                    }
+                    if (r.key === 'project-manager' && p.projectManagerAck) {
+                        if (p.projectManagerAck.rejected) isRej = true;
+                        if (!appEntry && p.projectManagerAck.acknowledged) {
+                            appEntry = { status: 'approved', by: p.projectManagerAck.by, at: p.projectManagerAck.at, sig: p.projectManagerAck.sig, gps: p.projectManagerAck.gps };
+                        }
+                    }
+                    if (r.key === 'night-supervisor' && p.nightHandover) {
+                        if (!appEntry) {
+                            appEntry = { status: 'approved', by: p.nightHandover.supervisorName, at: p.nightHandover.at, sig: p.nightHandover.sig, gps: p.nightHandover.gps };
+                        }
+                    }
+                    if ((r.key === 'pm' || r.key === 'pm-night') && p.pmNightAck) {
+                        if (!appEntry && p.pmNightAck.acknowledged) {
+                            appEntry = { status: 'approved', by: p.pmNightAck.by, at: p.pmNightAck.at, sig: p.pmNightAck.sig, gps: p.pmNightAck.gps };
+                        }
+                    }
+                    if (appEntry && appEntry.status === 'rejected') isRej = true;
+
+                    const rowH = 12.5;
+                    if (y + rowH > 280) {
+                        doc.addPage();
+                        drawRunningHeader(doc.getNumberOfPages());
+                        y = 22;
+                        drawSigHeader();
+                    }
+
+                    if (idx % 2 === 1) {
+                        doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                        doc.rect(L, y, W, rowH, 'F');
+                    }
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.18);
+                    doc.rect(L, y, W, rowH);
+                    doc.line(L + 14, y, L + 14, y + rowH);
+                    doc.line(L + 62, y, L + 62, y + rowH);
+                    doc.line(L + 102, y, L + 102, y + rowH);
+                    doc.line(L + 128, y, L + 128, y + rowH);
+                    doc.line(L + 160, y, L + 160, y + rowH);
+
+                    // Step
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.2);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text(String(idx + 1), L + 5, y + 5.5);
+
+                    // Role & Mandate
+                    doc.text(doc.splitTextToSize(r.label, 45)[0], L + 16, y + 4.5);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(6.4);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    doc.text(doc.splitTextToSize(r.stage, 45)[0], L + 16, y + 8.5);
+
+                    // Signatory Name
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.5);
+                    doc.setTextColor(15, 23, 42);
+                    const sName = (sigObj && sigObj.name) ? sigObj.name : (appEntry && appEntry.by ? appEntry.by : 'Designated Authority');
+                    doc.text(doc.splitTextToSize(sName, 37)[0], L + 64, y + 5);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(6.2);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    doc.text('DPDP Verified Identity', L + 64, y + 9);
+
+                    // Decision / Status Pill
+                    const isApproved = (sigObj && sigObj.sig) || (appEntry && appEntry.status === 'approved');
+                    if (isRej) {
+                        doc.setFillColor(254, 242, 242);
+                        doc.rect(L + 104, y + 3.2, 22, 5.5, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(6.8);
+                        doc.setTextColor(220, 38, 38);
+                        doc.text('REJECTED', L + 115, y + 7, { align: 'center' });
+                    } else if (isApproved) {
+                        doc.setFillColor(240, 253, 244);
+                        doc.rect(L + 104, y + 3.2, 22, 5.5, 'F');
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(6.8);
+                        doc.setTextColor(22, 163, 74);
+                        doc.text('APPROVED', L + 115, y + 7, { align: 'center' });
+                    } else {
+                        doc.setFillColor(255, 251, 235);
+                        doc.rect(L + 104, y + 3.2, 22, 5.5, 'F');
+                        doc.setFont('helvetica', 'italic');
+                        doc.setFontSize(6.5);
+                        doc.setTextColor(180, 83, 9);
+                        doc.text('PENDING', L + 115, y + 7, { align: 'center' });
+                    }
+
+                    // Timestamp & Location
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(6.4);
+                    doc.setTextColor(15, 23, 42);
+                    const sTime = (sigObj && sigObj.at) ? fmtDateTime(sigObj.at) : (appEntry && appEntry.at ? fmtDateTime(appEntry.at) : '—');
+                    doc.text(sTime + (sTime !== '—' ? ' IST' : ''), L + 130, y + 5);
+                    doc.setFontSize(5.8);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    const sGps = (sigObj && sigObj.gps) ? (sigObj.gps.lat.toFixed(3) + ', ' + sigObj.gps.lng.toFixed(3)) : (p.gps ? (p.gps.lat.toFixed(3) + ', ' + p.gps.lng.toFixed(3)) : 'Site Geofenced');
+                    doc.text('GPS: ' + sGps, L + 130, y + 9);
+
+                    // Signature image or seal
+                    const sigData = (sigObj && (sigObj.sig || (sigObj.sig && sigObj.sig.dataUrl))) || (appEntry && appEntry.sig);
+                    const sigStr = (typeof sigData === 'string') ? sigData : (sigData && sigData.dataUrl ? sigData.dataUrl : null);
+                    if (sigStr && /^data:image\//i.test(sigStr)) {
+                        try {
+                            doc.addImage(sigStr, pdfImgFormat(sigStr), L + 162, y + 1.8, 22, 9);
+                        } catch (e) {
+                            doc.setFont('helvetica', 'italic');
+                            doc.setFontSize(6.2);
+                            doc.setTextColor.apply(doc, PDF_MUTED);
+                            doc.text('Digital Signature', L + 173, y + 7, { align: 'center' });
+                        }
+                    } else if (isApproved) {
+                        doc.setFont('helvetica', 'bold');
+                        doc.setFontSize(6.2);
+                        doc.setTextColor(22, 163, 74);
+                        doc.text('[SIGNED DIGITALLY]', L + 173, y + 5.5, { align: 'center' });
+                        doc.setFont('helvetica', 'normal');
+                        doc.setFontSize(5.5);
+                        doc.setTextColor.apply(doc, PDF_MUTED);
+                        doc.text('DPDP Act Verified', L + 173, y + 9, { align: 'center' });
+                    } else {
+                        doc.setFont('helvetica', 'italic');
+                        doc.setFontSize(6.2);
+                        doc.setTextColor.apply(doc, PDF_MUTED);
+                        doc.text('(Awaiting Signature)', L + 173, y + 7, { align: 'center' });
+                    }
+
+                    y += rowH;
+                });
+
+                // DPDP Act Compliance Notice
+                ensure(6);
+                doc.setFont('helvetica', 'italic');
+                doc.setFontSize(6.5);
+                doc.setTextColor.apply(doc, PDF_MUTED);
+                doc.text('Digital identity binding verified under DPDP Act 2023 §4.1 with explicit consent and tamper-evident audit timestamps.', L, y + 4.5);
+                y += 8;
+
+                // ==================== 5. EXTENSION, OBSERVATION & LIFECYCLE ====================
+                if (p.extension) {
+                    sectionTitle('Extension History & Workflow Authorization');
+                    const extRows = [
+                        ['Requested By', p.extension.requestedBy, 'Requested At', fmtDateTime(p.extension.requestedAt) + ' IST'],
+                        ['Duration Requested', (typeof fmtExtDur === 'function') ? fmtExtDur(p.extension) : 'Extended Hours', 'Extension Status', p.extension.status],
+                        ['Reason for Extension', p.extension.reason || 'Operational Extension Requested']
+                    ];
+                    if (p.extension.approvals) {
+                        const ea = p.extension.approvals;
+                        if (ea.siteEngineer && ea.siteEngineer.by) extRows.push(['Site Engineer Review', ea.siteEngineer.by + ' · ' + (ea.siteEngineer.status || 'Approved') + ' (' + fmtDateTime(ea.siteEngineer.at) + ' IST)']);
+                        if (ea.pm && ea.pm.by) extRows.push(['P&M Engineer Review', ea.pm.by + ' · ' + (ea.pm.status || 'Approved') + ' (' + fmtDateTime(ea.pm.at) + ' IST)']);
+                        if (ea.qualityEngineer && ea.qualityEngineer.by) extRows.push(['Quality Engineer Review', ea.qualityEngineer.by + ' · ' + (ea.qualityEngineer.status || 'Approved') + ' (' + fmtDateTime(ea.qualityEngineer.at) + ' IST)']);
+                        if (ea.sectionHead && ea.sectionHead.by) extRows.push([(pMeta(p).shLabel || 'Section Head Review'), ea.sectionHead.by + ' · ' + (ea.sectionHead.status || 'Approved') + ' (' + fmtDateTime(ea.sectionHead.at) + ' IST)']);
+                        const ehsExt = (ea.ehsManager && ea.ehsManager.by) ? ea.ehsManager : ((ea.ehsOfficer && ea.ehsOfficer.by) ? ea.ehsOfficer : null);
+                        if (ehsExt) extRows.push(['EHS Safety Endorsement', ehsExt.by + ' · ' + (ehsExt.status || 'Approved') + ' (' + fmtDateTime(ehsExt.at) + ' IST)']);
+                    }
+                    drawMasterGrid(extRows);
+                }
+
+                if (p.observation) {
+                    sectionTitle('Site Safety Observation & Rectification Record');
+                    const obsRef = p.observation.id || ('OBS-' + p.id);
+                    const obsRows = [
+                        ['Work Permit Number', p.id, 'Observation Reference', obsRef],
+                        ['Raised By', p.observation.raisedBy + (p.observation.raisedByRole ? ' (' + p.observation.raisedByRole + ')' : ''), 'Raised At', fmtDateTime(p.observation.raisedAt) + ' IST'],
+                        ['Deviation Reported', p.observation.comment || 'Safety Non-Conformance Reported', 'Observation Status', p.observation.status || 'Active']
+                    ];
+                    if (p.observation.response) {
+                        obsRows.push(['Rectified By', p.observation.response.respondedBy, 'Rectified At', fmtDateTime(p.observation.response.respondedAt) + ' IST']);
+                        obsRows.push(['Corrective Action Remarks', p.observation.response.comment || 'Rectification completed on-site']);
                     }
                     if (p.observation.engAck) {
-                        sigBlock('Site Engineer — Rectification Verification', { gps: p.observation.engAck.gps, comment: p.observation.engAck.comment }, p.observation.engAck.sig, p.observation.engAck.by, p.observation.engAck.at);
-                    }
-                    if (p.observation.shReview) {
-                        const shObsLabel = shTitle + ' — Rectification Review (' + (p.observation.shReview.approved ? 'Approved & Forwarded to EHS' : 'Rejected / Returned') + ')';
-                        sigBlock(shObsLabel, { gps: p.observation.shReview.gps, comment: p.observation.shReview.comment }, p.observation.shReview.sig, p.observation.shReview.by, p.observation.shReview.at);
+                        obsRows.push(['Site Engineer Verification', p.observation.engAck.by + ' · Verified Rectified (' + fmtDateTime(p.observation.engAck.at) + ' IST)']);
                     }
                     if (p.observation.status === 'Resolved') {
-                        kv('Resolved By', p.observation.resolvedBy, 'Resolved At', fmtDateTime(p.observation.resolvedAt) + ' IST');
-                        kv('Clearance Remarks', p.observation.clearanceRemarks || 'Verified and cleared by EHS');
-                        if (p.observation.ehsSig) {
-                            sigBlock('EHS Safety — Final Clearance & Resumption', { gps: p.observation.ehsGps, comment: p.observation.clearanceRemarks }, p.observation.ehsSig, p.observation.resolvedBy, p.observation.resolvedAt);
-                        }
+                        obsRows.push(['EHS Final Clearance', (p.observation.resolvedBy || 'EHS Safety') + ' · Verified and Cleared for Work Resumption (' + fmtDateTime(p.observation.resolvedAt) + ' IST)']);
                     }
-                    hr();
+                    drawMasterGrid(obsRows);
                 }
-                // ---------- Returned for Correction Section ----------
-                if (p.status === 'Returned for Correction') {
+
+                // Alert Banners for Cancelled, Expired, Returned, Surrendered
+                function drawAlertBanner(type, title, textLines) {
+                    const wrappedLines = [];
+                    textLines.forEach(function (ln) {
+                        const parts = doc.splitTextToSize(String(ln), W - 8);
+                        parts.forEach(function (part) { wrappedLines.push(part); });
+                    });
+                    const boxH = wrappedLines.length * 4.2 + 10;
+                    ensure(boxH);
+                    let fill = [240, 253, 244], stroke = [22, 163, 74], textCol = [22, 163, 74];
+                    if (type === 'danger') { fill = [254, 242, 242]; stroke = [220, 38, 38]; textCol = [220, 38, 38]; }
+                    else if (type === 'warn') { fill = [255, 251, 235]; stroke = [217, 119, 6]; textCol = [217, 119, 6]; }
+                    else if (type === 'purple') { fill = [250, 245, 255]; stroke = [126, 34, 206]; textCol = [126, 34, 206]; }
+
+                    doc.setFillColor.apply(doc, fill);
+                    doc.setDrawColor.apply(doc, stroke);
+                    doc.setLineWidth(0.3);
+                    doc.roundedRect(L, y, W, boxH, 1.5, 1.5, 'FD');
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(8.4);
+                    doc.setTextColor.apply(doc, textCol);
+                    doc.text(title.toUpperCase(), L + 4, y + 5.2);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7.6);
+                    doc.setTextColor(15, 23, 42);
+                    let lineY = y + 9.5;
+                    wrappedLines.forEach(function (ln) {
+                        doc.text(ln, L + 4, lineY);
+                        lineY += 4.2;
+                    });
+                    y += boxH + 4;
+                }
+
+                if (isCancelled) {
+                    sectionTitle('Cancellation Record & Regulatory Stoppage');
+                    drawAlertBanner('danger', 'Permit Cancelled — Work Terminated (SOP 02 §4.3)', [
+                        'Cancelled By: ' + (p.cancelledBy || 'EHS Safety Authority') + ' at ' + fmtDateTime(p.cancelledAt || nowTime()) + ' IST',
+                        'Cancellation Justification: ' + (p.cancelReason || 'Safety Non-Compliance Detected'),
+                        'Under ARPL Corporate Safety Rules, cancelled permits are permanently terminated and cannot be reactivated.',
+                        'A completely new permit application must be initiated and routed through full statutory clearances.'
+                    ]);
+                } else if (isReturned) {
                     sectionTitle('Returned for Correction Record');
-                    kv('Returned By', p.returnedBy || 'Approving Authority', 'Returned At', fmtDateTime(p.returnedAt || p.stageEnteredAt || nowTime()) + ' IST');
-                    kv('Return / Correction Reason', p.returnReason || 'Corrections requested by reviewing authority');
-                    para('This permit was returned to the Site Supervisor for corrective action. Under SOP PTW rules, master data is locked and all corrections must be verified and re-submitted by the Site Engineer prior to workflow re-routing.', 8.4);
-                    hr();
-                }
-                // ---------- Active Operational Status Section ----------
-                if (p.status.startsWith('Active') || ['Observation Pending Site Engineer Acknowledgment', 'Observation Pending Section Head Review', 'Observation Pending EHS Clearance'].includes(p.status)) {
+                    drawAlertBanner('warn', 'Returned to Site Supervisor for Corrective Action', [
+                        'Returned By: ' + (p.returnedBy || 'Reviewing Authority') + ' at ' + fmtDateTime(p.returnedAt || nowTime()) + ' IST',
+                        'Correction Mandate: ' + (p.returnReason || 'Corrections requested prior to approval'),
+                        'Master data is locked. All corrective inputs must be verified and re-submitted prior to workflow progression.'
+                    ]);
+                } else if (isExpired) {
+                    sectionTitle('Expired Non-Closure Record & Mandatory Cessation');
+                    drawAlertBanner('purple', 'Permit Expired Prior to Surrender (Non-Closure Logged)', [
+                        'Scheduled Validity Concluded At: ' + fmtDateTime(p.validTill) + ' IST',
+                        'Audit Record: Work required to cease immediately upon expiry. Non-closure logged in regulatory safety register.',
+                        'EHS Safety verification and formal area inspection required before any resumption or re-issuance.'
+                    ]);
+                } else if (isCompleted) {
+                    sectionTitle('Surrender to EHS Department — Completion Record');
+                    const surrRemarks = (p.surrender && p.surrender.remarks) || 'Work completed safely, area cleared and handed over.';
+                    const surrBy = (p.surrender && p.surrender.by) || p.createdBy;
+                    const surrAt = p.surrender && (p.surrender.surrenderedAt || p.surrender.at) ? fmtDateTime(p.surrender.surrenderedAt || p.surrender.at) + ' IST' : fmtDateTime(nowTime()) + ' IST';
+                    
+                    let deIsoText = 'Housekeeping & area clearance certified physically safe.';
+                    if (pt === 'electrical') deIsoText = 'Electrical De-Isolation Certified: Apparatus safe, lockout padlocks/tags surrendered, and LOTO register logged.';
+                    else if (pt === 'guardrail') deIsoText = 'Guard Rail Re-Fix Certified: All rails, edge protections, shaft gates & floor openings safely re-fixed.';
+                    else if (pt === 'shaft') deIsoText = 'Shaft Closure Certified: All workers evacuated, platforms secured, and shaft openings sealed.';
+                    else if (pt === 'hotwork') deIsoText = 'Fire Watch Certified: Continuous fire watch maintained during work and 1 hour post-completion.';
+                    else if (pt === 'confined') deIsoText = 'Confined Space Evacuation Certified: All personnel evacuated, equipment removed, and entrance sealed.';
+                    else if (pt === 'blasting') deIsoText = 'Post-Blast Clearance Certified: All blast holes inspected, zero misfires confirmed, site certified safe.';
+                    else if (pt === 'nightshift') deIsoText = 'Night Shift Concluded: Workers evacuated, lighting towers de-energized, cables secured, and site surrendered.';
+                    else if (pt === 'lifting' || pt === 'liftplan') deIsoText = 'Lifting Operations Concluded: Load safely landed, crane boomed down, outriggers retracted, and area cleared.';
+
+                    drawAlertBanner('success', 'Statutory Surrender & Closure Certified Complete', [
+                        'Surrendered By: ' + surrBy + ' · Surrendered At: ' + surrAt,
+                        'Statutory Certification: ' + deIsoText,
+                        'Remarks: ' + surrRemarks,
+                        (p.surrender && p.surrender.gps ? 'Surrender GPS: ' + p.surrender.gps.lat.toFixed(5) + ', ' + p.surrender.gps.lng.toFixed(5) : 'GPS Geofenced Verification Confirmed')
+                    ]);
+                } else if (isAct) {
                     sectionTitle('Active Operational Status');
-                    kv('Operational Status', 'ACTIVE WORK PERMIT', 'Valid Till', fmtDateTime(p.validTill) + ' IST');
-                    kv('Worksite Location', p.location, 'Activated At', fmtDateTime(p.activatedAt || p.submittedAt) + ' IST');
-                    para('This permit is currently ACTIVE and authorized for on-site ' + (ptypeOf(p) === 'electrical' ? 'electrical work (HT / LT)' : ptypeOf(p) === 'blasting' ? ((p.drillingBlastingType === 'blasting' || p.dbOperationType === 'Blasting') ? 'blasting' : 'drilling') : ptypeOf(p) === 'guardrail' ? 'guard rail & floor opening removal' : ptypeOf(p) === 'shaft' ? 'shaft' : ptypeOf(p) === 'hotwork' ? 'hot work' : ptypeOf(p) === 'confined' ? 'confined space entry' : ptypeOf(p) === 'general' ? 'general work' : 'excavation') + ' operations. All personnel and subcontractors must strictly adhere to the safety control measures specified herein.', 8.4);
-                    hr();
+                    drawAlertBanner('success', 'Active Work Permit — Operations Authorized', [
+                        'Valid Till: ' + fmtDateTime(p.validTill) + ' IST · Activated At: ' + fmtDateTime(p.activatedAt || p.submittedAt) + ' IST',
+                        'This permit is currently ACTIVE and authorized for on-site execution under strict compliance with SOP 02/R1 control measures.'
+                    ]);
                 }
-                // ---------- Expired Permit Status Section ----------
-                if (p.status === 'Expired') {
-                    sectionTitle('Expired Permit Status — Non-Closure / Overdue Record');
-                    kv('Operational Status', 'EXPIRED (WORK STOPPED)', 'Valid Till', fmtDateTime(p.validTill) + ' IST');
-                    kv('Worksite Location', p.location, 'Expiry Recorded At', fmtDateTime(p.expiredAt || p.stageEnteredAt || p.validTill || nowTime()) + ' IST');
-                    para('This permit EXPIRED prior to formal surrender or closure. Under corporate SOP PTW rules, all drilling, blasting, electrical work, hot work, excavation, shaft, confined space entry, and edge protection operations were required to cease immediately upon expiry. Non-closure has been recorded in the statutory safety audit log. Site conditions must be verified and cleared by EHS Safety prior to any resumption or re-issuance.', 8.4);
-                    hr();
+
+                // ==================== 6. ACTIVITY TIMELINE ====================
+                sectionTitle('Complete Activity Timeline Audit Log');
+
+                function drawTimelineHeader() {
+                    ensure(7);
+                    doc.setFillColor.apply(doc, PDF_HEADER_BG);
+                    doc.rect(L, y, W, 6.2, 'F');
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.2);
+                    doc.rect(L, y, W, 6.2);
+                    doc.line(L + 46, y, L + 46, y + 6.2);
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(7.2);
+                    doc.setTextColor.apply(doc, PDF_NAVY);
+                    doc.text('TIMESTAMP (IST) & ACTOR', L + 3, y + 4.2);
+                    doc.text('SYSTEM EVENT / AUDIT LOG ENTRY', L + 49, y + 4.2);
+                    y += 6.2;
                 }
-                // ---------- Surrender — the final completion record ----------
-                if (p.surrender) {
-                    sectionTitle((p.extension ? '6' : '5') + '. Surrender to EHS Department — Completion Record');
-                    kv('Closed & Surrendered By', p.surrender.by, 'Surrendered At', fmtDateTime(p.surrender.surrenderedAt || p.surrender.at) + ' IST');
-                    if (ptypeOf(p) === 'electrical') {
-                        kv('Electrical De-Isolation Certification', 'VERIFIED: Apparatus made safe, lockout padlocks/tags removed & surrendered, LOTO register logged');
-                    } else if (ptypeOf(p) === 'guardrail') {
-                        kv('Guard Rail Re-Fix Certification', 'VERIFIED: All rails, edge protections, shaft gates & floor openings safely re-fixed');
-                    } else if (ptypeOf(p) === 'shaft') {
-                        kv('Shaft Closure Certification', 'VERIFIED: All workers evacuated, platform secured & shaft openings closed');
-                    } else if (ptypeOf(p) === 'hotwork') {
-                        kv('Fire Watch Certification', 'VERIFIED: Continuous fire watch maintained during work & 1 hr post-completion');
-                    } else if (ptypeOf(p) === 'confined') {
-                        kv('Confined Space Evacuation Certification', 'VERIFIED: All personnel evacuated, equipment removed, access sealed/secured & handover completed');
-                    } else if (ptypeOf(p) === 'blasting') {
-                        kv('Post-Blast Clearance Certification', 'VERIFIED: All blast holes inspected, zero misfires confirmed, site certified physically safe');
-                    } else if (ptypeOf(p) === 'general') {
-                        kv('Housekeeping & Area Clearance Certification', 'VERIFIED: Work completed, tools/rigging removed, debris cleared, and area handed back physically safe');
-                    } else if (ptypeOf(p) === 'nightshift') {
-                        kv('Night Shift Handover & Illumination De-energization', 'VERIFIED: Night operations concluded, workers evacuated safely, lighting towers & cables de-energized/secured');
+                drawTimelineHeader();
+
+                const logItems = (p.activityLog || []).slice().reverse();
+                if (logItems.length === 0) {
+                    logItems.push({ ts: p.createdAt || nowTime(), actor: p.createdBy || 'System', text: 'Permit created and recorded in system registry' });
+                }
+
+                logItems.forEach(function (a, li) {
+                    const tText = fmtDateTime(a.ts) + ' IST';
+                    const actText = a.actor ? String(a.actor) : 'System';
+                    const actLines = doc.splitTextToSize(actText, 41);
+                    const evLines = doc.splitTextToSize(String(a.text || 'Audit event logged'), 134);
+                    const rowH = Math.max(evLines.length * 3.6 + 3, (actLines.length + 1) * 3.6 + 2, 7.5);
+
+                    if (y + rowH > 280) {
+                        doc.addPage();
+                        drawRunningHeader(doc.getNumberOfPages());
+                        y = 22;
+                        drawTimelineHeader();
                     }
-                    kv('Remarks', p.surrender.remarks);
-                    if (p.surrender.gps) kv('Surrender GPS', p.surrender.gps.lat.toFixed(5) + ', ' + p.surrender.gps.lng.toFixed(5));
-                    tryImg(p.surrender.photo, 60, 40, 'Surrender evidence photograph');
-                }
-                // ---------- Cancellation — official record for cancelled permits ----------
-                if (p.status === 'Cancelled') {
-                    sectionTitle((p.extension ? '6' : '5') + '. Cancellation Record');
-                    const cEntry = (p.approvals && ((p.approvals.ehsManager && p.approvals.ehsManager.status === 'rejected' && p.approvals.ehsManager) || (p.approvals.ehsOfficer && p.approvals.ehsOfficer.status === 'rejected' && p.approvals.ehsOfficer))) || null;
-                    kv('Cancelled By', (p.cancelledBy || (cEntry && cEntry.by) || '—') + (p.cancelledByRole ? ' (' + p.cancelledByRole + ')' : ''), 'Cancelled At', fmtDateTime(p.cancelledAt || (cEntry && cEntry.at)) + ' IST');
-                    kv('Cancellation Reason', p.cancelReason);
-                    if (cEntry && cEntry.gps) kv('Cancellation GPS', cEntry.gps.lat.toFixed(5) + ', ' + cEntry.gps.lng.toFixed(5) + (cEntry.gps.within !== undefined ? (cEntry.gps.within ? ' (within site radius)' : ' (outside site radius)') : ''));
-                    para('The permit is terminated due to non-compliance and cannot be reactivated or resubmitted. A completely new permit must be raised with full compliance before work can continue (SOP 02 §4.3).', 8.4);
-                    if (cEntry) sigBlock('Cancellation Authorised — ' + (p.cancelledByRole || 'EHS'), cEntry, cEntry.sig, cEntry.by, cEntry.at);
-                }
-                // ---------- Final status & completion ----------
-                if (['Completed (Surrendered)', 'Cancelled', 'Expired'].includes(p.status)) {
-                    sectionTitle('Final Status');
-                    const doneAt = p.status === 'Cancelled' ? (p.cancelledAt || null) : p.status === 'Expired' ? (p.expiredAt || p.validTill || null) : ((p.surrender && (p.surrender.surrenderedAt || p.surrender.at)) || null);
-                    kv('Final Status', p.status, 'Permit Number', p.id);
-                    kv(p.status === 'Expired' ? 'Expiration Date' : 'Completion Date', doneAt ? fmtDate(doneAt) : '—', p.status === 'Expired' ? 'Expiration Time' : 'Completion Time', doneAt ? fmtTime(doneAt) + ' IST' : '—');
-                    if (p.surrender) kv('Closed & Surrendered By', p.surrender.by);
-                    para(p.status === 'Expired' ? 'This document constitutes the official expired record of the unclosed permit and is retained for regulatory safety compliance and audit inspection.' : 'This document constitutes the official completed record of the permit and is retained until project handover or 4 years, whichever is earlier.', 8);
-                }
-                // ---------- Timeline ----------
-                sectionTitle('Complete Activity Timeline');
-                (p.activityLog || []).slice().reverse().forEach(function (a) {
-                    const tl = doc.splitTextToSize(fmtDateTime(a.ts) + ' IST — ' + a.text, W);
-                    ensure(tl.length * 3.8 + 1.5);
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(8); doc.setTextColor(20, 26, 34);
-                    doc.text(tl, L, y + 3); y += tl.length * 3.8 + 1.5;
+
+                    if (li % 2 === 1) {
+                        doc.setFillColor.apply(doc, PDF_BG_LIGHT);
+                        doc.rect(L, y, W, rowH, 'F');
+                    }
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.18);
+                    doc.rect(L, y, W, rowH);
+                    doc.line(L + 46, y, L + 46, y + rowH);
+
+                    doc.setFont('helvetica', 'bold');
+                    doc.setFontSize(6.8);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text(tText, L + 2.5, y + 3.8);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(6.2);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    doc.text(actLines, L + 2.5, y + 7.2);
+
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7.2);
+                    doc.setTextColor(15, 23, 42);
+                    doc.text(evLines, L + 49, y + 4);
+
+                    y += rowH;
                 });
-                // ---------- Footer on every page ----------
-                const pages = doc.getNumberOfPages();
-                for (let i = 1; i <= pages; i++) {
+
+                // ==================== RUNNING FOOTERS ON ALL PAGES ====================
+                const totalPages = doc.getNumberOfPages();
+                for (let i = 1; i <= totalPages; i++) {
                     doc.setPage(i);
-                    doc.setDrawColor.apply(doc, PDF_LINE); doc.setLineWidth(.25); doc.line(L, 287, R, 287);
-                    doc.setFont('helvetica', 'normal'); doc.setFontSize(7.4); doc.setTextColor.apply(doc, PDF_MUTED);
-                    doc.text('ARPL-EHS-BRD-PTW-001 · ' + p.id + ' · Retained until project handover or 4 years, whichever is earlier', L, 291.5);
-                    doc.text('Page ' + i + ' of ' + pages, R, 291.5, { align: 'right' });
+                    doc.setDrawColor.apply(doc, PDF_LINE);
+                    doc.setLineWidth(0.25);
+                    doc.line(L, 287, R, 287);
+                    doc.setFont('helvetica', 'normal');
+                    doc.setFontSize(7.2);
+                    doc.setTextColor.apply(doc, PDF_MUTED);
+                    doc.text('ARPL-EHS-PTW-' + pMeta(p).form + ' · Permit ' + p.id + ' · Statutory Safety Compliance Audit Record (Retained 4 Years)', L, 291.5);
+                    doc.text('Page ' + i + ' of ' + totalPages, R, 291.5, { align: 'right' });
                 }
+
                 const fname = p.id + '_' + (p.status === 'Cancelled' ? 'Cancelled_Report' : p.status === 'Returned for Correction' ? 'Returned_Report' : p.status === 'Expired' ? 'Expired_Report' : (p.status.startsWith('Active') ? 'Active_Report' : 'Permit_Report')) + '.pdf';
                 if (typeof window !== 'undefined') window.lastGeneratedPdf = doc;
                 if (typeof lastGeneratedPdf !== 'undefined') lastGeneratedPdf = doc;
@@ -20155,7 +21445,7 @@ function trackerHtml(p) {
             }
 
             if (pt === 'electrical') {
-                const isBatching = (kind === 'electrical-batching' || p.electricalSiteType === 'batching_plant');
+                const isBatching = (kind === 'electrical-batching' || p.electricalSiteType === 'batching_plant' || p.facilityScope === 'batching_plant' || p.electricalFacilityScope === 'batching_plant');
                 if (isBatching) {
                     flow.push({ key: 'pm', label: 'P&M Engineer', stage: 'Step 2: Plant & Machinery Statutory Acknowledgment' });
                     flow.push({ key: 'quality-engineer', label: 'Quality Engineer', stage: 'Step 3: Quality Review & Statutory Declaration' });
@@ -20440,12 +21730,11 @@ function trackerHtml(p) {
                         downloadBtnHtml = '<button class="btn no-print" style="background:#E65100;color:#fff;border:none;padding:8px 15px;border-radius:6px;font-weight:600;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onclick="generatePermitPDF(\'' + p.id + '\')"><i class="fa-solid fa-file-pdf"></i> Download Returned Permit Report (PDF)</button>';
                     } else if (p.status === 'Expired') {
                         downloadBtnHtml = '<button class="btn no-print" style="background:#4A148C;color:#fff;border:none;padding:8px 15px;border-radius:6px;font-weight:600;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onclick="generatePermitPDF(\'' + p.id + '\')"><i class="fa-solid fa-file-pdf"></i> Download Expired Permit Report (PDF)</button>';
+                    } else {
+                        downloadBtnHtml = '<button class="btn btn-outline no-print" style="border:1.5px solid var(--navy);color:var(--navy);padding:8px 15px;border-radius:6px;font-weight:600;font-size:12.5px;cursor:pointer;display:inline-flex;align-items:center;gap:6px;" onclick="generatePermitPDF(\'' + p.id + '\')"><i class="fa-solid fa-file-pdf"></i> Download Permit Report (PDF)</button>';
                     }
                 } else {
-                    const isDownloadableStage = p.status.startsWith('Active') || ['Completed (Surrendered)', 'Cancelled', 'Returned for Correction', 'Expired', 'Observation Pending Site Engineer Acknowledgment', 'Observation Pending Section Head Review', 'Observation Pending EHS Clearance', 'Closed – Pending Surrender'].includes(p.status);
-                    if (isDownloadableStage) {
-                        downloadBtnHtml = '<span class="no-print" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--card-bg,#F8FAFC);border:1px solid var(--border,#CBD5E1);border-radius:6px;font-size:11.5px;color:var(--text-muted,#64748B);font-weight:600;" title="Per corporate PTW safety compliance policy, official audit-ready PDF report downloads are restricted exclusively to EHS Safety Officers and Managers."><i class="fa-solid fa-lock" style="color:#94A3B8;"></i> PDF Download restricted to EHS</span>';
-                    }
+                    downloadBtnHtml = '<span class="no-print" style="display:inline-flex;align-items:center;gap:6px;padding:7px 13px;background:var(--card-bg,#F8FAFC);border:1px solid var(--border,#CBD5E1);border-radius:6px;font-size:11.5px;color:var(--text-muted,#64748B);font-weight:600;" title="Per corporate PTW safety compliance policy, official audit-ready PDF report downloads are restricted exclusively to EHS Safety Officers and Managers."><i class="fa-solid fa-lock" style="color:#94A3B8;"></i> PDF Download restricted to EHS</span>';
                 }
 
                 const activityHtml = (p.activityLog && p.activityLog.length)

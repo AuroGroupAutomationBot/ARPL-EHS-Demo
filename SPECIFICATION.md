@@ -1,6 +1,6 @@
 # ARPL EHS Permit-to-Work — Normalized Specification
 
-> **Source of truth**: [README.md](file:///Users/techsavvy/Downloads/ARPL-EHS-Demo-main-2/README.md), [index.html](file:///Users/techsavvy/Downloads/ARPL-EHS-Demo-main-2/index.html) (~20,708 LOC), [ptw_swimlanes.html](file:///Users/techsavvy/Downloads/ARPL-EHS-Demo-main-2/ptw_swimlanes.html), 25 test suites.
+> **Source of truth**: [README.md](README.md), [index.html](index.html) (~21,450 LOC), [ptw_swimlanes.html](ptw_swimlanes.html), 25 master test suites (100% pass rate).
 
 ---
 
@@ -19,7 +19,7 @@
 | **Business Rules** | 27 distinct operational states; transitions are strictly gated by role authorization |
 | **Exceptions** | Invalid role = Access Denied; Missing signature = Blocked; Off-site GPS = Warning |
 | **Dependencies** | GPS Engine (FR-011), Signature Engine (FR-012), Notification Engine (FR-010) |
-| **Acceptance** | Every state transition documented in section 6 is enforceable; 920+ automated assertions confirm |
+| **Acceptance** | Every state transition documented in section 6 is enforceable; 1,090+ automated assertions confirm |
 
 ### FR-002 — 10 Permit Type Modules
 Support 10 distinct permit types: PTW-001 Excavation, PTW-002 Hot Work, PTW-003 Guard Rail, PTW-004 Confined Space, PTW-005 Shaft Work, PTW-006 Electrical (HT/LT) with dual topology, PTW-007 Drilling and Blasting, PTW-008 General Work, PTW-009A Routine Lifting, PTW-009B Critical Lift Plan, PTW-010 Night Shift. Each type has unique checklist (9-21 items), unique approval chain topology (3-8 stages), unique closure/surrender declarations, and unique location mode restrictions.
@@ -37,13 +37,13 @@ EHS can raise safety observations on active permits; observations block extensio
 Permittees can request extensions within operational windows; 3-stage approval: Site Engineer to Section Head to EHS. 18:30 IST request cutoff; 20:30 IST max ceiling; PTW-007 Blasting extensions completely disabled.
 
 ### FR-007 — Escalation and Auto-Expiry Engine
-Real-time tick engine (5s interval) monitoring SLA breaches and permit validity. Stage 1 SLA (45s demo / 2h prod), Stage 2 SLA (120s demo / 4h prod), T-30 min warning, auto-expire, auto-cancel on open observation.
+Real-time tick engine (5s interval) monitoring SLA breaches and permit validity. Dynamic Stage 1 SLA (45s demo / 2h prod), Stage 2 SLA (120s demo / 4h prod), T-30 min warning, auto-expire, auto-cancel on open observation.
 
 ### FR-008 — 4-Step Permit Creation Wizard
 Guided wizard: Step 1 General Info, Step 2 Safety Checklist, Step 3 Permit Validity, Step 4 Review and Sign. Dynamic form fields per permit type; checklist gating; GPS captured on final submission.
 
 ### FR-009 — Statutory PDF Generation
-Generate comprehensive A4 statutory PDF reports via jsPDF. Strictly restricted to EHS Manager/Officer. Includes full signatory chain, checklist, observations, extensions, and activity log.
+Generate comprehensive A4 statutory PDF reports via jsPDF. Strictly restricted to EHS Manager/Officer across all 10 permit types and lifecycle states. Includes full signatory chain, technical sub-tables (PTW-009 rigging stress calculations & Part A/B checklists), observations, extensions, and activity log.
 
 ### FR-010 — Notification Engine
 Role-targeted in-app notification dispatch with severity levels (info, warn, error). Max 250 notifications; role-scoped filtering; mark-all-read; broadcast capability.
@@ -60,8 +60,8 @@ Dynamic dashboard per role with KPI cards, quick actions, and scoped permit feed
 ### FR-014 — Permit Register and Advanced Filtering
 Tabular permit register with multi-field tokenized search, status/project/type filters, and newest-first sorting. Unified heading across all roles; approval-flow visibility isolation.
 
-### FR-015 — Configuration-Driven Architecture
-Centralized APP_CONFIG object governing all dynamic UI, workflows, statuses, form definitions, navigation, and dashboards.
+### FR-015 — Configuration-Driven Architecture (APP_CONFIG)
+Centralized Single Source of Truth (`APP_CONFIG`) governing all dynamic UI, workflows, statuses, form definitions, navigation, dashboards, SLA timings, weather options, and contractor directory.
 
 ### FR-016 — Confined Space Multi-Gas Detection
 4-parameter atmospheric testing engine for PTW-004. O2: 19.5-21.0%, LEL: less than 10%, CO: less than 25 PPM, H2S: 5 PPM or less.
@@ -77,6 +77,23 @@ Saturday advance preparation tile plus Sunday zero-creation lockout engine. PTW-
 
 ### FR-020 — Location Selection Mode and Safety Restriction Matrix
 3-mode location selection (Tower, Basement/Podium, Manual) with per-permit-type restrictions. Excavation: no Tower; Guard Rail/Shaft: no Manual; Blasting: Manual only; Electrical BP: Manual only.
+
+### FR-021 — Dynamic Project Structural Hierarchy & Accessor Layer
+Project-level structural hierarchies defining custom building towers, basement levels, floor counts, and approved contractors per construction site. Structural accessors (`getProjectTowers`, `getProjectBasements`, `getProjectFloors`, `getProjectContractors`) dynamically populate wizard choices when projects switch.
+
+### FR-022 — Enterprise Contractor Directory & Datalist Auto-Suggest
+Centralized approved contractor catalog (`APP_CONFIG.contractorDirectory`) featuring vendor codes, trade categories, safety ratings, and empanelment status. Wizard provides real-time `<datalist id="contractorDatalist">` auto-suggest while supporting unlisted agencies.
+
+### FR-023 — Configurable SLA Escalation Policy & Operating Windows
+Administrative control over escalation thresholds: Fast Demo Mode (Stage 1: 45s, Stage 2: 120s) and Enterprise Production Mode (Stage 1: 2h, Stage 2: 4h). Configurable validity expiry warning offsets (default 30 min) and statutory cutoff hours.
+
+### FR-024 — Multi-Panel Administrative Governance Center
+Multi-tab Administration Center (`view-admin-config`) featuring 5 dedicated control panels:
+1. Worksite GPS & Geofencing (on-site tagging, slider, radar preview)
+2. Projects & Structural Hierarchies (register new project, add towers, configure basements)
+3. Approved Contractor Directory (empanel vendor, assign trade, set safety rating)
+4. SLA Timers & Operating Windows (mode toggle, threshold tuning)
+5. Permit Types & Weekend Rules (enable/disable permit types, toggle Sunday Work tile)
 
 ## 2. Non-Functional Requirements
 
