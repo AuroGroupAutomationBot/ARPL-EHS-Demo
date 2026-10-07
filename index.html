@@ -6108,7 +6108,7 @@
                 nightshift: {
                     key: 'nightshift',
                     code: 'PTW-010',
-                    name: 'Night Shift / Holiday Work',
+                    name: 'Night Shift Work',
                     short: 'Night Shift',
                     prefix: 'PTW-010',
                     form: 'PTW-010',
@@ -6545,7 +6545,7 @@
             { key: 'general', code: 'PTW-008', name: 'General Work', icon: 'fa-helmet-safety', available: true, desc: 'Day-to-day activities not covered by other permit types, incl. erection, hoist and formwork sub-checklists. Form PTW-008.' },
             { key: 'lifting', code: 'PTW-009', name: 'Lifting Operations & Lift Plan', icon: 'fa-arrow-up-from-ground-water', available: true, desc: 'All crane and lifting operations. Dynamic routing automatically determines Routine (PTW-009A) or Critical Lift Plan (PTW-009B) based on load weight (> 5 MT), tandem lifts, and 14 statutory high-risk criteria. Form PTW-009A/B.' },
             { key: 'liftplan', code: 'PTW-009B', name: 'Critical Lift Plan', icon: 'fa-weight-hanging', available: true, hiddenFromGrid: true, desc: 'Critical / Complex Lift Plan with mandatory Project Manager executive acknowledgment. Form PTW-009B.' },
-            { key: 'nightshift', code: 'PTW-010', name: 'Night Shift / Holiday Work', icon: 'fa-moon', available: true, desc: 'Night shift governance & sequential dual-phase clearance. Mandatory 13-point checklist, linked activity permit authorizations, 8:30 PM supervisor qualification gate & dual photo handover. Form PTW-010.' },
+            { key: 'nightshift', code: 'PTW-010', name: 'Night Shift Work', icon: 'fa-moon', available: true, desc: 'Night shift governance & sequential dual-phase clearance. Mandatory 13-point checklist, linked activity permit authorizations, 8:30 PM supervisor qualification gate & dual photo handover. Form PTW-010.' },
         ];
 
         function fmtDur(mins) {
@@ -6774,7 +6774,7 @@
             general: { key: 'general', code: 'PTW-008', name: 'General Work', short: 'General Work', prefix: 'PTW-008', form: 'PTW-008', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             lifting: { key: 'lifting', code: 'PTW-009', name: 'General & Routine Lifting', short: 'Lifting Operations', prefix: 'PTW-009A', form: 'PTW-009A', sh: 'hw-section-head', shLabel: 'Tower Incharge' },
             liftplan: { key: 'liftplan', code: 'PTW-009B', name: 'Critical Lift Plan (Non-Routine / Complex)', short: 'Critical Lift Plan', prefix: 'PTW-009B', form: 'PTW-009B', hiddenFromGrid: true, sh: 'hw-section-head', shLabel: 'Tower Incharge' },
-            nightshift: { key: 'nightshift', code: 'PTW-010', name: 'Night Shift / Holiday Work', short: 'Night Shift', prefix: 'PTW-010', form: 'PTW-010', sh: 'hw-section-head', shLabel: 'Tower Incharge' }
+            nightshift: { key: 'nightshift', code: 'PTW-010', name: 'Night Shift Work', short: 'Night Shift', prefix: 'PTW-010', form: 'PTW-010', sh: 'hw-section-head', shLabel: 'Tower Incharge' }
         };
 
         // Synchronize APP_CONFIG with PTYPE_META and PERMIT_TYPES for seamless interoperability
@@ -8608,7 +8608,7 @@
             if (ptypeOf(p) === 'nightshift') {
                 p.status = 'Pending Site Engineer Acknowledgment';
                 p.approvals = newChain('nightshift');
-                logActivity(p, 'Night Shift / Holiday Work permit (PTW-010) Day Pre-Fill submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2). Informational notification dispatched to P&M Engineer.');
+                logActivity(p, 'Night Shift Work permit (PTW-010) Day Pre-Fill submitted by Site Supervisor (' + creator + '). Awaiting Site Engineer acknowledgment (Step 2). Informational notification dispatched to P&M Engineer.');
                 notify(['site-engineer'], pLabel(p) + ' submitted by Site Supervisor — Site Engineer acknowledgment required.', 'info', p.id);
                 notify(['pm'], pLabel(p) + ' Day-Shift Pre-Fill registered by Site Supervisor (' + creator + '). Informational notice: Night shift work scheduled.', 'info', p.id);
                 notify(stakeholdersFor(p), pLabel(p) + ' Day-Shift Pre-Fill submitted by Site Supervisor. Awaiting Site Engineer acknowledgment.', 'info', p.id);
@@ -12202,7 +12202,7 @@
             function baseNightShift(over) {
                 const qList = (typeof NIGHTSHIFT_CHECKLIST_ITEMS !== 'undefined') ? NIGHTSHIFT_CHECKLIST_ITEMS : [];
                 const res = Object.assign({
-                    id: genPermitNumber('nightshift'), ptype: 'nightshift', activity: 'Night Shift / Holiday Work (PTW-010)', createdBy: 'Day Site Supervisor',
+                    id: genPermitNumber('nightshift'), ptype: 'nightshift', activity: 'Night Shift Work (PTW-010)', createdBy: 'Day Site Supervisor',
                     createdByRole: 'site-supervisor',
                     weather: 'Clear Night', organization: 'ARPL', contractor: 'Apex Infra Ltd',
                     nightWorkType: 'hotwork',
@@ -14059,11 +14059,11 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                            '</div></div>')
                         : '');
             } else if (isNightShift) {
-                // Night Shift / Holiday Work (PTW-010) specific fields
+                // Night Shift Work (PTW-010) specific fields
                 html += '<div class="form-field full" style="margin-top:4px;">' +
                     '<div style="background:#EFF6FF;border:1.5px solid #3B82F6;border-radius:8px;padding:12px 14px;display:flex;align-items:flex-start;gap:12px;">' +
                     '<i class="fa-solid fa-moon" style="font-size:22px;color:#2563EB;margin-top:2px;"></i>' +
-                    '<div><strong style="color:#1D4ED8;font-size:13px;">Stage 1 Day Phase: Night Shift / Holiday Work Pre-fill (5:00 PM – 6:30 PM Window)</strong>' +
+                    '<div><strong style="color:#1D4ED8;font-size:13px;">Stage 1 Day Phase: Night Shift Work Pre-fill (5:00 PM – 6:30 PM Window)</strong>' +
                     '<div style="font-size:12px;color:#1E40AF;line-height:1.5;margin-top:3px;">Site Supervisor (Day Permittee) pre-fills this statutory night shift permit with 13 mandatory checklist points. Day-time site engineer and section head approvals unlock the linked activity permit. <em>Worksite photo is deferred to 8:30 PM on-site night handover.</em></div>' +
                     '</div></div></div>' +
                     '<div class="form-field full" id="ff-night-work-desc"><label>Description of Work at Night <span class="req">*</span></label>' +
@@ -20577,7 +20577,7 @@ function trackerHtml(p) {
                     }
                     if (p.liftingSpecialPrecautions) masterRows.push(['Special Safety Precautions', p.liftingSpecialPrecautions]);
                 } else if (pt === 'nightshift') {
-                    masterRows.push(['Permit Classification', 'PTW-010 Night Shift / Holiday Work', 'Execution Agency', p.isSubcontractor ? ('Subcontractor (' + (p.nightSubcontractorName || '—') + ')') : 'ARPL / Departmental In-House']);
+                    masterRows.push(['Permit Classification', 'PTW-010 Night Shift Work', 'Execution Agency', p.isSubcontractor ? ('Subcontractor (' + (p.nightSubcontractorName || '—') + ')') : 'ARPL / Departmental In-House']);
                     masterRows.push(['Description of Night Work', p.nightWorkDescription || 'Night Construction Operations', 'Overnight Operating Hours', (p.startTime || '20:30') + ' to ' + (p.validTillTime || '06:00') + ' IST (Overnight Window)']);
                     masterRows.push(['Linked Activity Permit', p.linkedPermitId || 'None', 'Stage 1 Day Window', '5:00 PM – 6:30 PM (Site Eng -> Tower Incharge)']);
                     if (p.nightHandover) {

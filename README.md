@@ -4,7 +4,7 @@
 
 ### Enterprise-Grade Digital Safety Governance for Construction Operations
 
-**PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work · PTW-009A/B Lifting Operations · PTW-010 Night Shift / Holiday Work**
+**PTW-001 Excavation · PTW-002 Hot Work · PTW-003 Guard Rail · PTW-004 Confined Space · PTW-005 Shaft Work · PTW-006 Electrical Work · PTW-007 Drilling & Blasting · PTW-008 General Work · PTW-009A/B Lifting Operations · PTW-010 Night Shift Work**
 
 [![Status](https://img.shields.io/badge/Status-Production_Ready-brightgreen?style=for-the-badge)](/)
 [![Tests](https://img.shields.io/badge/Tests-25%20Suites%20Passed-success?style=for-the-badge)](/)
@@ -43,7 +43,7 @@
      - 5.2.8 [PTW-008 General Work](#528-ptw-008-general-work-4-stages---multi-tier-dynamic-safety-spine)
      - 5.2.9 [PTW-009A Routine Lifting Operations](#529-ptw-009a-routine-lifting-operations-5-stages---technical-pm-clearance-spine)
      - 5.2.10 [PTW-009B Critical Lift Plan](#5210-ptw-009b-critical-lift-plan--non-routine-lift-6-stages---project-manager-executive-review-spine)
-     - 5.2.11 [PTW-010 Night Shift / Holiday Work (Dual-Phase Handover Governance)](#5211-ptw-010-night-shift--holiday-work-dual-phase-handover-governance)
+     - 5.2.11 [PTW-010 Night Shift Work (Dual-Phase Handover Governance)](#5211-ptw-010-night-shift--holiday-work-dual-phase-handover-governance)
        - 5.2.11.1 [Phase 1: Stage 1 Daytime Approval Spine](#52111-phase-1-day-phase-stage-1-daytime-initiation--approval-spine-500-pm--630-pm-ist)
        - 5.2.11.2 [Phase 1: Stage 2 Linked Activity Approval Spine](#52112-phase-1-day-phase-sequential-stage-2-linked-activity-permit-approval-spine)
        - 5.2.11.3 [Phase 2: Night Handover & EHS Activation](#52113-phase-2-night-phase-830-pm-handover-gate-pm-inspection--ehs-final-activation)
@@ -515,7 +515,7 @@ The EHS final endorsement stage implements a **first-wins** pattern:
 | **PTW-008** | General Work | `PTW-008` | Dynamic (21 / 15 / 20 / 11) | 4-Stage (Direct) | Multi-tier safety checklists dynamically tailored to 14 work descriptions across 4 categories: Category A Panel Erection (21 items, Item 21 wind $\le 45\text{ km/h}$), Category B Hoisting & Rigging (15 items + wind warning banner), Category C Formwork (20 items + wind warning banner), Category D Custom (11 items + manual entry field). 4-stage direct spine (Site Sup $\to$ Site Eng $\to$ Tower Incharge $\to$ EHS). Mandatory housekeeping & area clearance surrender gate. |
 | **PTW-009A** | Routine Lifting Operations | `PTW-009A` | 14 | 5-Stage (P&M Clearance Spine) | Single unified tile (`PTW-009`) in catalog; initiated exclusively by certified Lifting Supervisor; mandatory pre-location signature gate (Crane Operator & Signaler/Rigger digital signatures and DPDP consent); rigging geometry & sling tension calculation engine ($\text{Stress} = \frac{\text{TotalW} \times L}{H \times N}$ with $N=2$ safety clamping); 14 statutory checklist items; mobile crane ($\le 38\text{ km/h}$) and tower crane ($\le 45\text{ km/h}$) wind speed warnings; dedicated P&M Engineer technical clearance; exclusive Lifting Supervisor surrender gate with certified demobilization declaration. |
 | **PTW-009B** | Critical Lift Plan / Non-Routine Lift | `PTW-009B` | 14 | 6-Stage (Project Manager Review) | Single unified tile (`PTW-009`, `liftplan` hidden from catalog grid); auto-promoted dynamically from routine lifting if: total load $> 5.0\text{ MT}$, tandem lift selected, calculated sling stress $> 80\%$ of sling SWL, or ANY of 14 statutory high-risk criteria = YES; 6-stage governance requiring executive review by Project Manager (Step 5) prior to EHS final endorsement; certified demobilization declaration upon surrender. |
-| **PTW-010** | Night Shift / Holiday Work | `PTW-010` | 13 | 8-Stage Dual-Phase Handover Protocol | Enterprise-grade governance for night operations (20:30 to 06:00 IST). Day Phase (5:00 PM – 6:30 PM): Initiated by Site Supervisor, 13 statutory checklist checks, contractor/subcontractor declaration, authorized activity dropdown, site photo deferred to handover, approved by Site Engineer & Tower Incharge. Unlocks sequential Stage 2 linked activity permit (Hot Work, Shaft, Lifting, etc.) through its daytime approval spine. Night Phase Handover (8:30 PM / 20:30 IST): Transferred to incoming Night Site Supervisor; qualification gate requires PM authorization + valid PTW training (< 365 days); 21:00 cutoff engine auto-cancels if unstaffed; mandatory dual site photo verification (workplace illumination + linked activity setup). Step 5: P&M Engineer night inspection of lighting towers and equipment. Step 6: EHS Safety verification activates both permits; rejection strictly isolates Night Supervisor without re-engaging day approvers. Strict statutory prohibitions: Confined Space (PTW-004), Drilling & Blasting (PTW-007), and Critical Lift Plans (PTW-009B / > 5 MT) strictly forbidden at night. Exclusive closure & surrender by Night Site Supervisor with de-energization declaration. |
+| **PTW-010** | Night Shift Work | `PTW-010` | 13 | 8-Stage Dual-Phase Handover Protocol | Enterprise-grade governance for night operations (20:30 to 06:00 IST). Day Phase (5:00 PM – 6:30 PM): Initiated by Site Supervisor, 13 statutory checklist checks, contractor/subcontractor declaration, authorized activity dropdown, site photo deferred to handover, approved by Site Engineer & Tower Incharge. Unlocks sequential Stage 2 linked activity permit (Hot Work, Shaft, Lifting, etc.) through its daytime approval spine. Night Phase Handover (8:30 PM / 20:30 IST): Transferred to incoming Night Site Supervisor; qualification gate requires PM authorization + valid PTW training (< 365 days); 21:00 cutoff engine auto-cancels if unstaffed; mandatory dual site photo verification (workplace illumination + linked activity setup). Step 5: P&M Engineer night inspection of lighting towers and equipment. Step 6: EHS Safety verification activates both permits; rejection strictly isolates Night Supervisor without re-engaging day approvers. Strict statutory prohibitions: Confined Space (PTW-004), Drilling & Blasting (PTW-007), and Critical Lift Plans (PTW-009B / > 5 MT) strictly forbidden at night. Exclusive closure & surrender by Night Site Supervisor with de-energization declaration. |
 
 ### 5.2 Approval Chain Topology per Permit Type
 
@@ -635,7 +635,7 @@ graph LR
     end
 ```
 
-#### 5.2.11 PTW-010 Night Shift / Holiday Work (Dual-Phase Handover Governance)
+#### 5.2.11 PTW-010 Night Shift Work (Dual-Phase Handover Governance)
 
 Night Shift and Holiday Work operates under an enterprise multi-phase governance protocol separated into distinct, independent operational stages:
 
@@ -1314,7 +1314,7 @@ In the Step 1 Creation Wizard, users select from:
 | **Drilling & Blasting (PTW-007)** | ❌ **Restricted** | ❌ **Restricted** | ✅ **Enabled** | **Manual** |
 | **General Work (PTW-008)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 | **Lifting Operations & Lift Plan (PTW-009A/B)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** *(Strictly locked until pre-location signatures captured)* |
-| **Night Shift / Holiday Work (PTW-010)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
+| **Night Shift Work (PTW-010)** | ✅ **Enabled** | ✅ **Enabled** | ✅ **Enabled** | **Tower** |
 
 #### Why this mapping works (The Technical & Safety Logic)
 
@@ -1350,7 +1350,7 @@ In the Step 1 Creation Wizard, users select from:
 8. **General Work (PTW-008)**
    * **Enable All.** General works span panel erection on elevated tower slabs (Category A), material hoisting and equipment rigging across open yards and towers (Category B), heavy formwork in basements and substructures (Category C), and miscellaneous fabrication in exterior laydown areas (Category D). All three structural location modes are fully supported with Tower as the default mode.
 
-9. **Night Shift / Holiday Work (PTW-010)**
+9. **Night Shift Work (PTW-010)**
    * **Enable All.** Night operations may occur across towers (slab finishing, MEP installation), basements (substation cabling, pump room commissioning), or exterior laydown areas (trench work, steel yard fabrication). All three structural location modes are enabled, defaulting to Tower. Physical handover at 8:30 PM verifies exact location coordinates with GPS geofencing.
 
 ---
@@ -2507,7 +2507,7 @@ sequenceDiagram
 
 ---
 
-### 8.10 PTW-010 Night Shift / Holiday Work: Dual-Phase Handover & 6-Signatory Governance
+### 8.10 PTW-010 Night Shift Work: Dual-Phase Handover & 6-Signatory Governance
 
 PTW-010 implements a specialized **Dual-Phase (Day-to-Night) Handover Architecture** with an 8:30 PM (20:30 IST) handover gate, mandatory dual site photos (Illumination + Activity Setup), 21:00 IST cutoff auto-cancel engine, P&M night inspection, and isolated EHS rejection:
 
@@ -4063,7 +4063,7 @@ tests/
 ├── test_dynamic_config_architecture.js  # Suite 20: Dynamic & Configuration-Driven Enterprise Architecture (9 Sections)
 ├── test_pt09_lifting_operations.js      # Suite 21: PTW-009 Lifting Operations & Critical Lift Plan (PTW-009A/B) (14 Sections)
 ├── test_draft_and_pt09_subtables.js     # Suite 22: Draft Resumption, Sub-Table Scroll Fix & Part A/B Checkboxes (6 Sections)
-├── test_pt10_night_shift.js             # Suite 23: PTW-010 Night Shift / Holiday Work & Dual-Phase Handover (12 Sections)
+├── test_pt10_night_shift.js             # Suite 23: PTW-010 Night Shift Work & Dual-Phase Handover (12 Sections)
 ├── test_sunday_work_tile.js             # Suite 24: Sunday Work Tile & Weekend Governance (9 Sections)
 └── test_dynamic_enterprise_features.js   # Suite 25: Dynamic Enterprise Architecture, Multi-Project & Contractor Governance (11 Sections)
 ```
@@ -4307,7 +4307,7 @@ tests/
 - **Bi-Directional Weight Threshold Synchronization**: Dynamic synchronization of load weight thresholds ($\le 5\text{ MT}$ Part A vs $> 5\text{ MT}$ Part B).
 - **Universal Draft Resumption**: Verifies draft resumption and form re-population across all specialized roles (Lifting Supervisor, Electrician).
 
-#### Suite 23: PTW-010 Night Shift / Holiday Work & Dual-Phase Handover (test_pt10_night_shift.js - 12 Sections)
+#### Suite 23: PTW-010 Night Shift Work & Dual-Phase Handover (test_pt10_night_shift.js - 12 Sections)
 - **Statutory Prohibitions & Checklist**: Enforces strict prohibition of high-risk activities (Confined Space, Blasting, Critical Lifts); validates 13 statutory night checklist items.
 - **Stage 1 Daytime Approval Spine**: Site Supervisor $\to$ Site Engineer $\to$ Tower Incharge $\to$ Night Shift Approved – Awaiting Linked Permit.
 - **Sequential Stage 2 Linked Activity Permitting**: Unlocks linked permit initiation, daytime clearances, and synchronized promotion to Approved – Pending Night Handover.
@@ -4494,7 +4494,7 @@ Tile visibility, operational mode, and lockout enforcement are driven by the pro
 To facilitate compliance audits, training demonstrations, and offline verification, the top navigation bar includes an **Interactive Day Simulator** allowing instant switching between Live IST, Saturday (Preparation Mode), Sunday (Lockout Mode), and Monday (Standard Operations).
 
 ### 24.4 Hard Exclusion of Night Shift Work (PTW-010)
-Under ARPL corporate safety policy §3 and requirements NW-01, NW-02, NW-03, **Night Shift / Holiday Work (PTW-010) is strictly barred from the Sunday Work tile**. Night Shift possesses an independent, specialized dual-phase daytime approval and 8:30 PM handover protocol requiring linked daytime permits, and must not be initiated through advance Sunday batching.
+Under ARPL corporate safety policy §3 and requirements NW-01, NW-02, NW-03, **Night Shift Work (PTW-010) is strictly barred from the Sunday Work tile**. Night Shift possesses an independent, specialized dual-phase daytime approval and 8:30 PM handover protocol requiring linked daytime permits, and must not be initiated through advance Sunday batching.
 
 The exclusion is enforced through **3 independent architectural layers**:
 1. **Catalog Filter (Presentation Layer)**: PTW-010 is excluded from the Sunday Work catalog modal. The UI displays an explicit statutory reminder: *"Night Shift Work (PTW-010) is excluded from this tile and must be initiated through the standard PTW flow."*

@@ -54,7 +54,7 @@ console.log('\n--- 1. Static Verification of Metadata, Constants & Schema ---');
 assert(src.includes("key: 'nightshift'"), "PTYPE_META must register nightshift key");
 assert(src.includes("code: 'PTW-010'"), "PTYPE_META must register PTW-010 code");
 assert(src.includes("form: 'PTW-010'"), "PTYPE_META must register Form PTW-010");
-assert(src.includes("Night Shift / Holiday Work"), "PTYPE_META title must contain Night Shift / Holiday Work");
+assert(src.includes("Night Shift Work"), "PTYPE_META title must contain Night Shift Work");
 assert(src.includes("NIGHTSHIFT_CHECKLIST_ITEMS"), "NIGHTSHIFT_CHECKLIST_ITEMS must be defined (13 items)");
 assert(src.includes("NIGHT_WORK_DESCRIPTIONS"), "NIGHT_WORK_DESCRIPTIONS must be defined");
 assert(src.includes("NIGHT_SUPERVISORS"), "NIGHT_SUPERVISORS registry must be defined");
