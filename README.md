@@ -128,7 +128,8 @@
    - 24.7 [Permit Data Origin Tracking, Register Filtering & SUN Badge](#247-permit-data-origin-tracking-register-filtering--sun-badge)
    - 24.8 [Cross-Cutting Controls (RBAC, Notifications, Retention, PDF Audit)](#248-cross-cutting-controls-rbac-notifications-retention-pdf-audit)
    - 24.9 [Smooth Scrolling & Navigation Engineering](#249-smooth-scrolling--navigation-engineering)
-25. [Authors & Engineering Team](#25-authors--engineering-team)
+25. [GitHub Pages Deployment](#25-github-pages-deployment)
+26. [Authors & Engineering Team](#26-authors--engineering-team)
 
 ---
 
@@ -4536,7 +4537,29 @@ To ensure optimal fluid navigation across large landing pages, long statutory ch
 
 ---
 
-## 25. Authors & Engineering Team
+## 25. GitHub Pages Deployment
+
+The ARPL EHS Permit-to-Work system is engineered with a **zero-build, client-side architecture** that runs natively on **GitHub Pages** without requiring any build pipelines or servers.
+
+### One-Click GitHub Pages Setup:
+1. In your GitHub repository, open **Settings** > **Pages**.
+2. Under **Build and deployment**:
+   - **Source**: Select `Deploy from a branch`.
+   - **Branch**: Select `main` (or default branch) and folder `/(root)`.
+   - Click **Save**.
+3. Your application is live at:
+   `https://<your-username>.github.io/<your-repository>/`
+
+### Built-in GitHub Pages Optimizations:
+* **`.nojekyll` Marker**: Included at the repository root to bypass Jekyll static-site generation and serve raw web assets directly.
+* **`404.html` SPA Handler**: Provided to catch direct route reloads and redirect safely back to `./index.html`.
+* **Zero Mixed Content**: All external libraries (Font Awesome, jsPDF, Leaflet/OSM) use secure `https://cdnjs.cloudflare.com` CDNs.
+* **Relative Path Resolution**: All asset paths and view navigation links use `./` relative references, ensuring smooth operation under sub-directory URLs (such as `https://user.github.io/repo-name/`).
+* **Instant First-Visit Initialization**: Seeds demonstration scenarios into memory automatically if `localStorage` is empty.
+
+---
+
+## 26. Authors & Engineering Team
 
 Developed and engineered by:
 * **Mohith**
