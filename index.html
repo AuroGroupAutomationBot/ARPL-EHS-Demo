@@ -5620,7 +5620,7 @@
         ];
 
         const WEATHER_OPTIONS = ['Sunny', 'Partly Cloudy', 'Overcast', 'Windy', 'Light Rain', 'Hazy'];
-        const EQUIPMENT_OPTIONS = ['Excavator', 'JCB', 'Hydra', 'Poclain', 'Manual Excavation', 'Crane', 'Others'];
+        const EQUIPMENT_OPTIONS = ['JCB', 'Excavator', 'Dumper', 'Tipper', 'Tractor', 'Trolley', 'Others'];
 
         /* Lifting Operations Constants (PTW-009A & PTW-009B) */
         const LIFTING_EQUIPMENT_TYPES = [
@@ -5635,12 +5635,23 @@
 
         const LIFTING_GEAR_TYPES = [
             'Wire Rope Sling',
+            'Hook Chook',
+            'Winch',
             'Webbing Sling',
             'Chain Sling',
             'Shackle',
             'Spreader Beam',
             'Lifting Beam',
             'Other'
+        ];
+
+        const LIFTING_COMMUNICATION_METHODS = [
+            'Radio (walkie-talkie)',
+            'Standard Hand Signals',
+            'Both Radio & Hand Signals',
+            'Blinker',
+            'Flags',
+            'Whistles'
         ];
 
         const LIFTING_LOAD_CHECKLIST_CRITERIA = [
@@ -5810,8 +5821,6 @@
                 blastingExplosives: [
                     'Emulsion Explosives',
                     'ANFO (Ammonium Nitrate Fuel Oil)',
-                    'Slurry / Water Gel Explosives',
-                    'Cartridge Explosives (Slurry/Emulsion)',
                     'Cast Boosters',
                     'Electric Detonators (Instantaneous / Delay)',
                     'Non-Electric (Nonel) Shock Tube Detonators',
@@ -5820,11 +5829,20 @@
                 ],
                 drillingMachines: [
                     'Crawler Drilling Rig',
-                    'Jack Hammer (Pneumatic)',
+                    'DTH (Down-the-Hole) Rig',
                     'Rotary Blast Hole Drill',
-                    'Down-The-Hole (DTH) Drill Rig',
-                    'Hydraulic Crawler Drill',
-                    'Handheld Rock Drill',
+                    'Top Hammer Drill Rig',
+                    'Pneumatic Jackhammer & Air Compressor',
+                    'Others'
+                ],
+                confinedActivities: [
+                    'Tank Cleaning',
+                    'Sump Inspection / Repair',
+                    'STP / WTP Maintenance',
+                    'Pipe / Cable Duct Entry',
+                    'Underground Drainage / Culvert Work',
+                    'Sump Waterproofing',
+                    'Batching plant mixer drum cleaning',
                     'Others'
                 ]
             },
@@ -6968,6 +6986,7 @@
             'Pipe / Cable Duct Entry',
             'Underground Drainage / Culvert Work',
             'Sump Waterproofing',
+            'Batching plant mixer drum cleaning',
             'Others'
         ];
 
@@ -7080,8 +7099,6 @@
         const BLASTING_EXPLOSIVE_TYPES = [
             'Emulsion Explosives',
             'ANFO (Ammonium Nitrate Fuel Oil)',
-            'Slurry / Water Gel Explosives',
-            'Cartridge Explosives (Slurry/Emulsion)',
             'Cast Boosters',
             'Electric Detonators (Instantaneous / Delay)',
             'Non-Electric (Nonel) Shock Tube Detonators',
@@ -7095,8 +7112,6 @@
             'Rotary Blast Hole Drill',
             'Top Hammer Drill Rig',
             'Pneumatic Jackhammer & Air Compressor',
-            'Hydraulic Rock Drill',
-            'Handheld Rock Drill',
             'Others'
         ];
 
@@ -11237,7 +11252,7 @@
                 return Object.assign({
                     id: genPermitNumber(), activity: 'Excavation Work (PTW-001)', createdBy: 'Duty Site Supervisor',
                     weather: 'Sunny', organization: 'ARPL', contractor: null,
-                    equipment: ['Excavator', 'Manual Excavation'],
+                    equipment: ['Excavator', 'JCB'],
                     startTime: '09:00',
                     checklist: CHECKLIST_ITEMS.map((q, i) => ({ q, ans: 'yes', comment: null, photo: null, gps: null })),
                     sitePhoto: 'demo',
@@ -11877,7 +11892,7 @@
                     dbBlastDiameter: '0.115',
                     dbBlastDepth: '6.0',
                     dbHolesCount: '24',
-                    dbExplosiveType: 'Slurry / Watergel Explosives',
+                    dbExplosiveType: 'Emulsion Explosives',
                     blastingRigHolesLoaded: '24',
                     blastingRigHoleDepthM: '6.0',
                     blastingRigHoleDepthFt: '6.0',
@@ -15162,7 +15177,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 '<div class="form-grid">' +
                 '<div class="form-field" id="ff-lifting-comms"><label>Primary Means of Communication <span class="req">*</span></label>' +
                 '<select id="inLiftingComms" onchange="draft.liftingComms=this.value;validateWizStep(1);"' + disAttr + '>' +
-                ['Radio (walkie-talkie)', 'Standard Hand Signals', 'Both Radio & Hand Signals'].map(c => '<option value="' + c + '" ' + ((draft.liftingComms || 'Both Radio & Hand Signals') === c ? 'selected' : '') + '>' + c + '</option>').join('') +
+                LIFTING_COMMUNICATION_METHODS.map(c => '<option value="' + c + '" ' + ((draft.liftingComms || 'Both Radio & Hand Signals') === c ? 'selected' : '') + '>' + c + '</option>').join('') +
                 '</select><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Primary means of communication is mandatory.</div></div>' +
                 '<div class="form-field" id="ff-lifting-ground"><label>Ground Condition Verification <span class="req">*</span></label>' +
                 '<select id="inLiftingGround" onchange="draft.liftingGround=this.value;validateWizStep(1);"' + disAttr + '>' +
@@ -15352,20 +15367,21 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
             const isTower = (draft.locationStructure || 'Tower') === 'Tower';
             const isBp = draft.locationStructure === 'Basement/Podium';
             const isManual = draft.locationStructure === 'Manual';
-            const isContractor = draft.organization === 'Contractor';
+            const isContractor = draft.organization === 'Contractor' || draft.organization === 'Subcontractor';
+            const isArpl = !isContractor;
 
             const towerAllowed = allowedModes.includes('Tower');
             const bpAllowed = allowedModes.includes('Basement/Podium');
             const manualAllowed = allowedModes.includes('Manual');
 
             let html = '';
-            // Organization (ARPL / Contractor)
+            // Organization (ARPL / Contractor or Subcontractor - Single Manual Field)
             html += '<div class="form-field full" id="ff-org"><label>Organization <span class="req">*</span></label><div class="radio-row">' +
-                '<label class="radio-pill ' + (!isContractor ? 'sel' : '') + '"><input type="radio" name="univOrg" value="ARPL" ' + (!isContractor ? 'checked' : '') + ' onchange="onUniversalOrgChange(\'ARPL\')"' + disAttr + '> ARPL</label>' +
-                '<label class="radio-pill ' + (isContractor ? 'sel' : '') + '"><input type="radio" name="univOrg" value="Contractor" ' + (isContractor ? 'checked' : '') + ' onchange="onUniversalOrgChange(\'Contractor\')"' + disAttr + '> Contractor</label>' +
+                '<label class="radio-pill ' + (isArpl ? 'sel' : '') + '"><input type="radio" name="univOrg" value="ARPL" ' + (isArpl ? 'checked' : '') + ' onchange="onUniversalOrgChange(\'ARPL\')"' + disAttr + '> ARPL</label>' +
+                '<label class="radio-pill ' + (isContractor ? 'sel' : '') + '"><input type="radio" name="univOrg" value="Contractor" ' + (isContractor ? 'checked' : '') + ' onchange="onUniversalOrgChange(\'Contractor\')"' + disAttr + '> Contractor / Subcontractor</label>' +
                 '</div></div>' +
                 (isContractor
-                    ? '<div class="form-field full" id="ff-contractor"><label>Contractor Agency / Company Name <span class="req">*</span></label><input type="text" id="inContractor" list="contractorDatalist" placeholder="Select or enter contractor company / agency name..." value="' + escapeHtml(draft.contractor || '') + '" oninput="draft.contractor=this.value;draft.welderContractor=this.value;validateWizStep(1)"' + disAttr + '><datalist id="contractorDatalist">' + getProjectContractors(draft.project).map(c => '<option value="' + escapeHtml(c) + '"></option>').join('') + '</datalist><div class="form-hint" style="font-size:11px;color:var(--text-muted);margin-top:3px;"><i class="fa-solid fa-building-shield"></i> Choose from approved contractor registry or enter new agency.</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Contractor name is mandatory.</div></div>'
+                    ? '<div class="form-field full" id="ff-contractor"><label>Contractor / Subcontractor Agency Name <span class="req">*</span></label><input type="text" id="inContractor" placeholder="Enter Contractor or Subcontractor agency / company name..." value="' + escapeHtml(draft.contractor || '') + '" oninput="draft.contractor=this.value;draft.welderContractor=this.value;validateWizStep(1)"' + disAttr + '><datalist id="contractorDatalist" style="display:none;"></datalist><div class="form-hint" style="font-size:11px;color:var(--text-muted);margin-top:3px;"><i class="fa-solid fa-pen-to-square"></i> Manual text entry for Contractor / Subcontractor name (no dropdown required).</div><div class="form-error"><i class="fa-solid fa-circle-exclamation"></i> Contractor / Subcontractor name is mandatory.</div></div>'
                     : '') +
                 // Location Selection Mode (Select either Tower or Basement/Podium or Manual)
                 '<div class="form-field full"><label>Location Selection Mode (Select either Tower or Basement/Podium or Manual) <span class="req">*</span></label>' +
@@ -15446,7 +15462,7 @@ return '<span class="badge st-' + statusClass(s) + '">' + s + '</span>';
                 draft.welderContractor = '';
             }
             renderWizStep();
-            if (v === 'Contractor') {
+            if (v === 'Contractor' || v === 'Subcontractor') {
                 const ci = document.getElementById('inContractor');
                 if (ci) ci.focus();
             }

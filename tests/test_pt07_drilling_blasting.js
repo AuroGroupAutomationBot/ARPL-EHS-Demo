@@ -210,7 +210,7 @@ evalInVM("draft.dbChargeAmount = '15.5';");
 evalInVM("draft.dbBlastDiameter = '0.115';");
 evalInVM("draft.dbBlastDepth = '5.0';");
 evalInVM("draft.dbHolesCount = '20';");
-evalInVM("draft.dbExplosiveType = 'Slurry / Watergel Explosives';");
+evalInVM("draft.dbExplosiveType = 'Emulsion Explosives';");
 
 assert.strictEqual(evalInVM("validateWizStep(1)"), true, "Step 1 must pass when all Blasting parameters are valid");
 console.log('  ✓ PASS: Step 1 validation passes with complete Blasting specifications');

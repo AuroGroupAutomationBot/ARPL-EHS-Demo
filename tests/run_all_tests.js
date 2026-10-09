@@ -31,7 +31,8 @@ const suites = [
     { num: 22, name: 'DRAFT RESUMPTION, SUB-TABLE SCROLL FIX & PART A/B CHECKBOXES', file: 'test_draft_and_pt09_subtables.js' },
     { num: 23, name: 'PTW-010 NIGHT SHIFT / HOLIDAY WORK & DUAL-PHASE HANDOVER', file: 'test_pt10_night_shift.js' },
     { num: 24, name: 'SUNDAY WORK TILE & WEEKEND GOVERNANCE', file: 'test_sunday_work_tile.js' },
-    { num: 25, name: 'DYNAMIC ENTERPRISE ARCHITECTURE, MULTI-PROJECT & CONTRACTOR GOVERNANCE', file: 'test_dynamic_enterprise_features.js' }
+    { num: 25, name: 'DYNAMIC ENTERPRISE ARCHITECTURE, MULTI-PROJECT & CONTRACTOR GOVERNANCE', file: 'test_dynamic_enterprise_features.js' },
+    { num: 26, name: 'PERMIT-SPECIFIC MASTER DATA & MANUAL CONTRACTOR/SUBCONTRACTOR ENTRY', file: 'test_master_data_updates.js' }
 ];
 
 console.log('================================================================');
